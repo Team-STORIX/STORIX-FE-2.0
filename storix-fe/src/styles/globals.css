@@ -1,112 +1,73 @@
-@import 'tailwindcss';
+/* src\styles\globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  /* Typography */
-  --font-family-sans:
-    var(--font-geist-sans), 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  --font-weight-bold: 700;
-  --font-weight-medium: 500;
-  --font-weight-extrabold: 800;
-
-  --fs-heading-1: 24px;
-  --fs-heading-2: 20px;
-  --fs-body-1: 16px;
-  --fs-body-2: 14px;
-  --fs-caption-1: 12px;
-  --fs-caption-2: 10px;
-  --fs-caption-3: 10px;
-
-  --line-height-tight: 140%;
+/* 스크롤바 숨김 - 모든 브라우저 */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
 }
 
-@theme {
-  /*-------- Black & White---------*/
-  --color-black: #000000;
-  --color-white: #ffffff;
-  /*-------- Main color ---------*/
-  --color-primary-main: #ff4093;
-  --color-primary-light: #fdbcd9;
-  --color-primary-extra-light: #ffeef6;
-  --color-primary-dark: #d8016f;
-  /*-------- Gray scale ---------*/
-  --color-gray-900: #100f0f;
-  --color-gray-800: #302f2f;
-  --color-gray-700: #4e4d4d;
-  --color-gray-600: #616060;
-  --color-gray-500: #888787;
-  --color-gray-400: #a9a8a8;
-  --color-gray-300: #cecdcd;
-  --color-gray-200: #e1e0e0;
-  --color-gray-100: #eeeded;
-  --color-gray-50: #f8f7f7;
-  /*------ font -------*/
-  --font-sans: var(--font-family-sans);
-  --font-mono: var(--font-geist-mono);
+*::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--color-black);
-    --color-foreground: var(--color-gray-50);
-  }
-}
-
+html,
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-family-sans);
-  line-height: var(--line-height-tight);
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-@layer utilities {
-  /*------ Typography scale -------*/
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+@layer components {
   .heading-1 {
-    font-size: var(--fs-heading-1);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-tight);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 140%;
   }
 
   .heading-2 {
-    font-size: var(--fs-heading-2);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-tight);
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 140%;
   }
 
   .body-1 {
-    font-size: var(--fs-body-1);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-tight);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 140%;
   }
 
   .body-2 {
-    font-size: var(--fs-body-2);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-tight);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 140%;
   }
 
   .caption-1 {
-    font-size: var(--fs-caption-1);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-tight);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 140%;
   }
 
   .caption-2 {
-    font-size: var(--fs-caption-2);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-tight);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 140%;
   }
 
   .caption-3 {
-    font-size: var(--fs-caption-3);
-    font-weight: var(--font-weight-extrabold);
-    line-height: var(--line-height-tight);
-  }
-
-  /*------ iPhone16 Container ------*/
-  .ipone16-container {
-    aspect-ratio: 9 / 19.5;
-    width: 100%;
-    max-width: 20rem;
-    margin: 16px;
+    font-weight: 800;
+    font-size: 10px;
+    line-height: 140%;
   }
 }

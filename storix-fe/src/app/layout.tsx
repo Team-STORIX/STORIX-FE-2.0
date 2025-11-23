@@ -1,9 +1,11 @@
-import '@/styles/globals.css'
+// src\app\layout.tsx
 import type { Metadata } from 'next'
+import '../styles/globals.css'
 
 export const metadata: Metadata = {
+  title: 'STORIX',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icons/logo.svg',
   },
 }
 
@@ -14,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="min-h-dvh">{children}</body>
+      <body>{children}</body>
     </html>
   )
 }
