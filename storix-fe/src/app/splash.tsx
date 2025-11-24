@@ -1,47 +1,45 @@
-// src\components\Splash.tsx
+// app/splash.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 
-export default function Splash({ onComplete }: { onComplete: () => void }) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onComplete()
-    }, 1500)
-
-    return () => clearTimeout(timer)
-  }, [onComplete])
-
+// ✅ export 추가!
+export function Splash() {
   return (
-    <main
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#E9E9E9',
-      }}
+    <div
+      className="flex w-full h-full justify-center items-center"
+      style={{ backgroundColor: 'var(--color-black)' }}
     >
-      <div
-        style={{
-          width: 393,
-          height: 892,
-          backgroundColor: '#000000',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Image
+      <div className="flex flex-col items-center">
+        <img
           src="/icons/logo-white.svg"
           alt="STORIX Logo"
           width={100}
           height={100}
-          priority
         />
       </div>
-    </main>
+    </div>
   )
+}
+
+export default function SplashWrapper({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (showSplash) {
+    return <Splash />
+  }
+
+  return <>{children}</>
 }

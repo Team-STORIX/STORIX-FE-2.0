@@ -1,73 +1,76 @@
 /* src\styles\globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-/* 스크롤바 숨김 - 모든 브라우저 */
-* {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE and Edge */
+/* ---------------------------------------------------
+   Color 
+--------------------------------------------------- */
+
+:root {
+  --background: #ffeef6;
+  --foreground: #000000;
+  --color-black: #000a19;
+  --color-white: #ffffff;
+  /*-------- main color ---------*/
+  --color-main: #ff4093;
+  --color-main-light: #fdbcd9;
+  --color-main-extra-light: #ffeef6;
+  --color-main-dark: #d8016f;
+  /*-------- gray scale ---------*/
+  --color-gray-50: #f8f7f7;
+  --color-gray-100: #eeeded;
+  --color-gray-200: #e1e0e0;
+  --color-gray-300: #cecded;
+  --color-gray-400: #a9a8a8;
+  --color-gray-500: #888787;
+  --color-gray-600: #616060;
+  --color-gray-700: #4e4d4d;
+  --color-gray-800: #302f2f;
+  --color-gray-900: #100f0f;
 }
 
-*::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, Opera */
-  width: 0 !important;
-  height: 0 !important;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
 }
 
-html,
 body {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
+/* Typography System */
+:root {
+  /* Headings */
+  --font-heading1-size: 24px;
+  --font-heading1-weight: 700;
+  --font-heading1-line-height: 140%;
 
-@layer components {
-  .heading-1 {
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 140%;
-  }
+  --font-heading2-size: 20px;
+  --font-heading2-weight: 700;
+  --font-heading2-line-height: 140%;
 
-  .heading-2 {
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 140%;
-  }
+  /* Body */
+  --font-body1-size: 16px;
+  --font-body1-weight: 500;
+  --font-body1-line-height: 140%;
 
-  .body-1 {
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 140%;
-  }
+  --font-body2-size: 14px;
+  --font-body2-weight: 500;
+  --font-body2-line-height: 140%;
 
-  .body-2 {
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 140%;
-  }
+  /* Captions */
+  --font-caption1-size: 12px;
+  --font-caption1-weight: 500;
+  --font-caption1-line-height: 140%;
 
-  .caption-1 {
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 140%;
-  }
+  --font-caption2-size: 10px;
+  --font-caption2-weight: 500;
+  --font-caption2-line-height: 140%;
 
-  .caption-2 {
-    font-weight: 500;
-    font-size: 10px;
-    line-height: 140%;
-  }
-
-  .caption-3 {
-    font-weight: 800;
-    font-size: 10px;
-    line-height: 140%;
-  }
+  --font-caption3-size: 10px;
+  --font-caption3-weight: 800;
+  --font-caption3-line-height: 140%;
 }
