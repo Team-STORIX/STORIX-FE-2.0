@@ -1,0 +1,26 @@
+// src/components/home/todayTopicRoom/TopicNav.tsx
+'use client'
+
+import Link from 'next/link'
+import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
+
+export default function TopicNav() {
+  return (
+    <div className="flex w-full h-17 items-center justify-between px-1">
+      <div className="flex items-center justify-center">
+        <p className="heading-1">오늘의 토픽룸</p>
+      </div>
+
+      {/* 오른쪽 아이콘 그룹 */}
+      <div className="flex items-center gap-4">
+        <Link
+          href={'/home/topicroom'}
+          aria-label="토픽룸으로 이동"
+          className="flex h-6 w-6 items-center justify-center"
+        >
+          <ForwardArrowIcon />
+        </Link>
+      </div>
+    </div>
+  )
+}
