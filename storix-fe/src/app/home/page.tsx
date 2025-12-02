@@ -6,6 +6,7 @@ import { TopicRoomCoverSlider } from '@/components/home/todayTopicRoom/TopicRoom
 import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
 import HotFeedSlider from '@/components/home/hotFeed/HotFeedSlider'
 import MyTypeSlider from '@/components/home/myType/MyTypeSlider'
+import HashtagList from '@/components/common/HashtagList'
 
 const MOCK_ROOMS: TopicRoomData[] = [
   {
@@ -54,11 +55,11 @@ export default function Home() {
           </p>
           <MyTypeSlider />
         </div>
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full mb-6">
           <p className="flex items-center h-17 text-left heading-1 px-1">
             이런 해시태그는 어때요?
           </p>
-          <MyTypeSlider />
+          <HashtagList />
         </div>
       </div>
     </div>
