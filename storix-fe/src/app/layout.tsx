@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`min-h-dvh ${suit.className}`}>
-        <main className="flex min-h-screen items-center justify-center bg-gray-50 text-gray-900">
+        <main className="flex min-h-screen items-center justify-center bg-black text-gray-900">
           <div className="iphone16-container flex flex-col bg-white shadow-lg">
             <StatusBar />
             <div className="flex-1 overflow-y-auto no-scrollbar">

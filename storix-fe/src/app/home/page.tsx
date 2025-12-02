@@ -2,10 +2,8 @@
 
 import HomeHeader from '@/components/home/HomeHeader'
 import TopicNav from '@/components/home/todayTopicRoom/TopicNav'
-import {
-  TopicRoomCoverSlider,
-  type TopicRoomData,
-} from '@/components/home/todayTopicRoom/TopicRoomCoverSlider'
+import { TopicRoomCoverSlider } from '@/components/home/todayTopicRoom/TopicRoomCoverSlider'
+import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
 import HotFeedSlider from '@/components/home/hotFeed/HotFeedSlider'
 import MyTypeSlider from '@/components/home/myType/MyTypeSlider'
 

@@ -19,7 +19,7 @@ type HotFeedCardProps = {
 export const HotFeedCard = ({ className }: HotFeedCardProps) => {
   return (
     <div
-      className={`flex w-[353px] h-[173px] rounded-2xl  shadow-sm flex-shrink-0 ${
+      className={`flex w-[353px] h-[173px] rounded-2xl shadow-sm flex-shrink-0 ${
         className ?? 'bg-white'
       }`}
     ></div>
