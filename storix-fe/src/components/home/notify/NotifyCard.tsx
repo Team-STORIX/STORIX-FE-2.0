@@ -20,15 +20,9 @@ export default function NotifyCard({
 }: NotifyCardProps) {
   return (
     <div className={`w-full ${className}`}>
-      <div
-        className="
-          flex items-start gap-4
-          rounded-2xl bg-white
-          px-4 py-4
-        "
-      >
+      <div className="flex items-start gap-4 rounded-2xl bg-white px-4 py-4 border-bottom">
         {/* 왼쪽 동그란 썸네일 */}
-        <div className="mt-1 h-6 w-6 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
+        <div className="mt-1 h-6 w-6 flex-shrink-0 overflow-hidden rounded-full bg-gray-100">
           {thumbnailSrc && (
             <Image
               src={thumbnailSrc}

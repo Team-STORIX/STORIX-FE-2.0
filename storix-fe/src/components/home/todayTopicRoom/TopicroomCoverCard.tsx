@@ -2,6 +2,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 
 /** 토픽룸 카드에 들어갈 데이터 타입 */
 export interface TopicRoomData {
@@ -48,9 +49,9 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
         </div>
       </div>
 
-      {/* 오른쪽 아래 플로팅 화살표 버튼 */}
-      <button
-        type="button"
+      {/* 입장 버튼 */}
+      <Link
+        href="/home/topicroom"
         className="
           absolute bottom-3 right-3
           flex h-10 w-10 items-center justify-center
@@ -58,7 +59,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
         "
       >
         <EnterRoomIcon />
-      </button>
+      </Link>
     </div>
   )
 }

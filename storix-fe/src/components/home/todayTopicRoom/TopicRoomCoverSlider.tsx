@@ -14,9 +14,14 @@ interface TopicRoomCoverSliderProps {
 export const TopicRoomCoverSlider = ({ rooms }: TopicRoomCoverSliderProps) => {
   return (
     <section className="w-full">
-      <div className="flex h-[354px] gap-3 overflow-x-auto no-scrollbar">
-        {rooms.map((room) => (
-          <TopicRoomCoverCard key={room.id} room={room} />
+      <div className="flex h-[354px] overflow-x-auto no-scrollbar pl-4 -mx-4">
+        {rooms.map((room, index) => (
+          <div
+            key={room.id}
+            className={`flex-shrink-0 ${index !== rooms.length - 1 ? 'mr-3' : ''}`}
+          >
+            <TopicRoomCoverCard room={room} />
+          </div>
         ))}
       </div>
     </section>

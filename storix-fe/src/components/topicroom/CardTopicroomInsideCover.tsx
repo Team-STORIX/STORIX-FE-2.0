@@ -2,6 +2,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
 
 interface TopicRoomCoverCardProps {
@@ -41,8 +42,8 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
       </div>
 
       {/* 오른쪽 아래 플로팅 화살표 버튼 */}
-      <button
-        type="button"
+      <Link
+        href="/home/topicroom"
         className="
           absolute bottom-3 right-3
           flex h-10 w-10 items-center justify-center
@@ -50,7 +51,7 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
         "
       >
         <EnterRoomIcon />
-      </button>
+      </Link>
     </div>
   )
 }
