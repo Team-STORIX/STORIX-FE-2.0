@@ -28,6 +28,23 @@
   --color-primary-light: #fdbcd9;
   --color-primary-extra-light: #ffeef6;
   --color-primary-dark: #d8016f;
+  /*-------- Semantic color ---------*/
+  --color-success: #009126;
+  --color-warning: #ef433e;
+  --color-notice: #d8016f;
+  --color-info: #d8016f;
+  /*-------- Magenta scale ---------*/
+  --color-magenta-900: #96005a;
+  --color-magenta-800: #bd0058;
+  --color-magenta-700: #d8016f;
+  --color-magenta-600: #e90075;
+  --color-magenta-500: #f80078;
+  --color-magenta-400: #ff0079;
+  --color-magenta-300: #ff4093;
+  --color-magenta-200: #ff80b3;
+  --color-magenta-100: #fdbcd9;
+  --color-magenta-50: #ffe1ed;
+  --color-magenta-20: #ffeef6;
   /*-------- Gray scale ---------*/
   --color-gray-900: #100f0f;
   --color-gray-800: #302f2f;
@@ -39,6 +56,7 @@
   --color-gray-200: #e1e0e0;
   --color-gray-100: #eeeded;
   --color-gray-50: #f8f7f7;
+
   /*------ font -------*/
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-geist-mono);
