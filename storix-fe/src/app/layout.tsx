@@ -1,4 +1,5 @@
-import '@/styles/globals.css'
+// src/app/layout.tsx
+import '@/styles/globals.css '
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import StatusBar from '@/components/layout/StatusBar'
@@ -11,8 +12,9 @@ const suit = localFont({
 })
 
 export const metadata: Metadata = {
+  title: 'STORIX',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icons/logo.svg',
   },
 }
 

@@ -1,3 +1,4 @@
+/* src\styles\globals.css */
 @import 'tailwindcss';
 
 :root {
@@ -10,15 +11,47 @@
   --line-height-tight: 140%;
 }
 
-@theme {
-  /*-------- Black & White---------*/
-  --color-black: #000000;
+/* 스크롤바 숨김 */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* ---------------------------------------------------
+   Color 
+--------------------------------------------------- */
+
+:root {
+  --background: #ffeef6;
+  --foreground: #000000;
+  --color-black: #000a19;
   --color-white: #ffffff;
   /*-------- Main color ---------*/
   --color-primary-main: #ff4093;
   --color-primary-light: #fdbcd9;
   --color-primary-extra-light: #ffeef6;
   --color-primary-dark: #d8016f;
+  /*-------- Semantic color ---------*/
+  --color-success: #009126;
+  --color-warning: #ef433e;
+  --color-notice: #d8016f;
+  --color-info: #d8016f;
+  /*-------- Magenta scale ---------*/
+  --color-magenta-900: #96005a;
+  --color-magenta-800: #bd0058;
+  --color-magenta-700: #d8016f;
+  --color-magenta-600: #e90075;
+  --color-magenta-500: #f80078;
+  --color-magenta-400: #ff0079;
+  --color-magenta-300: #ff4093;
+  --color-magenta-200: #ff80b3;
+  --color-magenta-100: #fdbcd9;
+  --color-magenta-50: #ffe1ed;
+  --color-magenta-20: #ffeef6;
   /*-------- Gray scale ---------*/
   --color-gray-900: #100f0f;
   --color-gray-800: #302f2f;
@@ -30,6 +63,7 @@
   --color-gray-200: #e1e0e0;
   --color-gray-100: #eeeded;
   --color-gray-50: #f8f7f7;
+
   /*------ font -------*/
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-geist-mono);
@@ -37,31 +71,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: var(--color-black);
-    --color-foreground: var(--color-gray-50);
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-family-sans);
-  line-height: var(--line-height-tight);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* 
- --font-weight-bold: 700;
-  --font-weight-medium: 500;
-  --font-weight-extrabold: 800;
-
-  --fs-heading-1: 24px;
-  --fs-heading-2: 20px;
-  --fs-body-1: 16px;
-  --fs-body-2: 14px;
-  --fs-caption-1: 12px;
-  --fs-caption-2: 10px;
-  --fs-caption-3: 10px;
-*/
 @layer utilities {
   /*------ Typography scale -------*/
   .heading-1 {
