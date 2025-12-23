@@ -20,7 +20,6 @@
   --foreground: #000000;
   --color-black: #000a19;
   --color-white: #ffffff;
-<<<<<<< HEAD
   /*-------- Main color ---------*/
   --color-primary-main: #ff4093;
   --color-primary-light: #fdbcd9;
@@ -58,24 +57,6 @@
   /*------ font -------*/
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-geist-mono);
-=======
-  /*-------- main color ---------*/
-  --color-main: #ff4093;
-  --color-main-light: #fdbcd9;
-  --color-main-extra-light: #ffeef6;
-  --color-main-dark: #d8016f;
-  /*-------- gray scale ---------*/
-  --color-gray-50: #f8f7f7;
-  --color-gray-100: #eeeded;
-  --color-gray-200: #e1e0e0;
-  --color-gray-300: #cecded;
-  --color-gray-400: #a9a8a8;
-  --color-gray-500: #888787;
-  --color-gray-600: #616060;
-  --color-gray-700: #4e4d4d;
-  --color-gray-800: #302f2f;
-  --color-gray-900: #100f0f;
->>>>>>> 062e807ee96abb3dadedff553b2e413531c16587
 }
 
 @media (prefers-color-scheme: dark) {
