@@ -28,7 +28,7 @@ export default function Nickname({ value, onChange }: NicknameProps) {
           lineHeight: '140%',
         }}
       >
-        10자 이내
+        10자 이내의 닉네임을 입력해주세요
       </p>
 
       <input

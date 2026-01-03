@@ -18,11 +18,32 @@ export default function OnboardingPage() {
   const [genres, setGenres] = useState<string[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
 
+  // 각 단계별 유효성 검사
+  const isStepValid = () => {
+    switch (step) {
+      case 1:
+        return nickname.trim().length > 0 // 나중에 수정 예정
+      case 2:
+        return gender !== '' // 성별 1개 선택
+      case 3:
+        return genres.length >= 1 // 장르 1개 이상 선택
+      case 4:
+        return favorites.length >= 1 // 작품 1개 이상 선택
+      case 5:
+        return true // final 단계는 항상 활성화
+      default:
+        return false
+    }
+  }
+
+  const canProceed = isStepValid()
+
   const handleNext = () => {
+    if (!canProceed) return // 조건 미충족 시 클릭 무시
+
     if (step < 5) {
       setStep(step + 1)
     } else {
-      // step 5에서 다음 버튼 클릭 시 manual 페이지로 이동
       router.push('/manual')
     }
   }
@@ -37,12 +58,12 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative w-full h-full bg-white">
-      {/* Topbar - 상단에서 54px 아래 */}
+      {/* Topbar */}
       <div className="absolute top-[54px] left-0 right-0 z-50">
         <Topbar onBack={handleBack} />
       </div>
 
-      {/* Progress Indicator - Topbar 바로 아래 (54 + 56 = 110px), step 1~4만 표시 */}
+      {/* Progress Indicator */}
       {step <= 4 && (
         <div className="absolute top-[110px] left-4 z-40">
           <img
@@ -54,7 +75,7 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/* 컨텐츠 영역 - indicator 아래 32px부터 (110 + 8 + 32 = 150px) */}
+      {/* 컨텐츠 영역 */}
       <div
         className="px-4 h-full overflow-y-auto"
         style={{
@@ -62,7 +83,6 @@ export default function OnboardingPage() {
           paddingBottom: '134px',
         }}
       >
-        {/* 실제 컨텐츠 */}
         {step === 1 && <Nickname value={nickname} onChange={setNickname} />}
         {step === 2 && <Gender value={gender} onChange={setGender} />}
         {step === 3 && <Genre value={genres} onChange={setGenres} />}
@@ -70,12 +90,18 @@ export default function OnboardingPage() {
         {step === 5 && <Final />}
       </div>
 
-      {/* 하단 다음 버튼 - 하단에서 34px 위 */}
+      {/* 하단 다음 버튼 */}
       <div className="absolute bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-50">
         <img
-          src="/onboarding/next.svg"
+          src={
+            canProceed ? '/onboarding/next.svg' : '/onboarding/next-gray.svg'
+          }
           alt="다음"
-          className="w-full h-[50px] cursor-pointer hover:opacity-80 transition-opacity"
+          className={`w-full h-[50px] ${
+            canProceed
+              ? 'cursor-pointer hover:opacity-80 transition-opacity'
+              : 'cursor-not-allowed opacity-50'
+          }`}
           onClick={handleNext}
         />
       </div>

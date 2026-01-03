@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from 'react'
 
-// ✅ export 추가!
 export function Splash() {
   return (
     <div

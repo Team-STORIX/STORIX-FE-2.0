@@ -23,7 +23,7 @@ export default function RootLayout({
       >
         {/* 가운데 393 x 852 카드: 흰색 */}
         <div
-          className="w-[393px] h-[852px] shadow-2xl overflow-hidden"
+          className="w-[393px] h-[852px] shadow-2xl overflow-y-auto"
           style={{ backgroundColor: 'var(--color-white)' }}
         >
           {children}
