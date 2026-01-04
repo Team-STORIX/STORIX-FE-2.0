@@ -16,17 +16,14 @@ export default function Rating() {
     { rating: 5, percentage: 0 },
   ]
 
-  // 최대 percentage 찾기
   const maxPercentage = Math.max(...ratingData.map((item) => item.percentage))
-  const maxHeight = 120 // 최대 높이 120px
+  const maxHeight = 120
 
-  // 높이 계산 함수
   const getBarHeight = (percentage: number) => {
-    if (percentage === 0) return 1 // 0일 때는 1px
+    if (percentage === 0) return 1
     return (percentage / maxPercentage) * maxHeight
   }
 
-  // 통계 데이터
   const averageRating = 4.5
   const totalReviews = 21
   const mostGivenRating = 3.5
@@ -39,7 +36,6 @@ export default function Rating() {
         backgroundColor: 'var(--color-white)',
       }}
     >
-      {/* 제목 */}
       <h2
         className="text-[18px] font-semibold leading-[140%]"
         style={{ color: 'var(--color-gray-900)' }}
@@ -47,39 +43,39 @@ export default function Rating() {
         별점 분포
       </h2>
 
-      {/* 그래프 영역 */}
       <div className="mt-6 flex justify-center">
         <div className="flex items-end h-[150px] gap-1">
           {ratingData.map((item) => {
-            const isMaxValue =
-              item.percentage === maxPercentage && maxPercentage > 0
-            const barOpacity = 0.4
-            const textOpacity = item.percentage === 0 ? 0 : isMaxValue ? 1 : 0.4
+            const barHeight = getBarHeight(item.percentage)
+            const isMaxBar =
+              item.percentage === maxPercentage && item.percentage > 0
+            const hasData = item.percentage > 0
+            const opacity = isMaxBar ? 1 : 0.4
 
             return (
               <div
                 key={item.rating}
                 className="flex flex-col items-center gap-2"
               >
-                {/* 별점 숫자 */}
-                <span
-                  className="text-[16px] font-medium leading-[140%]"
-                  style={{
-                    color: 'var(--color-gray-900)',
-                    opacity: textOpacity,
-                  }}
-                >
-                  {item.rating}
-                </span>
+                {hasData && (
+                  <span
+                    className="text-[16px] font-medium leading-[140%]"
+                    style={{
+                      color: 'var(--color-gray-900)',
+                      opacity: opacity,
+                    }}
+                  >
+                    {item.rating}
+                  </span>
+                )}
 
-                {/* 막대 그래프 */}
                 <div
                   className="w-7"
                   style={{
-                    height: `${getBarHeight(item.percentage)}px`,
-                    backgroundColor: 'var(--color-main)',
-                    borderRadius: item.percentage === 0 ? '0' : '4px 4px 0 0',
-                    opacity: isMaxValue ? 1 : barOpacity,
+                    height: `${barHeight}px`,
+                    backgroundColor: '#FF4093',
+                    borderRadius: '4px 4px 0 0',
+                    opacity: hasData ? opacity : 0.4,
                   }}
                 />
               </div>
@@ -88,9 +84,7 @@ export default function Rating() {
         </div>
       </div>
 
-      {/* 통계 */}
       <div className="mt-8 flex justify-center gap-[60px]">
-        {/* 별점 평균 */}
         <div className="text-center">
           <p
             className="text-[16px] font-medium leading-[140%]"
@@ -106,7 +100,6 @@ export default function Rating() {
           </p>
         </div>
 
-        {/* 리뷰 수 */}
         <div className="text-center">
           <p
             className="text-[16px] font-medium leading-[140%]"
@@ -122,7 +115,6 @@ export default function Rating() {
           </p>
         </div>
 
-        {/* 많이 준 별점 */}
         <div className="text-center">
           <p
             className="text-[16px] font-medium leading-[140%]"

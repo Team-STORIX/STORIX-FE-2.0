@@ -59,9 +59,9 @@ export default function UserProfile() {
 
       {/* 오른쪽: 프로필 수정 화살표 - 닉네임 높이에 맞춤 */}
       <Link
-        href="profile/fix"
+        href="/profile/fix"
         className="absolute right-5 transition-opacity hover:opacity-70"
-        style={{ top: 'calc(28px + 20px + 7px)' }} // py-7(28px) + 레벨 높이(약 20px) + mt-7px
+        style={{ top: 'calc(28px + 20px + 7px)' }}
       >
         <Image
           src="/icons/arrow-next.svg"

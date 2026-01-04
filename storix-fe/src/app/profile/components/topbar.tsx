@@ -1,8 +1,8 @@
 // src/app/profile/components/topbar.tsx
-
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState } from 'react'
 
 export default function TopBar() {
@@ -42,7 +42,8 @@ export default function TopBar() {
           </button>
 
           {/* 설정 아이콘 */}
-          <button
+          <Link
+            href="/profile/settings"
             className="w-6 h-6 flex items-center justify-center transition-opacity hover:opacity-70"
             aria-label="설정"
           >
@@ -52,7 +53,7 @@ export default function TopBar() {
               width={24}
               height={24}
             />
-          </button>
+          </Link>
         </div>
       </div>
 

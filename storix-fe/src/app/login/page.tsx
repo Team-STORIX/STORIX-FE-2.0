@@ -1,4 +1,3 @@
-// src/app/login/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -17,6 +16,19 @@ export default function LoginPage() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // ✅ Gmail 웹 메일 작성 화면 열기
+  const handleAuthorInquiry = () => {
+    const to = encodeURIComponent('storixbiz@gmail.com')
+    const subject = encodeURIComponent('STORIX 작가 문의')
+    const body = encodeURIComponent(
+      '안녕하세요,\nSTORIX 서비스 이용을 위한 작가 인증 캡처본 보내드립니다.',
+    )
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
+
+    window.open(gmailUrl, '_blank')
+  }
 
   if (showSplash) {
     return <Splash />
@@ -69,9 +81,14 @@ export default function LoginPage() {
           />
         </div>
 
-        <p className="caption-1 text-gray-500 text-center underline cursor-pointer mt-4">
+        {/* ✅ 작가 문의 → Gmail 웹 메일 작성 */}
+        <p
+          className="caption-1 text-gray-500 text-center underline cursor-pointer mt-4 hover:opacity-70"
+          onClick={handleAuthorInquiry}
+        >
           작가님이신가요?
         </p>
+
         <p
           className="caption-1 text-gray-700 text-center underline cursor-pointer mt-2"
           onClick={() => router.push('/agreement')}

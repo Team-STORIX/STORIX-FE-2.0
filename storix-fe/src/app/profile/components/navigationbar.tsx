@@ -1,10 +1,13 @@
 // src/app/profile/components/navigationbar.tsx
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default function NavigationBar() {
+  const [isPlusOpen, setIsPlusOpen] = useState(false)
+
   return (
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[393px]">
       {/* 41px 공백 */}
@@ -18,6 +21,7 @@ export default function NavigationBar() {
           width={393}
           height={128}
           className="w-full h-full"
+          priority
         />
 
         {/* 클릭 가능한 영역들 */}
@@ -39,10 +43,40 @@ export default function NavigationBar() {
           <div className="w-full h-full" />
         </Link>
 
-        {/* 플러스 버튼 - 좌우 중앙, 하단에서 72px 위 */}
+        {/* ✅ 플로팅 탭 (플러스 버튼 위 12px) */}
+        {isPlusOpen && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{
+              // 플러스 버튼 top = 128 - 72 - 56 = 0
+              // 플로팅 top = (플러스 버튼 top) - 12 - 98 = -110
+              top: -110,
+              width: 162,
+              height: 98,
+            }}
+          >
+            <Image
+              src="/icons/plus-floating-tab.svg"
+              alt="플러스 플로팅 탭"
+              width={162}
+              height={98}
+              className="w-[162px] h-[98px]"
+              priority
+            />
+          </div>
+        )}
+
+        {/* ✅ 플러스 버튼 - 좌우 중앙, 하단에서 72px 위 */}
         <button
-          className="absolute left-1/2 -translate-x-1/2 bottom-[72px] w-14 h-14 transition-opacity hover:opacity-70"
+          type="button"
+          onClick={() => setIsPlusOpen((prev) => !prev)}
+          className={[
+            'absolute left-1/2 -translate-x-1/2 bottom-[72px] w-14 h-14',
+            'transition-transform duration-200 ease-in-out',
+            isPlusOpen ? 'rotate-90' : 'rotate-0',
+          ].join(' ')}
           aria-label="추가"
+          aria-expanded={isPlusOpen}
         >
           <div className="w-full h-full" />
         </button>

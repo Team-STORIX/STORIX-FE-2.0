@@ -7,12 +7,10 @@ export default function Genre() {
     '로판',
     'BL',
     '판타지',
-    '라노벨',
-
-    '드라마',
-
     '현판',
     '무협',
+    '라노벨',
+    '드라마',
     '미스터리',
   ]
 
@@ -33,7 +31,7 @@ export default function Genre() {
   const centerY = 127.5
   const maxRadius = 90
   const labelRadius = 108
-  const levels = [90, 73.8, 57.6, 41.4] // 비율 유지
+  const levels = [90, 73.8, 57.6, 41.4]
 
   const angleStep = (2 * Math.PI) / 9
   const startAngle = -Math.PI / 2
@@ -86,19 +84,15 @@ export default function Genre() {
                 key={i}
                 d={getLevelPath(radius)}
                 fill="none"
-                stroke="var(--color-gray-900)"
+                stroke="#100F0F"
                 strokeWidth="1"
               />
             ))}
 
-            {/* 데이터 영역 */}
-            <path
-              d={getDataPath()}
-              fill="var(--color-main-light)"
-              fillOpacity="0.5"
-            />
+            {/* 데이터 영역 - magenta-200 */}
+            <path d={getDataPath()} fill="#FF80B3" fillOpacity="0.5" />
 
-            {/* 바깥 구각형 꼭지점 포인트 */}
+            {/* 바깥 구각형 꼭지점 포인트 - magenta-300 */}
             {genres.map((_, i) => {
               const point = getPoint(i, maxRadius)
               return (
@@ -108,7 +102,7 @@ export default function Genre() {
                   y={point.y - 6}
                   width="12"
                   height="12"
-                  fill="var(--color-main)"
+                  fill="#FF4093"
                 />
               )
             })}
@@ -127,7 +121,7 @@ export default function Genre() {
                     fontSize: '12px',
                     fontWeight: 500,
                     fontFamily: 'SUIT',
-                    fill: 'var(--color-gray-900)',
+                    fill: '#100F0F',
                   }}
                 >
                   {genre}
