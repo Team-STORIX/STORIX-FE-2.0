@@ -77,7 +77,7 @@ export default function NavBar({
         <nav
           className="
           mt-43
-          flex h-32 w-full items-start
+          flex h-25 w-full items-start
           bg-white
           px-5 pt-[15px] pb-3
         "
