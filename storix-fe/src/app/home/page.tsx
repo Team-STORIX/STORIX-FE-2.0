@@ -1,5 +1,7 @@
 // src/app/home/page.tsx
+'use client'
 
+import { useState } from 'react'
 import HomeHeader from '@/components/home/HomeHeader'
 import TopicNav from '@/components/home/todayTopicRoom/TopicNav'
 import { TopicRoomCoverSlider } from '@/components/home/todayTopicRoom/TopicRoomCoverSlider'
@@ -7,6 +9,7 @@ import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCa
 import HotFeedSlider from '@/components/home/hotFeed/HotFeedSlider'
 import MyTypeSlider from '@/components/home/myType/MyTypeSlider'
 import HashtagList from '@/components/common/HashtagList'
+import NavBar from '@/components/common/NavBar'
 
 const MOCK_ROOMS: TopicRoomData[] = [
   {
@@ -32,35 +35,49 @@ const MOCK_ROOMS: TopicRoomData[] = [
   },
 ]
 
-const userName = '스토릭스' // 나중에 유저 정보 받아오면 바꾸기
+const userName = '나는 유저1' // 나중에 유저 정보 받아오면 바꾸기
 
 export default function Home() {
+  const [active, setActive] = useState<'home' | 'feed' | 'library' | 'profile'>(
+    'home',
+  )
+
   return (
-    <div>
+    <div className="px-4">
       <HomeHeader />
-      <div className="w-full h-full flex flex-col justify-center gap-6 px-4">
-        <div className="flex flex-col w-full items-center text-center">
-          <TopicNav />
-          <TopicRoomCoverSlider rooms={MOCK_ROOMS} />
+      <div className="w-full h-full flex flex-col pb-32">
+        {/* 위쪽만 스크롤 */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex flex-col items-center text-center">
+            <TopicNav />
+            <TopicRoomCoverSlider rooms={MOCK_ROOMS} />
+          </div>
+          <div className="flex flex-col w-full">
+            <p className="flex items-center h-17 text-left heading-1 px-1">
+              취향 저격 작품 탐색
+            </p>
+            <MyTypeSlider />
+          </div>
+          <div className="flex flex-col w-full">
+            <p className="flex items-center h-17 text-left heading-1 px-1">
+              지금 뜨는 글
+            </p>
+            <HotFeedSlider />
+          </div>
+          <div className="flex flex-col w-full mb-36">
+            <p className="flex items-center h-17 text-left heading-1 px-1">
+              이런 해시태그는 어때요?
+            </p>
+            <HashtagList />
+          </div>
         </div>
-        <div className="flex flex-col w-full">
-          <p className="flex items-center h-17 text-left heading-1 px-1">
-            지금 뜨는 글
-          </p>
-          <HotFeedSlider />
-        </div>
-        <div className="flex flex-col w-full">
-          <p className="flex items-center h-17 text-left heading-1 px-1">
-            {userName}님 취향 저격 작품
-          </p>
-          <MyTypeSlider />
-        </div>
-        <div className="flex flex-col w-full mb-6">
-          <p className="flex items-center h-17 text-left heading-1 px-1">
-            이런 해시태그는 어때요?
-          </p>
-          <HashtagList />
-        </div>
+        <NavBar
+          active={active}
+          onChange={setActive}
+          onCenterClick={() => {
+            // 플로팅 + 버튼 클릭 시 동작
+          }}
+        />
       </div>
     </div>
   )

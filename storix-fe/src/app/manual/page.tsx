@@ -2,6 +2,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Topbar from './components/topbar'
 import Step1 from './components/step1'
 import Step2 from './components/step2'
@@ -9,6 +10,7 @@ import Step3 from './components/step3'
 import Step4 from './components/step4'
 
 export default function ManualPage() {
+  const router = useRouter()
   const [step, setStep] = useState(1)
 
   const handleNext = () => {
@@ -101,6 +103,7 @@ export default function ManualPage() {
             className="w-full h-[50px] cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => {
               // 여기에 탐색하기 페이지로 이동하는 로직 추가
+              router.push('/home')
               console.log('탐색하기 클릭')
             }}
           />

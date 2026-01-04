@@ -9,7 +9,7 @@ import SearchIcon from '@/public/icons/header/SearchIcon'
 /** 상단 로고 + 검색 + 알림 헤더 */
 export default function HomeHeader() {
   return (
-    <header className="flex h-14 items-center justify-between px-4">
+    <header className="flex h-14 items-center justify-between">
       {/* 왼쪽 로고 버튼 */}
       <Link
         href={'/home'}
