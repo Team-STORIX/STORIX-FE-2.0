@@ -7,8 +7,6 @@ import IconFeed from '@/public/icons/navbar/Icon-Feed'
 import IconHome from '@/public/icons/navbar/Icon-Home'
 import IconLibrary from '@/public/icons/navbar/Icon-Library'
 import IconProfile from '@/public/icons/navbar/Icon-Profile'
-import FloatingNav from '@/public/icons/navbar/Floating-Button'
-import NavBarWave from '@/public/icons/navbar/NavBarWave'
 
 type NavKey = 'home' | 'feed' | 'library' | 'profile'
 
