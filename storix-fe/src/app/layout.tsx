@@ -1,5 +1,5 @@
-// src/app/layout.tsx
 import type { Metadata } from 'next'
+import { Providers } from './providers'
 import '../styles/globals.css'
 
 export const metadata: Metadata = {
@@ -21,13 +21,15 @@ export default function RootLayout({
         className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: 'var(--color-gray-400)' }}
       >
-        {/* 가운데 393 x 852 카드: 흰색, relative 추가 */}
-        <div
-          className="relative w-[393px] h-[852px] shadow-2xl overflow-y-auto"
-          style={{ backgroundColor: 'var(--color-white)' }}
-        >
-          {children}
-        </div>
+        <Providers>
+          {/* 가운데 393 x 852 카드: 흰색, relative 추가 */}
+          <div
+            className="relative w-[393px] h-[852px] shadow-2xl overflow-y-auto"
+            style={{ backgroundColor: 'var(--color-white)' }}
+          >
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   )
