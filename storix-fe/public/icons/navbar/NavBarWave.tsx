@@ -1,4 +1,4 @@
-// public/icons/navbar/NavBarWave.tsx
+// public/icons/navbar/NavBarWave.tsx stroke="#EEEDED"
 
 export default function NavBarWave() {
   return (

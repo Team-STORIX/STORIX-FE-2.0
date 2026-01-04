@@ -68,8 +68,8 @@ export default function Home() {
             <HashtagList />
           </div>
         </div>
-        <NavBar active={active} onChange={setActive} />
       </div>
+      <NavBar active={active} onChange={setActive} />
     </div>
   )
 }
