@@ -21,9 +21,9 @@ export default function RootLayout({
         className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: 'var(--color-gray-400)' }}
       >
-        {/* 가운데 393 x 852 카드: 흰색 */}
+        {/* 가운데 393 x 852 카드: 흰색, relative 추가 */}
         <div
-          className="w-[393px] h-[852px] shadow-2xl overflow-hidden"
+          className="relative w-[393px] h-[852px] shadow-2xl overflow-y-auto"
           style={{ backgroundColor: 'var(--color-white)' }}
         >
           {children}
