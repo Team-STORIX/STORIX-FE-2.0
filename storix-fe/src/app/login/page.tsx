@@ -17,17 +17,58 @@ export default function LoginPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  // ✅ Gmail 웹 메일 작성 화면 열기
+  // ✅ Gmail 앱 우선(모바일) → Gmail 웹 → mailto fallback
   const handleAuthorInquiry = () => {
-    const to = encodeURIComponent('storixbiz@gmail.com')
-    const subject = encodeURIComponent('STORIX 작가 문의')
-    const body = encodeURIComponent(
-      '안녕하세요,\nSTORIX 서비스 이용을 위한 작가 인증 캡처본 보내드립니다.',
-    )
+    const toRaw = 'storixbiz@gmail.com'
+    const subjectRaw = 'STORIX 작가 문의'
+    const bodyRaw =
+      '안녕하세요,\nSTORIX 서비스 이용을 위한 작가 인증 캡처본 보내드립니다.'
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
+    const to = encodeURIComponent(toRaw)
+    const subject = encodeURIComponent(subjectRaw)
+    const body = encodeURIComponent(bodyRaw)
 
-    window.open(gmailUrl, '_blank')
+    const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
+    const mailtoUrl = `mailto:${toRaw}?subject=${subject}&body=${body}`
+
+    const ua = navigator.userAgent || ''
+    const isIOS = /iPhone|iPad|iPod/i.test(ua)
+    const isAndroid = /Android/i.test(ua)
+
+    // iOS: Gmail 앱 딥링크 시도 → 실패 시 Gmail 웹
+    if (isIOS) {
+      const gmailAppUrl = `googlegmail:///co?to=${to}&subject=${subject}&body=${body}`
+      window.location.href = gmailAppUrl
+
+      setTimeout(() => {
+        window.location.href = gmailWebUrl
+      }, 700)
+
+      return
+    }
+
+    // Android: intent로 Gmail 앱 시도 → 실패 시 Gmail 웹
+    if (isAndroid) {
+      const gmailIntentUrl = `intent://co?to=${to}&subject=${subject}&body=${body}#Intent;scheme=googlegmail;package=com.google.android.gm;end`
+      window.location.href = gmailIntentUrl
+
+      setTimeout(() => {
+        window.location.href = gmailWebUrl
+      }, 700)
+
+      return
+    }
+
+    // Desktop: Gmail 웹 새 탭 시도 (팝업 차단이면 현재 탭으로 이동)
+    const opened = window.open(gmailWebUrl, '_blank')
+    if (!opened) {
+      window.location.href = gmailWebUrl
+    }
+
+    // (선택) 그래도 안 되면 mailto를 쓰고 싶다면 아래를 켜도 됨
+    // setTimeout(() => {
+    //   window.location.href = mailtoUrl
+    // }, 1200)
   }
 
   if (showSplash) {
@@ -81,7 +122,7 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* ✅ 작가 문의 → Gmail 웹 메일 작성 */}
+        {/* ✅ 작가 문의 */}
         <p
           className="caption-1 text-gray-500 text-center underline cursor-pointer mt-4 hover:opacity-70"
           onClick={handleAuthorInquiry}

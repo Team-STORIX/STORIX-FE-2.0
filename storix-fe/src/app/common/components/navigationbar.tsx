@@ -65,7 +65,7 @@ export default function NavigationBar() {
   }
 
   return (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[393px] z-50">
+    <div className="absolute bottom-0 left-0 w-full z-50">
       <div className="relative w-full h-[100px]">
         {/* 배경 */}
         <Image

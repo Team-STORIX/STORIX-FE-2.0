@@ -4,13 +4,13 @@
 export default function Genre() {
   const genres = [
     '로맨스',
-    '로판',
-    'BL',
     '판타지',
-    '현판',
-    '무협',
+    'BL',
+    '로판',
     '라노벨',
     '드라마',
+    '현판',
+    '무협',
     '미스터리',
   ]
 
@@ -30,7 +30,7 @@ export default function Genre() {
   const centerX = 116.5
   const centerY = 127.5
   const maxRadius = 90
-  const labelRadius = 108
+  const labelRadius = 109
   const levels = [90, 73.8, 57.6, 41.4]
 
   const angleStep = (2 * Math.PI) / 9
