@@ -22,7 +22,7 @@ export default function Topbar({ onBack }: TopbarProps) {
         onClick={onBack}
       />
 
-      {/* 건너뛰기 */}
+      {/* 건너뛰기 
       <button
         onClick={() => router.push('/manual')}
         className="text-center cursor-pointer hover:opacity-70 transition-opacity whitespace-nowrap shrink-0"
@@ -37,7 +37,7 @@ export default function Topbar({ onBack }: TopbarProps) {
         }}
       >
         건너뛰기
-      </button>
+      </button>*/}
     </div>
   )
 }

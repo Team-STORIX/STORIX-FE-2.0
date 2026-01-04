@@ -1,5 +1,7 @@
 // src/components/common/NavBar.tsx
 'use client'
+import Image from 'next/image'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import IconFeed from '@/public/icons/navbar/Icon-Feed'
 import IconHome from '@/public/icons/navbar/Icon-Home'
@@ -13,7 +15,6 @@ type NavKey = 'home' | 'feed' | 'library' | 'profile'
 type NavBarProps = {
   active: NavKey
   onChange?: (next: NavKey) => void
-  onCenterClick?: () => void
 }
 
 const NAV_ITEMS: { key: NavKey; label: string }[] = [
@@ -25,17 +26,18 @@ const NAV_ITEMS: { key: NavKey; label: string }[] = [
 
 const ROUTES: Record<NavKey, string> = {
   home: '/home',
-  feed: '#',
+  feed: '/feed',
   library: '#',
-  profile: '#',
+  profile: '/profile',
 }
 
-export default function NavBar({
-  active,
-  onChange,
-  onCenterClick,
-}: NavBarProps) {
+export default function NavBar({ active, onChange }: NavBarProps) {
   const router = useRouter()
+  const [isPlusOpen, setIsPlusOpen] = useState(false)
+
+  const handlePlusClick = () => {
+    setIsPlusOpen((prev) => !prev)
+  }
 
   const handleNavClick = (key: NavKey) => {
     onChange?.(key)
@@ -53,8 +55,8 @@ export default function NavBar({
       <button
         key={item.key}
         type="button"
-        onClick={() => onChange?.(item.key)}
-        className="flex flex-col items-center justify-center text-[11px] px-3"
+        onClick={() => handleNavClick(item.key)}
+        className="flex flex-col items-center justify-center caption-1 px-3"
       >
         <div className="mb-1 flex h-6 w-6 items-center justify-center">
           <span className={isActive ? 'text-gray-900' : 'text-gray-300'}>
@@ -71,17 +73,10 @@ export default function NavBar({
   return (
     <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[393px] -translate-x-1/2">
       <div className="relative w-full">
-        <div className="pointer-events-none absolute left-0 h-14 w-full">
+        <div className="pointer-events-none absolute left-0 w-full">
           <NavBarWave />
         </div>
-        <nav
-          className="
-          mt-43
-          flex h-32 w-full items-start
-          bg-white
-          px-5 pt-[15px] pb-3
-        "
-        >
+        <nav className="flex h-25 w-full items-start bg-white px-5 pt-[15px] pb-3">
           {/* 왼쪽 두 개: gap-4 = 16px */}
           <div className="flex items-center gap-5">
             {NAV_ITEMS.slice(0, 2).map(renderItem)}
@@ -96,24 +91,56 @@ export default function NavBar({
           </div>
         </nav>
 
-        {/* 가운데 떠 있는 + 버튼 */}
+        {/* 플로팅 탭 */}
+        {isPlusOpen && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{
+              width: 162,
+              height: 98,
+              bottom: 72 + 56 + 12,
+            }}
+          >
+            <Image
+              src="/common/icons/plus-floating-tab.svg"
+              alt="플러스 플로팅 탭"
+              width={162}
+              height={98}
+              className="w-[162px] h-[98px]"
+              priority
+            />
+          </div>
+        )}
+
+        {/* 플러스 버튼 */}
         <button
           type="button"
-          onClick={onCenterClick}
-          className="
-          absolute left-1/2 -top-9 -translate-x-1/2
-          flex h-18 w-18 items-center justify-center
-          rounded-full bg-black
-        "
+          onClick={handlePlusClick}
+          className={[
+            'absolute left-1/2 -translate-x-1/2 bottom-18',
+            'w-14 h-14',
+            'transition-transform duration-200 ease-in-out',
+            'hover:opacity-70',
+            isPlusOpen ? 'rotate-90' : 'rotate-0',
+          ].join(' ')}
+          aria-label="추가"
+          aria-expanded={isPlusOpen}
         >
-          <FloatingNav />
+          <Image
+            src="/common/icons/plus.svg"
+            alt="플러스"
+            width={56}
+            height={56}
+            className="w-[56px] h-[56px]"
+            priority
+          />
         </button>
       </div>
     </div>
   )
 }
 
-/** 아이콘 자리 구분용 네이밍 (나중에 SVG로 교체) */
+/** 아이콘 자리 구분용 네이밍 */
 function iconByName(key: NavKey) {
   switch (key) {
     case 'home':

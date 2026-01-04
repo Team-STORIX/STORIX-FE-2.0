@@ -63,18 +63,12 @@ export default function Home() {
             <HotFeedSlider />
           </div>
 
-          <div className="flex flex-col w-full mb-36">
+          <div className="flex flex-col w-full mb-8">
             <CardNav header="이런 키워드, 좋아하실 것 같아요" roomName="#" />
             <HashtagList />
           </div>
         </div>
-        <NavBar
-          active={active}
-          onChange={setActive}
-          onCenterClick={() => {
-            // 플로팅 + 버튼 클릭 시 동작
-          }}
-        />
+        <NavBar active={active} onChange={setActive} />
       </div>
     </div>
   )
