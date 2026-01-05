@@ -1,3 +1,4 @@
+// src/app/profile/components/userProfile.tsx
 'use client'
 
 import Image from 'next/image'

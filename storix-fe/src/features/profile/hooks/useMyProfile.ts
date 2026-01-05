@@ -4,16 +4,12 @@
 import { useEffect, useState } from 'react'
 import { fetchMyProfile } from '@/features/profile/api/profile.api'
 
-// ✅ ProfileResponse가 profile.api.ts에서 export되고 있지 않아서 에러가 난 거야.
-//    가장 빠른 해결: 여기서는 타입 import를 빼고, 응답 타입을 훅 안에서 정의하거나 any로 받기.
-//    (나중에 백엔드 응답 스펙 확정되면 profile.api.ts에서 타입 export로 정리하면 됨)
-
 type MyProfile = {
   nickname?: string
   bio?: string
   level?: number
   profileImageUrl?: string
-  // 필요하면 더 추가
+  genres?: string[]
   [key: string]: any
 }
 
@@ -23,30 +19,56 @@ export function useMyProfile() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
+    let cancelled = false
+
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+    const getAccessTokenWithRetry = async () => {
+      // ✅ 리다이렉트 직후/rehydrate 직후 토큰이 늦게 들어올 수 있어 재시도
+      const MAX_TRIES = 15 // 1.2초
+      const INTERVAL_MS = 80
+
+      for (let i = 0; i < MAX_TRIES; i++) {
+        const token =
+          typeof window !== 'undefined'
+            ? sessionStorage.getItem('accessToken')
+            : null
+        if (token && token.trim().length > 0) return token.trim()
+        await sleep(INTERVAL_MS)
+      }
+      return null
+    }
+
     const run = async () => {
       try {
         setLoading(true)
         setErrorMsg(null)
 
-        const accessToken =
-          typeof window !== 'undefined'
-            ? sessionStorage.getItem('accessToken')
-            : null
+        const accessToken = await getAccessTokenWithRetry()
 
         if (!accessToken) {
           throw new Error('accessToken이 없습니다. 로그인 상태를 확인해주세요.')
         }
 
+        // ✅ 백엔드 API가 없으니 fetchMyProfile은 sessionStorage(my-profile)에서 읽어옴
         const res = await fetchMyProfile(accessToken)
-        setData(res as MyProfile)
+
+        if (!cancelled) setData(res as MyProfile)
       } catch (e) {
-        setErrorMsg(e instanceof Error ? e.message : '알 수 없는 오류')
+        if (!cancelled) {
+          setData(null)
+          setErrorMsg(e instanceof Error ? e.message : '알 수 없는 오류')
+        }
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
     run()
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return { data, loading, errorMsg }
