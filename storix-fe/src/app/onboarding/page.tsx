@@ -15,6 +15,7 @@ import Favorite from './components/favorite'
 import Final from './components/final'
 
 export default function OnboardingPage() {
+  console.log('onboardingToken now:', useAuthStore.getState().onboardingToken) // 디버깅
   const router = useRouter()
   const { marketingAgree, onboardingToken } = useAuthStore() // onboardingToken 추가
   const { mutate: signupMutate, isPending } = useSignup()

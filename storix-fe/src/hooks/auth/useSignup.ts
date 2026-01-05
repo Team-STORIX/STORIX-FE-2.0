@@ -15,6 +15,7 @@ export const useSignup = () => {
 
   return useMutation({
     mutationFn: async (data: SignupRequest) => {
+      const onboardingToken = useAuthStore.getState().onboardingToken
       if (!onboardingToken) throw new Error('Onboarding token is missing')
       return signup(data, onboardingToken)
     },
