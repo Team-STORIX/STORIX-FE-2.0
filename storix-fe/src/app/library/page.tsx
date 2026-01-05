@@ -44,31 +44,7 @@ export default function Home() {
 
   return (
     <div className="px-4">
-      <HomeHeader />
-      <div className="w-full h-full flex flex-col pb-32">
-        {/* 위쪽만 스크롤 */}
-        <div className="flex-1 flex flex-col gap-[24px] overflow-y-auto overflow-x-hidden">
-          <div className="flex flex-col items-center text-center">
-            <CardNav header="실시간 작품 이야기!" roomName="topicroom" />
-            <TopicRoomCoverSlider rooms={MOCK_ROOMS} />
-          </div>
-
-          <div className="flex flex-col w-full">
-            <CardNav header="이 작품, 내 취향일까?" roomName="#" />
-            <MyTypeCard />
-          </div>
-
-          <div className="flex flex-col w-full">
-            <CardNav header="오늘의 피드" roomName="#" />
-            <HotFeedSlider />
-          </div>
-
-          <div className="flex flex-col w-full mb-8">
-            <CardNav header="이런 키워드, 좋아하실 것 같아요" roomName="#" />
-            <HashtagList />
-          </div>
-        </div>
-      </div>
+      <div className="w-full h-full flex flex-col pb-32"> </div>
       <NavBar active={active} onChange={setActive} />
     </div>
   )
