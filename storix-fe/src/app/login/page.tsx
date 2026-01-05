@@ -23,6 +23,8 @@ function generateNaverState() {
 }
 
 export default function LoginPage() {
+  console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+
   const [showSplash, setShowSplash] = useState(true)
   const router = useRouter()
 
