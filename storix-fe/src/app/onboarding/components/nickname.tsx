@@ -79,7 +79,7 @@ export default function Nickname({
   }
 
   const showMaxToast = () => {
-    // 11번째 입력 시도: 토스트 1.5초
+    // 11번째 입력 시도: 토스트 1.5초 ~
     setMsg(MSG_LEN)
     setMsgType('toast')
 
