@@ -1,6 +1,6 @@
 // src/app/pending/page.tsx
 import { Suspense } from 'react'
-import PendingClient from './pendingClient'
+import PendingClient from '@/app/pending/pendingClient'
 
 export default function PendingPage() {
   return (
