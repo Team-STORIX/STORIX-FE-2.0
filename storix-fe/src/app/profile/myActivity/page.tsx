@@ -1,7 +1,7 @@
 // src/app/profile/myActivity/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TopBar from '../components/topbar'
 import UserProfile from '../components/userProfile'
 import PreferenceTab from '../components/preferenceTab'
@@ -14,12 +14,26 @@ export default function MyActivityPage() {
   const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'likes'>(
     'posts',
   )
+  const [nickname, setNickname] = useState<string>('')
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem('signup_nickname') ?? ''
+    setNickname(saved)
+    console.log('[myActivity] local nickname:', saved)
+  }, [])
 
   return (
     <div>
       <div className="h-[54px]" />
       <TopBar />
-      <UserProfile />
+
+      <UserProfile
+        profileImage={undefined}
+        level={1}
+        nickname={nickname || '(닉네임 없음)'}
+        bio={''}
+      />
+
       <PreferenceTab />
 
       {/* 게시글/댓글/좋아요 탭 */}
