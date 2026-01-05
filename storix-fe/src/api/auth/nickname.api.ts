@@ -1,68 +1,85 @@
 // src/api/auth/nickname.api.ts
 import { apiClient } from '../axios-instance'
-import {
-  NicknameValidResponseSchema,
-  type NicknameValidResponse,
-  NicknameForbiddenResponseSchema,
-  type NicknameForbiddenResponse,
-} from './auth.schema'
+import { z } from 'zod'
 
-// 닉네임 중복 체크 (버튼 클릭시에만 호출)
+/**
+ * ✅ /api/v1/auth/nickname/valid 응답 스키마
+ * - 백엔드가 result를 안 내려줄 수도 있어서 optional 처리
+ */
+export const NicknameValidResponseSchema = z.object({
+  isSuccess: z.boolean(),
+  code: z.string(),
+  message: z.string(),
+  result: z.unknown().optional(),
+  timestamp: z.string(),
+})
+
+export type NicknameValidResponse = z.infer<typeof NicknameValidResponseSchema>
+
+/**
+ * ✅ 금칙어 체크 응답 스키마 (엔드포인트/응답 확정 전이므로 안전하게 optional)
+ */
+export const NicknameForbiddenResponseSchema = z.object({
+  isSuccess: z.boolean(),
+  code: z.string(),
+  message: z.string(),
+  result: z.unknown().optional(),
+  timestamp: z.string(),
+})
+
+export type NicknameForbiddenResponse = z.infer<
+  typeof NicknameForbiddenResponseSchema
+>
+
+/**
+ * ✅ 닉네임 중복 체크 (버튼 클릭시에만 호출)
+ * - 명세: GET /api/v1/auth/nickname/valid?nickname=...
+ * - 중복 같은 케이스가 4xx로 내려오면 axios가 throw 하므로,
+ *   validateStatus로 4xx도 "정상 응답처럼" 받아서 UI에서 분기 처리하게 함
+ */
 export const checkNicknameValid = async (
-  nickName: string,
+  nickname: string,
 ): Promise<NicknameValidResponse> => {
   const response = await apiClient.get('/api/v1/auth/nickname/valid', {
-    params: { nickName },
+    params: { nickname }, // ✅ 명세 그대로
+    validateStatus: (status) => status >= 200 && status < 500, // ✅ 4xx도 처리
   })
+
   return NicknameValidResponseSchema.parse(response.data)
 }
 
-// 금칙어 체크 (debounce로 호출)
-// ⚠️ 백엔드 엔드포인트가 확정되면 path만 교체하면 됨
+/**
+ * ✅ 금칙어 체크 (debounce로 호출)
+ * ⚠️ 백엔드 엔드포인트/응답 확정 전에는 401/404 날 수 있음.
+ *     (Nickname 컴포넌트에서 호출을 막는 걸 추천)
+ */
 export const checkNicknameForbidden = async (
-  nickName: string,
+  nickname: string,
 ): Promise<NicknameForbiddenResponse> => {
   const response = await apiClient.get('/api/v1/auth/nickname/forbidden', {
-    params: { nickName },
+    params: { nickname },
+    // 필요하면 여기도 4xx 허용 가능:
+    // validateStatus: (status) => status >= 200 && status < 500,
   })
+
   return NicknameForbiddenResponseSchema.parse(response.data)
 }
 
-// ✅ result 응답 형태가 애매할 때 "사용 가능 여부"를 최대한 안정적으로 뽑아내는 헬퍼
+/**
+ * ✅ “사용 가능” 판정: 확정된 code로만 판단 (가장 안정적)
+ */
 export const extractIsAvailableFromValidResponse = (
   data: NicknameValidResponse,
 ): boolean => {
-  const r: any = data?.result ?? {}
-
-  // 가장 우선: 명시적 available
-  if (typeof r.isAvailable === 'boolean') return r.isAvailable
-  if (typeof r.available === 'boolean') return r.available
-  if (typeof r.canUse === 'boolean') return r.canUse
-
-  // duplicate 기반
-  if (typeof r.isDuplicate === 'boolean') return !r.isDuplicate
-  if (typeof r.isDuplicated === 'boolean') return !r.isDuplicated
-  if (typeof r.duplicated === 'boolean') return !r.duplicated
-  if (typeof r.exists === 'boolean') return !r.exists
-
-  // fallback: message에 “가능” 포함 시 true 추정
-  const msg = String(data?.message ?? '')
-  if (msg.includes('가능')) return true
-
-  return false
+  return data.isSuccess === true && data.code === 'NICKNAME_SUCCESS_001'
 }
 
-export const extractIsForbiddenFromForbiddenResponse = (
-  data: NicknameForbiddenResponse,
-): { forbidden: boolean; message?: string } => {
-  const r: any = data?.result ?? {}
-
-  const forbidden =
-    r === true ||
-    r?.forbidden === true ||
-    r?.isForbidden === true ||
-    r?.blocked === true
-
-  const message = r?.message || data?.message
-  return { forbidden, message }
+/**
+ * ✅ “이미 사용 중(중복)” 판정: 확정된 code로 판단
+ * (Nickname 컴포넌트에서 분기할 때 쓰면 더 명확해짐)
+ */
+export const extractIsDuplicatedFromValidResponse = (
+  data: NicknameValidResponse,
+): boolean => {
+  return data.isSuccess === false && data.code === 'NICKNAME_ERROR_001'
 }

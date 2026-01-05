@@ -126,7 +126,10 @@ export const NicknameForbiddenResultSchema = z
 export const NicknameForbiddenResponseSchema = ApiResponseSchema(
   NicknameForbiddenResultSchema.optional().default({}),
 )
-
+// ✅ 회원 탈퇴 Response
+export const WithdrawResponseSchema = ApiResponseSchema(
+  z.object({}).passthrough(), // result: {}
+)
 /**
  * 타입 추출
  */
@@ -144,3 +147,4 @@ export type NicknameValidResponse = z.infer<typeof NicknameValidResponseSchema>
 export type NicknameForbiddenResponse = z.infer<
   typeof NicknameForbiddenResponseSchema
 >
+export type WithdrawResponse = z.infer<typeof WithdrawResponseSchema>

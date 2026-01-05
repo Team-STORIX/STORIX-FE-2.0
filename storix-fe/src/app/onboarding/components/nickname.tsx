@@ -5,9 +5,9 @@ import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import {
   checkNicknameValid,
-  checkNicknameForbidden,
+  // checkNicknameForbidden,  // (보류)
   extractIsAvailableFromValidResponse,
-  extractIsForbiddenFromForbiddenResponse,
+  // extractIsForbiddenFromForbiddenResponse, // (보류)
 } from '@/api/auth/nickname.api'
 
 interface NicknameProps {
@@ -229,32 +229,32 @@ export default function Nickname({
       clearIfBasicLengthWarning()
 
       // ✅ 금칙어 체크 API 호출 (요구사항: debounce로 호출)
-      try {
-        const data = await checkNicknameForbidden(value)
-        const { forbidden, message } =
-          extractIsForbiddenFromForbiddenResponse(data)
+      // try {
+      //   const data = await checkNicknameForbidden(value)
+      //   const { forbidden, message } =
+      //     extractIsForbiddenFromForbiddenResponse(data)
 
-        if (forbidden) {
-          setStatus('forbidden')
-          setMsg(message || '사용할 수 없는 닉네임이에요!')
-          setMsgType('error')
-          // 금칙어 걸리면 아이콘 gray + 중복체크 불가 상태가 자연스러움
-          setAvailabilityFalse()
-          return
-        }
+      //   if (forbidden) {
+      //     setStatus('forbidden')
+      //     setMsg(message || '사용할 수 없는 닉네임이에요!')
+      //     setMsgType('error')
+      //     // 금칙어 걸리면 아이콘 gray + 중복체크 불가 상태가 자연스러움
+      //     setAvailabilityFalse()
+      //     return
+      //   }
 
-        // 금칙어 OK면 forbidden 상태였다면 unchecked로 복구 (중복체크 전 상태)
-        setStatus((prev) => (prev === 'forbidden' ? 'unchecked' : prev))
-        // 에러 메시지가 금칙어 메시지였다면 제거 (토스트/다른 메시지는 유지)
-        setMsg((prev) => {
-          if (msgType === 'toast') return prev
-          if (prev && prev !== MSG_OK) return ''
-          return prev
-        })
-        if (msgType !== 'toast') setMsgType('none')
-      } catch {
-        // 금칙어 API가 아직 없거나 실패해도 UX 유지 (무시)
-      }
+      //   // 금칙어 OK면 forbidden 상태였다면 unchecked로 복구 (중복체크 전 상태)
+      //   setStatus((prev) => (prev === 'forbidden' ? 'unchecked' : prev))
+      //   // 에러 메시지가 금칙어 메시지였다면 제거 (토스트/다른 메시지는 유지)
+      //   setMsg((prev) => {
+      //     if (msgType === 'toast') return prev
+      //     if (prev && prev !== MSG_OK) return ''
+      //     return prev
+      //   })
+      //   if (msgType !== 'toast') setMsgType('none')
+      // } catch {
+      //   // 금칙어 API가 아직 없거나 실패해도 UX 유지 (무시)
+      // }
     }, 400)
 
     return () => {
