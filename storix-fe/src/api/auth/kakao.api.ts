@@ -13,8 +13,8 @@ export const getKakaoAuthUrl = async (): Promise<string> => {
 
 // 카카오 로그인 (백엔드 API 호출)
 export const kakaoLogin = async (code: string): Promise<KakaoLoginResponse> => {
-  const redirectUri =
-    process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI || 'http://localhost:3000/login'
+  const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI
+  //|| 'http://localhost:3000/login'
 
   const response = await apiClient.get('/api/v1/auth/oauth/kakao/login', {
     params: {

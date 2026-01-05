@@ -3,6 +3,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function SettingsPage() {
+  const handleWithdraw = () => {
+    // TODO: 회원탈퇴 확인 모달 → 탈퇴 API 연동
+    console.log('회원탈퇴 클릭')
+  }
+
   return (
     <div>
       {/* 상단 54px 공백 */}
@@ -34,9 +39,27 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* TODO: 설정 컨텐츠 추가 */}
-      <div className="px-4 py-8">
+      {/* 설정 컨텐츠 */}
+      <div className="px-4 py-8 space-y-6">
         <p style={{ color: 'var(--color-gray-500)' }}>설정 페이지</p>
+
+        {/* 회원탈퇴 */}
+        <button
+          type="button"
+          onClick={handleWithdraw}
+          className="
+            w-full h-[48px]
+            flex items-center justify-center
+            border border-[var(--color-warning)]
+            rounded-md
+            text-[14px] font-medium
+            transition-opacity
+            hover:opacity-80
+          "
+          style={{ color: 'var(--color-warning)' }}
+        >
+          회원탈퇴
+        </button>
       </div>
     </div>
   )

@@ -3,6 +3,12 @@
 
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import {
+  checkNicknameValid,
+  checkNicknameForbidden,
+  extractIsAvailableFromValidResponse,
+  extractIsForbiddenFromForbiddenResponse,
+} from '@/api/auth/nickname.api'
 
 interface NicknameProps {
   value: string
@@ -13,7 +19,8 @@ interface NicknameProps {
 type Status =
   | 'idle'
   | 'typing'
-  | 'invalid'
+  | 'invalid_chars'
+  | 'length_basic' // 0~1글자 기본 경고
   | 'spaces_only'
   | 'forbidden'
   | 'unchecked'
@@ -21,8 +28,16 @@ type Status =
   | 'ok'
   | 'taken'
 
+type MsgType = 'none' | 'basic' | 'toast' | 'error' | 'success'
+
 const MIN = 2
 const MAX = 10
+
+const MSG_LEN = '한글,영문,숫자 2~10자까지 입력 가능해요'
+const MSG_CHARS = '닉네임은 한글/영문/숫자/_ 만 가능해요!'
+const MSG_SPACES = '공백만으론 닉네임을 설정할 수 없어요!'
+const MSG_OK = '사용 가능한 닉네임이에요'
+const MSG_TAKEN = '이미 사용 중인 닉네임이에요'
 
 export default function Nickname({
   value,
@@ -31,11 +46,21 @@ export default function Nickname({
 }: NicknameProps) {
   const [focused, setFocused] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
+
+  // 메시지/종류 분리(기본 길이 경고 vs 11번째 토스트)
   const [msg, setMsg] = useState('')
+  const [msgType, setMsgType] = useState<MsgType>('none')
 
   const lastChecked = useRef('')
 
+  // 11번째 입력 시도 토스트 타이머
+  const maxToastTimer = useRef<number | null>(null)
+
+  // debounce 금칙어 체크 타이머
+  const forbiddenTimer = useRef<number | null>(null)
+
   // ✅ 허용: 한글/영문/숫자/_ + 공백(허용)
+  // 요구사항: ^[ㄱ-ㅎ가-힣a-zA-Z0-9_]+$ 에 "공백도 가능"을 반영하여 스페이스 포함
   const allowedRegex = /^[ㄱ-ㅎ가-힣a-zA-Z0-9_ ]+$/
 
   const isAllSpaces = (v: string) => v.length > 0 && v.trim().length === 0
@@ -46,18 +71,67 @@ export default function Nickname({
     !isAllSpaces(v) &&
     allowedRegex.test(v)
 
-  const resetCheck = () => {
-    lastChecked.current = ''
+  const clearMaxToast = () => {
+    if (maxToastTimer.current) {
+      window.clearTimeout(maxToastTimer.current)
+      maxToastTimer.current = null
+    }
+  }
+
+  const showMaxToast = () => {
+    // 11번째 입력 시도: 토스트 1.5초
+    setMsg(MSG_LEN)
+    setMsgType('toast')
+
+    clearMaxToast()
+    maxToastTimer.current = window.setTimeout(() => {
+      setMsgType((prev) => (prev === 'toast' ? 'none' : prev))
+      setMsg((prev) => (prev === MSG_LEN ? '' : prev))
+      maxToastTimer.current = null
+    }, 1500)
+  }
+
+  const setAvailabilityFalse = () => {
     onAvailabilityChange?.(false)
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('signup_nickname_available', 'false')
     }
   }
 
-  const handleChange = (raw: string) => {
-    const next = raw.slice(0, MAX)
-    resetCheck()
+  const resetCheck = () => {
+    lastChecked.current = ''
+    setAvailabilityFalse()
+  }
 
+  const setBasicLengthWarning = () => {
+    // 0~1 글자: 계속 떠야 하는 기본 경고
+    setStatus('length_basic')
+    setMsg(MSG_LEN)
+    setMsgType('basic')
+  }
+
+  const clearIfBasicLengthWarning = () => {
+    // 2글자 되면 기본 길이 경고는 즉시 사라져야 함
+    if (msgType === 'basic' && msg === MSG_LEN) {
+      setMsg('')
+      setMsgType('none')
+    }
+  }
+
+  const handleChange = (raw: string) => {
+    // ✅ 11번째 입력 시도 감지: "이미 10자"인데 "raw는 10자 초과"
+    if (value.length === MAX && raw.length > MAX) {
+      showMaxToast()
+    }
+
+    const next = raw.slice(0, MAX)
+
+    // ✅ 값이 바뀌면(=중복체크 결과 무효) 다음 버튼 비활성화
+    // (10자 초과 시도는 실제 값 변화가 없으므로 resetCheck가 과하게 호출될 수 있지만,
+    //  UX상 '사용 가능' 상태에서 더 입력하려다 막혔다고 해서 결과를 무효화할 필요는 없음)
+    if (next !== value) resetCheck()
+
+    // ✅ 로컬 저장 (프로필에서 바로 읽어 쓸 값)
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('signup_nickname', next)
     }
@@ -65,19 +139,24 @@ export default function Nickname({
     if (!next) {
       setStatus('idle')
       setMsg('')
+      setMsgType('none')
       onChange(next)
       return
     }
 
-    // 공백만은 입력은 허용하되, debounce에서 멈췄을 때 경고 처리
+    // 공백만: 입력은 허용하되, debounce에서 멈추면 에러 표시
     if (isAllSpaces(next)) {
       setStatus('typing')
-      setMsg('')
+      // 공백만 에러가 debounce에서 뜰 거라 기본 메시지 일단 제거
+      if (msgType !== 'toast') {
+        setMsg('')
+        setMsgType('none')
+      }
       onChange(next)
       return
     }
 
-    // 허용 문자 외 입력 시 제거 + 안내 문구
+    // 허용 문자 외: 즉시 필터링 + 에러
     if (!allowedRegex.test(next)) {
       const filtered = next
         .replace(/[^ㄱ-ㅎ가-힣a-zA-Z0-9_ ]/g, '')
@@ -87,142 +166,161 @@ export default function Nickname({
       if (!filtered) {
         setStatus('idle')
         setMsg('')
+        setMsgType('none')
         return
       }
 
-      setStatus('invalid')
-      setMsg('닉네임은 한글/영문/숫자/_ 만 가능해요!')
+      setStatus('invalid_chars')
+      setMsg(MSG_CHARS)
+      setMsgType('error')
       return
     }
 
+    // 0~1 글자: 기본 길이 경고 유지
     if (next.length < MIN) {
       onChange(next)
-      setStatus('invalid')
-      setMsg('한글,영문,숫자 2~10자까지 입력 가능해요')
+      setBasicLengthWarning()
       return
     }
+
+    // ✅ 2글자 이상이면 기본 길이 경고는 즉시 사라져야 함
+    onChange(next)
+    clearIfBasicLengthWarning()
 
     // ✅ 기본 정합성 OK (중복체크 전)
     setStatus('unchecked')
-    setMsg('')
-    onChange(next)
+    // 토스트(11번째)는 1.5초 후 자동 제거
   }
 
   /** ✅ debounce(400ms): 공백만 / 금칙어 체크 */
   useEffect(() => {
     if (!value) return
 
-    const t = window.setTimeout(async () => {
+    // 기존 타이머 정리
+    if (forbiddenTimer.current) {
+      window.clearTimeout(forbiddenTimer.current)
+      forbiddenTimer.current = null
+    }
+
+    forbiddenTimer.current = window.setTimeout(async () => {
       // 공백만 닉네임 금지
       if (isAllSpaces(value)) {
         setStatus('spaces_only')
-        setMsg('공백만으론 닉네임을 설정할 수 없어요!')
+        setMsg(MSG_SPACES)
+        setMsgType('error')
         return
       }
 
-      // 기본 정합성 통과 못하면 금칙어 체크 안 함
-      if (!isBasicValid(value)) return
+      // 0~1글자면 기본 길이 경고
+      if (value.length < MIN) {
+        setBasicLengthWarning()
+        return
+      }
 
-      // ✅ 금칙어 체크 API (백엔드 실제 엔드포인트로 교체)
+      // 허용 문자 아니면 invalid_chars가 이미 잡았을 가능성 높지만 안전망
+      if (!allowedRegex.test(value)) {
+        setStatus('invalid_chars')
+        setMsg(MSG_CHARS)
+        setMsgType('error')
+        return
+      }
+
+      // ✅ 2~10자 & 허용문자 OK → 기본 길이 경고는 즉시 사라져야 함
+      clearIfBasicLengthWarning()
+
+      // ✅ 금칙어 체크 API 호출 (요구사항: debounce로 호출)
       try {
-        const res = await fetch(
-          `/api/v1/auth/nickname/forbidden?nickName=${encodeURIComponent(value)}`,
-          { method: 'GET', credentials: 'include' },
-        )
-        if (!res.ok) return
-        const data = await res.json()
+        const data = await checkNicknameForbidden(value)
+        const { forbidden, message } =
+          extractIsForbiddenFromForbiddenResponse(data)
 
-        // 다양한 응답 형태 대응
-        const r = data?.result
-        const isForbidden =
-          r === true ||
-          r?.isForbidden === true ||
-          r?.forbidden === true ||
-          r?.blocked === true
-
-        if (isForbidden) {
+        if (forbidden) {
           setStatus('forbidden')
-          setMsg(r?.message || data?.message || '사용할 수 없는 닉네임이에요!')
+          setMsg(message || '사용할 수 없는 닉네임이에요!')
+          setMsgType('error')
+          // 금칙어 걸리면 아이콘 gray + 중복체크 불가 상태가 자연스러움
+          setAvailabilityFalse()
           return
         }
 
-        // 금칙어 OK인데 이전에 forbidden이었다면 정상 상태로 복구
-        if (status === 'forbidden') {
-          setStatus('unchecked')
-          setMsg('')
-        }
+        // 금칙어 OK면 forbidden 상태였다면 unchecked로 복구 (중복체크 전 상태)
+        setStatus((prev) => (prev === 'forbidden' ? 'unchecked' : prev))
+        // 에러 메시지가 금칙어 메시지였다면 제거 (토스트/다른 메시지는 유지)
+        setMsg((prev) => {
+          if (msgType === 'toast') return prev
+          if (prev && prev !== MSG_OK) return ''
+          return prev
+        })
+        if (msgType !== 'toast') setMsgType('none')
       } catch {
-        // 네트워크 오류는 UX 깨지지 않게 무시
+        // 금칙어 API가 아직 없거나 실패해도 UX 유지 (무시)
       }
     }, 400)
 
-    return () => window.clearTimeout(t)
+    return () => {
+      if (forbiddenTimer.current) {
+        window.clearTimeout(forbiddenTimer.current)
+        forbiddenTimer.current = null
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
+  // unmount 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      clearMaxToast()
+      if (forbiddenTimer.current) window.clearTimeout(forbiddenTimer.current)
+    }
+  }, [])
+
   const canCheck = status === 'unchecked' && isBasicValid(value)
 
+  /** ✅ 버튼 클릭 시에만 중복 체크 API 호출 */
   const checkDuplicate = async () => {
     if (!canCheck) return
 
     setStatus('checking')
     setMsg('')
+    setMsgType('none')
 
     try {
-      const res = await fetch(
-        `/api/v1/auth/nickname/valid?nickName=${encodeURIComponent(value)}`,
-        { method: 'GET', credentials: 'include' },
-      )
-      const data = await res.json().catch(() => null)
-
-      if (!res.ok || !data) {
-        setStatus('taken')
-        setMsg('닉네임 확인 중 오류가 발생했어요. 다시 시도해주세요.')
-        return
-      }
-
-      // ✅ 백엔드 result 형태에 맞게 조정 가능
-      const available =
-        data?.result?.isAvailable ??
-        data?.result?.available ??
-        data?.result?.canUse ??
-        false
+      const data = await checkNicknameValid(value)
+      const available = extractIsAvailableFromValidResponse(data)
 
       if (available) {
         lastChecked.current = value
         setStatus('ok')
-        setMsg('사용 가능한 닉네임이에요')
+        setMsg(MSG_OK)
+        setMsgType('success')
         onAvailabilityChange?.(true)
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('signup_nickname_available', 'true')
         }
       } else {
         setStatus('taken')
-        setMsg('이미 사용 중인 닉네임이에요')
-        onAvailabilityChange?.(false)
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('signup_nickname_available', 'false')
-        }
+        setMsg(MSG_TAKEN)
+        setMsgType('error')
+        setAvailabilityFalse()
       }
     } catch {
       setStatus('taken')
       setMsg('닉네임 확인 중 오류가 발생했어요. 다시 시도해주세요.')
-      onAvailabilityChange?.(false)
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('signup_nickname_available', 'false')
-      }
+      setMsgType('error')
+      setAvailabilityFalse()
     }
   }
 
   const isWarning =
-    status === 'invalid' ||
+    status === 'length_basic' ||
+    status === 'invalid_chars' ||
     status === 'spaces_only' ||
     status === 'forbidden' ||
     status === 'taken'
 
   const isSuccess = status === 'ok'
 
-  // ✅ 밑줄(underline)만 상태 따라 변경
+  // ✅ 밑줄(underline)만 상태에 따라 변경
   const underlineClass = isSuccess
     ? 'border-b-2 border-[var(--color-success)]'
     : isWarning
@@ -237,11 +335,18 @@ export default function Nickname({
       ? 'text-[var(--color-black)]'
       : 'text-[var(--color-gray-300)]'
 
-  // ✅ 아이콘: 경고 상태면 gray, 입력 있고 경고 없으면 pink
+  // ✅ 아이콘: 경고/에러면 gray, 입력 있고 에러 없으면 pink
   const iconSrc =
     value && !isWarning
       ? '/onboarding/id-check-pink.svg'
       : '/onboarding/id-check-gray.svg'
+
+  const msgColorClass =
+    msgType === 'success'
+      ? 'text-[var(--color-success)]'
+      : msg
+        ? 'text-[var(--color-warning)]'
+        : ''
 
   return (
     <div>
@@ -293,13 +398,9 @@ export default function Nickname({
 
         {msg && (
           <p
-            className={[
-              'caption-1',
-              'mt-[6px] ml-[8px]',
-              isSuccess
-                ? 'text-[var(--color-success)]'
-                : 'text-[var(--color-warning)]',
-            ].join(' ')}
+            className={['caption-1', 'mt-[6px] ml-[8px]', msgColorClass].join(
+              ' ',
+            )}
           >
             {msg}
           </p>
