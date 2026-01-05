@@ -1,36 +1,56 @@
 // src/app/onboarding/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/store/auth.store'
+import { useSignup } from '@/hooks/auth/useSignup'
 import Topbar from './components/topbar'
 import Nickname from './components/nickname'
 import Gender from './components/gender'
 import Genre from './components/genre'
+import type { GenreKey } from './components/genre'
+
 import Favorite from './components/favorite'
 import Final from './components/final'
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const { marketingAgree, onboardingToken } = useAuthStore() // onboardingToken 추가
+  const { mutate: signupMutate, isPending } = useSignup()
+
   const [step, setStep] = useState(1)
   const [nickname, setNickname] = useState('')
-  const [gender, setGender] = useState('')
-  const [genres, setGenres] = useState<string[]>([])
-  const [favorites, setFavorites] = useState<string[]>([])
+  const [gender, setGender] = useState<'MALE' | 'FEMALE' | ''>('')
+  const [genres, setGenres] = useState<GenreKey[]>([])
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([])
+
+  // // 디버깅: onboardingToken 확인
+  // useEffect(() => {
+  //   console.log('=== 온보딩 페이지 ===')
+  //   console.log('onboardingToken:', onboardingToken)
+  //   console.log('marketingAgree:', marketingAgree)
+
+  //   if (!onboardingToken) {
+  //     console.error('⚠️ onboardingToken이 없습니다!')
+  //     alert('로그인이 필요합니다.')
+  //     router.push('/login')
+  //   }
+  // }, [onboardingToken, marketingAgree, router])
 
   // 각 단계별 유효성 검사
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return nickname.trim().length > 0 // 나중에 수정 예정
+        return nickname.trim().length > 0
       case 2:
-        return gender !== '' // 성별 1개 선택
+        return gender !== ''
       case 3:
-        return genres.length >= 1 // 장르 1개 이상 선택
+        return genres.length >= 1
       case 4:
-        return favorites.length >= 1 // 작품 1개 이상 선택
+        return favoriteIds.length >= 1
       case 5:
-        return true // final 단계는 항상 활성화
+        return true
       default:
         return false
     }
@@ -39,21 +59,56 @@ export default function OnboardingPage() {
   const canProceed = isStepValid()
 
   const handleNext = () => {
-    if (!canProceed) return // 조건 미충족 시 클릭 무시
+    if (!canProceed) return
 
     if (step < 5) {
       setStep(step + 1)
     } else {
-      router.push('/manual')
+      // 5단계(Final)에서 회원가입 API 호출
+      handleSignup()
     }
+  }
+
+  const handleSignup = () => {
+    if (gender === '') return
+
+    // ✅ (추가) 회원가입 때 입력한 값들 프론트 임시 저장
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('signup_nickname', nickname)
+      sessionStorage.setItem('signup_genres', JSON.stringify(genres))
+      sessionStorage.setItem('signup_favoriteIds', JSON.stringify(favoriteIds))
+      sessionStorage.setItem('signup_gender', gender)
+    }
+
+    signupMutate({
+      marketingAgree,
+      nickName: nickname,
+      gender,
+      favoriteGenreList: genres,
+      favoriteWorksIdList: favoriteIds,
+    })
   }
 
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1)
     } else {
-      router.push('/')
+      router.push('/agreement') // '/'가 아니라 '/agreement'로 이동
     }
+  }
+
+  // 로딩 중
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p
+          className="text-[16px] font-medium"
+          style={{ color: 'var(--color-gray-700)' }}
+        >
+          회원가입 중...
+        </p>
+      </div>
+    )
   }
 
   return (
@@ -86,7 +141,9 @@ export default function OnboardingPage() {
         {step === 1 && <Nickname value={nickname} onChange={setNickname} />}
         {step === 2 && <Gender value={gender} onChange={setGender} />}
         {step === 3 && <Genre value={genres} onChange={setGenres} />}
-        {step === 4 && <Favorite value={favorites} onChange={setFavorites} />}
+        {step === 4 && (
+          <Favorite value={favoriteIds} onChange={setFavoriteIds} />
+        )}
         {step === 5 && <Final />}
       </div>
 
