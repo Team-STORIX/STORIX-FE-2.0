@@ -27,8 +27,11 @@ export default function AgreementPage() {
   const handleNext = () => {
     if (!allAgreed) return
 
-    // 마케팅 동의는 기본값 false
-    setMarketingAgree(false)
+    // ✅ "다음"을 눌렀다는 건 필수 약관 전체 동의 완료라는 의미
+    // ✅ 따라서 marketingAgree도 true로 세팅 (termsAgreed와 동일하게 사용)
+    setMarketingAgree(true)
+
+    console.log('[agreement] termsAgreed:', true, 'marketingAgree:', true)
 
     // 온보딩 페이지로 이동
     router.push('/onboarding')
@@ -43,8 +46,8 @@ export default function AgreementPage() {
     : 'ml-[6px] text-[14px] font-medium leading-[140%] underline text-[#888787]'
 
   const link3Class = agreement3
-    ? 'ml-[6px] text-[14px] font-medium leading-[140%] text-[#FF4093]'
-    : 'ml-[6px] text-[14px] font-medium leading-[140%] text-[#888787]'
+    ? 'ml-[6px] text-[14px] font-medium leading-[140%] underline text-[#FF4093]'
+    : 'ml-[6px] text-[14px] font-medium leading-[140%] underline text-[#888787]'
 
   return (
     <div className="relative h-full flex flex-col">

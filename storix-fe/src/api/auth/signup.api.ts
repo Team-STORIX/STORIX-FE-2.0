@@ -1,3 +1,5 @@
+// src/api/auth/signup.api.ts
+
 import { apiClient } from '../axios-instance'
 import {
   SignupRequestSchema,
@@ -16,7 +18,7 @@ export const signup = async (
     data,
     {
       headers: {
-        Authorization: `Bearer ${onboardingToken}`,
+        Authorization: `Bearer ${onboardingToken.trim()}`,
       },
     },
   )

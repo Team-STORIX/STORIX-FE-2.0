@@ -3,9 +3,12 @@
 
 import { useState } from 'react'
 import TopBar from './components/topbar'
-import NavigationBar from '../profile/components/navigationbar'
+import NavBar from '@/components/common/NavBar'
 
 export default function FeedPage() {
+  const [active, setActive] = useState<'home' | 'feed' | 'library' | 'profile'>(
+    'home',
+  )
   const [activeTab, setActiveTab] = useState<'works' | 'writers'>('works')
 
   return (
@@ -23,7 +26,7 @@ export default function FeedPage() {
       )}
 
       {/* 하단 네비게이션 바 */}
-      <NavigationBar />
+      <NavBar active="feed" />
     </div>
   )
 }

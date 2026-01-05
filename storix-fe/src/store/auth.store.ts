@@ -1,6 +1,7 @@
 // src/store/auth.store.ts
+
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
+import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 
 interface AuthState {
   accessToken: string | null
@@ -26,24 +27,21 @@ export const useAuthStore = create<AuthState>()(
         isLoading: false,
         marketingAgree: false,
 
-        setAccessToken: (token: string) =>
+        setAccessToken: (token) =>
           set({
             accessToken: token,
             isAuthenticated: true,
             onboardingToken: null,
           }),
 
-        setOnboardingToken: (token: string) =>
+        setOnboardingToken: (token) =>
           set({
             onboardingToken: token,
             isAuthenticated: false,
             accessToken: null,
           }),
 
-        setMarketingAgree: (agree: boolean) =>
-          set({
-            marketingAgree: agree,
-          }),
+        setMarketingAgree: (agree) => set({ marketingAgree: agree }),
 
         clearAuth: () =>
           set({
@@ -53,21 +51,15 @@ export const useAuthStore = create<AuthState>()(
             marketingAgree: false,
           }),
 
-        setLoading: (loading: boolean) =>
-          set({
-            isLoading: loading,
-          }),
+        setLoading: (loading) => set({ isLoading: loading }),
       }),
       {
         name: 'auth-storage',
+        storage: createJSONStorage(() => sessionStorage), // ✅ 세션스토리지로
         partialize: (state) => ({
-          // ✅ 가입 직후 토큰 유지(핵심)
-          accessToken: state.accessToken,
-          isAuthenticated: state.isAuthenticated,
-
-          // 기존 유지
-          onboardingToken: state.onboardingToken,
-          marketingAgree: state.marketingAgree,
+          accessToken: state.accessToken, // ✅ 추가
+          onboardingToken: state.onboardingToken, // 유지
+          marketingAgree: state.marketingAgree, // 유지
         }),
       },
     ),

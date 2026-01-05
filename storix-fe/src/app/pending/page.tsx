@@ -12,19 +12,18 @@ export default function PendingPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // ✅ 프로젝트 store에 맞게 쓰는 형태 (이름 다르면 여기만 수정)
-  const { setAccessToken, setOnboardingToken } = useAuthStore() as any
+  const setAccessToken = useAuthStore((s) => s.setAccessToken)
+  const setOnboardingToken = useAuthStore((s) => s.setOnboardingToken)
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
     const run = async () => {
       const code = searchParams.get('code')
-      const state = searchParams.get('state') // ✅ 네이버에서 옴
+      const state = searchParams.get('state')
       const error = searchParams.get('error')
       const errorDescription = searchParams.get('error_description')
 
-      // 1) OAuth 에러 처리
       if (error) {
         setErrorMsg(
           `OAuth 에러: ${error}${errorDescription ? `\n${errorDescription}` : ''}`,
@@ -32,7 +31,6 @@ export default function PendingPage() {
         return
       }
 
-      // 2) code 체크
       if (!code) {
         setErrorMsg('code가 없습니다. redirect_uri 설정/라우팅을 확인하세요.')
         return
@@ -42,7 +40,7 @@ export default function PendingPage() {
         const apiBase = process.env.NEXT_PUBLIC_API_URL
         if (!apiBase) throw new Error('NEXT_PUBLIC_API_URL is not set')
 
-        // 3) provider 판단: state 있으면 네이버로 간주
+        // 네이버는 state가 항상 붙어서 오고, 카카오는 일반적으로 state가 없음
         const provider: Provider = state ? 'naver' : 'kakao'
 
         let url = ''
@@ -54,7 +52,6 @@ export default function PendingPage() {
             `?code=${encodeURIComponent(code)}` +
             `&state=${encodeURIComponent(state)}`
         } else {
-          // ✅ 카카오: code + redirectUri (백엔드가 redirectUri를 요구하는 스펙이었음)
           const redirectUri =
             process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ||
             'http://localhost:3000/pending'
@@ -70,7 +67,7 @@ export default function PendingPage() {
 
         const res = await fetch(url, {
           method: 'GET',
-          credentials: 'include', // refreshToken 쿠키 세팅 가능성 대비
+          credentials: 'include', // ✅ refreshToken 쿠키가 배포환경에서만 저장/전송됨
           headers: { Accept: 'application/json' },
         })
 
@@ -87,25 +84,26 @@ export default function PendingPage() {
           throw new Error('Unexpected response: missing result.isRegistered')
         }
 
-        // ✅ 가입된 유저 → accessToken 저장 후 profile로
+        // ✅ isRegistered 기준 분기
+        // true  -> 홈
+        // false -> 이용약관(온보딩 시작)
         if (result.isRegistered) {
           const accessToken = result.readerLoginResponse?.accessToken
           if (!accessToken)
             throw new Error('Registered user but no accessToken')
 
-          setAccessToken?.(accessToken)
-          router.replace('/profile')
+          setAccessToken(accessToken)
+          router.replace('/home')
           return
         }
 
-        // ✅ 미가입 유저 → onboardingToken 저장 후 agreement로
         const onboardingToken = result.readerPreLoginResponse?.onboardingToken
-        if (!onboardingToken)
+        if (!onboardingToken) {
           throw new Error('Not registered but no onboardingToken')
+        }
 
-        setOnboardingToken?.(onboardingToken)
+        setOnboardingToken(onboardingToken)
         router.replace('/agreement')
-        console.log('[pending] onboardingToken:', onboardingToken)
       } catch (e: any) {
         console.error('[pending] flow error:', e)
         setErrorMsg(e?.message ?? String(e))

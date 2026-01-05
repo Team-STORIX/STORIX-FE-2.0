@@ -132,8 +132,8 @@ export default function NavigationBar() {
           type="button"
           onClick={handlePlusClick}
           className={[
-            'absolute left-1/2 -translate-x-1/2 bottom-[72px]',
-            'w-[56px] h-[56px]',
+            'absolute left-1/2 -translate-x-1/2 bottom-18',
+            'w-14 h-14',
             'transition-transform duration-200 ease-in-out',
             'hover:opacity-70',
             isPlusOpen ? 'rotate-90' : 'rotate-0',

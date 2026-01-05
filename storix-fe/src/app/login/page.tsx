@@ -3,32 +3,35 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
 import { getKakaoAuthUrl } from '@/api/auth/kakao.api'
-import { useKakaoLogin } from '@/hooks/auth/useKakaoLogin'
+
+function generateNaverState() {
+  // ✅ 요구사항: state는 랜덤 문자열
+  // (검증/비교 로직은 명세에 없으니 추가하지 않음)
+  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+    const bytes = new Uint8Array(16)
+    window.crypto.getRandomValues(bytes)
+    return Array.from(bytes)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+  }
+
+  // fallback
+  return `${Date.now()}_${Math.random().toString(16).slice(2)}`
+}
 
 export default function LoginPage() {
   const [showSplash, setShowSplash] = useState(true)
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const code = searchParams.get('code')
-
-  const { mutate: loginMutate, isPending } = useKakaoLogin()
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1500)
     return () => clearTimeout(timer)
   }, [])
 
-  // (선택) 카카오에서 login 페이지로 code가 돌아오는 플로우를 계속 쓴다면 유지
-  useEffect(() => {
-    if (code && !showSplash) {
-      loginMutate(code)
-    }
-  }, [code, showSplash, loginMutate])
-
-  // 카카오 로그인 버튼 클릭
+  // 카카오 로그인 버튼 클릭 (인가 코드 요청 → redirect_uri(/pending)로 돌아옴)
   const handleKakaoLogin = async () => {
     try {
       const authUrl = await getKakaoAuthUrl()
@@ -54,7 +57,8 @@ export default function LoginPage() {
       return
     }
 
-    const state = 'test' // TODO: 실제 서비스에서는 랜덤 문자열 권장(보안)
+    const state = generateNaverState()
+
     const authUrl =
       `https://nid.naver.com/oauth2.0/authorize` +
       `?response_type=code` +
@@ -104,19 +108,6 @@ export default function LoginPage() {
   }
 
   if (showSplash) return <Splash />
-
-  if (isPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p
-          className="text-[16px] font-medium"
-          style={{ color: 'var(--color-gray-700)' }}
-        >
-          로그인 중...
-        </p>
-      </div>
-    )
-  }
 
   return (
     <div className="relative w-full h-full flex flex-col items-center">

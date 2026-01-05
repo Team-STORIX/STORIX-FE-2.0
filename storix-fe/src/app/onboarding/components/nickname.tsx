@@ -1,10 +1,20 @@
 // src/app/onboarding/components/nickname.tsx
+'use client'
+
 interface NicknameProps {
   value: string
   onChange: (value: string) => void
 }
 
 export default function Nickname({ value, onChange }: NicknameProps) {
+  const handleChange = (next: string) => {
+    // ✅ 로컬 저장 (프로필에서 바로 읽어 쓸 값)
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('signup_nickname', next)
+    }
+    onChange(next)
+  }
+
   return (
     <div>
       <h1
@@ -34,7 +44,7 @@ export default function Nickname({ value, onChange }: NicknameProps) {
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
         maxLength={10}
         className="mt-20 w-[361px] h-[65px] border border-black px-4"
         placeholder="닉네임 입력"

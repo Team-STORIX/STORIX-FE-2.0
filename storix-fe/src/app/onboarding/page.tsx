@@ -9,6 +9,8 @@ import Topbar from './components/topbar'
 import Nickname from './components/nickname'
 import Gender from './components/gender'
 import Genre from './components/genre'
+import type { GenreKey } from './components/genre'
+
 import Favorite from './components/favorite'
 import Final from './components/final'
 
@@ -20,21 +22,21 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [nickname, setNickname] = useState('')
   const [gender, setGender] = useState<'MALE' | 'FEMALE' | ''>('')
-  const [genres, setGenres] = useState<string[]>([])
+  const [genres, setGenres] = useState<GenreKey[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 
-  // 디버깅: onboardingToken 확인
-  useEffect(() => {
-    console.log('=== 온보딩 페이지 ===')
-    console.log('onboardingToken:', onboardingToken)
-    console.log('marketingAgree:', marketingAgree)
+  // // 디버깅: onboardingToken 확인
+  // useEffect(() => {
+  //   console.log('=== 온보딩 페이지 ===')
+  //   console.log('onboardingToken:', onboardingToken)
+  //   console.log('marketingAgree:', marketingAgree)
 
-    if (!onboardingToken) {
-      console.error('⚠️ onboardingToken이 없습니다!')
-      alert('로그인이 필요합니다.')
-      router.push('/login')
-    }
-  }, [onboardingToken, marketingAgree, router])
+  //   if (!onboardingToken) {
+  //     console.error('⚠️ onboardingToken이 없습니다!')
+  //     alert('로그인이 필요합니다.')
+  //     router.push('/login')
+  //   }
+  // }, [onboardingToken, marketingAgree, router])
 
   // 각 단계별 유효성 검사
   const isStepValid = () => {
@@ -70,15 +72,13 @@ export default function OnboardingPage() {
   const handleSignup = () => {
     if (gender === '') return
 
-    console.log('=== 회원가입 API 호출 ===')
-    console.log('onboardingToken:', onboardingToken)
-    console.log('회원가입 데이터:', {
-      marketingAgree,
-      nickName: nickname,
-      gender,
-      favoriteGenreList: genres,
-      favoriteWorksIdList: favoriteIds,
-    })
+    // ✅ (추가) 회원가입 때 입력한 값들 프론트 임시 저장
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('signup_nickname', nickname)
+      sessionStorage.setItem('signup_genres', JSON.stringify(genres))
+      sessionStorage.setItem('signup_favoriteIds', JSON.stringify(favoriteIds))
+      sessionStorage.setItem('signup_gender', gender)
+    }
 
     signupMutate({
       marketingAgree,

@@ -1,6 +1,21 @@
 // src/api/auth/auth.schema.ts
 import { z } from 'zod'
 
+// ✅ (추가) 백엔드 ENUM 값(전송용) - 단일 소스
+export const GenreKeySchema = z.enum([
+  'ROMANCE',
+  'FANTASY',
+  'ROFAN',
+  'HISTORICAL',
+  'DRAMA',
+  'THRILLER',
+  'ACTION',
+  'BL',
+  'MODERN_FANTASY',
+  'DAILY',
+])
+export type GenreKey = z.infer<typeof GenreKeySchema>
+
 // 기본 응답 래퍼
 export const ApiResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   z.object({
@@ -39,7 +54,8 @@ export const SignupRequestSchema = z.object({
   marketingAgree: z.boolean(),
   nickName: z.string().min(1),
   gender: z.enum(['MALE', 'FEMALE']),
-  favoriteGenreList: z.array(z.string()),
+  // ✅ (개선) 아무 문자열이 아니라, 백엔드 ENUM만 허용
+  favoriteGenreList: z.array(GenreKeySchema),
   favoriteWorksIdList: z.array(z.number()),
 })
 
