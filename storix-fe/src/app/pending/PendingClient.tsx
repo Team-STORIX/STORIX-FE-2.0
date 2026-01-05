@@ -112,6 +112,8 @@ export default function PendingClient() {
       }
     }
 
+    console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+
     run()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
