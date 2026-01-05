@@ -7,9 +7,7 @@ export default function PendingPage() {
     <Suspense
       fallback={
         <div className="flex h-full w-full flex-col items-center justify-center">
-          <p className="text-[16px] font-medium text-gray-700">
-            로그인 중입니다
-          </p>
+          <p className="body-1 font-medium text-gray-700">로그인 중입니다</p>
         </div>
       }
     >
