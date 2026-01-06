@@ -23,6 +23,8 @@ function generateNaverState() {
 }
 
 export default function LoginPage() {
+  console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+
   const [showSplash, setShowSplash] = useState(true)
   const router = useRouter()
 
@@ -117,7 +119,7 @@ export default function LoginPage() {
           className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70"
           style={{ color: 'var(--color-gray-500)' }}
           onClick={() => {
-            // TODO: 추후 경로 설정
+            router.push('/home/demo')
           }}
         >
           둘러보기
