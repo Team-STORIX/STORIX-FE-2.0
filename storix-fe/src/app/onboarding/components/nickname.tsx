@@ -363,6 +363,14 @@ export default function Nickname({
             onChange={(e) => handleChange(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                if (canCheck) {
+                  checkDuplicate()
+                }
+              }
+            }}
             maxLength={MAX}
             placeholder="닉네임을 입력하세요"
             className={[
