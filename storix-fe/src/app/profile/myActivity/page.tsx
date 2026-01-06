@@ -9,9 +9,7 @@ import Selectbar from './components/selectBar'
 import MyPosts from './components/myPosts'
 import MyComments from './components/myComments'
 import MyLikes from './components/myLikes'
-<<<<<<< HEAD
 import NavBar from '@/components/common/NavBar'
-=======
 import { apiClient } from '@/api/axios-instance'
 import { useAuthStore } from '@/store/auth.store'
 
@@ -22,7 +20,6 @@ type MeProfileResult = {
   level?: number
   profileDescription: string | null
 }
->>>>>>> upstream/develop
 
 export default function MyActivityPage() {
   const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'likes'>(
