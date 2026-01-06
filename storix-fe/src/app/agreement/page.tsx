@@ -46,8 +46,8 @@ export default function AgreementPage() {
     : 'ml-[6px] text-[14px] font-medium leading-[140%] underline text-[#888787]'
 
   const link3Class = agreement3
-    ? 'ml-[6px] text-[14px] font-medium leading-[140%] underline text-[#FF4093]'
-    : 'ml-[6px] text-[14px] font-medium leading-[140%] underline text-[#888787]'
+    ? 'ml-[6px] text-[14px] font-medium leading-[140%] text-[#FF4093]'
+    : 'ml-[6px] text-[14px] font-medium leading-[140%]  text-[#888787]'
 
   return (
     <div className="relative h-full flex flex-col">

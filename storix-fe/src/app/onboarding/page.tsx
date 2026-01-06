@@ -17,7 +17,7 @@ import Final from './components/final'
 export default function OnboardingPage() {
   console.log('onboardingToken now:', useAuthStore.getState().onboardingToken) // 디버깅
   const router = useRouter()
-  const { marketingAgree, onboardingToken } = useAuthStore() // onboardingToken 추가
+  const { marketingAgree, onboardingToken } = useAuthStore()
   const { mutate: signupMutate, isPending } = useSignup()
 
   const [step, setStep] = useState(1)
@@ -26,24 +26,15 @@ export default function OnboardingPage() {
   const [genres, setGenres] = useState<GenreKey[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 
-  // // 디버깅: onboardingToken 확인
-  // useEffect(() => {
-  //   console.log('=== 온보딩 페이지 ===')
-  //   console.log('onboardingToken:', onboardingToken)
-  //   console.log('marketingAgree:', marketingAgree)
-
-  //   if (!onboardingToken) {
-  //     console.error('⚠️ onboardingToken이 없습니다!')
-  //     alert('로그인이 필요합니다.')
-  //     router.push('/login')
-  //   }
-  // }, [onboardingToken, marketingAgree, router])
+  // ✅ 1단계(닉네임)에서만 쓰는 "다음으로" 활성화 상태
+  const [canGoNextNickname, setCanGoNextNickname] = useState(false)
 
   // 각 단계별 유효성 검사
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return nickname.trim().length > 0
+        // ✅ "닉네임 사용 가능(중복체크 통과)"일 때만 다음 가능
+        return canGoNextNickname
       case 2:
         return gender !== ''
       case 3:
@@ -65,7 +56,6 @@ export default function OnboardingPage() {
     if (step < 5) {
       setStep(step + 1)
     } else {
-      // 5단계(Final)에서 회원가입 API 호출
       handleSignup()
     }
   }
@@ -73,7 +63,6 @@ export default function OnboardingPage() {
   const handleSignup = () => {
     if (gender === '') return
 
-    // ✅ (추가) 회원가입 때 입력한 값들 프론트 임시 저장
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('signup_nickname', nickname)
       sessionStorage.setItem('signup_genres', JSON.stringify(genres))
@@ -94,18 +83,14 @@ export default function OnboardingPage() {
     if (step > 1) {
       setStep(step - 1)
     } else {
-      router.push('/agreement') // '/'가 아니라 '/agreement'로 이동
+      router.push('/agreement')
     }
   }
 
-  // 로딩 중
   if (isPending) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p
-          className="text-[16px] font-medium"
-          style={{ color: 'var(--color-gray-700)' }}
-        >
+        <p className="text-[16px] font-medium text-[var(--color-gray-700)]">
           회원가입 중...
         </p>
       </div>
@@ -139,7 +124,13 @@ export default function OnboardingPage() {
           paddingBottom: '134px',
         }}
       >
-        {step === 1 && <Nickname value={nickname} onChange={setNickname} />}
+        {step === 1 && (
+          <Nickname
+            value={nickname}
+            onChange={setNickname}
+            onAvailabilityChange={setCanGoNextNickname}
+          />
+        )}
         {step === 2 && <Gender value={gender} onChange={setGender} />}
         {step === 3 && <Genre value={genres} onChange={setGenres} />}
         {step === 4 && (

@@ -41,7 +41,7 @@ export async function fetchMyProfile(
 
     // 최소 필수값 보정
     return {
-      nickname: parsed.nickname ?? '(닉네임 없음)',
+      nickname: parsed.nickname ?? '닉네임',
       bio: parsed.bio ?? '',
       level: parsed.level ?? 1,
       profileImageUrl: parsed.profileImageUrl,
