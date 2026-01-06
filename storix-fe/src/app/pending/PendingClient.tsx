@@ -26,7 +26,9 @@ export default function PendingClient() {
 
       if (error) {
         setErrorMsg(
-          `OAuth 에러: ${error}${errorDescription ? `\n${errorDescription}` : ''}`,
+          `OAuth 에러: ${error}${
+            errorDescription ? `\n${errorDescription}` : ''
+          }`,
         )
         return
       }
@@ -115,17 +117,16 @@ export default function PendingClient() {
 
   if (errorMsg) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center px-6 text-center">
-        <p className="text-[16px] font-semibold text-gray-800 mb-3">
+      <div className="flex h-full w-full flex-col items-center justify-center px-6 text-center">
+        <p className="mb-3 text-[16px] font-semibold text-gray-800">
           로그인 실패
         </p>
-
-        <pre className="text-[12px] text-gray-600 whitespace-pre-wrap break-words">
+        <pre className="whitespace-pre-wrap break-words text-[12px] text-gray-600">
           {errorMsg}
         </pre>
 
         <button
-          className="mt-6 underline text-gray-700 hover:opacity-70"
+          className="mt-6 text-gray-700 underline hover:opacity-70"
           onClick={() => router.replace('/login')}
         >
           로그인 페이지로 돌아가기
@@ -135,7 +136,7 @@ export default function PendingClient() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center">
+    <div className="flex h-full w-full flex-col items-center justify-center">
       <Image
         src="/icons/logo.svg"
         alt="STORIX"
@@ -147,10 +148,10 @@ export default function PendingClient() {
 
       <p className="text-[16px] font-medium text-gray-700">로그인 중입니다</p>
 
-      <div className="flex gap-1 mt-4">
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.2s]" />
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.1s]" />
-        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+      <div className="mt-4 flex gap-1">
+        <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.2s]" />
+        <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.1s]" />
+        <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
       </div>
     </div>
   )
