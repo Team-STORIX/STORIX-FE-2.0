@@ -129,9 +129,7 @@ body {
   /*------ iPhone16 Container ------*/
   .ipone16-container,
   .iphone16-container {
-    aspect-ratio: 393 / 852;
     width: min(100%, 393px);
-    height: max(100%, 852px);
     border: 1px solid;
     background-color: var(--color-white);
     border-color: var(--color-gray-200);

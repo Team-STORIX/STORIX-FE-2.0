@@ -23,10 +23,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className="h-full">
+    <html lang="ko" className={`${suit.className}`}>
       {/* 화면 전체 배경 */}
       <body
-        className={`min-h-screen flex items-center justify-center ${suit.className}`}
+        className="min-h-dvh overflow-hidden justify-center"
         style={{ backgroundColor: 'var(--color-gray-400)' }}
       >
         <Providers>
