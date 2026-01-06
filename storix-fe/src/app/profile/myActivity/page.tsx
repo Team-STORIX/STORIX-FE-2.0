@@ -9,75 +9,31 @@ import Selectbar from './components/selectBar'
 import MyPosts from './components/myPosts'
 import MyComments from './components/myComments'
 import MyLikes from './components/myLikes'
-import { apiClient } from '@/api/axios-instance'
-import { useAuthStore } from '@/store/auth.store'
-
-type MeProfileResult = {
-  role: string
-  profileImageUrl: string | null
-  nickName: string
-  level?: number
-  profileDescription: string | null
-}
+import NavBar from '@/components/common/NavBar'
 
 export default function MyActivityPage() {
   const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'likes'>(
     'posts',
   )
-
   const [nickname, setNickname] = useState<string>('')
-  const [level, setLevel] = useState<number>(1)
-  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>(
-    undefined,
-  )
-  const [bio, setBio] = useState<string>('')
 
   useEffect(() => {
-    let mounted = true
-
-    const fetchMe = async () => {
-      try {
-        const token = useAuthStore.getState().accessToken
-        console.log('[myActivity] accessToken exists?', !!token)
-
-        const res = await apiClient.get('/api/v1/profile/me')
-
-        const result = (res.data as any)?.result as MeProfileResult | undefined
-        if (!result) throw new Error('No result in /profile/me response')
-
-        if (!mounted) return
-
-        setNickname(result.nickName ?? '')
-        setLevel(typeof result.level === 'number' ? result.level : 1)
-        setProfileImageUrl(result.profileImageUrl ?? undefined)
-        setBio(result.profileDescription ?? '')
-      } catch (e: any) {
-        console.error('[myActivity] failed to fetch /profile/me', e)
-        if (!mounted) return
-        setNickname('')
-        setLevel(1)
-        setProfileImageUrl(undefined)
-        setBio('')
-      }
-    }
-
-    fetchMe()
-
-    return () => {
-      mounted = false
-    }
+    const saved = sessionStorage.getItem('signup_nickname') ?? ''
+    setNickname(saved)
+    console.log('[myActivity] local nickname:', saved)
   }, [])
 
   return (
-    <div>
+    // ✅ profile/page.tsx와 동일하게 하단 여백 확보
+    <div className="relative w-full min-h-full pb-[169px]">
       <div className="h-[54px]" />
       <TopBar />
 
       <UserProfile
-        profileImage={profileImageUrl}
-        level={level}
+        profileImage={undefined}
+        level={1}
         nickname={nickname || '닉네임'}
-        bio={bio}
+        bio={''}
       />
 
       <PreferenceTab />
@@ -89,6 +45,8 @@ export default function MyActivityPage() {
       {activeTab === 'posts' && <MyPosts />}
       {activeTab === 'comments' && <MyComments />}
       {activeTab === 'likes' && <MyLikes />}
+
+      <NavBar active="profile" />
     </div>
   )
 }
