@@ -74,7 +74,7 @@ export const extractIsAvailableFromValidResponse = (
   return data.isSuccess === true && data.code === 'NICKNAME_SUCCESS_001'
 }
 
-/**
+/**ㅞㅡ
  * ✅ “이미 사용 중(중복)” 판정: 확정된 code로 판단
  * (Nickname 컴포넌트에서 분기할 때 쓰면 더 명확해짐)
  */
