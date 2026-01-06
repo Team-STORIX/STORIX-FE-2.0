@@ -11,13 +11,9 @@ export default function HomeHeader() {
   return (
     <header className="flex h-14 items-center justify-between">
       {/* 왼쪽 로고 버튼 */}
-      <Link
-        href={'/home'}
-        aria-label="홈으로 이동"
-        className="flex h-10 w-10 items-center justify-center"
-      >
+      <div className="flex h-10 w-10 items-center justify-center">
         <LogoSymbol />
-      </Link>
+      </div>
 
       {/* 오른쪽 아이콘 그룹 */}
       <div className="flex items-center gap-4">
