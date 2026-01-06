@@ -193,27 +193,13 @@ export default function MyPosts() {
 
           {/* 본문 */}
           <div className="mt-3 px-4">
-            {/* ✅ 3줄 초과 시 기본 … 대신 중간점 ···이 보이도록 오버레이 */}
             <div className="relative">
               <p
-                className="text-[14px] font-medium leading-[140%] line-clamp-3 pr-6"
+                className="text-[14px] font-medium leading-[140%] line-clamp-3 pr-10"
                 style={{ color: 'var(--color-gray-800)' }}
               >
                 {post.content}
               </p>
-
-              {/* 중간점 ··· 오버레이 (마지막 줄 오른쪽 하단) */}
-              <span
-                className="absolute bottom-0 right-0 text-[14px] font-medium leading-[140%]"
-                style={{
-                  color: 'var(--color-gray-800)',
-                  backgroundColor: 'var(--color-white)',
-                  paddingLeft: '4px',
-                }}
-                aria-hidden="true"
-              >
-                ···
-              </span>
             </div>
           </div>
 
