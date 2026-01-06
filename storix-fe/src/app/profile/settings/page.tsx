@@ -34,6 +34,7 @@ export default function SettingsPage() {
     <div>
       {/* 상단 54px 공백 */}
       <div className="h-[54px]" />
+      <p className="text-[12px] text-red-500">SETTINGS_VERSION=2026-01-07-1</p>
 
       {/* 헤더 */}
       <div className="px-4 py-2">
