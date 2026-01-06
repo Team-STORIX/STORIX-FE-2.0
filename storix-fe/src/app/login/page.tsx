@@ -119,7 +119,7 @@ export default function LoginPage() {
           className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70"
           style={{ color: 'var(--color-gray-500)' }}
           onClick={() => {
-            // TODO: 추후 경로 설정
+            router.push('/home/demo')
           }}
         >
           둘러보기

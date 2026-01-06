@@ -25,14 +25,11 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${suit.className}`}>
       {/* 화면 전체 배경 */}
-      <body
-        className="min-h-dvh overflow-hidden justify-center"
-        style={{ backgroundColor: 'var(--color-gray-400)' }}
-      >
+      <body className="min-h-dvh overflow-hidden justify-center ">
         <Providers>
-          <main className="flex min-h-dvh w-full justify-center text-gray-900">
+          <main className="flex min-h-dvh w-full justify-center text-gray-900 bg-white">
             {/* 가운데 393 x 852 카드 */}
-            <div className="iphone16-container flex h-svh w-full max-w-[393px] flex-col bg-white shadow-lg">
+            <div className="iphone16-container flex h-svh w-full max-w-[393px] flex-col bg-white">
               <div className="flex-1 overflow-y-auto no-scrollbar">
                 {children}
               </div>

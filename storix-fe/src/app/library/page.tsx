@@ -7,7 +7,7 @@ import { CardNav } from '@/components/home/todayTopicRoom/CardNav'
 import { TopicRoomCoverSlider } from '@/components/home/todayTopicRoom/TopicRoomCoverSlider'
 import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
 import HotFeedSlider from '@/components/home/hotFeed/HotFeedSlider'
-import MyTypeCard from '@/components/home/myType/MyTypeCard'
+import MyTypeCard from '@/components/home/myTaste/MyTasteCard'
 import HashtagList from '@/components/common/HashtagList'
 import NavBar from '@/components/common/NavBar'
 

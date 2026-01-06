@@ -1,7 +1,7 @@
 // src/app/onboarding/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
 import { useSignup } from '@/hooks/auth/useSignup'

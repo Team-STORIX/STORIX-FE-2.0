@@ -9,6 +9,7 @@ import Selectbar from './components/selectBar'
 import MyPosts from './components/myPosts'
 import MyComments from './components/myComments'
 import MyLikes from './components/myLikes'
+import NavBar from '@/components/common/NavBar'
 
 export default function MyActivityPage() {
   const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'likes'>(
@@ -43,6 +44,7 @@ export default function MyActivityPage() {
       {activeTab === 'posts' && <MyPosts />}
       {activeTab === 'comments' && <MyComments />}
       {activeTab === 'likes' && <MyLikes />}
+      <NavBar active="profile" />
     </div>
   )
 }
