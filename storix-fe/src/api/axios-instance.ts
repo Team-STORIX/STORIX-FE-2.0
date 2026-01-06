@@ -118,8 +118,13 @@ apiClient.interceptors.response.use(
 
         useAuthStore.getState().clearAuth()
 
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login'
+        // if (typeof window !== 'undefined') {
+        //   window.location.href = '/login'
+        // }
+
+        // after (window 식별자 직접 참조 X)
+        if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+          ;(globalThis as any).window.location.href = '/login'
         }
 
         return Promise.reject(refreshError)
