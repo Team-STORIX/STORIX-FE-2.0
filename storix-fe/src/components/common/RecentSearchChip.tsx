@@ -4,24 +4,16 @@
 type RecentSearchChipProps = {
   label: string
   onRemove?: () => void
-  onClick?: () => void
   className?: string
 }
 
 export default function RecentSearchChip({
   label,
   onRemove,
-  onClick,
   className = '',
 }: RecentSearchChipProps) {
   return (
     <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onClick?.()
-      }}
       className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 body-2 ${className}`}
     >
       <span>{label}</span>
@@ -29,10 +21,7 @@ export default function RecentSearchChip({
       <button
         type="button"
         aria-label="최근 검색어 삭제"
-        onClick={(e) => {
-          e.stopPropagation() // ✅ 삭제 누르면 검색 클릭이 같이 실행되지 않게
-          onRemove?.()
-        }}
+        onClick={onRemove}
         className="ml-1 flex h-4 w-4 items-center justify-center"
       >
         <CloseIcon />

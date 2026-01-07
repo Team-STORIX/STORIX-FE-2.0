@@ -63,15 +63,7 @@ export default function Home() {
 
           <div className="flex flex-col w-full mb-8">
             <CardNav header="이런 키워드, 좋아하실 것 같아요" roomName="#" />
-            <HashtagList
-              items={[
-                '#로맨스',
-                '#무협/사극',
-                '#액션',
-                '#로맨스판타지',
-                '#금발남주',
-              ]}
-            />
+            <HashtagList />
           </div>
         </div>
       </div>
