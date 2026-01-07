@@ -21,16 +21,16 @@ const MOCK_ROOMS: TopicRoomData[] = [
   },
   {
     id: 'room2',
-    imageUrl: '/image/sample/topicroom-1.webp',
-    title: '탄서방 시어머니회 2',
-    subtitle: '웹툰 상수리나무 아래',
+    imageUrl: '/image/sample/topicroom-2.webp',
+    title: '연의 등기우편',
+    subtitle: '웹툰 연의 편지',
     memberCount: 20,
   },
   {
     id: 'room3',
-    imageUrl: '/image/sample/topicroom-1.webp',
-    title: '탄서방 시어머니회 3',
-    subtitle: '웹툰 상수리나무 아래',
+    imageUrl: '/image/sample/topicroom-3.webp',
+    title: '전독시 덕후들 모여라',
+    subtitle: '웹툰 전지적 독자 시점',
     memberCount: 22,
   },
 ]
