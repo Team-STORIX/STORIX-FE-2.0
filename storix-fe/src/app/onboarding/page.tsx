@@ -30,19 +30,27 @@ export default function OnboardingPage() {
   const [canGoNextNickname, setCanGoNextNickname] = useState(false)
 
   // 각 단계별 유효성 검사
+  // 각 단계별 유효성 검사
   const isStepValid = () => {
     switch (step) {
       case 1:
-        // ✅ "닉네임 사용 가능(중복체크 통과)"일 때만 다음 가능
+        // 닉네임 중복 체크 통과
         return canGoNextNickname
+
       case 2:
         return gender !== ''
+
       case 3:
+        // 장르 1개 이상
         return genres.length >= 1
+
       case 4:
-        return favoriteIds.length >= 1
+        // ✅ 좋아하는 작품 2~18개 선택 시만 다음 활성화
+        return favoriteIds.length >= 2 && favoriteIds.length <= 18
+
       case 5:
         return true
+
       default:
         return false
     }
