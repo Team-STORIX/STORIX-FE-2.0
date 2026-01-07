@@ -11,7 +11,7 @@ export type GenreKey =
   | 'ACTION'
   | 'BL'
   | 'MODERN_FANTASY'
-  | 'DAILY' // ✅ 라노벨용 매핑 추가
+  | 'DAILY'
 
 interface GenreProps {
   // ✅ value는 백엔드로 보낼 ENUM 키 배열
@@ -28,11 +28,11 @@ const GENRE_OPTIONS: Array<{ key: GenreKey; label: string }> = [
   { key: 'MODERN_FANTASY', label: '현판' },
   { key: 'HISTORICAL', label: '무협' },
 
-  // ✅ 라노벨을 화면에 보이게 하고, 백엔드에는 DAILY로 전송
-  { key: 'DAILY', label: '라노벨' },
+  // ✅ 일상을 화면에 보이게 하고, 백엔드에는 DAILY로 전송
+  { key: 'DAILY', label: '일상' },
 
   { key: 'DRAMA', label: '드라마' },
-  { key: 'THRILLER', label: '미스터리' },
+  { key: 'THRILLER', label: '스릴러' },
 
   // ⚠️ ACTION이 백엔드에서 실제로 허용된다면 UI에 추가 가능
   // { key: 'ACTION', label: '액션' },
