@@ -18,6 +18,7 @@ export default function UserProfile({
   bio,
 }: Props) {
   const fallbackImage = '/profile/profile-default.svg'
+  const hasBio = bio && bio.trim().length > 0
 
   return (
     <div className="relative flex items-start px-5 py-7">
@@ -52,9 +53,11 @@ export default function UserProfile({
 
           <p
             className="mt-[7px] text-[14px] font-medium leading-[140%]"
-            style={{ color: 'var(--color-gray-600)' }}
+            style={{
+              color: hasBio ? 'var(--color-gray-600)' : 'var(--color-gray-400)',
+            }}
           >
-            {bio}
+            {hasBio ? bio : '한줄소개를 입력해보세요 !'}
           </p>
         </div>
       </div>
@@ -63,6 +66,7 @@ export default function UserProfile({
         href="/profile/fix"
         className="absolute right-5 transition-opacity hover:opacity-70"
         style={{ top: 'calc(28px + 20px + 7px)' }}
+        aria-label="프로필 수정"
       >
         <Image
           src="/icons/arrow-next.svg"

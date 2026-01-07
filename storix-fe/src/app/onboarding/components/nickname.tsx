@@ -1,4 +1,3 @@
-// src/app/onboarding/components/nickname.tsx
 'use client'
 
 import Image from 'next/image'
@@ -14,6 +13,9 @@ interface NicknameProps {
   value: string
   onChange: (value: string) => void
   onAvailabilityChange?: (ok: boolean) => void
+
+  // ✅ 추가: 프로필 수정 등 다른 화면에서도 재사용할 수 있게 UI variant 지원
+  variant?: 'onboarding' | 'inline'
 }
 
 type Status =
@@ -43,6 +45,7 @@ export default function Nickname({
   value,
   onChange,
   onAvailabilityChange,
+  variant = 'onboarding',
 }: NicknameProps) {
   const [focused, setFocused] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
@@ -274,11 +277,11 @@ export default function Nickname({
     }
   }, [])
 
-  const canCheck = status === 'unchecked' && isBasicValid(value)
+  const canCheck = isBasicValid(value) && status !== 'checking'
 
   /** ✅ 버튼 클릭 시에만 중복 체크 API 호출 */
   const checkDuplicate = async () => {
-    if (!canCheck) return
+    if (!isBasicValid(value) || status === 'checking') return
 
     setStatus('checking')
     setMsg('')
@@ -350,13 +353,22 @@ export default function Nickname({
 
   return (
     <div>
-      <h1 className="heading-1 text-black">닉네임을 입력하세요</h1>
+      {variant === 'onboarding' && (
+        <>
+          <h1 className="heading-1 text-black">닉네임을 입력하세요</h1>
 
-      <p className="body-1 text-[var(--color-gray-500)] mt-[5px]">
-        10자 이내의 닉네임을 입력해주세요
-      </p>
+          <p className="body-1 text-[var(--color-gray-500)] mt-[5px]">
+            10자 이내의 닉네임을 입력해주세요
+          </p>
+        </>
+      )}
 
-      <div className="mt-[80px] w-[361px]">
+      <div
+        className={[
+          variant === 'onboarding' ? 'mt-[80px]' : 'mt-0',
+          'w-[361px]',
+        ].join(' ')}
+      >
         <div className="h-[42px] flex items-center justify-between">
           <input
             value={value}
@@ -366,9 +378,7 @@ export default function Nickname({
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
-                if (canCheck) {
-                  checkDuplicate()
-                }
+                if (canCheck) checkDuplicate()
               }
             }}
             maxLength={MAX}

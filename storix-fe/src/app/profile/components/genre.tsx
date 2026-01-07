@@ -5,11 +5,11 @@ type GenreKey =
   | '판타지'
   | 'BL'
   | '로판'
-  | '라노벨'
+  | '일상'
   | '드라마'
   | '현판'
   | '무협'
-  | '미스터리'
+  | '스릴러'
 
 type Props = {
   // 0~100
@@ -22,11 +22,11 @@ export default function Genre({ genreData }: Props) {
     '판타지',
     'BL',
     '로판',
-    '라노벨',
+    '일상',
     '드라마',
     '현판',
     '무협',
-    '미스터리',
+    '스릴러',
   ]
 
   // ✅ API 없으면 기본값(테스트용) 유지
@@ -37,9 +37,9 @@ export default function Genre({ genreData }: Props) {
     판타지: 20,
     현판: 45,
     무협: 0,
-    라노벨: 28,
+    일상: 28,
     드라마: 35,
-    미스터리: 10,
+    스릴러: 10,
   }
 
   const merged: Record<GenreKey, number> = {
