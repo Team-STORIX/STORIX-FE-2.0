@@ -125,7 +125,7 @@ apiClient.interceptors.response.use(
 
         // after (window 식별자 직접 참조 X)
         if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
-          ;(globalThis as any).window.location.href = '/login'
+          ;(globalThis as any).window.location.href = '#'
         }
 
         return Promise.reject(refreshError)

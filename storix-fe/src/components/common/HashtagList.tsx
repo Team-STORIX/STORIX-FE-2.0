@@ -3,13 +3,21 @@
 
 import HashtagChip from '@/components/common/HashtagChip'
 
-export default function HashtagList() {
-  const items = ['#로맨스', '#무협/사극', '#액션', '#로맨스판타지', '#금발남주']
+type HashtagListProps = {
+  items: string[]
+  onSelect?: (keyword: string) => void
+  className?: string
+}
 
+export default function HashtagList({
+  items,
+  onSelect,
+  className = '',
+}: HashtagListProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={`flex flex-wrap gap-2 ${className}`}>
       {items.map((item) => (
-        <HashtagChip key={item} label={item} />
+        <HashtagChip key={item} label={item} onClick={() => onSelect?.(item)} />
       ))}
     </div>
   )
