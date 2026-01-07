@@ -16,6 +16,15 @@ import {
 } from '@/hooks/search/useSearch'
 
 export default function Search() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="flex w-full flex-col" />
+  }
   const [submittedKeyword, setSubmittedKeyword] = useState('')
 
   const fallbackHashtags = [
