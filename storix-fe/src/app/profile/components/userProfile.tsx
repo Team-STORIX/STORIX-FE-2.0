@@ -66,6 +66,7 @@ export default function UserProfile({
         href="/profile/fix"
         className="absolute right-5 transition-opacity hover:opacity-70"
         style={{ top: 'calc(28px + 20px + 7px)' }}
+        aria-label="프로필 수정"
       >
         <Image
           src="/icons/arrow-next.svg"
