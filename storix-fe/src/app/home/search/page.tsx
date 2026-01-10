@@ -15,16 +15,16 @@ import {
   useDeleteRecentKeyword,
 } from '@/hooks/search/useSearch'
 
+const FALLBACK_HASHTAGS = [
+  '#로맨스',
+  '#무협/사극',
+  '#액션',
+  '#로맨스판타지',
+  '#금발남주',
+]
+
 export default function Search() {
   const [submittedKeyword, setSubmittedKeyword] = useState('')
-
-  const fallbackHashtags = [
-    '#로맨스',
-    '#무협/사극',
-    '#액션',
-    '#로맨스판타지',
-    '#금발남주',
-  ]
 
   const { data: recentRes } = useRecentKeywords()
   const { data: trendingRes } = useTrendingKeywords()
@@ -40,11 +40,11 @@ export default function Search() {
   )
 
   const hashtagLabels =
-    submittedKeyword.trim().length === 0
-      ? fallbackHashtags
-      : trendingItems.map((t) =>
+    trendingItems.length > 0
+      ? trendingItems.map((t) =>
           t.keyword.startsWith('#') ? t.keyword : `#${t.keyword}`,
         )
+      : FALLBACK_HASHTAGS
 
   const worksQuery = useWorksSearchInfinite(submittedKeyword, 'NAME')
   const artistsQuery = useArtistsSearchInfinite(submittedKeyword)
@@ -85,8 +85,10 @@ export default function Search() {
     submittedKeyword,
     worksQuery.hasNextPage,
     worksQuery.isFetchingNextPage,
+    worksQuery.fetchNextPage,
     artistsQuery.hasNextPage,
     artistsQuery.isFetchingNextPage,
+    artistsQuery.fetchNextPage,
   ])
 
   const handleSearch = (keyword: string) => {
@@ -131,8 +133,11 @@ export default function Search() {
         <div className="flex flex-col w-full gap-6 px-4 pt-4 pb-10">
           <div className="flex items-center justify-between">
             <p className="body-1">검색 결과</p>
+            {isFetching && (
+              <p className="caption-1 text-gray-400">불러오는 중…</p>
+            )}
           </div>
-
+          {/*작품 검색결과 */}
           <div className="flex flex-col gap-3">
             <p className="body-2 text-gray-700">작품</p>
 
@@ -168,6 +173,7 @@ export default function Search() {
             )}
           </div>
 
+          {/*작가 검색결과 */}
           <div className="flex flex-col gap-3">
             <p className="body-2 text-gray-700">작가</p>
 

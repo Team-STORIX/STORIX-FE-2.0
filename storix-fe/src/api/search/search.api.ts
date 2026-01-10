@@ -6,11 +6,12 @@ import {
   TrendingResponseSchema,
   RecentResponseSchema,
   DeleteRecentResponseSchema,
+  type WorksSort,
 } from './search.schema'
 
 export const getWorksSearch = async (params: {
   keyword: string
-  sort?: 'NAME' | 'RATING' | 'REVIEW'
+  sort?: WorksSort
   page?: number
 }) => {
   const { keyword, sort = 'NAME', page = 0 } = params
