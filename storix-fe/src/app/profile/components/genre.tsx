@@ -39,7 +39,7 @@ export default function Genre({ genreData }: Props) {
     무협: 0,
     라노벨: 28,
     드라마: 35,
-    미스터리: 10,
+    미스터리: 30,
   }
 
   const merged: Record<GenreKey, number> = {

@@ -71,7 +71,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
   return (
     <div className="fixed z-50 w-full max-w-[393px] bottom-0 left-1/2 -translate-x-1/2">
       <div className="relative w-full">
-        <nav className="relative z-10 flex h-24 w-full items-start px-5 pt-[15px] pb-3">
+        <nav className="relative z-10 flex h-20 w-full items-start px-5 pt-[15px] pb-3">
           {/* 왼쪽 두 개: gap-4 = 16px */}
           <div className="flex items-center gap-5">
             {NAV_ITEMS.slice(0, 2).map(renderItem)}

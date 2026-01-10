@@ -6,7 +6,6 @@ import Image from 'next/image'
 import SearchBar from '@/components/common/SearchBar'
 import HashtagList from '@/components/common/HashtagList'
 import RecentSearchChip from '@/components/common/RecentSearchChip'
-
 import {
   useWorksSearchInfinite,
   useArtistsSearchInfinite,
@@ -46,53 +45,119 @@ export default function Search() {
         )
       : FALLBACK_HASHTAGS
 
-  const worksQuery = useWorksSearchInfinite(submittedKeyword, 'NAME')
-  const artistsQuery = useArtistsSearchInfinite(submittedKeyword)
+  // ✅ pager(훅 내부에서 stop/중복 제어)
+  const worksPager = useWorksSearchInfinite(submittedKeyword, 'NAME')
+  const artistsPager = useArtistsSearchInfinite(submittedKeyword)
 
-  const works = useMemo(
-    () => worksQuery.data?.pages.flatMap((p) => p.result.content ?? []) ?? [],
-    [worksQuery.data],
-  )
-  const artists = useMemo(
-    () => artistsQuery.data?.pages.flatMap((p) => p.result.content ?? []) ?? [],
-    [artistsQuery.data],
-  )
+  const works = worksPager.items
+  const artists = artistsPager.items
+  const isFetching = worksPager.isFetching || artistsPager.isFetching
 
-  const isFetching = worksQuery.isFetching || artistsQuery.isFetching
-
-  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+  // ✅ stale closure 방지(ref)
+  const hasNextRef = useRef({ works: false, artists: false })
+  const fetchingRef = useRef({ works: false, artists: false })
 
   useEffect(() => {
-    if (!submittedKeyword) return
-    const el = loadMoreRef.current
-    if (!el) return
+    hasNextRef.current = {
+      works: worksPager.hasNext,
+      artists: artistsPager.hasNext,
+    }
+  }, [worksPager.hasNext, artistsPager.hasNext])
 
-    const obs = new IntersectionObserver((entries) => {
-      const entry = entries[0]
-      if (!entry.isIntersecting) return
+  useEffect(() => {
+    fetchingRef.current = {
+      works: worksPager.isFetching,
+      artists: artistsPager.isFetching,
+    }
+  }, [worksPager.isFetching, artistsPager.isFetching])
 
-      if (worksQuery.hasNextPage && !worksQuery.isFetchingNextPage) {
-        worksQuery.fetchNextPage()
-      }
-      if (artistsQuery.hasNextPage && !artistsQuery.isFetchingNextPage) {
-        artistsQuery.fetchNextPage()
-      }
+  const requestNextRef = useRef({ works: () => {}, artists: () => {} })
+  useEffect(() => {
+    requestNextRef.current = {
+      works: worksPager.requestNext,
+      artists: artistsPager.requestNext,
+    }
+  }, [worksPager.requestNext, artistsPager.requestNext])
+
+  // ✅ root(스크롤 컨테이너)
+  const scrollRootRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    scrollRootRef.current = document.getElementById(
+      'app-scroll-container',
+    ) as HTMLElement | null
+  }, [])
+
+  const loadLockRef = useRef(false)
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+
+  // ✅ 트리거 후 fetch가 끝날 때까지 lock 유지
+  useEffect(() => {
+    if (!loadLockRef.current) return
+    if (!isFetching) loadLockRef.current = false
+  }, [isFetching])
+
+  useEffect(() => {
+    if (!submittedKeyword.trim()) return
+    console.log('[SEARCH]', { submittedKeyword })
+  }, [submittedKeyword])
+
+  useEffect(() => {
+    if (!submittedKeyword.trim()) return
+    console.log('[WORKS]', {
+      items: works.length,
+      hasNext: worksPager.hasNext,
+      meta: worksPager.meta,
     })
+    console.log('[ARTISTS]', {
+      items: artists.length,
+      hasNext: artistsPager.hasNext,
+      meta: artistsPager.meta,
+    })
+  }, [
+    submittedKeyword,
+    works.length,
+    artists.length,
+    worksPager.hasNext,
+    artistsPager.hasNext,
+    worksPager.meta,
+    artistsPager.meta,
+  ])
+
+  useEffect(() => {
+    if (!submittedKeyword.trim()) return
+    const el = loadMoreRef.current
+    const root = scrollRootRef.current
+    if (!el || !root) return
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
+        if (loadLockRef.current) return
+
+        if (!hasNextRef.current.works && !hasNextRef.current.artists) return
+        if (fetchingRef.current.works || fetchingRef.current.artists) return
+
+        loadLockRef.current = true
+        console.log('[LOAD_MORE_TRIGGER]', {
+          hasNext: hasNextRef.current,
+          fetching: fetchingRef.current,
+        })
+
+        // ✅ fetchNextPage 직접 호출 금지 → requestNext만
+        if (hasNextRef.current.works) requestNextRef.current.works()
+        if (hasNextRef.current.artists) requestNextRef.current.artists()
+      },
+      { root, rootMargin: '200px', threshold: 0 },
+    )
 
     obs.observe(el)
     return () => obs.disconnect()
-  }, [
-    submittedKeyword,
-    worksQuery.hasNextPage,
-    worksQuery.isFetchingNextPage,
-    worksQuery.fetchNextPage,
-    artistsQuery.hasNextPage,
-    artistsQuery.isFetchingNextPage,
-    artistsQuery.fetchNextPage,
-  ])
+  }, [submittedKeyword])
 
-  const handleSearch = (keyword: string) => {
-    const k = keyword.replace(/^#/, '').trim()
+  const handleSearch = (raw: string) => {
+    const k = raw.replace(/^#/, '').trim()
+    console.log('[handleSearch]', { raw, k })
     setSubmittedKeyword(k)
   }
 
@@ -123,7 +188,6 @@ export default function Search() {
 
           <div className="flex flex-col w-full gap-3">
             <p className="body-2 text-gray-700">이런 해시태그는 어때요?</p>
-
             <HashtagList items={hashtagLabels} onSelect={handleSearch} />
           </div>
         </div>
@@ -137,13 +201,13 @@ export default function Search() {
               <p className="caption-1 text-gray-400">불러오는 중…</p>
             )}
           </div>
-          {/*작품 검색결과 */}
+
           <div className="flex flex-col gap-3">
             <p className="body-2 text-gray-700">작품</p>
 
             {works.length ? (
               <div className="flex flex-col gap-3">
-                {works.map((w) => (
+                {works.map((w: any) => (
                   <div key={w.worksId} className="flex gap-3">
                     <div className="relative h-14 w-14 overflow-hidden rounded bg-gray-100">
                       {w.thumbnailUrl ? (
@@ -173,13 +237,12 @@ export default function Search() {
             )}
           </div>
 
-          {/*작가 검색결과 */}
           <div className="flex flex-col gap-3">
             <p className="body-2 text-gray-700">작가</p>
 
             {artists.length ? (
               <div className="flex flex-col gap-3">
-                {artists.map((a) => (
+                {artists.map((a: any) => (
                   <div key={a.artistId} className="flex items-center gap-3">
                     <div className="relative h-10 w-10 overflow-hidden rounded-full bg-gray-100">
                       {a.profileUrl ? (
@@ -191,7 +254,6 @@ export default function Search() {
                         />
                       ) : null}
                     </div>
-
                     <p className="body-2">{a.artistName}</p>
                   </div>
                 ))}
