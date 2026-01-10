@@ -85,7 +85,8 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             {NAV_ITEMS.slice(2).map(renderItem)}
           </div>
         </nav>
-        <div className="fixed w-full max-w-[393px] h-20 bottom-0 left-1/2 -translate-x-1/2">
+        {/* w-full max-w-[393px] h-20 bottom-0 left-1/2 -translate-x-1/2 */}
+        <div className="absolute inset-x-0 bottom-0 h-[80px]  ">
           <Image
             src="/common/icons/navigationbar-background.svg"
             alt="네비게이션 바 배경"
