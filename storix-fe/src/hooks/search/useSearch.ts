@@ -12,6 +12,7 @@ import {
   getRecentKeywords,
   deleteRecentKeyword,
 } from '@/api/search/search.api'
+import type { WorksSort } from '@/api/search/search.schema'
 
 const getNextPage = (lastPage: any, allPages: any[]) => {
   const r = lastPage?.result
@@ -24,7 +25,7 @@ const getNextPage = (lastPage: any, allPages: any[]) => {
 
 export const useWorksSearchInfinite = (
   keyword: string,
-  sort: 'NAME' | 'RATING' | 'REVIEW' = 'NAME',
+  sort: WorksSort = 'NAME',
 ) =>
   useInfiniteQuery({
     queryKey: ['search', 'works', keyword, sort],
