@@ -71,7 +71,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
   return (
     <div className="fixed z-50 w-full max-w-[393px] bottom-0 left-1/2 -translate-x-1/2">
       <div className="relative w-full">
-        <nav className="relative z-10 flex h-24 w-full items-start px-5 pt-[15px] pb-3">
+        <nav className="relative z-10 flex h-20 w-full items-start px-5 pt-[15px] pb-3">
           {/* 왼쪽 두 개: gap-4 = 16px */}
           <div className="flex items-center gap-5">
             {NAV_ITEMS.slice(0, 2).map(renderItem)}
@@ -85,12 +85,12 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             {NAV_ITEMS.slice(2).map(renderItem)}
           </div>
         </nav>
-        <div className="fixed w-full max-w-[393px] bottom-0 left-1/2 -translate-x-1/2">
+        <div className="fixed w-full max-w-[393px] h-20 bottom-0 left-1/2 -translate-x-1/2">
           <Image
             src="/common/icons/navigationbar-background.svg"
             alt="네비게이션 바 배경"
             width={393}
-            height={100}
+            height={80}
           />
         </div>
         {/* 플로팅 탭 */}
@@ -100,7 +100,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             style={{
               width: 162,
               height: 98,
-              bottom: 72 + 56 + 12,
+              bottom: 72 + 56 + 12 - 20 - 20,
             }}
           >
             <Image
@@ -125,6 +125,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             'hover:opacity-70',
             isPlusOpen ? 'rotate-90' : 'rotate-0',
           ].join(' ')}
+          style={{ bottom: 50 }} // ✅ NavBar가 20px 줄어든 만큼 + 20px 아래로
           aria-label="추가"
           aria-expanded={isPlusOpen}
         >
