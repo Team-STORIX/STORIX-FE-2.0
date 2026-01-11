@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import SearchBar from '@/components/common/SearchBar'
+import Warning from '@/components/common/Warining'
 import {
   useWorksSearchInfinite,
   useArtistsSearchInfinite,
@@ -60,11 +61,11 @@ export default function SearchResultEmptyOnlyPage() {
       <SearchBar onSearchClick={goSearch} />
 
       {showEmpty ? (
-        <div className="flex flex-1 flex-col items-center justify-center px-4 py-20">
-          <p className="text-[16px] font-semibold text-gray-800">
-            검색 결과가 없어요
-          </p>
-        </div>
+        <Warning
+          title="검색 결과가 없습니다"
+          description="다른 키워드로 검색해보세요."
+          className="mt-20"
+        />
       ) : (
         // 결과가 있으면 곧바로 replace 될 거라서 빈 컨테이너만
         <div className="px-4 py-10 text-[12px] text-gray-400">불러오는 중…</div>
