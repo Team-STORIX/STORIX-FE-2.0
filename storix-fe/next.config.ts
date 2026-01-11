@@ -1,4 +1,5 @@
 // next.config.ts
+import crypto from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import type { NextConfig } from 'next'
 import withSerwistInit from '@serwist/next'
@@ -22,7 +23,20 @@ const withSerwist = withSerwistInit({
 })
 
 const nextConfig: NextConfig = {
-  // 기존 설정 유지
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'page-images.kakaoentcdn.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'shared-comic.pstatic.net',
+        pathname: '/**',
+      },
+    ],
+  },
 }
 
 export default withSerwist(nextConfig)

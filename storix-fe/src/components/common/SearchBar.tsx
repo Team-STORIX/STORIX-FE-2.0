@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, KeyboardEvent } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 type SearchBarProps = {
@@ -29,13 +30,22 @@ export default function SearchBar({
     }
   }
 
+  const pathname = usePathname()
+
+  const href =
+    pathname === '/home/search'
+      ? '/home'
+      : pathname.startsWith('/home/search/result')
+        ? '/home/search' // <- 너가 말한 '/search'가 사실 이거면 이걸로
+        : '/home'
+
   return (
     <div className="flex h-17 w-full justify-between px-4 py-2.5 bg-white">
       {/* 상단 행: 화살표 / 텍스트 / 돋보기 */}
       <div className="flex w-full items-center gap-[15px]">
         <Link
-          href={'/home'}
-          aria-label="홈으로 이동"
+          href={href}
+          aria-label="뒤로 이동"
           className="flex h-6 w-6 items-center justify-center"
         >
           <BackIcon />
