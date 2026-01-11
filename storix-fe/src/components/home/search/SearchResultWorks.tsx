@@ -34,7 +34,7 @@ export default function SearchResultWorks({
               className="flex gap-4 border-b border-gray-100 py-5"
             >
               {/* 썸네일 */}
-              <div className="relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl bg-gray-100">
+              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-xl bg-gray-100">
                 {w.thumbnailUrl ? (
                   <Image
                     src={w.thumbnailUrl}
@@ -47,19 +47,17 @@ export default function SearchResultWorks({
               </div>
 
               {/* 텍스트 */}
-              <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
-                <p className="truncate text-[20px] font-extrabold leading-[28px] text-black">
-                  {w.worksName}
-                </p>
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <p className="truncate body-1 text-black">{w.worksName}</p>
 
-                <p className="truncate text-[16px] font-semibold leading-[22px] text-gray-500">
+                <p className="truncate caption-1 font-semibold leading-[22px] text-gray-500">
                   {w.artistName}
                   <span className="mx-2 text-gray-300">·</span>
                   {w.worksType}
                 </p>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-[16px] font-extrabold text-pink-500">
+                  <span className="caption-2 font-extrabold text-pink-500">
                     ✦ {Number(w.avgRating).toFixed(1)}
                     <span className="font-semibold text-pink-500">
                       ({w.reviewsCount})
