@@ -64,7 +64,7 @@ export default function SearchResultEmptyOnlyPage() {
         <Warning
           title="검색 결과가 없습니다"
           description="다른 키워드로 검색해보세요."
-          className="mt-20"
+          className="mt-48"
         />
       ) : (
         // 결과가 있으면 곧바로 replace 될 거라서 빈 컨테이너만

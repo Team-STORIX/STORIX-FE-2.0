@@ -3,19 +3,18 @@
 import Image from 'next/image'
 import type { RefObject } from 'react'
 import type { WorksSearchItem } from '@/api/search/search.schema'
+import Warning from '@/components/common/Warining'
 
 type Props = {
   works: WorksSearchItem[]
   isFetching?: boolean
   loadMoreRef?: RefObject<HTMLDivElement | null>
-  emptyText?: string
 }
 
 export default function SearchResultWorks({
   works,
   isFetching = false,
   loadMoreRef,
-  emptyText = '작품 검색 결과가 없어요.',
 }: Props) {
   return (
     <section className="flex w-full flex-col gap-3">
@@ -69,7 +68,11 @@ export default function SearchResultWorks({
           ))}
         </div>
       ) : (
-        <p className="text-[12px] font-medium text-gray-400">{emptyText}</p>
+        <Warning
+          title="검색 결과가 없습니다"
+          description="다른 키워드로 검색해보세요."
+          className="mt-48"
+        />
       )}
 
       {loadMoreRef ? <div ref={loadMoreRef} className="h-6 w-full" /> : null}
