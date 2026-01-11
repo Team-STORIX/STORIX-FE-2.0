@@ -32,7 +32,8 @@ const PageableSchema = z
   .object({
     pageNumber: z.coerce.number(),
     pageSize: z.coerce.number(),
-    sort: z.array(z.any()).default([]),
+    // ✅ 기존: sort: z.array(z.any()).default([]),
+    sort: z.any().optional(),
     offset: z.coerce.number(),
     unpaged: z.boolean(),
     paged: z.boolean(),
@@ -54,7 +55,6 @@ const SliceSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z
     .object({
       content: z.array(itemSchema).default([]),
-      // ✅ 무한스크롤 종료 판단에 필수: 실제 응답에서 항상 내려옴
       number: z.coerce.number(),
       size: z.coerce.number(),
       numberOfElements: z.coerce.number(),
@@ -63,7 +63,8 @@ const SliceSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
       empty: z.boolean(),
 
       pageable: PageableSchema,
-      sort: z.array(SortItemSchema).default([]),
+      // ✅ 기존: sort: z.array(SortItemSchema).default([]),
+      sort: z.any().optional(),
     })
     .passthrough()
 
@@ -93,14 +94,14 @@ export const ArtistsSearchItemSchema = z
 export const WorksSearchRawResponseSchema = ApiResponseSchema(
   z.object({
     result: SliceSchema(WorksSearchItemSchema),
-    fallbackRecommendation: z.string(),
+    fallbackRecommendation: z.string().nullable().optional(),
   }),
 )
 
 export const ArtistsSearchRawResponseSchema = ApiResponseSchema(
   z.object({
     result: SliceSchema(ArtistsSearchItemSchema),
-    fallbackRecommendation: z.string(),
+    fallbackRecommendation: z.string().nullable().optional(),
   }),
 )
 

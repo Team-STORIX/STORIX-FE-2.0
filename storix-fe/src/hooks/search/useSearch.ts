@@ -48,47 +48,6 @@ const shouldStop = (meta: {
   contentLen: number
 }) => meta.last === true || meta.empty === true || meta.contentLen === 0
 
-type SliceLike = {
-  content: unknown[]
-  number: number
-  size: number
-  last: boolean
-  empty: boolean
-  numberOfElements?: number
-}
-
-const getNextPage = (lastPage: any) => {
-  const r = lastPage?.result
-  if (!r) return undefined
-
-  const content = Array.isArray(r.content) ? r.content : []
-  const number = typeof r.number === 'number' ? r.number : undefined
-
-  // ✅ 서버 필드 기반 종료(가장 확실)
-  if (r.last === true) return undefined
-  if (r.empty === true) return undefined
-  if (content.length === 0) return undefined
-  if (number === undefined) return undefined
-
-  return number + 1
-}
-
-const getNextPageByServer = (slice: SliceLike) => {
-  const contentLen = slice.content?.length ?? 0
-
-  // ✅ 서버가 last/empty를 항상 내려줌(네가 준 실제 JSON 기준) -> 이게 가장 신뢰도 높음
-  if (slice.last) return undefined
-  if (slice.empty) return undefined
-
-  // ✅ 방어: content 0이면 더 볼 게 없음
-  if (contentLen === 0) return undefined
-
-  // ✅ page number 기반
-  if (typeof slice.number !== 'number') return undefined
-
-  return slice.number + 1
-}
-
 export const useWorksSearchInfinite = (
   keyword: string,
   sort: WorksSort = 'NAME',
@@ -191,6 +150,12 @@ export const useWorksSearchInfinite = (
 
     console.log('[PAGER][works] stop 판단', { stop, hasNext: !stop })
   }, [query.data])
+
+  useEffect(() => {
+    if (query.error) {
+      console.error('[PAGER][works] query error', query.error)
+    }
+  }, [query.error])
 
   const requestNext = () => {
     if (k.length === 0) return
@@ -320,6 +285,12 @@ export const useArtistsSearchInfinite = (
 
     console.log('[PAGER][artists] stop 판단', { stop, hasNext: !stop })
   }, [query.data])
+
+  useEffect(() => {
+    if (query.error) {
+      console.error('[PAGER][works] query error', query.error)
+    }
+  }, [query.error])
 
   const requestNext = () => {
     if (k.length === 0) return
