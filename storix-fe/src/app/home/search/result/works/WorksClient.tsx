@@ -78,24 +78,28 @@ export default function SearchWorksPage() {
     router.push(`/home/search/result/works?keyword=${encodeURIComponent(k)}`)
   }
 
+  const isEmpty = worksPager.items.length === 0 && worksPager.meta !== null
+
   return (
     <div className="flex w-full flex-col">
       <SearchBar onSearchClick={goSearch} />
 
       {/* sort (피그마 드롭다운 느낌용) */}
-      <div className="px-4 pt-3 flex items-center justify-start">
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as WorksSort)}
-          className="py-1 body-2 text-gray-500"
-        >
-          <option value="NAME">전체 작품</option>
-          <option value="RATING">별점 높은 순</option>
-          <option value="REVIEW">리뷰 많은 순</option>
-        </select>
-      </div>
+      {!isEmpty && (
+        <div className="px-4 flex items-center justify-start">
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as WorksSort)}
+            className="py-1 body-2 text-gray-500"
+          >
+            <option value="NAME">전체 작품</option>
+            <option value="RATING">별점 높은 순</option>
+            <option value="REVIEW">리뷰 많은 순</option>
+          </select>
+        </div>
+      )}
 
-      <div className="px-4 pt-4 pb-24">
+      <div className="pb-24">
         <SearchResultWorks
           works={worksPager.items}
           isFetching={worksPager.isFetching}

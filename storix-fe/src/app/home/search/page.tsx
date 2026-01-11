@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import SearchBar from '@/components/common/SearchBar'
 import HashtagList from '@/components/common/HashtagList'
 import RecentSearchChip from '@/components/common/RecentSearchChip'
+import TrendingSearch from '@/components/home/search/TrendingSearch'
 import {
   useRecentKeywords,
   useTrendingKeywords,
@@ -54,7 +55,7 @@ export default function SearchHomePage() {
 
       <div className="flex w-full flex-col gap-6 px-4 pt-4 pb-10">
         <div className="flex flex-col w-full gap-3">
-          <p className="text-[14px] font-semibold text-gray-700">최근 검색어</p>
+          <p className="body-1 text-gray-900">최근 검색어</p>
 
           {recentItems.length ? (
             <div className="flex flex-wrap gap-2">
@@ -75,10 +76,12 @@ export default function SearchHomePage() {
         </div>
 
         <div className="flex flex-col w-full gap-3">
-          <p className="text-[14px] font-semibold text-gray-700">
-            이런 해시태그는 어때요?
-          </p>
+          <p className="body-1 text-gray-900">키워드 추천</p>
           <HashtagList items={hashtagLabels} onSelect={goResult} />
+        </div>
+
+        <div className="flex flex-col w-full gap-3">
+          <TrendingSearch onSelect={goResult} className="mt-6" />
         </div>
       </div>
     </div>

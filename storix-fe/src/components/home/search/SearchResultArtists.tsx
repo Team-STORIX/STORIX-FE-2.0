@@ -20,13 +20,6 @@ export default function SearchResultArtists({
 }: Props) {
   return (
     <section className="flex w-full flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <p className="text-[14px] font-semibold text-gray-700">작가</p>
-        {isFetching && (
-          <p className="text-[12px] font-medium text-gray-400">불러오는 중…</p>
-        )}
-      </div>
-
       {artists.length > 0 ? (
         <div className="flex flex-col">
           {artists.map((a) => (

@@ -18,22 +18,15 @@ export default function SearchResultWorks({
 }: Props) {
   return (
     <section className="flex w-full flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <p className="text-[14px] font-semibold text-gray-700">작품</p>
-        {isFetching && (
-          <p className="text-[12px] font-medium text-gray-400">불러오는 중…</p>
-        )}
-      </div>
-
       {works.length > 0 ? (
         <div className="flex flex-col">
           {works.map((w) => (
             <div
               key={w.worksId}
-              className="flex gap-4 border-b border-gray-100 py-5"
+              className="flex gap-4 border-b border-gray-100 p-4"
             >
               {/* 썸네일 */}
-              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-xl bg-gray-100">
+              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100">
                 {w.thumbnailUrl ? (
                   <Image
                     src={w.thumbnailUrl}
@@ -57,7 +50,15 @@ export default function SearchResultWorks({
 
                 <div className="flex items-center gap-2">
                   <span className="caption-2 font-extrabold text-pink-500">
-                    ✦ {Number(w.avgRating).toFixed(1)}
+                    <Image
+                      src="/search/littleStar.svg"
+                      alt="star icon"
+                      width={9}
+                      height={10}
+                      className="w-[9px] h-[10px] inline-block mr-1 mb-0.5"
+                      priority
+                    />
+                    {Number(w.avgRating).toFixed(1)}
                     <span className="font-semibold text-pink-500">
                       ({w.reviewsCount})
                     </span>
