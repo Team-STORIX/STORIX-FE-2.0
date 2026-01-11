@@ -36,7 +36,7 @@ export default function SearchBar({
     pathname === '/home/search'
       ? '/home'
       : pathname.startsWith('/home/search/result')
-        ? '/home/search' // <- 너가 말한 '/search'가 사실 이거면 이걸로
+        ? '/home/search'
         : '/home'
 
   return (
