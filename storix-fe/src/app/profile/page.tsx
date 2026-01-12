@@ -7,7 +7,7 @@ import UserProfile from './components/userProfile'
 import PreferenceTab from './components/preferenceTab'
 import Preference from './components/preference'
 import Rating from './components/rating'
-import Genre from './components/genre'
+//import Genre from './components/genre'
 import Hashtag from './components/hashtag'
 import NavBar from '@/components/common/NavBar'
 import { apiClient } from '@/api/axios-instance'
@@ -81,8 +81,8 @@ export default function ProfilePage() {
       <Preference />
       <Rating />
 
-      {/* ✅ 장르는 기본값 */}
-      <Genre />
+      {/* ✅ 장르는 기본값 
+      <Genre />*/}
 
       <Hashtag />
       <NavBar active="profile" />
