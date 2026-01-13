@@ -92,9 +92,9 @@ export default function SearchWorksPage() {
             onChange={(e) => setSort(e.target.value as WorksSort)}
             className="py-1 body-2 text-gray-500"
           >
-            <option value="NAME">전체 작품</option>
-            <option value="RATING">별점 높은 순</option>
-            <option value="REVIEW">리뷰 많은 순</option>
+            <option value="NAME">기본순</option>
+            <option value="RATING">별점순</option>
+            <option value="REVIEW">리뷰순</option>
           </select>
         </div>
       )}

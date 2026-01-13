@@ -42,14 +42,14 @@ export default function SearchResultWorks({
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <p className="truncate body-1 text-black">{w.worksName}</p>
 
-                <p className="truncate caption-1 font-semibold leading-[22px] text-gray-500">
+                <p className="truncate body-2 text-gray-500">
                   {w.artistName}
                   <span className="mx-2 text-gray-300">·</span>
                   {w.worksType}
                 </p>
 
                 <div className="flex items-center gap-2">
-                  <span className="caption-2 font-extrabold text-pink-500">
+                  <span className="caption-1 font-extrabold text-pink-500">
                     <Image
                       src="/search/littleStar.svg"
                       alt="star icon"

@@ -52,13 +52,13 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full">
-            <CardNav header="이 작품, 내 취향일까?" roomName="#" />
-            <MyTasteCard />
+            <CardNav header="오늘의 피드" roomName="#" />
+            <HotFeedSlider />
           </div>
 
           <div className="flex flex-col w-full">
-            <CardNav header="오늘의 피드" roomName="#" />
-            <HotFeedSlider />
+            <CardNav header="이 작품, 내 취향일까?" roomName="#" />
+            <MyTasteCard />
           </div>
 
           <div className="flex flex-col w-full mb-8">

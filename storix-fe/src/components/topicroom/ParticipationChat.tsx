@@ -78,13 +78,13 @@ export default function ParticipationChat({ list }: ParticipationChatProps) {
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex justify-between">
                       <p className="flex body-1 leading-tight text-gray-900">
-                        {title}
+                        {subtitle}
                       </p>
                       <div className="flex ml-2 whitespace-nowrap caption-1 text-gray-500">
                         {memberCount}명 · {timeAgo}
                       </div>
                     </div>
-                    <p className="mt-1 caption-1 text-gray-500">{subtitle}</p>
+                    <p className="mt-1 caption-1 text-gray-500">{title}</p>
                   </div>
                 </div>
               ),

@@ -68,7 +68,7 @@ export default function SearchResultEmptyOnlyPage() {
         />
       ) : (
         // 결과가 있으면 곧바로 replace 될 거라서 빈 컨테이너만
-        <div className="px-4 py-10 text-[12px] text-gray-400">불러오는 중…</div>
+        <div className="px-4 py-10 body-2 text-gray-400">불러오는 중…</div>
       )}
     </div>
   )
