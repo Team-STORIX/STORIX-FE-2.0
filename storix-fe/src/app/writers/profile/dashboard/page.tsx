@@ -5,7 +5,7 @@ import { useState } from 'react'
 import TopBar from '@/app/profile/components/topbar'
 import WriterProfile from '@/app/writers/profile/components/writerProfile'
 import PreferenceTab from '@/app/writers/profile/components/preferenceTab'
-import NavBar from '@/app/writers/feed/components/navigationBar'
+import NavBar from '@/app/writers/feed/components/NavigaitionBar'
 
 import MyBooks from '@/app/writers/profile/components/myBooks'
 import Articles from '@/app/writers/profile/components/articles'
