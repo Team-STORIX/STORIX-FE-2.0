@@ -7,10 +7,8 @@ type Work = {
   meta: string
   thumb: string
 }
-type PageProps = {
-  params: { id: string }
-}
-export default function Page({ params }: PageProps) {
+
+export default function Page({ params }: any) {
   const works: Work[] = [
     {
       id: 1,
