@@ -1,13 +1,16 @@
-//src/app/feed/page.tsx
+// src/app/feed/payPost/page.tsx
 
 'use client'
 
 import { useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
-import Topbar from './components/topbar'
-import HorizontalPicker, { PickerItem } from './components/horizontalPicker'
-import FeedList from './components/feedList'
+import Topbar from '@/app/feed/components/topbar'
+import HorizontalPicker, {
+  PickerItem,
+} from '@/app/feed/components/horizontalPicker'
+import FeedList from '@/app/feed/components/feedList'
+
 import NavBar from '@/components/common/NavBar'
 
 type Tab = 'works' | 'writers'
