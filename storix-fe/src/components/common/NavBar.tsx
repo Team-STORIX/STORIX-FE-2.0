@@ -27,7 +27,7 @@ const NAV_ITEMS: { key: NavKey; label: string }[] = [
 const ROUTES: Record<NavKey, string> = {
   home: '/home',
   feed: '/feed',
-  library: '#',
+  library: '/library/list',
   profile: '/profile',
 }
 
@@ -177,7 +177,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
         <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
       )}
       {showFeedSheet && (
-        <WriteBottomSheet onClose={() => setShowReviewSheet(false)} />
+        <WriteBottomSheet onClose={() => setShowFeedSheet(false)} />
       )}
     </>
   )
