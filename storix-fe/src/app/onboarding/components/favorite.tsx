@@ -1,4 +1,3 @@
-// src/app/onboarding/components/favorite.tsx
 'use client'
 
 interface FavoriteProps {
@@ -22,44 +21,31 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
     onChange([...value, id])
   }
 
+  const count = value.length
+  const isUnderMin = count < MIN_SELECT
+  const isAtMax = count >= MAX_SELECT
+
   return (
     <div>
-      <h1
-        className="text-black text-2xl font-bold"
-        style={{
-          fontFamily: 'SUIT',
-          fontSize: '24px',
-          fontWeight: 700,
-          lineHeight: '140%',
-        }}
-      >
+      <h1 className="heading-1" style={{ color: 'var(--color-black)' }}>
         좋아하는 작품을 선택하세요
       </h1>
 
-      <p
-        className="text-gray-500 mt-[5px]"
-        style={{
-          fontFamily: 'SUIT',
-          fontSize: '16px',
-          fontWeight: 500,
-          lineHeight: '140%',
-        }}
-      >
+      <p className="body-1 mt-[5px]" style={{ color: 'var(--color-gray-500)' }}>
         좋아하는 작품을 기반으로 피드를 구성해드려요
       </p>
 
       {/* ✅ 선택 개수 표시 문구 */}
       <p
-        className="text-gray-500 mt-[5px]"
+        className="body-2 mt-[5px]"
         style={{
-          fontFamily: 'SUIT',
-          fontSize: '14px',
-          fontWeight: 500,
-          lineHeight: '140%',
+          color: isUnderMin ? 'var(--color-warning)' : 'var(--color-gray-500)',
         }}
       >
-        2~18개 선택해주세요{' '}
-        <span className="text-gray-400">(현재 {value.length}개 선택됨)</span>
+        {MIN_SELECT}~{MAX_SELECT}개 선택해주세요{' '}
+        <span style={{ color: 'var(--color-gray-400)' }}>
+          (현재 {count}개 선택됨{isAtMax ? ', 최대 선택' : ''})
+        </span>
       </p>
 
       {/* 작품 선택 그리드 */}
@@ -70,11 +56,24 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
           return (
             <div
               key={index}
-              className={`w-[108px] h-[191px] cursor-pointer transition-opacity
-                ${selected ? 'border-2 border-[#FF4093]' : 'border border-black'}
-                hover:opacity-80
-              `}
+              role="button"
+              tabIndex={0}
+              className={[
+                'w-[108px] h-[191px] cursor-pointer transition-opacity hover:opacity-80',
+                selected ? 'border-2' : 'border',
+              ].join(' ')}
+              style={{
+                borderColor: selected
+                  ? 'var(--color-magenta-300)'
+                  : 'var(--color-gray-900)',
+              }}
               onClick={() => handleSelect(index)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelect(index)
+                }
+              }}
             >
               <div
                 className="w-[108px] h-[144px]"

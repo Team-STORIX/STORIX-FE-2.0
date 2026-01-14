@@ -20,22 +20,16 @@ interface GenreProps {
 }
 
 // ✅ UI 표시(label)와 API 전송(key)을 분리
-const GENRE_OPTIONS: Array<{ key: GenreKey; label: string }> = [
-  { key: 'ROMANCE', label: '로맨스' },
-  { key: 'ROFAN', label: '로판' },
-  { key: 'BL', label: 'BL' },
-  { key: 'FANTASY', label: '판타지' },
-  { key: 'MODERN_FANTASY', label: '현판' },
-  { key: 'HISTORICAL', label: '무협' },
-
-  // ✅ 일상을 화면에 보이게 하고, 백엔드에는 DAILY로 전송
-  { key: 'DAILY', label: '일상' },
-
-  { key: 'DRAMA', label: '드라마' },
-  { key: 'THRILLER', label: '스릴러' },
-
-  // ⚠️ ACTION이 백엔드에서 실제로 허용된다면 UI에 추가 가능
-  // { key: 'ACTION', label: '액션' },
+const GENRE_OPTIONS: Array<{ key: GenreKey; label: string; icon: string }> = [
+  { key: 'ROMANCE', label: '로맨스', icon: '/onboarding/romance.svg' },
+  { key: 'ROFAN', label: '로판', icon: '/onboarding/rofan.svg' },
+  { key: 'BL', label: 'BL', icon: '/onboarding/bl.svg' },
+  { key: 'FANTASY', label: '판타지', icon: '/onboarding/fantasy.svg' },
+  { key: 'MODERN_FANTASY', label: '현판', icon: '/onboarding/mofan.svg' },
+  { key: 'ACTION', label: '액션', icon: '/onboarding/action.svg' },
+  { key: 'DAILY', label: '일상', icon: '/onboarding/daily.svg' },
+  { key: 'DRAMA', label: '드라마', icon: '/onboarding/drama.svg' },
+  { key: 'THRILLER', label: '스릴러', icon: '/onboarding/thriller.svg' },
 ]
 
 const MAX_GENRE_SELECTION = 3
@@ -67,28 +61,32 @@ export default function Genre({ value, onChange }: GenreProps) {
         평소 즐겨보는 장르를 선택하세요
       </h1>
 
-      <p
-        className="text-gray-500 mt-[5px]"
-        style={{
-          fontFamily: 'SUIT',
-          fontSize: '16px',
-          fontWeight: 500,
-          lineHeight: '140%',
-        }}
-      >
-        선택 장르를 기반으로 웹툰/웹소설을 추천드려요
-      </p>
+      {/* ✅ 기본 문구 / 선택시 문구 + (n/3) */}
+      <div className="mt-[5px] flex items-center gap-1">
+        <p
+          className="text-gray-500"
+          style={{
+            fontFamily: 'SUIT',
+            fontSize: '16px',
+            fontWeight: 500,
+            lineHeight: '140%',
+          }}
+        >
+          {value.length === 0
+            ? '선택 장르를 기반으로 웹툰/웹소설을 추천해드려요'
+            : '최소 1개~최대 3개 선택가능'}
+        </p>
 
-      {/* 선택된 장르 개수 표시 */}
-      <div className="mt-4">
-        <span className="text-sm text-gray-600">
-          {value.length}/{MAX_GENRE_SELECTION} 선택됨
-        </span>
+        {value.length > 0 && (
+          <span className="ml-1 text-[16px] font-medium leading-[140%] text-[var(--color-magenta-300)]">
+            ({value.length}/{MAX_GENRE_SELECTION})
+          </span>
+        )}
       </div>
 
       {/* 장르 선택 그리드 */}
       <div className="mt-16 grid grid-cols-3 gap-x-4 gap-y-7">
-        {GENRE_OPTIONS.map(({ key, label }) => {
+        {GENRE_OPTIONS.map(({ key, label, icon }) => {
           const isSelected = value.includes(key)
           const isDisabled = !isSelected && value.length >= MAX_GENRE_SELECTION
 
@@ -102,15 +100,32 @@ export default function Genre({ value, onChange }: GenreProps) {
               }`}
               onClick={() => !isDisabled && handleGenreClick(key)}
             >
-              <img
-                src="/onboarding/genre-select.svg"
-                alt={label}
-                width={80}
-                height={80}
-                className={isSelected ? 'opacity-100' : 'opacity-50'}
+              {/* ✅ 이미지도 선택 시 magenta300, 기본은 gray900 */}
+              <div
+                className="w-20 h-20"
+                style={{
+                  backgroundColor: isSelected
+                    ? 'var(--color-magenta-300)'
+                    : 'var(--color-gray-900)',
+                  WebkitMaskImage: `url(${icon})`,
+                  WebkitMaskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  WebkitMaskSize: 'contain',
+                  maskImage: `url(${icon})`,
+                  maskRepeat: 'no-repeat',
+                  maskPosition: 'center',
+                  maskSize: 'contain',
+                }}
+                aria-label={label}
               />
+
+              {/* ✅ 글자도 선택 시 magenta300, 기본은 gray900 */}
               <p
-                className="text-gray-900 text-center mt-3"
+                className={`text-center mt-3 ${
+                  isSelected
+                    ? 'text-[var(--color-magenta-300)]'
+                    : 'text-[var(--color-gray-900)]'
+                }`}
                 style={{
                   fontFamily: 'SUIT',
                   fontSize: '16px',
