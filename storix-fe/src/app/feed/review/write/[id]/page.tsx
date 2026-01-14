@@ -1,4 +1,4 @@
-// ✅ src/app/feed/review/write/page.tsx
+// ✅ src/app/feed/review/write/[id]/page.tsx
 import ReviewWriteClient from '../ReviewWriteClient'
 
 type Work = {
@@ -7,8 +7,10 @@ type Work = {
   meta: string
   thumb: string
 }
-
-export default function Page({ params }: { params: { id: string } }) {
+type PageProps = {
+  params: { id: string }
+}
+export default function Page({ params }: PageProps) {
   const works: Work[] = [
     {
       id: 1,
