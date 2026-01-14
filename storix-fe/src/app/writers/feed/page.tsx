@@ -8,7 +8,7 @@ import HorizontalPicker, {
   PickerItem,
 } from '@/app/writers/feed/components/horizontalPicker'
 import FeedList from '@/app/writers/feed/components/feedList'
-import NavBar from '@/app/writers/feed/components/navigationbar'
+import NavBar from '@/app/writers/feed/components/navigationBar'
 
 export default function WritersFeedPage() {
   const router = useRouter()
