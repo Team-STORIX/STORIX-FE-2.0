@@ -8,7 +8,11 @@ type Work = {
   thumb: string
 }
 
-export default function Page({ params }: { params: { id: string } }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const works: Work[] = [
     {
       id: 1,
@@ -35,7 +39,8 @@ export default function Page({ params }: { params: { id: string } }) {
       thumb: '/image/sample/topicroom-4.webp',
     },
   ]
-  const workId = Number(params.id)
+  const { id } = await params
+  const workId = Number(id)
   const work = works.find((w) => w.id === workId) ?? null
 
   return <WriteClient work={work} />
