@@ -1,69 +1,49 @@
 // src/app/profile/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import TopBar from './components/topbar'
 import UserProfile from './components/userProfile'
 import PreferenceTab from './components/preferenceTab'
 import Preference from './components/preference'
 import Rating from './components/rating'
-//import Genre from './components/genre'
 import Hashtag from './components/hashtag'
 import NavBar from '@/components/common/NavBar'
-import { apiClient } from '@/api/axios-instance'
-import { useAuthStore } from '@/store/auth.store'
 
-type MeProfileResult = {
-  role: string
-  profileImageUrl: string | null
-  nickName: string
-  level?: number
-  profileDescription: string | null
-}
+import { useProfileStore } from '@/store/profile.store'
+import { getMyProfile } from '@/api/profile/profile.api'
 
 export default function ProfilePage() {
-  const [nickname, setNickname] = useState<string>('')
-  const [level, setLevel] = useState<number>(1)
-  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>(
-    undefined,
-  )
-  const [bio, setBio] = useState<string>('')
+  const me = useProfileStore((s) => s.me)
+  const setMe = useProfileStore((s) => s.setMe)
 
+  // ✅ store가 비어있을 때만 1회 보충 fetch
   useEffect(() => {
     let mounted = true
 
-    const fetchMe = async () => {
+    const hydrate = async () => {
+      if (me) return
       try {
-        const token = useAuthStore.getState().accessToken
-        console.log('[profile] accessToken exists?', !!token)
-
-        const res = await apiClient.get('/api/v1/profile/me')
-
-        const result = (res.data as any)?.result as MeProfileResult | undefined
-        if (!result) throw new Error('No result in /profile/me response')
-
+        const res = await getMyProfile()
+        if (!res.isSuccess) throw new Error(res.message || 'Failed to load me')
         if (!mounted) return
-
-        setNickname(result.nickName ?? '')
-        setLevel(typeof result.level === 'number' ? result.level : 1)
-        setProfileImageUrl(result.profileImageUrl ?? undefined)
-        setBio(result.profileDescription ?? '')
-      } catch (e: any) {
-        console.error('[profile] failed to fetch /profile/me', e)
-        if (!mounted) return
-        setNickname('')
-        setLevel(1)
-        setProfileImageUrl(undefined)
-        setBio('')
+        setMe(res.result)
+      } catch (e) {
+        console.error('[profile] failed to hydrate me', e)
       }
     }
 
-    fetchMe()
-
+    hydrate()
     return () => {
       mounted = false
     }
-  }, [])
+  }, [me, setMe])
+
+  // ✅ 렌더링용 값 (store 기반)
+  const nickname = me?.nickName ?? ''
+  const level = typeof me?.level === 'number' ? me.level : 1
+  const profileImageUrl = me?.profileImageUrl || undefined
+  const bio = me?.profileDescription ?? ''
 
   return (
     <div className="relative w-full min-h-full pb-[169px]">
@@ -80,9 +60,6 @@ export default function ProfilePage() {
       <PreferenceTab />
       <Preference />
       <Rating />
-
-      {/* ✅ 장르는 기본값 
-      <Genre />*/}
 
       <Hashtag />
       <NavBar active="profile" />

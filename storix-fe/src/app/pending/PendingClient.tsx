@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
+import { useProfileStore } from '@/store/profile.store'
+import { getMyProfile } from '@/api/profile/profile.api'
 
 type Provider = 'kakao' | 'naver'
 
@@ -42,7 +44,6 @@ export default function PendingClient() {
         const apiBase = process.env.NEXT_PUBLIC_API_URL
         if (!apiBase) throw new Error('NEXT_PUBLIC_API_URL is not set')
 
-        // 네이버는 state가 항상 붙어서 오고, 카카오는 일반적으로 state가 없음
         const provider: Provider = state ? 'naver' : 'kakao'
 
         let url = ''
@@ -64,37 +65,37 @@ export default function PendingClient() {
             `&redirectUri=${encodeURIComponent(redirectUri)}`
         }
 
-        console.log('[pending] provider:', provider)
-        console.log('[pending] request:', url)
-
         const res = await fetch(url, {
           method: 'GET',
-          credentials: 'include', // ✅ refreshToken 쿠키가 배포환경에서만 저장/전송됨
+          credentials: 'include',
           headers: { Accept: 'application/json' },
         })
 
         const text = await res.text()
-        if (!res.ok) {
-          throw new Error(`Login API failed: ${res.status} ${text}`)
-        }
+        if (!res.ok) throw new Error(`Login API failed: ${res.status} ${text}`)
 
         const data = JSON.parse(text)
-        console.log('[pending] response:', data)
-
         const result = data?.result
         if (!result || typeof result.isRegistered !== 'boolean') {
           throw new Error('Unexpected response: missing result.isRegistered')
         }
 
-        // ✅ isRegistered 기준 분기
-        // true  -> 홈
-        // false -> 이용약관(온보딩 시작)
         if (result.isRegistered) {
           const accessToken = result.readerLoginResponse?.accessToken
           if (!accessToken)
             throw new Error('Registered user but no accessToken')
 
+          // 1) 토큰 저장
           setAccessToken(accessToken)
+
+          // 2) 프로필 조회 후 전역 저장
+          const meRes = await getMyProfile()
+          if (!meRes?.isSuccess) {
+            throw new Error(meRes?.message || 'Failed to load profile')
+          }
+          useProfileStore.getState().setMe(meRes.result)
+
+          // 3) 홈 이동
           router.replace('/home')
           return
         }
@@ -111,6 +112,7 @@ export default function PendingClient() {
         setErrorMsg(e?.message ?? String(e))
       }
     }
+
     run()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

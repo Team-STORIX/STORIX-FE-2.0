@@ -11,37 +11,61 @@ import MyComments from './components/myComments'
 import MyLikes from './components/myLikes'
 import NavBar from '@/components/common/NavBar'
 
+import { useProfileStore } from '@/store/profile.store'
+import { getMyProfile } from '@/api/profile/profile.api'
+
 export default function MyActivityPage() {
   const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'likes'>(
     'posts',
   )
-  const [nickname, setNickname] = useState<string>('')
 
+  const me = useProfileStore((s) => s.me)
+  const setMe = useProfileStore((s) => s.setMe)
+
+  // ✅ store 비어있을 때만 1회 보충 fetch
   useEffect(() => {
-    const saved = sessionStorage.getItem('signup_nickname') ?? ''
-    setNickname(saved)
-    console.log('[myActivity] local nickname:', saved)
-  }, [])
+    let mounted = true
+
+    const hydrate = async () => {
+      if (me) return
+      try {
+        const res = await getMyProfile()
+        if (!res.isSuccess) throw new Error(res.message || 'Failed to load me')
+        if (!mounted) return
+        setMe(res.result)
+      } catch (e) {
+        console.error('[myActivity] failed to hydrate me', e)
+      }
+    }
+
+    hydrate()
+    return () => {
+      mounted = false
+    }
+  }, [me, setMe])
+
+  // ✅ 렌더링용 값 (store 기반)
+  const nickname = me?.nickName ?? ''
+  const level = typeof me?.level === 'number' ? me.level : 1
+  const profileImageUrl = me?.profileImageUrl || undefined
+  const bio = me?.profileDescription ?? ''
 
   return (
-    // ✅ profile/page.tsx와 동일하게 하단 여백 확보
     <div className="relative w-full min-h-full pb-[169px]">
       <div className="h-[54px]" />
       <TopBar />
 
       <UserProfile
-        profileImage={undefined}
-        level={1}
+        profileImage={profileImageUrl}
+        level={level}
         nickname={nickname || '닉네임'}
-        bio={''}
+        bio={bio}
       />
 
       <PreferenceTab />
 
-      {/* 게시글/댓글/좋아요 탭 */}
       <Selectbar activeTab={activeTab} onChange={setActiveTab} />
 
-      {/* 선택된 탭에 따른 컨텐츠 */}
       {activeTab === 'posts' && <MyPosts />}
       {activeTab === 'comments' && <MyComments />}
       {activeTab === 'likes' && <MyLikes />}

@@ -6,12 +6,50 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { withdrawUser } from '@/api/auth/withdraw.api'
+import { logoutUser } from '@/api/auth/logout.api'
 import { useAuthStore } from '@/store/auth.store'
+import { useProfileStore } from '@/store/profile.store'
 
 export default function SettingsPage() {
   const router = useRouter()
   const clearAuth = useAuthStore((state) => state.clearAuth)
+  const clearMe = useProfileStore((s) => s.clearMe)
+
   const [isWithdrawing, setIsWithdrawing] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    const ok = window.confirm('로그아웃 하시겠어요?')
+    if (!ok) return
+
+    try {
+      setIsLoggingOut(true)
+
+      // ✅ 서버 로그아웃 호출 (accessToken은 interceptor가 자동 첨부)
+      const res = await logoutUser()
+      if (!res.isSuccess) {
+        // 서버가 실패를 내려줘도, 클라에서는 로그아웃 처리하는 게 UX상 안전
+        console.warn('[logout] failed:', res.code, res.message)
+      }
+
+      // ✅ 인증/프로필 전역 상태 정리
+      clearAuth()
+      clearMe()
+
+      // ✅ 로그인 페이지로 이동
+      router.replace('/login')
+    } catch (error) {
+      // 네트워크 에러여도 로컬 상태는 지워서 “확실히 로그아웃” 처리
+      console.error('[logout] error:', error)
+      clearAuth()
+      clearMe()
+      router.replace('/login')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
 
   const handleWithdraw = async () => {
     if (isWithdrawing) return
@@ -26,8 +64,9 @@ export default function SettingsPage() {
 
       await withdrawUser()
 
-      // ✅ 인증 정보 정리
+      // ✅ 인증/프로필 전역 상태 정리
       clearAuth()
+      clearMe()
 
       // ✅ 로그인 페이지로 이동
       router.replace('/login')
@@ -65,11 +104,27 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="px-4 py-8">
+      <div className="px-4 py-8 space-y-3">
+        {/* ✅ 로그아웃 (탈퇴 위) */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={isLoggingOut || isWithdrawing}
+          className="w-full h-[50px] border rounded-md
+                     border-[var(--color-gray-200)]
+                     text-[14px] font-medium
+                     transition-opacity hover:opacity-80
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ color: 'var(--color-gray-900)' }}
+        >
+          {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
+        </button>
+
+        {/* 기존: 회원탈퇴 */}
         <button
           type="button"
           onClick={handleWithdraw}
-          disabled={isWithdrawing}
+          disabled={isWithdrawing || isLoggingOut}
           className="w-full h-[50px] border rounded-md
                      border-[var(--color-warning)]
                      text-[14px] font-medium
