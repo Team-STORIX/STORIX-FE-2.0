@@ -3,23 +3,47 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import RatingInput from '@/components/common/RatingInput'
+import { createReaderReview } from '@/lib/api/plusWrite'
 
-type Work = {
-  id: number
-  title: string
-  meta: string
-  thumb: string
-}
+type Work = { id: number; title: string; meta: string; thumb: string }
 
 export default function ReviewWriteClient({ work }: { work: Work | null }) {
   const router = useRouter()
   const [text, setText] = useState('')
   const [spoiler, setSpoiler] = useState(false)
-  const [rating, setRating] = useState(0) // 0 ~ 5, 0.5 step
+  const [rating, setRating] = useState(0)
+  const [submitting, setSubmitting] = useState(false)
 
-  console.log('ReviewWriteClient work:', work)
+  const content = text.trim()
+  const canSubmit = useMemo(() => {
+    if (!work?.id) return false
+    if (content.length === 0) return false
+    if (content.length > 500) return false // 리뷰 500자:contentReference[oaicite:9]{index=9}
+    if (rating < 0.5) return false
+    return true
+  }, [work?.id, content.length, rating])
+
+  const onSubmit = async () => {
+    if (!work?.id) return
+    if (!canSubmit || submitting) return
+
+    try {
+      setSubmitting(true)
+      await createReaderReview({
+        worksId: work.id,
+        rating: rating.toFixed(1), // "0.5" ~ "5.0":contentReference[oaicite:10]{index=10}
+        isSpoiler: spoiler,
+        content,
+      })
+      router.replace('/feed')
+    } catch (e) {
+      alert(e instanceof Error ? e.message : '리뷰 등록 실패')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
@@ -29,23 +53,17 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
         </button>
         <span className="text-body-1 font-medium">피드</span>
         <button
-          disabled={!text}
-          className={text ? 'text-[var(--color-magenta-500)]' : 'text-gray-500'}
+          onClick={onSubmit}
+          disabled={!canSubmit || submitting}
+          className={
+            canSubmit ? 'text-[var(--color-magenta-500)]' : 'text-gray-500'
+          }
         >
           완료
         </button>
       </div>
 
-      <div className="px-4 py-2 mb-5 flex items-center justify-start">
-        <select className="py-1 body-2 text-gray-500">
-          <option value="NAME">기본순</option>
-          <option value="RATING">별점순</option>
-          <option value="REVIEW">리뷰순</option>
-        </select>
-      </div>
-
       <div className="flex-1 overflow-y-auto px-4 pb-32">
-        {/* ✅ props로 받은 title/thumb 표시 */}
         <div className="mb-6 flex items-center gap-3">
           {work?.thumb ? (
             <Image
@@ -69,8 +87,8 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
         </div>
 
         <div className="mb-2 flex items-center justify-between border-t border-gray-200">
-          <span className="heading-2 mt-6">게시글 작성</span>
-          <div className="flex items-center gap-1 mt-6">
+          <span className="heading-2 mt-6">리뷰 작성</span>
+          <div className="mt-6 flex items-center gap-1">
             <span className="caption-1 text-gray-500">스포일러 방지</span>
             <input
               type="checkbox"
@@ -85,16 +103,11 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="좋아하는 작품에 대해 적어보세요!"
-          className="h-60 w-full resize-none body-1 text-gray-700 mt-4 outline-none"
+          className="mt-4 h-60 w-full resize-none body-1 text-gray-700 outline-none"
         />
 
-        <div className="mt-2 flex justify-between px-1 text-caption text-gray-400">
-          <Image
-            src="/common/icons/image.svg"
-            alt="이미지 추가"
-            width={24}
-            height={24}
-          />
+        <div className="mt-2 flex justify-end px-1 text-caption text-gray-400">
+          {content.length}/500
         </div>
       </div>
     </main>

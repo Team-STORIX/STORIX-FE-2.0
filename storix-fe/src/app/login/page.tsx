@@ -114,7 +114,7 @@ export default function LoginPage() {
   return (
     <div className="relative w-full h-full flex flex-col items-center">
       {/* 둘러보기 버튼 */}
-      <div className="absolute top-20 right-4">
+      <div className="absolute top-4 right-4">
         <button
           className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70"
           style={{ color: 'var(--color-gray-500)' }}
@@ -126,7 +126,7 @@ export default function LoginPage() {
         </button>
       </div>
 
-      <div className="flex flex-col items-center mt-[326px]">
+      <div className="flex flex-col items-center mt-[263px]">
         <Image src="/icons/logo.svg" alt="Logo" width={79} height={79} />
 
         <div className="mt-1">

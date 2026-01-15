@@ -11,7 +11,7 @@ type SortKey = 'DEFAULT' | 'REVIEW' | 'RATING'
 const MOCK_WORKS = [
   {
     id: 1,
-    title: '무림세가 천대받는 손녀딸이 되었다',
+    title: '상수리 나무 아래',
     meta: '웹툰 • 무협',
     thumb: '/image/sample/topicroom-1.webp',
     rating: 5.0,
@@ -19,7 +19,7 @@ const MOCK_WORKS = [
   },
   {
     id: 2,
-    title: '재혼황후',
+    title: '연의 편지',
     meta: '웹툰 • 로판',
     thumb: '/image/sample/topicroom-2.webp',
     rating: 5.0,
@@ -27,7 +27,7 @@ const MOCK_WORKS = [
   },
   {
     id: 3,
-    title: '상수리 나무 아래',
+    title: '전지적 독자 시점',
     meta: '웹툰 • 로판',
     thumb: '/image/sample/topicroom-3.webp',
     rating: 5.0,
@@ -35,7 +35,7 @@ const MOCK_WORKS = [
   },
   {
     id: 4,
-    title: '재혼황후',
+    title: '무림세가 천대받는 손녀딸이 되었다',
     meta: '웹툰 • 로판',
     thumb: '/image/sample/topicroom-4.webp',
     rating: 5.0,
@@ -43,7 +43,7 @@ const MOCK_WORKS = [
   },
   {
     id: 5,
-    title: '상수리 나무 아래',
+    title: '재혼 황후',
     meta: '웹툰 • 로판',
     thumb: '/image/sample/topicroom-1.webp',
     rating: 5.0,
@@ -66,8 +66,6 @@ export default function LibraryGalleryPage() {
 
   return (
     <div className="relative min-h-screen pb-[169px] bg-white">
-      <div className="h-[54px]" />
-
       {/* 헤더 */}
       <div className="flex items-center justify-between px-4 pt-2">
         <p className="heading-2 text-black">내 서재</p>

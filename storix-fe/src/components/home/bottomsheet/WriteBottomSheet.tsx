@@ -39,8 +39,8 @@ export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
       thumb: '/image/sample/topicroom-1.webp',
     },
     {
-      id: 2,
-      title: '상수리 나무 아래',
+      id: 6056,
+      title: '연의 편지',
       meta: '서하/나무 • 웹툰',
       thumb: '/image/sample/topicroom-2.webp',
     },

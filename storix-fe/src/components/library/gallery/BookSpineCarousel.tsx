@@ -1,4 +1,4 @@
-// ✅ src/components/library/gallery/BookSpineCarousel.tsx
+// src/components/library/gallery/BookSpineCarousel.tsx
 'use client'
 
 import Image from 'next/image'
@@ -73,16 +73,16 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
     const sRect = scroller.getBoundingClientRect()
     const eRect = el.getBoundingClientRect()
 
-    // ✅ (1) 현재 위치 기준으로 “엘리먼트 중심 → 스크롤러 중심” 차이만큼 이동
+    //  (1) 현재 위치 기준으로 “엘리먼트 중심 → 스크롤러 중심” 차이만큼 이동
     const delta = eRect.left + eRect.width / 2 - (sRect.left + sRect.width / 2)
 
-    // ✅ (2) 스크롤러의 scrollLeft에 delta를 더해서 중앙 정렬
+    //  (2) 스크롤러의 scrollLeft에 delta를 더해서 중앙 정렬
     scroller.scrollTo({
       left: scroller.scrollLeft + delta,
       behavior: 'smooth',
     })
 
-    // ✅ (3) 클릭하면 active도 즉시 바뀌게(선택 반응 빨리)
+    //  (3) 클릭하면 active도 즉시 바뀌게(선택 반응 빨리)
     setActiveIdx(idx)
   }
   // 마우스 휠로도 가로 이동
@@ -119,7 +119,7 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
 
   return (
     <div className="w-full">
-      {/* ✅ 책등 캐러셀 */}
+      {/*  책등 캐러셀 */}
       <div
         ref={scrollerRef}
         onScroll={scheduleMeasure}
@@ -131,7 +131,7 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
         style={{ touchAction: 'pan-x' }}
       >
         {/* 중앙 정렬용 패딩 */}
-        <div className="flex items-center gap-4 pl-[140px] pr-[620px] py-6">
+        <div className="flex items-center gap-5.5 pl-35 pr-155 py-6">
           {works.map((w, i) => {
             const isActive = i === activeIdx
 
@@ -144,19 +144,19 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
                 type="button"
                 onClick={() => scrollToIndex(i)}
                 className={[
-                  'relative shrink-0 snap-center rounded-md bg-[var(--color-magenta-300)]',
+                  'relative shrink-0 snap-center rounded-r-sm bg-[var(--color-magenta-300)]',
                   'transition-all duration-250 ease-out',
                   'shadow-[0px_10px_24px_rgba(255,64,147,0.18)]',
                   'hover:opacity-90',
-                  isActive ? 'opacity-100' : 'opacity-80',
+                  isActive ? 'opacity-100 rounded-md' : 'opacity-80',
                 ].join(' ')}
                 style={{
-                  width: isActive ? 150 : 30, // ✅ 가운데만 “표지로 확장”
+                  width: isActive ? 150 : 30, // 가운데만 “표지로 확장”
                   height: 200,
                 }}
                 aria-label={w.title}
               >
-                {/* ✅ 표지(활성일 때만 보임) */}
+                {/*  표지(활성일 때만 보임) */}
                 {isActive && (
                   <div className="absolute inset-0 w-37.5 h-50 overflow-hidden rounded-md">
                     <Image
@@ -170,7 +170,7 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
                   </div>
                 )}
 
-                {/* ✅ 책등 텍스트(비활성은 세로, 활성은 숨김) */}
+                {/*  책등 텍스트(비활성은 세로, 활성은 숨김) */}
                 {!isActive && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="body-2 whitespace-nowrap -rotate-90 text-white">
@@ -184,17 +184,19 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
                     alt=""
                     width={22}
                     height={200}
-                    className="pointer-events-none absolute -left-[22px] top-0 h-full w-[22px]"
+                    className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 "
                   />
                 )}
                 {!isActive && i < activeIdx && (
-                  <Image
-                    src="/icons/library/leftGradient.svg"
-                    alt=""
-                    width={22}
-                    height={200}
-                    className="pointer-events-none absolute -right-[22px] top-0 h-full w-[22px]"
-                  />
+                  <div className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5">
+                    <Image
+                      src="/icons/library/leftGradient.svg"
+                      alt=""
+                      width={22}
+                      height={200}
+                      className=" "
+                    />
+                  </div>
                 )}
               </button>
             )
@@ -202,7 +204,7 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
         </div>
       </div>
 
-      {/* ✅ 활성 작품 정보(표지 밑) */}
+      {/* 활성 작품 정보(표지 밑) */}
       {active && (
         <div className="mt-6 flex flex-col items-center px-4">
           <p className="heading-2 text-black text-center">{active.title}</p>

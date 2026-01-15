@@ -78,9 +78,15 @@ export default function LibraryListPage() {
             className="body-2 text-gray-500 pr-7 appearance-none bg-transparent outline-none cursor-pointer"
             aria-label="정렬"
           >
-            <option value="DEFAULT">기본순</option>
-            <option value="REVIEW">리뷰순</option>
-            <option value="RATING">별점순</option>
+            <option value="DEFAULT" className="caption-1">
+              기본순
+            </option>
+            <option value="REVIEW" className="caption-1">
+              리뷰순
+            </option>
+            <option value="RATING" className="caption-1">
+              별점순
+            </option>
           </select>
 
           {/* caret */}
