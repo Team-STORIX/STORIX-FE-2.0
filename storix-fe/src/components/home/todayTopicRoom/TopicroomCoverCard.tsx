@@ -44,8 +44,8 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
 
         {/* 제목 / 부제목 */}
         <div className="space-y-0.5 text-white text-left">
-          <p className="heading-2 ">{room.title}</p>
-          <p className="body-1 ">{room.subtitle}</p>
+          <p className="heading-2 ">{room.subtitle}</p>
+          <p className="body-1 ">{room.title}</p>
         </div>
       </div>
 
