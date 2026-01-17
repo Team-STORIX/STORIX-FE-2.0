@@ -1,12 +1,16 @@
-// src/app/login/page.tsx
+// src/app/writers/login/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+
 import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
 import { getKakaoAuthUrl } from '@/api/auth/kakao.api'
-import Link from 'next/link'
+import { artistLoginUser } from '@/api/auth/artist-login.api'
+import { useAuthStore } from '@/store/auth.store'
+import Final from './components/final'
 
 function generateNaverState() {
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
@@ -19,18 +23,31 @@ function generateNaverState() {
   return `${Date.now()}_${Math.random().toString(16).slice(2)}`
 }
 
+type Step = 'login' | 'final'
+
 export default function LoginPage() {
-  console.log('NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL)
+  const router = useRouter()
+  const setAccessToken = useAuthStore((s) => s.setAccessToken)
 
   const [showSplash, setShowSplash] = useState(true)
-  const router = useRouter()
+  const [step, setStep] = useState<Step>('login')
+
+  // ✅ 작가 일반 로그인 폼
+  const [showArtistForm, setShowArtistForm] = useState(false)
+  const [loginId, setLoginId] = useState('')
+  const [password, setPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const canSubmit = useMemo(() => {
+    return loginId.trim().length > 0 && password.trim().length > 0
+  }, [loginId, password])
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1500)
     return () => clearTimeout(timer)
   }, [])
 
-  // 카카오 로그인 버튼 클릭 (인가 코드 요청 → redirect_uri(/pending)로 돌아옴)
+  // ✅ 카카오 로그인(독자 소셜 로그인 그대로)
   const handleKakaoLogin = async () => {
     try {
       const authUrl = await getKakaoAuthUrl()
@@ -40,7 +57,7 @@ export default function LoginPage() {
     }
   }
 
-  // 네이버 로그인 버튼 클릭 (Authorize로 이동)
+  // ✅ 네이버 로그인(독자 소셜 로그인 그대로)
   const handleNaverLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_NAVER_CLIENT_ID
     const redirectUri = process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI
@@ -68,7 +85,44 @@ export default function LoginPage() {
     window.location.href = authUrl
   }
 
+  // ✅ 작가 일반 로그인: POST /api/v1/auth/users/artist/login
+  const handleArtistLogin = async () => {
+    if (isSubmitting) return
+    if (!canSubmit) return
+
+    try {
+      setIsSubmitting(true)
+
+      const res = await artistLoginUser({
+        loginId: loginId.trim(),
+        password: password.trim(),
+      })
+
+      const token = res?.result?.accessToken
+      if (!res?.isSuccess || !token) {
+        alert(res?.message || '로그인에 실패했습니다.')
+        return
+      }
+
+      // ✅ accessToken 저장
+      setAccessToken(token)
+
+      // ✅ Final 화면으로 전환 (Final 내부에서 /writers/feed로 이동 처리)
+      setStep('final')
+    } catch (e) {
+      console.error('[artist-login] error:', e)
+      alert('로그인 중 오류가 발생했어요. 다시 시도해주세요.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   if (showSplash) return <Splash />
+
+  // ✅ 작가 일반 로그인 성공 이후 Final 컴포넌트
+  if (step === 'final') {
+    return <Final />
+  }
 
   return (
     <div className="relative w-full h-full flex flex-col items-center">
@@ -77,9 +131,7 @@ export default function LoginPage() {
         <button
           className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70"
           style={{ color: 'var(--color-gray-500)' }}
-          onClick={() => {
-            router.push('/home/demo')
-          }}
+          onClick={() => router.push('/home/demo')}
         >
           둘러보기
         </button>
@@ -97,6 +149,7 @@ export default function LoginPage() {
           />
         </div>
 
+        {/* ✅ 독자 소셜 로그인(동일 동작) */}
         <div className="mt-16">
           <Image
             src="/login/login-kakao.svg"
@@ -119,7 +172,6 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* ✅ 작가 로그인: signup이 아니라 writers/login으로 이동 */}
         <div className="mt-2">
           <Link href="/writers/signup">
             <Image

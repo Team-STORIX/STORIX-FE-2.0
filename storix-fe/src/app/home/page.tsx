@@ -21,16 +21,16 @@ const MOCK_ROOMS: TopicRoomData[] = [
   },
   {
     id: 'room2',
-    imageUrl: '/image/sample/topicroom-1.webp',
-    title: '탄서방 시어머니회 2',
-    subtitle: '웹툰 상수리나무 아래',
+    imageUrl: '/image/sample/topicroom-2.webp',
+    title: '연의 등기우편',
+    subtitle: '웹툰 연의 편지',
     memberCount: 20,
   },
   {
     id: 'room3',
-    imageUrl: '/image/sample/topicroom-1.webp',
-    title: '탄서방 시어머니회 3',
-    subtitle: '웹툰 상수리나무 아래',
+    imageUrl: '/image/sample/topicroom-3.webp',
+    title: '전독시 덕후들 모여라',
+    subtitle: '웹툰 전지적 독자 시점',
     memberCount: 22,
   },
 ]
@@ -52,18 +52,26 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full">
-            <CardNav header="이 작품, 내 취향일까?" roomName="#" />
-            <MyTasteCard />
-          </div>
-
-          <div className="flex flex-col w-full">
             <CardNav header="오늘의 피드" roomName="#" />
             <HotFeedSlider />
           </div>
 
+          <div className="flex flex-col w-full">
+            <CardNav header="이 작품, 내 취향일까?" roomName="#" />
+            <MyTasteCard />
+          </div>
+
           <div className="flex flex-col w-full mb-8">
             <CardNav header="이런 키워드, 좋아하실 것 같아요" roomName="#" />
-            <HashtagList />
+            <HashtagList
+              items={[
+                '#로맨스',
+                '#무협/사극',
+                '#액션',
+                '#로맨스판타지',
+                '#금발남주',
+              ]}
+            />
           </div>
         </div>
       </div>

@@ -99,7 +99,26 @@ apiClient.interceptors.response.use(
           { withCredentials: true },
         )
 
-        const newAccessToken = (response.data as any)?.result?.accessToken
+        const data: any = response.data
+        // ✅ 백엔드가 result를 중첩해서 내려주는 케이스 방어
+
+        let r: any = data?.result
+        for (
+          let i = 0;
+          i < 3 && r && typeof r === 'object' && 'result' in r;
+          i++
+        ) {
+          // accessToken이 있으면 바로 사용
+          if (typeof r?.accessToken === 'string' && r.accessToken.length > 0)
+            break
+          r = r.result
+        }
+
+        const newAccessToken =
+          typeof r?.accessToken === 'string' && r.accessToken.length > 0
+            ? r.accessToken
+            : undefined
+
         if (!newAccessToken) throw new Error('Refresh succeeded but no token')
 
         // Zustand store에 새 토큰 저장

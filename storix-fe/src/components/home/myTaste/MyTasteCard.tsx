@@ -4,7 +4,7 @@ import Image from 'next/image'
 export default function MyTasteCard() {
   return (
     <div
-      className={`relative flex w-[360px] h-[204px] rounded-2xl bg-gray-100 p-4 overflow-hidden`}
+      className={`relative flex w-full h-[204px] rounded-2xl bg-gray-100 p-4 overflow-hidden`}
     >
       <Image
         src={'/image/tasteImage.webp'}

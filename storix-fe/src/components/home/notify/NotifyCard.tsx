@@ -36,15 +36,13 @@ export default function NotifyCard({
 
         {/* 오른쪽 텍스트 영역 */}
         <div className="flex-1">
-          <p className="text-[15px] font-semibold leading-snug text-gray-900">
-            {title}
-          </p>
+          <p className="body-2 leading-snug text-black">{title}</p>
 
-          <p className="mt-1 text-[13px] leading-snug text-gray-500">
+          <p className="mt-1 caption-1 leading-snug text-gray-400">
             {description}
           </p>
 
-          <p className="mt-3 text-[12px] text-gray-400">{date}</p>
+          <p className="mt-3 caption-1 text-gray-400">{date}</p>
         </div>
       </div>
     </div>
