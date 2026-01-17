@@ -2,53 +2,86 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
+import { useMemo, useState, useEffect } from 'react'
 import RatingInput from '@/components/common/RatingInput'
 import { createReaderReview } from '@/lib/api/plusWrite'
 
 type Work = { id: number; title: string; meta: string; thumb: string }
+const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 
 export default function ReviewWriteClient({ work }: { work: Work | null }) {
   const router = useRouter()
+  const params = useParams<{ id: string }>()
+  const routeId = Number(params?.id)
+
+  const [resolvedWork, setResolvedWork] = useState<Work | null>(work)
+
   const [text, setText] = useState('')
   const [spoiler, setSpoiler] = useState(false)
   const [rating, setRating] = useState(0)
   const [submitting, setSubmitting] = useState(false)
 
+  // ✅ work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
+  useEffect(() => {
+    if (work?.id && work.id === routeId) {
+      setResolvedWork(work)
+      return
+    }
+
+    const raw = sessionStorage.getItem(STORAGE_KEY_REVIEW)
+    if (!raw) return
+
+    try {
+      const parsed = JSON.parse(raw) as Work
+      if (parsed?.id === routeId) {
+        setResolvedWork(parsed)
+      }
+    } catch {
+      // ignore
+    }
+  }, [work?.id, routeId])
+
   const content = text.trim()
+
   const canSubmit = useMemo(() => {
-    if (!work?.id) return false
+    if (!resolvedWork?.id) return false
     if (content.length === 0) return false
-    if (content.length > 500) return false // 리뷰 500자:contentReference[oaicite:9]{index=9}
+    if (content.length > 500) return false
     if (rating < 0.5) return false
     return true
-  }, [work?.id, content.length, rating])
+  }, [resolvedWork?.id, content.length, rating])
 
   const onSubmit = async () => {
-    if (!work?.id) return
+    if (!resolvedWork?.id) return
     if (!canSubmit || submitting) return
 
     try {
       setSubmitting(true)
       await createReaderReview({
-        worksId: work.id,
-        rating: rating.toFixed(1), // "0.5" ~ "5.0":contentReference[oaicite:10]{index=10}
+        worksId: resolvedWork.id,
+        rating: rating.toFixed(1),
         isSpoiler: spoiler,
         content,
       })
+
+      // ✅ 성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
+      sessionStorage.removeItem(STORAGE_KEY_REVIEW)
+
       router.replace('/feed')
     } catch (e) {
       alert(e instanceof Error ? e.message : '리뷰 등록 실패')
     } finally {
       setSubmitting(false)
     }
+    console.log('worksId', resolvedWork.id)
+    console.log('rating', rating)
   }
 
   return (
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       <div className="flex h-[54px] items-center justify-between px-4">
-        <button onClick={() => router.back()}>
+        <button onClick={() => router.back()} className="cursor-pointer">
           <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
         <span className="text-body-1 font-medium">피드</span>
@@ -56,7 +89,9 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
           onClick={onSubmit}
           disabled={!canSubmit || submitting}
           className={
-            canSubmit ? 'text-[var(--color-magenta-500)]' : 'text-gray-500'
+            canSubmit
+              ? 'text-[var(--color-magenta-500)] cursor-pointer'
+              : 'text-gray-500'
           }
         >
           완료
@@ -65,10 +100,10 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
 
       <div className="flex-1 overflow-y-auto px-4 pb-32">
         <div className="mb-6 flex items-center gap-3">
-          {work?.thumb ? (
+          {resolvedWork?.thumb ? (
             <Image
-              src={work.thumb}
-              alt={work.title}
+              src={resolvedWork.thumb}
+              alt={resolvedWork.title}
               width={87}
               height={116}
               className="rounded-md object-cover"
@@ -78,9 +113,11 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
           )}
 
           <div className="flex flex-col">
-            <span className="text-body-1">{work?.title ?? '작품 제목'}</span>
+            <span className="text-body-1">
+              {resolvedWork?.title ?? '작품 제목'}
+            </span>
             <span className="text-caption text-gray-500">
-              {work?.meta ?? ''}
+              {resolvedWork?.meta ?? ''}
             </span>
             <RatingInput value={rating} onChange={setRating} />
           </div>

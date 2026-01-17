@@ -155,7 +155,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
               'absolute z-20 left-1/2 -translate-x-1/2 bottom-18',
               'w-14 h-14',
               'transition-transform duration-200 ease-in-out',
-              'hover:opacity-80',
+              'hover:opacity-80 cursor-pointer',
               isPlusOpen ? 'rotate-90' : 'rotate-0',
             ].join(' ')}
             style={{ bottom: 50 }} // ✅ NavBar가 20px 줄어든 만큼 + 20px 아래로
