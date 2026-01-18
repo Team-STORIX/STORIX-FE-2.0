@@ -8,7 +8,6 @@ import Link from 'next/link'
 
 import { artistLoginUser } from '@/api/auth/artist-login.api'
 import { useAuthStore } from '@/store/auth.store'
-import Final from '@/app/writers/login/components/final'
 
 type Step = 'form' | 'final'
 
@@ -66,11 +65,6 @@ export default function WriterSignupPage() {
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  // ✅ 로그인 성공 후 Final 표시
-  if (step === 'final') {
-    return <Final />
   }
 
   return (
