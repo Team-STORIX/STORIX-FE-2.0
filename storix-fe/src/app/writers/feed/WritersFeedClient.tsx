@@ -36,9 +36,6 @@ export default function WritersFeedClient() {
 
   return (
     <div className="relative w-full min-h-full pb-[169px] bg-white">
-      {/* ✅ 상단 safe 영역 */}
-      <div className="h-[54px]" />
-
       {/* ✅ 타이틀 영역 */}
       <div className="w-[393px] px-5 py-4 flex items-start gap-5">
         <h1 className="text-[24px] font-bold leading-[140%] text-[var(--gray-900)]">

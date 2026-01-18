@@ -8,7 +8,7 @@ export default function Articles() {
     { label: '조회', value: `${stats.views}회` },
     { label: '좋아요', value: `${stats.likes}개` },
     { label: '댓글', value: `${stats.comments}개` },
-    { label: '팬 컨텐츠 결제', value: `${stats.paid}건` },
+    { label: '팬 콘텐츠 결제', value: `${stats.paid}건` },
   ]
 
   return (

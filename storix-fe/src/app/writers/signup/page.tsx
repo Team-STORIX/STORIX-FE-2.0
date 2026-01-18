@@ -75,9 +75,6 @@ export default function WriterSignupPage() {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* ✅ 상단 54px */}
-      <div className="h-[54px]" />
-
       {/* ✅ Topbar */}
       <div className="w-full h-14 px-4 flex items-center bg-white">
         <img
@@ -86,7 +83,7 @@ export default function WriterSignupPage() {
           width={24}
           height={24}
           className="cursor-pointer brightness-0"
-          onClick={() => router.push('/writers/login')}
+          onClick={() => router.push('/login')}
         />
       </div>
 

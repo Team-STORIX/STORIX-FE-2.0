@@ -2,9 +2,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useRouter } from 'next/navigation'
-
+import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 import TopBar from './components/topbar'
@@ -18,9 +16,7 @@ type LikedWork = {
   title: string
   author: string
   kind: '웹툰' | '웹소설'
-  rated?: {
-    score: number
-  } | null
+  rated?: { score: number } | null
 }
 
 type LikedWriter = {
@@ -51,29 +47,78 @@ export default function LikesClient() {
   const tab: Tab = (sp.get('tab') as Tab) ?? 'works'
   const router = useRouter()
 
-  // ✅ 더미 데이터(나중에 API로 교체)
+  // ✅ 더미 데이터(일단 보이게 넉넉히)
   const worksSeed: LikedWork[] = useMemo(
     () => [
       {
-        id: 'w1',
+        id: 'seed-work-01',
         title: '상수리 나무 아래',
         author: '서말',
         kind: '웹툰',
         rated: { score: 4.5 },
       },
       {
-        id: 'w2',
-        title: '전지적독자지시점 전독시 외전급으로 긴 제목 테스트',
+        id: 'seed-work-02',
+        title: '전지적독자시점',
         author: '싱숑',
         kind: '웹소설',
-        rated: null, // 평가 안함
+        rated: null,
       },
       {
-        id: 'w3',
+        id: 'seed-work-03',
         title: '재혼황후',
         author: '히어리',
         kind: '웹툰',
         rated: { score: 5 },
+      },
+      {
+        id: 'seed-work-04',
+        title: '나 혼자만 레벨업',
+        author: '추공',
+        kind: '웹소설',
+        rated: { score: 4.0 },
+      },
+      {
+        id: 'seed-work-05',
+        title: '마도조사',
+        author: '묵향동후',
+        kind: '웹소설',
+        rated: null,
+      },
+      {
+        id: 'seed-work-06',
+        title: '여신강림',
+        author: '야옹이',
+        kind: '웹툰',
+        rated: { score: 4.2 },
+      },
+      {
+        id: 'seed-work-07',
+        title: '그 해 우리는',
+        author: '작가A',
+        kind: '웹툰',
+        rated: null,
+      },
+      {
+        id: 'seed-work-08',
+        title: '악역의 엔딩은 죽음뿐',
+        author: '권겨을',
+        kind: '웹소설',
+        rated: { score: 4.8 },
+      },
+      {
+        id: 'seed-work-09',
+        title: '연애혁명',
+        author: '232',
+        kind: '웹툰',
+        rated: null,
+      },
+      {
+        id: 'seed-work-10',
+        title: '나의 히어로 아카데미아',
+        author: '호리코시',
+        kind: '웹툰',
+        rated: { score: 4.1 },
       },
     ],
     [],
@@ -81,42 +126,63 @@ export default function LikesClient() {
 
   const writersSeed: LikedWriter[] = useMemo(
     () => [
-      { id: 'a1', name: '서말', bio: '감정선을 촘촘하게 그려요' },
-      { id: 'a2', name: '나무', bio: '캐릭터 케미 맛집' },
-      { id: 'a3', name: '싱숑', bio: '세계관 설계가 탄탄해요' },
+      { id: 'seed-writer-01', name: '서말', bio: '감정선을 촘촘하게 그려요' },
+      { id: 'seed-writer-02', name: '싱숑', bio: '세계관 설계가 탄탄해요' },
+      { id: 'seed-writer-03', name: '히어리', bio: '몰입감 있는 전개가 강점' },
+      {
+        id: 'seed-writer-04',
+        name: '야옹이',
+        bio: '현실 공감 포인트가 좋아요',
+      },
+      { id: 'seed-writer-05', name: '권겨을', bio: '로판 장르 맛집' },
+      { id: 'seed-writer-06', name: '추공', bio: '시원한 성장 서사' },
+      { id: 'seed-writer-07', name: '232', bio: '캐릭터가 살아있어요' },
+      { id: 'seed-writer-08', name: '작가A', bio: '잔잔한 감성 스토리' },
     ],
     [],
   )
 
-  // ✅ “제거된 항목” persisted 상태
+  // ✅ 로컬스토리지에 이미 반영된 "영구 제거" 목록
   const [removedIds, setRemovedIds] = useState<string[]>([])
+  // ✅ 이 화면에서만 표시되는 "제거 예정" 목록(아이콘만 plus로 바뀜)
+  const [pendingRemovedIds, setPendingRemovedIds] = useState<string[]>([])
 
   useEffect(() => {
+    // ✅ 개발 중 “항상 더미가 보이게” 하고 싶으면 아래 2줄 잠깐 켜도 됨
+    // localStorage.removeItem(LS_KEY)
+    // setRemovedIds([])
+
     setRemovedIds(loadRemovedIds())
   }, [])
 
-  const isRemoved = (id: string) => removedIds.includes(id)
+  const isRemovedPersisted = (id: string) => removedIds.includes(id)
+  const isPendingRemoved = (id: string) => pendingRemovedIds.includes(id)
 
+  // ✅ 체크/플러스 토글: 즉시 삭제 X, 화면에서는 plus만 표시
   const toggleLike = (id: string) => {
-    setRemovedIds((prev) => {
-      const next = prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : [...prev, id]
-      saveRemovedIds(next)
-      return next
-    })
+    setPendingRemovedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
   }
 
-  // ✅ 표시용: removedIds에 포함된 건 목록에서 제거(요구사항)
-  const works = useMemo(
-    () => worksSeed.filter((w) => !isRemoved(w.id)),
+  // ✅ 화면 떠날 때 pending을 로컬스토리지에 반영
+  useEffect(() => {
+    return () => {
+      if (pendingRemovedIds.length === 0) return
+      const next = Array.from(new Set([...removedIds, ...pendingRemovedIds]))
+      saveRemovedIds(next)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingRemovedIds, removedIds])
+
+  // ✅ 목록에서 실제로 제거되는 건 "다음 방문부터": persisted만 필터링
+  const works = useMemo(
+    () => worksSeed.filter((w) => !isRemovedPersisted(w.id)),
     [worksSeed, removedIds],
   )
 
   const writers = useMemo(
-    () => writersSeed.filter((w) => !isRemoved(w.id)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    () => writersSeed.filter((w) => !isRemovedPersisted(w.id)),
     [writersSeed, removedIds],
   )
 
@@ -124,12 +190,9 @@ export default function LikesClient() {
 
   return (
     <div className="relative w-full min-h-full pb-[169px] bg-white">
-      <div className="h-[56px]" />
       <TopBar />
-
       <SelectBar />
 
-      {/* ✅ 내용 */}
       {hasData ? (
         <div>
           {tab === 'works' ? (
@@ -144,21 +207,17 @@ export default function LikesClient() {
                     height: 107,
                   }}
                 >
-                  {/* 표지 */}
                   <div className="w-[62px] h-[83px] bg-[var(--color-gray-200)] rounded flex-shrink-0" />
 
                   <div className="ml-3 flex-1 min-w-0">
-                    {/* 제목: 210px, ... */}
                     <p className="body-1 text-[var(--color-black)] w-[210px] truncate">
                       {w.title}
                     </p>
 
-                    {/* 작가 · 웹툰/웹소설 */}
                     <p className="mt-1 caption-1 text-[var(--color-gray-500)]">
                       {w.author} · {w.kind}
                     </p>
 
-                    {/* 평가 */}
                     {w.rated ? (
                       <div className="mt-1 flex items-center">
                         <span
@@ -180,21 +239,19 @@ export default function LikesClient() {
                         </span>
                       </div>
                     ) : (
-                      // ✅ 평가 안했으면 자리 공백
                       <div className="mt-1 h-[14px]" />
                     )}
                   </div>
 
-                  {/* 체크/플러스 토글 */}
                   <button
                     type="button"
                     onClick={() => toggleLike(w.id)}
-                    className="ml-3 transition-opacity hover:opacity-70"
+                    className="ml-3 transition-opacity hover:opacity-70 cursor-pointer"
                     aria-label="관심 작품 토글"
                   >
                     <Image
                       src={
-                        isRemoved(w.id)
+                        isPendingRemoved(w.id)
                           ? '/profile/likes-plus.svg'
                           : '/profile/likes-check.svg'
                       }
@@ -218,7 +275,6 @@ export default function LikesClient() {
                     height: 88,
                   }}
                 >
-                  {/* 작가 프로필 */}
                   <div className="w-[64px] h-[64px] rounded-full bg-[var(--color-gray-200)] flex-shrink-0" />
 
                   <div className="ml-3 flex-1 min-w-0">
@@ -233,12 +289,12 @@ export default function LikesClient() {
                   <button
                     type="button"
                     onClick={() => toggleLike(wr.id)}
-                    className="ml-3 transition-opacity hover:opacity-70"
+                    className="ml-3 transition-opacity hover:opacity-70 cursor-pointer"
                     aria-label="관심 작가 토글"
                   >
                     <Image
                       src={
-                        isRemoved(wr.id)
+                        isPendingRemoved(wr.id)
                           ? '/profile/likes-plus.svg'
                           : '/profile/likes-check.svg'
                       }
@@ -253,7 +309,6 @@ export default function LikesClient() {
           )}
         </div>
       ) : (
-        // ✅ 빈 상태
         <EmptyState tab={tab} onClickCta={() => router.push('/home/search')} />
       )}
 

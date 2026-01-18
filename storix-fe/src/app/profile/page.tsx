@@ -47,7 +47,6 @@ export default function ProfilePage() {
 
   return (
     <div className="relative w-full min-h-full pb-[169px]">
-      <div className="h-[54px]" />
       <TopBar />
 
       <UserProfile
