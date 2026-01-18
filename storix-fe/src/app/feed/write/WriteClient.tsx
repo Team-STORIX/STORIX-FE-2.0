@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import ImagePicker from '@/components/feed/ImagePicker'
-import { createReaderBoard } from '@/lib/api/plusWrite'
+import { createReaderBoard } from '@/lib/api/plus/plusWrite'
 import {
   getBoardPresignedUrls,
   putToPresignedUrl,

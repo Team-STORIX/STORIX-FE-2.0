@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter, useParams } from 'next/navigation'
 import { useMemo, useState, useEffect } from 'react'
 import RatingInput from '@/components/common/RatingInput'
-import { createReaderReview } from '@/lib/api/plusWrite'
+import { createReaderReview } from '@/lib/api/plus/plusWrite'
 
 type Work = { id: number; title: string; meta: string; thumb: string }
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
