@@ -1,6 +1,6 @@
 // src/api/search/search.api.ts
 
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import {
   WorksSearchRawResponseSchema,
   ArtistsSearchRawResponseSchema,

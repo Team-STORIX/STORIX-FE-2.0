@@ -1,5 +1,5 @@
 // src/api/plus/plus.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import {
   BoardImagePresignRequest,
   BoardImagePresignResponseSchema,

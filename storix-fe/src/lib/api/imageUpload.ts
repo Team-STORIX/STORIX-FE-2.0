@@ -1,5 +1,5 @@
 // src/lib/api/imageUpload.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 type PresignReq = { files: { contentType: string }[] }
 type PresignItem = { url: string; objectKey: string; expiresInSeconds: number }

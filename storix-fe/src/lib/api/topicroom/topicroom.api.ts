@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import { z } from 'zod'
 
 const ApiResponseSchema = z.object({

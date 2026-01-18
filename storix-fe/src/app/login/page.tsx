@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
-import { getKakaoAuthUrl } from '@/api/auth/kakao.api'
+import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
 
 function generateNaverState() {
   // ✅ 요구사항: state는 랜덤 문자열

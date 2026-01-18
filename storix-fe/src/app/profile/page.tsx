@@ -10,7 +10,7 @@ import Rating from './components/rating'
 //import Genre from './components/genre'
 import Hashtag from './components/hashtag'
 import NavBar from '@/components/common/NavBar'
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import { useAuthStore } from '@/store/auth.store'
 
 type MeProfileResult = {

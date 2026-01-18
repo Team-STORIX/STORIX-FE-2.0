@@ -7,7 +7,7 @@ import {
   // checkNicknameForbidden,  // (보류)
   extractIsAvailableFromValidResponse,
   // extractIsForbiddenFromForbiddenResponse, // (보류)
-} from '@/api/auth/nickname.api'
+} from '@/lib/api/auth/nickname.api'
 
 interface NicknameProps {
   value: string

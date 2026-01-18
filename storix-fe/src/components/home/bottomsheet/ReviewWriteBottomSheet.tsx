@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import CheckBox from '@/public/common/icons/CheckBox'
-import { getWorksSearch } from '@/api/search/search.api'
-import type { WorksSearchItem } from '@/api/search/search.schema'
+import { getWorksSearch } from '@/lib/api/search/search.api'
+import type { WorksSearchItem } from '@/lib/api/search/search.schema'
 
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 

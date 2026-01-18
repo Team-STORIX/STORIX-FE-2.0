@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
-import { createTopicRoom } from '@/api/topicroom/topicroom.api'
+import { createTopicRoom } from '@/lib/api/topicroom/topicroom.api'
 
 type WorkMini = {
   id: number

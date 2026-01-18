@@ -1,5 +1,5 @@
 // src/lib/api/plusWrite.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 export type CreateReviewBody = {
   worksId: number

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
-import { getKakaoAuthUrl } from '@/api/auth/kakao.api'
+import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
 import Link from 'next/link'
 
 function generateNaverState() {

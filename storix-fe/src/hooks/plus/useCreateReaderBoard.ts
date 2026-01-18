@@ -4,7 +4,7 @@ import {
   postBoardImagePresignedUrls,
   postReaderBoard,
   uploadToPresignedUrl,
-} from '@/api/plus/plus.api'
+} from '@/lib/api/plus/plus.api'
 
 type CreateReaderBoardArgs = {
   isWorksSelected: boolean

@@ -4,8 +4,8 @@
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { getWorksDetail, type WorksDetail } from '@/api/works/works.api'
-import { findTopicRoomIdByWorksName } from '@/api/topicroom/topicroom.api'
+import { getWorksDetail, type WorksDetail } from '@/lib/api/works/works.api'
+import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
 
 import TopicRoomCreateModal from '@/components/topicroom/TopicRoomCreateModal'
 import WorkTopBar from '@/components/library/works/WorkTopBar'

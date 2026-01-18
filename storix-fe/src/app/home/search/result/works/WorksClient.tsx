@@ -7,7 +7,7 @@ import SearchBar from '@/components/common/SearchBar'
 import SearchResultWorks from '@/components/home/search/SearchResultWorks'
 import SearchResultBottomNav from '@/components/home/search/SearchResultBottomNav'
 import { useWorksSearchInfinite } from '@/hooks/search/useSearch'
-import type { WorksSort } from '@/api/search/search.schema'
+import type { WorksSort } from '@/lib/api/search/search.schema'
 
 export default function SearchWorksPage() {
   const router = useRouter()

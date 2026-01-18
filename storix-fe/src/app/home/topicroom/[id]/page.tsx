@@ -7,7 +7,7 @@ import {
   joinTopicRoom,
   leaveTopicRoom,
   findTopicRoomInfoById,
-} from '@/api/topicroom/topicroom.api'
+} from '@/lib/api/topicroom/topicroom.api'
 
 type Msg = {
   id: string

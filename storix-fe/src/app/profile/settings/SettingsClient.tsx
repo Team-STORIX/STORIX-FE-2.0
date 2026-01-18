@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { withdrawUser } from '@/api/auth/withdraw.api'
+import { withdrawUser } from '@/lib/api/auth/withdraw.api'
 import { useAuthStore } from '@/store/auth.store'
 
 export default function SettingsClient() {
