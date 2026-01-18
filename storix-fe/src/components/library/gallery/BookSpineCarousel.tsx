@@ -172,8 +172,8 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
 
                 {/*  책등 텍스트(비활성은 세로, 활성은 숨김) */}
                 {!isActive && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="body-2 whitespace-nowrap -rotate-90 text-white">
+                  <div className="flex flex-col absolute inset-0 flex items-center justify-start">
+                    <span className="flex flex-col body-2 whitespace-nowrap rotate-90 text-white justify-start">
                       {w.title}
                     </span>
                   </div>

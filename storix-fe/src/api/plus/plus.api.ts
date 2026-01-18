@@ -11,13 +11,13 @@ import {
 
 /** ✅ 독자 리뷰 등록 */
 export async function postReaderReview(payload: ReaderReviewCreateRequest) {
-  const { data } = await apiClient.post('/api/v1/plus/reader-review', payload)
+  const { data } = await apiClient.post('/api/v1/plus/reader/review', payload)
   return ReaderReviewCreateResponseSchema.parse(data)
 }
 
 /** ✅ 독자 게시글 등록 */
 export async function postReaderBoard(payload: ReaderBoardCreateRequest) {
-  const { data } = await apiClient.post('/api/v1/plus/reader-board', payload)
+  const { data } = await apiClient.post('/api/v1/plus/reader/board', payload)
   return ReaderBoardCreateResponseSchema.parse(data)
 }
 

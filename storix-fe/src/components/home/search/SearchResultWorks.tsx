@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import type { RefObject } from 'react'
 import type { WorksSearchItem } from '@/api/search/search.schema'
 import Warning from '@/components/common/Warining'
@@ -16,6 +17,10 @@ export default function SearchResultWorks({
   isFetching = false,
   loadMoreRef,
 }: Props) {
+  const router = useRouter()
+  const onClickWorks = (worksId: number) => {
+    router.push(`/library/works/${worksId}`)
+  }
   return (
     <section className="flex w-full flex-col gap-3">
       {works.length > 0 ? (
@@ -32,6 +37,7 @@ export default function SearchResultWorks({
                     src={w.thumbnailUrl}
                     alt={w.worksName}
                     fill
+                    onClick={() => onClickWorks(w.worksId)}
                     className="object-cover"
                     sizes="96px"
                   />

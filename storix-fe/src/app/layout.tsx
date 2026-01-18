@@ -4,7 +4,7 @@ import { Providers } from './providers'
 import '@/styles/globals.css'
 
 const suit = localFont({
-  src: './fonts/SUIT-Variable.woff2',
+  src: '/fonts/SUIT-Variable.woff2',
   weight: '100 900',
   style: 'normal',
   display: 'swap',

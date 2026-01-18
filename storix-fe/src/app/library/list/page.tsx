@@ -144,8 +144,7 @@ export default function LibraryListPage() {
               key={w.id}
               type="button"
               className="w-full px-4 py-4 border-t border-gray-100 text-left hover:bg-gray-50"
-              // TODO: 상세로 가는 라우트 생기면 연결
-              onClick={() => {}}
+              onClick={() => router.push(`/library/works/${w.id}`)}
             >
               <div className="flex">
                 <div className="relative h-[116px] w-[87px] mr-3 overflow-hidden rounded-xl bg-gray-100">

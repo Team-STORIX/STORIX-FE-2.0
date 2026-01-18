@@ -80,6 +80,10 @@ export default function SearchWorksPage() {
 
   const isEmpty = worksPager.items.length === 0 && worksPager.meta !== null
 
+  const onClickWorks = (worksId: number) => {
+    router.push(`/library/works/${worksId}`)
+  }
+
   return (
     <div className="flex w-full flex-col">
       <SearchBar onSearchClick={goSearch} />
