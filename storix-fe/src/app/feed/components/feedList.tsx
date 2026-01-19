@@ -96,9 +96,9 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
         likeCount: 24,
         commentCount: 12,
         images: [
-          '/works/default-cover.jpg',
-          '/works/default-cover.jpg',
-          '/works/default-cover.jpg',
+          '/image/sample/topicroom-6.webp',
+          '/image/sample/topicroom-5.webp',
+          '/image/sample/topicroom-4.webp',
         ],
       },
       {
@@ -171,7 +171,7 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
         isLiked: true,
         likeCount: 1,
         commentCount: 0,
-        images: ['/works/default-cover.jpg'],
+        images: ['/image/sample/topicroom-5.webp'],
       },
     ],
     [],
