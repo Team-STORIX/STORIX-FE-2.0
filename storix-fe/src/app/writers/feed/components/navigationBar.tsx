@@ -1,16 +1,16 @@
-// src/components/common/NavBar.tsx
+// src/app/writers/feed/components/navigationBar.tsx
+
 'use client'
+
 import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
 import WriteBottomSheet from '@/components/home/bottomsheet/WriteBottomSheet'
 import IconFeed from '@/public/common/icons/navbar/Icon-Feed'
-import IconHome from '@/public/common/icons/navbar/Icon-Home'
-import IconLibrary from '@/public/common/icons/navbar/Icon-Library'
 import IconProfile from '@/public/common/icons/navbar/Icon-Profile'
 
-type NavKey = 'home' | 'feed' | 'library' | 'profile'
+type NavKey = 'feed' | 'profile'
 
 type NavBarProps = {
   active: NavKey
@@ -18,17 +18,13 @@ type NavBarProps = {
 }
 
 const NAV_ITEMS: { key: NavKey; label: string }[] = [
-  { key: 'home', label: '홈' },
   { key: 'feed', label: '피드' },
-  { key: 'library', label: '서재' },
   { key: 'profile', label: '프로필' },
 ]
 
 const ROUTES: Record<NavKey, string> = {
-  home: '/home',
-  feed: '/feed',
-  library: '/library/list',
-  profile: '/profile',
+  feed: '/writers/feed',
+  profile: '/writers/profile',
 }
 
 export default function NavBar({ active, onChange }: NavBarProps) {
@@ -43,11 +39,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
 
   const handleNavClick = (key: NavKey) => {
     onChange?.(key)
-
-    const href = ROUTES[key]
-    if (href !== '#') {
-      router.push(href)
-    }
+    router.push(ROUTES[key])
   }
 
   const renderItem = (item: { key: NavKey; label: string }) => {
@@ -58,7 +50,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
         key={item.key}
         type="button"
         onClick={() => handleNavClick(item.key)}
-        className="flex cursor-pointer flex-col items-center justify-center caption-1 px-3"
+        className="flex flex-col items-center justify-center caption-1 px-3 cursor-pointer hover:opacity-80 transition-opacity"
       >
         <div className="mb-1 flex h-6 w-6 items-center justify-center">
           <span className={isActive ? 'text-gray-900' : 'text-gray-300'}>
@@ -74,57 +66,52 @@ export default function NavBar({ active, onChange }: NavBarProps) {
 
   return (
     <>
-      {/* ✅ plus 열렸을 때: nav 밖 클릭으로 닫히게 + 뒤 화면 클릭 막기 */}
-      {isPlusOpen && (
-        <button
-          type="button"
-          aria-label="닫기 오버레이"
-          onClick={() => setIsPlusOpen(false)}
-          className="fixed inset-0 z-40 cursor-default bg-transparent"
-        />
-      )}
-
-      <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[393px] -translate-x-1/2">
+      <div className="fixed z-50 w-full max-w-[393px] bottom-0 left-1/2 -translate-x-1/2">
         <div className="relative w-full">
-          <nav className="relative z-10 flex h-20 w-full items-start px-5 pt-[15px] pb-3">
-            <div className="flex items-center gap-5">
-              {NAV_ITEMS.slice(0, 2).map(renderItem)}
+          <nav className="relative z-10 flex h-[80px] w-full items-start px-5 pt-[15px] pb-3">
+            {/* ✅ 왼쪽 절반 중앙에 '피드' */}
+            <div className="flex flex-1 items-center justify-center">
+              {renderItem(NAV_ITEMS[0])}
             </div>
 
-            <div className="flex-1" />
+            {/* ✅ 가운데(플러스) 공간 확보 */}
+            <div className="w-[56px]" />
 
-            <div className="flex items-center gap-5">
-              {NAV_ITEMS.slice(2).map(renderItem)}
+            {/* ✅ 오른쪽 절반 중앙에 '프로필' */}
+            <div className="flex flex-1 items-center justify-center">
+              {renderItem(NAV_ITEMS[1])}
             </div>
           </nav>
 
-          <div className="absolute inset-x-0 bottom-0 h-[80px]">
+          {/* ✅ 배경은 nav 아래에 깔리도록 z-0 */}
+          <div className="absolute inset-x-0 bottom-0 z-0 h-[80px]">
             <Image
               src="/common/icons/navbar/navigationbar-background.svg"
               alt="네비게이션 바 배경"
               width={393}
               height={80}
+              className="h-full w-full"
             />
           </div>
 
-          {/* 플로팅 탭 */}
+          {/* 플로팅 탭 그대로 */}
           {isPlusOpen && (
             <div
-              className="absolute left-1/2 z-50 -translate-x-1/2"
+              className="absolute left-1/2 -translate-x-1/2"
               style={{
                 width: 162,
                 height: 98,
                 bottom: 130,
               }}
             >
-              <div className="w-40.5 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_8px_10px_0_rgba(0,0,0,0.25)]">
+              <div className="w-40.5 overflow-hidden rounded-2xl bg-white border-1 border-gray-200 shadow-[0_8px_10px_0_rgba(0,0,0,0.25)]">
                 <button
                   type="button"
                   onClick={() => {
                     setIsPlusOpen(false)
                     setShowReviewSheet(true)
                   }}
-                  className="flex w-full items-center justify-between px-4 py-3 border-b border-gray-200 hover:opacity-70 cursor-pointer"
+                  className="flex w-full items-center justify-between px-4 py-3 border-b border-gray-200 hover:opacity-70"
                 >
                   <span className="body-1 text-gray-800">리뷰 작성</span>
                   <Image
@@ -141,7 +128,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                     setIsPlusOpen(false)
                     setShowFeedSheet(true)
                   }}
-                  className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70 cursor-pointer"
+                  className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70"
                 >
                   <span className="body-1 text-gray-800">피드 작성</span>
                   <Image
@@ -155,16 +142,15 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             </div>
           )}
 
-          {/* 플러스 버튼 */}
+          {/* 플러스 버튼 위치 그대로 */}
           <button
             type="button"
             onClick={handlePlusClick}
             className={[
-              'absolute left-1/2 z-50 -translate-x-1/2',
+              'absolute z-20 left-1/2 -translate-x-1/2 bottom-18',
               'w-14 h-14',
-              'cursor-pointer', // ✅ 다른 아이콘처럼 커서 변경
               'transition-transform duration-200 ease-in-out',
-              'hover:opacity-80 cursor-pointer',
+              'hover:opacity-80',
               isPlusOpen ? 'rotate-90' : 'rotate-0',
             ].join(' ')}
             style={{ bottom: 50 }}
@@ -176,7 +162,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
               alt="플러스"
               width={56}
               height={56}
-              className="h-[56px] w-[56px]"
+              className="w-[56px] h-[56px]"
               priority
             />
           </button>
@@ -193,15 +179,10 @@ export default function NavBar({ active, onChange }: NavBarProps) {
   )
 }
 
-/** 아이콘 자리 구분용 네이밍 */
 function iconByName(key: NavKey) {
   switch (key) {
-    case 'home':
-      return <IconHome />
     case 'feed':
       return <IconFeed />
-    case 'library':
-      return <IconLibrary />
     case 'profile':
       return <IconProfile />
   }

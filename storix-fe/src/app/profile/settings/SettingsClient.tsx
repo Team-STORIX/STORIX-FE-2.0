@@ -6,45 +6,80 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { withdrawUser } from '@/lib/api/auth/withdraw.api'
+import { logoutUser } from '@/lib/api/auth/logout.api'
 import { useAuthStore } from '@/store/auth.store'
+import { useProfileStore } from '@/store/profile.store'
+
+const TERMS_URL =
+  'https://truth-gopher-09e.notion.site/STORIX-2cae81f7094880c889bfd8300787572a'
 
 export default function SettingsClient() {
   const router = useRouter()
-  const clearAuth = useAuthStore((s) => s.clearAuth)
+  const clearAuth = useAuthStore((state) => state.clearAuth)
+  const clearMe = useProfileStore((s) => s.clearMe)
 
-  // ✅ 기존에 쓰던 useState들 있으면 그대로 유지
-  // const [open, setOpen] = useState(false)
+  const [isWithdrawing, setIsWithdrawing] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  const handleWithdraw = async () => {
-    const ok =
-      typeof window !== 'undefined' &&
-      window.confirm(
-        '회원 탈퇴 시 계정 정보는 복구할 수 없어요.\n정말 탈퇴하시겠어요?',
-      )
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+
+    const ok = window.confirm('로그아웃 하시겠어요?')
     if (!ok) return
 
     try {
-      await withdrawUser()
+      setIsLoggingOut(true)
+
+      const res = await logoutUser()
+      if (!res.isSuccess) {
+        console.warn('[logout] failed:', res.code, res.message)
+      }
+
       clearAuth()
+
+      clearMe()
       router.replace('/login')
-    } catch {
-      alert('회원 탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요.')
+    } catch (error) {
+      console.error('[logout] error:', error)
+      clearAuth()
+      clearMe()
+      router.replace('/login')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  const handleWithdraw = async () => {
+    if (isWithdrawing) return
+
+    const ok = window.confirm(
+      '회원 탈퇴 시 계정 정보는 복구할 수 없어요.\n정말 탈퇴하시겠어요?',
+    )
+    if (!ok) return
+
+    try {
+      setIsWithdrawing(true)
+
+      await withdrawUser()
+
+      clearAuth()
+      clearMe()
+      router.replace('/login')
+    } catch (error) {
+      alert('회원 탈퇴 중 오류가 발생했어요. 다시 시도해주세요.')
+    } finally {
+      setIsWithdrawing(false)
     }
   }
 
   return (
-    // ✅ 배포 모바일에서 회색 비침 방지 + ✅ NavBar 가림 방지
-    <div className="min-h-full w-full bg-white pb-32">
-      {/* StatusBar 높이만큼 */}
-      <div className="h-[54px]" />
-
-      {/* ===== 여기부터는 너 기존 settings/page.tsx 내용 그대로 옮기기 ===== */}
-      {/* 예: 헤더 */}
+    <div className="flex min-h-dvh flex-col">
+      {/* TopBar */}
       <div className="px-4 py-2">
         <div className="relative flex h-10 items-center justify-center">
           <Link
             href="/profile"
-            className="absolute left-0 flex h-10 w-10 items-center justify-center"
+            className="absolute left-0 transition-opacity hover:opacity-70"
           >
             <Image
               src="/icons/back.svg"
@@ -54,25 +89,66 @@ export default function SettingsClient() {
             />
           </Link>
 
-          <h1 className="text-[16px] font-medium leading-[140%] text-[var(--color-gray-900)]">
+          <h1
+            className="text-[16px] font-medium leading-[140%]"
+            style={{ color: 'var(--color-gray-900)' }}
+          >
             설정
           </h1>
         </div>
       </div>
 
-      {/* 설정 컨텐츠 */}
-      <div className="px-4 py-8">
-        <button
-          type="button"
-          onClick={handleWithdraw}
-          className="h-[50px] w-full rounded-md border border-[var(--color-warning)] text-[14px] font-medium transition-opacity hover:opacity-80 cursor-pointer"
-          style={{ color: 'var(--color-warning)' }}
+      {/* ✅ 내용 영역 */}
+      <div className="flex flex-1 flex-col px-4 py-8">
+        {/* ✅ 상단: 이용약관 */}
+        <a
+          href={TERMS_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="h-[50px] w-full rounded-md border
+                     border-[var(--color-gray-200)]
+                     text-[14px] font-medium
+                     transition-opacity hover:opacity-80"
+          style={{ color: 'var(--color-gray-900)' }}
         >
-          회원탈퇴
-        </button>
-      </div>
+          <span className="flex h-full w-full items-center justify-center">
+            이용약관 보러가기
+          </span>
+        </a>
 
-      {/* ===== 기존 코드 끝 ===== */}
+        {/* ✅ 하단으로 밀기 */}
+        <div className="mt-auto space-y-3 pt-10">
+          {/* 로그아웃 */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut || isWithdrawing}
+            className="h-[50px] w-full rounded-md border
+                       border-[var(--color-gray-200)]
+                       text-[14px] font-medium
+                       transition-opacity hover:opacity-80
+                       disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ color: 'var(--color-gray-900)' }}
+          >
+            {isLoggingOut ? '로그아웃 중...' : '로그아웃'}
+          </button>
+
+          {/* 회원탈퇴 */}
+          <button
+            type="button"
+            onClick={handleWithdraw}
+            disabled={isWithdrawing || isLoggingOut}
+            className="h-[50px] w-full rounded-md border
+                       border-[var(--color-warning)]
+                       text-[14px] font-medium
+                       transition-opacity hover:opacity-80
+                       disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ color: 'var(--color-warning)' }}
+          >
+            {isWithdrawing ? '탈퇴 처리 중...' : '회원탈퇴'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

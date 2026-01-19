@@ -5,7 +5,7 @@ import { useState } from 'react'
 import TopBar from '@/app/profile/components/topbar'
 import WriterProfile from '@/app/writers/profile/components/writerProfile'
 import PreferenceTab from '@/app/writers/profile/components/preferenceTab'
-import NavBar from '@/app/writers/feed/components/NavigaitionBar'
+import NavBar from '@/app/writers/feed/components/navigationBar'
 
 import MyBooks from '@/app/writers/profile/components/myBooks'
 import Articles from '@/app/writers/profile/components/articles'
@@ -20,7 +20,6 @@ export default function ProfilePage() {
 
   return (
     <div className="relative w-full min-h-full pb-[169px]">
-      <div className="h-[54px]" />
       <TopBar />
 
       <WriterProfile

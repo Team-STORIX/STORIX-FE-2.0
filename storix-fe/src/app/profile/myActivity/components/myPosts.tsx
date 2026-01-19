@@ -2,9 +2,11 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 export default function MyPosts() {
   // TODO: API 연동 후 실제 데이터로 대체
+  const router = useRouter()
   const posts = [
     {
       id: 1,
@@ -153,40 +155,58 @@ export default function MyPosts() {
                 style={{ aspectRatio: '62/83' }}
               />
 
-              {/* 작품 정보 */}
-              <div className="flex flex-col justify-between w-[210px]">
-                {/* 제목 */}
-                <p
-                  className="text-[16px] font-medium leading-[140%] overflow-hidden text-ellipsis whitespace-nowrap"
-                  style={{ color: 'var(--color-black)' }}
-                >
-                  {post.work.title}
-                </p>
+              {/* ✅ 작품 정보 + (오른쪽 화살표) 를 같은 라인에 배치 */}
+              <div className="flex w-full items-stretch">
+                {/* ✅ 기존 작품 정보 (간격/디자인 손대지 않음) */}
+                <div className="flex flex-col justify-between w-[210px]">
+                  {/* 제목 */}
+                  <p
+                    className="text-[16px] font-medium leading-[140%] overflow-hidden text-ellipsis whitespace-nowrap"
+                    style={{ color: 'var(--color-black)' }}
+                  >
+                    {post.work.title}
+                  </p>
 
-                {/* 작가 정보 */}
-                <p
-                  className="text-[12px] font-medium leading-[140%]"
-                  style={{ color: 'var(--color-gray-500)' }}
-                >
-                  {post.work.author} · {post.work.type} · {post.work.genre}
-                </p>
+                  {/* 작가 정보 */}
+                  <p
+                    className="text-[12px] font-medium leading-[140%]"
+                    style={{ color: 'var(--color-gray-500)' }}
+                  >
+                    {post.work.author} · {post.work.type} · {post.work.genre}
+                  </p>
 
-                {/* 해시태그 */}
-                <div className="flex gap-1 flex-wrap">
-                  {post.hashtags.map((tag, index) => (
-                    <div
-                      key={index}
-                      className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]"
-                      style={{
-                        border: '1px solid var(--color-gray-100)',
-                        backgroundColor: 'var(--color-gray-50)',
-                        color: 'var(--color-gray-800)',
-                      }}
-                    >
-                      {tag}
-                    </div>
-                  ))}
+                  {/* 해시태그 */}
+                  <div className="flex gap-1 flex-wrap">
+                    {post.hashtags.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]"
+                        style={{
+                          border: '1px solid var(--color-gray-100)',
+                          backgroundColor: 'var(--color-gray-50)',
+                          color: 'var(--color-gray-800)',
+                        }}
+                      >
+                        {tag}
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                {/* ✅ 오른쪽 12px 패딩 + 상하 중앙 화살표 */}
+                <button
+                  type="button"
+                  onClick={() => router.push('/feed')}
+                  className="ml-auto pl-3 flex items-center justify-center cursor-pointer transition-opacity hover:opacity-70"
+                  aria-label="작품 상세 보기"
+                >
+                  <Image
+                    src="/icons/icon-arrow-forward-small.svg"
+                    alt="작품 상세"
+                    width={24}
+                    height={24}
+                  />
+                </button>
               </div>
             </div>
           </div>

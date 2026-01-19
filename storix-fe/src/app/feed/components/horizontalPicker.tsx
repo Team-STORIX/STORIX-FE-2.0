@@ -5,7 +5,7 @@
 export type PickerItem = {
   id: string
   name: string
-  thumbnailUrl?: string // 나중에 API 붙이면 사용
+  thumbnailUrl?: string
 }
 
 type Props = {
@@ -23,44 +23,25 @@ export default function HorizontalPicker({
     <section
       className="w-full"
       style={{
-        // ✅ 디자인: 393*110, 좌우16, 아래20
         height: 110,
         paddingLeft: 16,
         paddingRight: 16,
         paddingBottom: 20,
-
-        // ✅ 요청: 밑줄 + 흰 배경
         borderBottom: '6px solid var(--gray-50, #F8F7F7)',
         background: 'var(--white, #FFF)',
       }}
     >
-      <div className="h-full overflow-x-auto">
+      <div className="h-full">
         <div className="flex items-start h-full">
           {items.map((item, idx) => {
             const isActive = selectedId === item.id
             const isAll = item.id === 'all'
             const opacity = isActive ? 1 : 0.5
 
-            // ✅ 텍스트 기본(Body2)
-            const baseText = {
-              color: 'var(--gray-900, #100F0F)',
-              textAlign: 'center' as const,
-              fontFamily: 'Pretendard',
-              fontSize: 14,
-              fontStyle: 'normal' as const,
-              fontWeight: 500,
-              lineHeight: '140%',
-            }
-
-            // ✅ 활성 텍스트 규칙
-            // - 전체 활성: 검정(기본 그대로)
-            // - 일반 활성: 핑크 + bold (Body4)
+            // ✅ 색은 유지 (요청대로), 활성만 기존 규칙 유지
             const activeText = isAll
               ? {}
-              : {
-                  color: 'var(--magenta-300-main, #FF4093)',
-                  fontWeight: 700,
-                }
+              : { color: 'var(--magenta-300-main, #FF4093)', fontWeight: 700 }
 
             return (
               <div key={item.id} className="flex items-start h-full">
@@ -75,15 +56,10 @@ export default function HorizontalPicker({
                   }}
                   aria-pressed={isActive}
                 >
-                  {/* ✅ 60x60 원형 이미지(지금은 썸네일 없으니 placeholder) */}
                   <div
                     className="relative w-[60px] h-[60px] overflow-hidden rounded-full"
-                    style={{
-                      background: 'var(--gray-100, #EEEDED)',
-                    }}
+                    style={{ background: 'var(--gray-100, #EEEDED)' }}
                   >
-                    {/* 썸네일 들어오면 여기서 Image로 교체 */}
-                    {/* 활성(전체 제외)일 때 핑크 톤 오버레이 */}
                     {isActive && !isAll && (
                       <div
                         className="absolute inset-0"
@@ -92,11 +68,11 @@ export default function HorizontalPicker({
                     )}
                   </div>
 
-                  {/* ✅ 이미지 아래 8px, max 62px, ... */}
+                  {/* ✅ SUIT / 14 / 500 / 140% / center  (body-2가 14/500/140% 담당) */}
                   <p
-                    className="mt-2 w-[62px] truncate"
+                    className="mt-2 w-[62px] truncate body-2 text-center"
                     style={{
-                      ...baseText,
+                      fontFamily: 'SUIT',
                       ...(isActive ? activeText : null),
                     }}
                     title={item.name}
@@ -105,7 +81,6 @@ export default function HorizontalPicker({
                   </p>
                 </button>
 
-                {/* ✅ 구분선은 ‘전체’ 옆(= 첫 아이템 뒤)에만 1개 */}
                 {idx === 0 && items.length > 1 && (
                   <div className="flex items-start">
                     <div style={{ width: 16 }} />
@@ -129,14 +104,9 @@ export default function HorizontalPicker({
                   </div>
                 )}
 
-                {/* ✅ 구분선이 없는 경우엔 아이템 간 간격만(너가 말한 16px) */}
                 {idx !== 0 && idx !== items.length - 1 && (
                   <div style={{ width: 16 }} />
                 )}
-                {idx === 0 &&
-                  // 전체 뒤는 구분선이 있으니까 별도 간격 불필요(이미 16+선+16)
-                  null}
-                {idx === items.length - 1 && null}
               </div>
             )
           })}

@@ -1,3 +1,5 @@
+// src/app/layout.tsx
+
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Providers } from './providers'
@@ -24,53 +26,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${suit.className}`}>
-      {/* 화면 전체 배경 */}
-      <body className="min-h-dvh overflow-y-auto justify-center ">
-        <Providers>
-          <main className="flex min-h-dvh w-full justify-center text-gray-900 bg-white">
-            {/* 가운데 393 x 852 카드 */}
-            <div className="iphone16-container flex min-h-svh w-full max-w-[393px] flex-col bg-white">
-              <div
-                id="app-scroll-container"
-                className="flex-1 overflow-y-auto no-scrollbar"
-              >
-                {children}
-              </div>
-            </div>
-          </main>
-        </Providers>
-      </body>
-    </html>
-  )
-}
-
-/*
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="ko" className={`${suit.className}`}>
-    */
-{
-  /* ✅ body에서 스크롤 허용 */
-}
-/*
+      {/* ✅ body에서 스크롤 허용 */}
       <body className="min-h-dvh overflow-y-auto justify-center">
         <Providers>
           <main className="flex min-h-dvh w-full justify-center text-gray-900 bg-white">
-          */
-{
-  /* ✅ h-svh(고정) -> min-h-svh(최소) 로 변경 */
-}
-/*
+            {/* ✅ h-svh(고정) -> min-h-svh(최소) 로 변경 */}
             <div className="iphone16-container flex min-h-svh w-full max-w-[393px] flex-col bg-white">
-            */
-{
-  /* ✅ 내부 스크롤 제거 유지 */
-}
-/*
+              {/* ✅ 내부 스크롤 제거 유지 */}
               <div id="app-scroll-container" className="flex-1">
                 {children}
               </div>
@@ -81,4 +43,3 @@ export default function RootLayout({
     </html>
   )
 }
-*/
