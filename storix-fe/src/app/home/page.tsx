@@ -52,7 +52,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full">
-            <CardNav header="오늘의 피드" roomName="#" />
+            <CardNav header="오늘의 피드" roomName="/feed" />
             <HotFeedSlider />
           </div>
 
