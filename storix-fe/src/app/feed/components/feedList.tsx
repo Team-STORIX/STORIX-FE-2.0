@@ -313,7 +313,7 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
                     {post.images.slice(0, 3).map((src, idx) => (
                       <div
                         key={`${post.id}-img-${idx}`}
-                        className="w-[236px] h-[236px] p-2 rounded-[12px] overflow-hidden flex-shrink-0"
+                        className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
                         style={{
                           border: '1px solid var(--color-gray-100)',
                           background: 'lightgray',
