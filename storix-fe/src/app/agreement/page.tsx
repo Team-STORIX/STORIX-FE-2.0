@@ -51,8 +51,6 @@ export default function AgreementPage() {
 
   return (
     <div className="relative h-full flex flex-col">
-      <div className="h-[54px]" />
-
       <div className="px-4 py-2">
         <div className="relative flex items-center justify-center h-10">
           <Link

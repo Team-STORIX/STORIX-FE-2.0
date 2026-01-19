@@ -6,7 +6,7 @@ import { useState } from 'react'
 import TopBar from '@/app/profile/components/topbar'
 import WriterProfile from '@/app/writers/profile/components/writerProfile'
 import PreferenceTab from '@/app/writers/profile/components/preferenceTab'
-import NavBar from '@/app/writers/feed/components/NavigaitionBar'
+import NavBar from '@/app/writers/feed/components/navigationBar'
 
 export default function ProfilePage() {
   // ✅ 임시 기본값 (로그인 없이 접근 가능)
@@ -17,7 +17,6 @@ export default function ProfilePage() {
 
   return (
     <div className="relative w-full min-h-full pb-[169px]">
-      <div className="h-[54px]" />
       <TopBar />
 
       <WriterProfile

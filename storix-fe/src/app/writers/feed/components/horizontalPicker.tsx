@@ -30,22 +30,12 @@ export default function HorizontalPicker({
         background: 'var(--white, #FFF)',
       }}
     >
-      <div className="h-full overflow-x-auto">
+      <div className="h-full">
         <div className="flex items-start h-full">
           {items.map((item, idx) => {
             const isActive = selectedId === item.id
             const isAll = item.id === 'all'
             const opacity = isActive ? 1 : 0.5
-
-            const baseText = {
-              color: 'var(--gray-900, #100F0F)',
-              textAlign: 'center' as const,
-              fontFamily: 'Pretendard',
-              fontSize: 14,
-              fontStyle: 'normal' as const,
-              fontWeight: 500,
-              lineHeight: '140%',
-            }
 
             const activeText = isAll
               ? {}
@@ -57,11 +47,7 @@ export default function HorizontalPicker({
                   type="button"
                   onClick={() => onSelect(item.id)}
                   className="flex flex-col items-center"
-                  style={{
-                    width: 62,
-                    opacity,
-                    background: 'transparent',
-                  }}
+                  style={{ width: 62, opacity, background: 'transparent' }}
                   aria-pressed={isActive}
                 >
                   <div
@@ -76,10 +62,11 @@ export default function HorizontalPicker({
                     )}
                   </div>
 
+                  {/* ✅ SUIT / 14 / 500 / 140% / center */}
                   <p
-                    className="mt-2 w-[62px] truncate"
+                    className="mt-2 w-[62px] truncate body-2 text-center"
                     style={{
-                      ...baseText,
+                      fontFamily: 'SUIT',
                       ...(isActive ? activeText : null),
                     }}
                     title={item.name}

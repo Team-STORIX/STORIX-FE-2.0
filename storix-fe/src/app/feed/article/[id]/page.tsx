@@ -23,7 +23,6 @@ type Post = {
   workId?: string
   writerId?: string
   isAuthorPost?: boolean
-
   user: {
     profileImage: string
     nickname: string
@@ -245,37 +244,32 @@ export default function FeedArticlePage() {
     requestAnimationFrame(() => textareaRef.current?.focus())
   }
 
+  // ----------------------------
+  // 공용 Topbar (짧게)
+  // ----------------------------
+  const Topbar = () => (
+    <div className="w-full h-14 p-4 flex justify-between items-center bg-white border-bottom">
+      <img
+        src="/icons/back.svg"
+        alt="뒤로가기"
+        width={24}
+        height={24}
+        className="cursor-pointer brightness-0"
+        onClick={handleBack}
+      />
+      <div className="flex-1 text-center">
+        <span className="body-1" style={{ color: 'var(--color-gray-900)' }}>
+          피드
+        </span>
+      </div>
+      <div className="w-6" />
+    </div>
+  )
+
   if (!post || Number.isNaN(postId)) {
     return (
       <div className="relative w-full min-h-full bg-white">
-        <div className="h-[54px]" />
-        <div className="w-full h-14 p-4 flex justify-between items-center bg-white border-bottom">
-          <img
-            src="/icons/back.svg"
-            alt="뒤로가기"
-            width={24}
-            height={24}
-            className="cursor-pointer brightness-0"
-            onClick={handleBack}
-          />
-          <div className="flex-1 text-center">
-            <span
-              style={{
-                color: 'var(--gray-900, #100F0F)',
-                textAlign: 'center',
-                fontFamily: 'SUIT',
-                fontSize: 16,
-                fontStyle: 'normal',
-                fontWeight: 500,
-                lineHeight: '140%',
-              }}
-            >
-              피드
-            </span>
-          </div>
-          <div className="w-6" />
-        </div>
-
+        <Topbar />
         <div
           className="px-4 py-10 body-2"
           style={{ color: 'var(--color-gray-500)' }}
@@ -294,38 +288,11 @@ export default function FeedArticlePage() {
       className="relative w-full min-h-full bg-white"
       style={{ paddingBottom: 68 + 20 + 16 }}
     >
-      <div className="h-[54px]" />
-
-      {/* ✅ Topbar (요청 디자인) */}
-      <div className="w-full h-14 p-4 flex justify-between items-center bg-white border-bottom">
-        <img
-          src="/icons/back.svg"
-          alt="뒤로가기"
-          width={24}
-          height={24}
-          className="cursor-pointer brightness-0"
-          onClick={handleBack}
-        />
-        <div className="flex-1 text-center">
-          <span
-            style={{
-              color: 'var(--gray-900, #100F0F)',
-              textAlign: 'center',
-              fontFamily: 'SUIT',
-              fontSize: 16,
-              fontStyle: 'normal',
-              fontWeight: 500,
-              lineHeight: '140%',
-            }}
-          >
-            피드
-          </span>
-        </div>
-        <div className="w-6" />
-      </div>
+      <Topbar />
 
       {/* =========================
           ✅ 본문(글 1개)
+          ✅ 순서: 작품정보 → 이미지 → 본문 → 댓글
          ========================= */}
       <section className="py-5 bg-white">
         {/* 프로필 영역 */}
@@ -357,7 +324,6 @@ export default function FeedArticlePage() {
                       alt="작가"
                       width={16}
                       height={16}
-                      style={{ marginLeft: 4 }}
                     />
                   </span>
                 )}
@@ -377,6 +343,7 @@ export default function FeedArticlePage() {
             <button
               className="w-6 h-6 cursor-pointer transition-opacity hover:opacity-70"
               onClick={() => setOpenPostMenu((v) => !v)}
+              aria-label="글 메뉴"
             >
               <Image
                 src="/icons/menu-3dots.svg"
@@ -388,13 +355,8 @@ export default function FeedArticlePage() {
 
             {openPostMenu && (
               <div
-                className="absolute right-0 top-[28px] z-20 overflow-hidden"
-                style={{
-                  width: 96,
-                  height: 68,
-                  borderRadius: 4,
-                  background: '#FFF',
-                }}
+                className="absolute right-0 top-[28px] z-50 rounded"
+                style={{ width: 96, height: 68 }}
               >
                 <Image
                   src="/icons/comment-dropdown.svg"
@@ -402,17 +364,18 @@ export default function FeedArticlePage() {
                   width={96}
                   height={68}
                   className="absolute inset-0 w-full h-full"
+                  style={{ pointerEvents: 'none' }}
                 />
                 <div className="relative w-full h-full">
                   <button
                     type="button"
-                    className="w-full h-[34px] cursor-pointer"
+                    className="w-full h-[34px] cursor-pointer bg-transparent"
                     onClick={() => setOpenPostMenu(false)}
                     aria-label="신고하기"
                   />
                   <button
                     type="button"
-                    className="w-full h-[34px] cursor-pointer"
+                    className="w-full h-[34px] cursor-pointer bg-transparent"
                     onClick={() => setOpenPostMenu(false)}
                     aria-label="차단하기"
                   />
@@ -422,28 +385,88 @@ export default function FeedArticlePage() {
           </div>
         </div>
 
-        {/* ✅✅ (원본 feedList 설정 그대로) 피드 이미지: 프로필과 본문 사이, 최대 3개, 좌우 스크롤 */}
+        {/* ✅✅ 작품 정보 영역 (요청 코드 그대로) */}
+        <div className="mt-5 px-4">
+          <div
+            className="p-3 rounded-xl flex gap-3"
+            style={{
+              border: '1px solid var(--color-gray-100)',
+              backgroundColor: 'var(--color-white)',
+            }}
+          >
+            {/* 표지 이미지 */}
+            <div
+              className="w-[62px] h-[83px] rounded bg-[var(--color-gray-200)] flex-shrink-0"
+              style={{ aspectRatio: '62/83' }}
+            />
+
+            {/* ✅ 작품 정보 + (오른쪽 화살표) 를 같은 라인에 배치 */}
+            <div className="flex w-full items-stretch">
+              <div className="flex flex-col justify-between w-[210px]">
+                {/* 제목 */}
+                <p
+                  className="text-[16px] font-medium leading-[140%] overflow-hidden text-ellipsis whitespace-nowrap"
+                  style={{ color: 'var(--color-black)' }}
+                >
+                  {post.work.title}
+                </p>
+
+                {/* 작가 정보 */}
+                <p
+                  className="text-[12px] font-medium leading-[140%]"
+                  style={{ color: 'var(--color-gray-500)' }}
+                >
+                  {post.work.author} · {post.work.type} · {post.work.genre}
+                </p>
+
+                {/* 해시태그 */}
+                <div className="flex gap-1 flex-wrap">
+                  {post.hashtags.map((tag, index) => (
+                    <div
+                      key={index}
+                      className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]"
+                      style={{
+                        border: '1px solid var(--color-gray-100)',
+                        backgroundColor: 'var(--color-gray-50)',
+                        color: 'var(--color-gray-800)',
+                      }}
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ✅ 오른쪽 12px 패딩 + 상하 중앙 화살표 */}
+              <button
+                type="button"
+                onClick={() => router.push('/feed')}
+                className="ml-auto pl-3 flex items-center justify-center cursor-pointer transition-opacity hover:opacity-70"
+                aria-label="작품 상세 보기"
+              >
+                <Image
+                  src="/icons/icon-arrow-forward-small.svg"
+                  alt="작품 상세"
+                  width={24}
+                  height={24}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ✅✅ 피드 이미지: 작품정보 다음 */}
         {post.images && post.images.length > 0 && (
           <div className="mt-4 px-4">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-scrollbar">
               <div className="flex gap-3">
                 {post.images.slice(0, 3).map((src, idx) => (
                   <div
                     key={`${post.id}-img-${idx}`}
+                    className="w-[236px] h-[236px] p-2 rounded-xl flex-shrink-0 overflow-hidden"
                     style={{
-                      display: 'flex',
-                      width: 236,
-                      height: 236,
-                      padding: 8,
-                      justifyContent: 'flex-end',
-                      alignItems: 'flex-start',
-                      gap: 10,
-                      flexShrink: 0,
-                      aspectRatio: '1 / 1',
-                      borderRadius: 12,
-                      border: '1px solid var(--gray-100, #EEEDED)',
+                      border: '1px solid var(--color-gray-100)',
                       background: 'lightgray',
-                      overflow: 'hidden',
                     }}
                   >
                     <Image
@@ -460,68 +483,11 @@ export default function FeedArticlePage() {
           </div>
         )}
 
-        {/* ✅✅ (원본 feedList 설정 그대로) 작품 정보 영역 */}
-        <div className="mt-5 px-4">
-          <div
-            className="p-3 rounded-xl flex gap-3"
-            style={{
-              border: '1px solid var(--color-gray-100)',
-              backgroundColor: 'var(--color-white)',
-            }}
-          >
-            {/* 표지 이미지(placeholder) */}
-            <div
-              className="w-[62px] h-[83px] rounded bg-[var(--color-gray-200)] flex-shrink-0"
-              style={{ aspectRatio: '62/83' }}
-            />
-
-            {/* 작품 정보 */}
-            <div className="flex flex-col justify-between w-[210px]">
-              <p
-                className="text-[16px] font-medium leading-[140%] overflow-hidden text-ellipsis whitespace-nowrap"
-                style={{ color: 'var(--color-black)' }}
-              >
-                {post.work.title}
-              </p>
-
-              <p
-                className="text-[12px] font-medium leading-[140%]"
-                style={{ color: 'var(--color-gray-500)' }}
-              >
-                {post.work.author} · {post.work.type} · {post.work.genre}
-              </p>
-
-              <div className="flex gap-1 flex-wrap">
-                {post.hashtags.map((tag, index) => (
-                  <div
-                    key={index}
-                    className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]"
-                    style={{
-                      border: '1px solid var(--color-gray-100)',
-                      backgroundColor: 'var(--color-gray-50)',
-                      color: 'var(--color-gray-800)',
-                    }}
-                  >
-                    {tag}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 본문(전문) */}
+        {/* ✅✅ 본문(전문): 이미지 다음 */}
         <div className="mt-3 px-4">
           <p
-            className="whitespace-pre-wrap pr-10"
-            style={{
-              color: 'var(--color-gray-800)',
-              fontFamily: 'SUIT',
-              fontSize: 14,
-              fontStyle: 'normal',
-              fontWeight: 500,
-              lineHeight: '140%',
-            }}
+            className="whitespace-pre-wrap body-2 pr-10"
+            style={{ color: 'var(--color-gray-800)' }}
           >
             {post.content}
           </p>
@@ -571,27 +537,8 @@ export default function FeedArticlePage() {
 
       {/* 댓글 헤더: 댓글 n (n=0이면 없음) */}
       {showCommentHeader && (
-        <div
-          style={{
-            display: 'flex',
-            padding: '12px 16px',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: 10,
-            alignSelf: 'stretch',
-          }}
-        >
-          <p
-            style={{
-              color: 'var(--gray-900, #100F0F)',
-              textAlign: 'justify',
-              fontFamily: 'Pretendard',
-              fontSize: 14,
-              fontStyle: 'normal',
-              fontWeight: 500,
-              lineHeight: '140%',
-            }}
-          >
+        <div className="px-4 py-3">
+          <p style={{ color: 'var(--color-gray-900)' }} className="body-2">
             댓글 {commentCount}
           </p>
         </div>
@@ -615,37 +562,11 @@ export default function FeedArticlePage() {
 
       {/* 댓글 입력창 (하단 고정) */}
       <div
-        style={{
-          position: 'fixed',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          bottom: 20,
-          width: 393,
-          height: 68,
-          background: 'var(--white, #FFF)',
-          zIndex: 50,
-        }}
+        className="fixed left-1/2 -translate-x-1/2 bg-white z-50"
+        style={{ bottom: 20, width: 393, height: 68 }}
       >
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-            padding: 16,
-            alignItems: 'center',
-            gap: 10,
-          }}
-        >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 9999,
-              overflow: 'hidden',
-              background: 'var(--gray-200, #E1E0E0)',
-              flexShrink: 0,
-            }}
-          >
+        <div className="w-full h-full p-4 flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full overflow-hidden bg-[var(--color-gray-200)] flex-shrink-0">
             <Image
               src={myProfileImage}
               alt="내 프로필"
@@ -656,18 +577,9 @@ export default function FeedArticlePage() {
           </div>
 
           <div
-            style={{
-              display: 'flex',
-              width: 274,
-              padding: '8px 16px',
-              alignItems: 'flex-start',
-              gap: 10,
-              borderRadius: 30,
-              border: '1px solid var(--gray-200, #E1E0E0)',
-              background: 'var(--gray-50, #F8F7F7)',
-            }}
+            className="flex w-[274px] px-4 py-2 gap-2.5 rounded-[30px] border bg-[var(--color-gray-50)] cursor-text"
+            style={{ borderColor: 'var(--color-gray-200)' }}
             onClick={() => textareaRef.current?.focus()}
-            className="cursor-text"
           >
             <textarea
               ref={textareaRef}
@@ -675,17 +587,12 @@ export default function FeedArticlePage() {
               onChange={(e) => setCommentText(e.target.value)}
               rows={1}
               placeholder="댓글을 입력하세요"
-              className="w-full bg-transparent outline-none resize-none"
+              className="w-full bg-transparent outline-none resize-none body-2"
               style={{
-                fontFamily: 'Pretendard',
-                fontSize: 14,
-                fontStyle: 'normal',
-                fontWeight: 500,
-                lineHeight: '140%',
                 color:
                   commentText.length > 0
                     ? 'var(--color-gray-800)'
-                    : 'var(--gray-300, #CECDCD)',
+                    : 'var(--color-gray-300)',
                 caretColor: 'var(--color-gray-800)',
                 height: 'auto',
                 overflowY: 'hidden',
@@ -693,7 +600,7 @@ export default function FeedArticlePage() {
             />
             <style jsx>{`
               textarea::placeholder {
-                color: var(--gray-300, #cecdcd);
+                color: var(--color-gray-300);
                 opacity: 1;
               }
             `}</style>
@@ -743,29 +650,12 @@ function CommentCard({
 
   return (
     <article
-      style={{
-        display: 'flex',
-        padding: '12px 16px',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: 12,
-        alignSelf: 'stretch',
-        borderBottom: '1px solid var(--gray-100, #EEEDED)',
-        background: 'var(--white, #FFF)',
-      }}
+      className="px-4 py-3 flex flex-col gap-3 bg-white border-bottom"
+      style={{ borderBottomColor: 'var(--color-gray-100)' }}
     >
       <div className="w-full flex items-center justify-between">
         <div className="flex items-center">
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 9999,
-              overflow: 'hidden',
-              background: 'var(--gray-200, #E1E0E0)',
-              flexShrink: 0,
-            }}
-          >
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-[var(--color-gray-200)] flex-shrink-0">
             <Image
               src={comment.user.profileImage}
               alt="댓글 프로필"
@@ -775,34 +665,14 @@ function CommentCard({
             />
           </div>
 
-          <div className="ml-2 flex items-center">
-            <p
-              style={{
-                color: 'var(--gray-900, #100F0F)',
-                textAlign: 'justify',
-                fontFamily: 'Pretendard',
-                fontSize: 14,
-                fontStyle: 'normal',
-                fontWeight: 500,
-                lineHeight: '140%',
-              }}
-            >
+          <div className="ml-2 flex items-center body-2">
+            <p style={{ color: 'var(--color-gray-900)' }}>
               {comment.user.nickname}
             </p>
-            <span style={{ width: 4 }} />
-            <span style={{ color: 'var(--gray-300, #CECDCD)' }}>·</span>
-            <span style={{ width: 4 }} />
-            <p
-              style={{
-                color: 'var(--gray-300, #CECDCD)',
-                textAlign: 'justify',
-                fontFamily: 'Pretendard',
-                fontSize: 14,
-                fontStyle: 'normal',
-                fontWeight: 500,
-                lineHeight: '140%',
-              }}
-            >
+            <span className="mx-1" style={{ color: 'var(--color-gray-300)' }}>
+              ·
+            </span>
+            <p style={{ color: 'var(--color-gray-300)' }}>
               {comment.createdAt}
             </p>
           </div>
@@ -824,24 +694,25 @@ function CommentCard({
           </button>
 
           {openMenu && (
-            <div className="absolute right-0 top-[28px] z-20 overflow-hidden w-[96px] h-[68px] rounded bg-white">
+            <div className="absolute right-0 top-[28px] z-50 w-[96px] h-[68px] rounded">
               <Image
                 src="/icons/comment-dropdown.svg"
                 alt="드롭다운"
                 width={96}
                 height={68}
                 className="absolute inset-0 w-full h-full"
+                style={{ pointerEvents: 'none' }}
               />
               <div className="relative w-full h-full">
                 <button
                   type="button"
-                  className="w-full h-[34px]"
+                  className="w-full h-[34px] cursor-pointer bg-transparent"
                   onClick={() => setOpenMenu(false)}
                   aria-label="첫번째 메뉴"
                 />
                 <button
                   type="button"
-                  className="w-full h-[34px]"
+                  className="w-full h-[34px] cursor-pointer bg-transparent"
                   onClick={() => setOpenMenu(false)}
                   aria-label="두번째 메뉴"
                 />
@@ -851,23 +722,14 @@ function CommentCard({
         </div>
       </div>
 
-      <p
-        style={{
-          color: 'var(--gray-900, #100F0F)',
-          fontFamily: 'Pretendard',
-          fontSize: 14,
-          fontStyle: 'normal',
-          fontWeight: 500,
-          lineHeight: '140%',
-        }}
-      >
+      <p className="body-2" style={{ color: 'var(--color-gray-900)' }}>
         {comment.content}
       </p>
 
       <div className="flex items-center">
         <button
           type="button"
-          className="transition-opacity hover:opacity-70"
+          className="transition-opacity hover:opacity-70 cursor-pointer"
           onClick={() => onToggleLike(comment.id)}
           aria-label="댓글 좋아요"
         >
