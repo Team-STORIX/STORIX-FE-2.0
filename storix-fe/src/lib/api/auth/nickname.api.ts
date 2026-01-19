@@ -1,5 +1,5 @@
 // src/api/auth/nickname.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import { z } from 'zod'
 
 /**
