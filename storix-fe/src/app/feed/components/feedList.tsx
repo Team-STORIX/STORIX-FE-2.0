@@ -322,8 +322,8 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
                         <Image
                           src={src}
                           alt={`피드 이미지 ${idx + 1}`}
-                          width={220}
-                          height={220}
+                          width={236}
+                          height={236}
                           className="w-full h-full object-cover rounded-[8px]"
                         />
                       </div>
