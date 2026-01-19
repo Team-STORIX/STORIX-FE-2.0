@@ -150,6 +150,7 @@ export default function LibraryWorkHomePage() {
           thumb: ui.thumb,
           rating: ui.rating,
           reviewCount: ui.reviewCount,
+          worksType: ui.worksType,
         }}
         isCheckingRoom={isCheckingRoom}
         onReviewWrite={handleReviewWrite}
