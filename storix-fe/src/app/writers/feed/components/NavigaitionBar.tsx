@@ -44,7 +44,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
         key={item.key}
         type="button"
         onClick={() => handleNavClick(item.key)}
-        className="flex flex-col items-center justify-center caption-1 px-3 hover:opacity-70 transition-opacity"
+        className="flex flex-col items-center justify-center caption-1 px-3 hover:opacity-70 transition-opacity cursor-pointer"
       >
         <div className="mb-1 flex h-6 w-6 items-center justify-center">
           <span className={isActive ? 'text-gray-900' : 'text-gray-300'}>
@@ -115,7 +115,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             'absolute left-1/2 -translate-x-1/2 bottom-18',
             'w-14 h-14',
             'transition-transform duration-200 ease-in-out',
-            'hover:opacity-70',
+            'hover:opacity-70 cursor-pointer',
             isPlusOpen ? 'rotate-90' : 'rotate-0',
           ].join(' ')}
           aria-label="추가"

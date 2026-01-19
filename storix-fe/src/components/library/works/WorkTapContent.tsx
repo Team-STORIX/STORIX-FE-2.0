@@ -57,7 +57,7 @@ export default function WorkTabContent({
             type="button"
             onClick={() => onChangeTab('info')}
             className={[
-              'flex-1 py-3 text-center caption-1',
+              'flex-1 py-3 text-center caption-1 cursor-pointer',
               tab === 'info' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
@@ -67,7 +67,7 @@ export default function WorkTabContent({
             type="button"
             onClick={() => onChangeTab('review')}
             className={[
-              'flex-1 py-3 text-center caption-1',
+              'flex-1 py-3 text-center caption-1 cursor-pointer',
               tab === 'review' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
@@ -122,13 +122,13 @@ export default function WorkTabContent({
               {ui.keywords.length === 0 ? (
                 <p className="body-2 mt-3 text-gray-400">키워드가 없어요</p>
               ) : (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2 ">
                   {ui.keywords.map((k) => (
                     <span
                       key={k}
-                      className="caption-1 rounded-md border border-gray-200 bg-white px-3 py-2 text-gray-600"
+                      className="inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm cursor-pointer"
                     >
-                      {k}
+                      #{k}
                     </span>
                   ))}
                 </div>
@@ -142,7 +142,7 @@ export default function WorkTabContent({
               <button
                 type="button"
                 onClick={onReviewWrite}
-                className="mt-3 w-full rounded-xl border border-gray-200 px-4 py-4 text-left"
+                className="mt-3 w-full rounded-xl border border-gray-200 px-4 py-4 text-left cursor-pointer"
               >
                 <p className="caption-1 text-gray-500">{ui.title}...</p>
                 <p className="body-2 mt-1 text-gray-700 line-clamp-2">
@@ -159,7 +159,7 @@ export default function WorkTabContent({
                   <button
                     key={r.id}
                     type="button"
-                    className="flex w-full items-start gap-3 rounded-xl border border-gray-100 px-4 py-4 text-left"
+                    className="flex w-full items-start gap-3 rounded-xl border border-gray-100 px-4 py-4 text-left cursor-pointer"
                   >
                     <div
                       className={[

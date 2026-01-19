@@ -22,7 +22,7 @@ export default function SearchResultBottomNav({ keyword, active }: Props) {
         <button
           type="button"
           onClick={() => go('works')}
-          className={`flex-1 rounded-full py-2 text-[14px] font-semibold transition ${
+          className={`flex-1 rounded-full py-2 text-[14px] font-semibold cursor-pointer transition ${
             active === 'works'
               ? 'bg-white text-black'
               : 'bg-black text-white/70'
@@ -33,7 +33,7 @@ export default function SearchResultBottomNav({ keyword, active }: Props) {
         <button
           type="button"
           onClick={() => go('artists')}
-          className={`flex-1 rounded-full py-2 text-[14px] font-semibold transition ${
+          className={`flex-1 rounded-full py-2 text-[14px] font-semibold cursor-pointer transition ${
             active === 'artists'
               ? 'bg-white text-black'
               : 'bg-black text-white/70'

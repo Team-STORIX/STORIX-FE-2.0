@@ -9,6 +9,7 @@ export type Work = {
   title: string
   meta: string
   thumb: string
+  rating: number
 }
 
 const clamp = (n: number, min: number, max: number) =>
@@ -144,11 +145,10 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
                 type="button"
                 onClick={() => scrollToIndex(i)}
                 className={[
-                  'relative shrink-0 snap-center rounded-r-sm bg-[var(--color-magenta-300)]',
+                  'relative shrink-0 snap-center rounded-r-xs bg-[var(--color-magenta-300)]',
                   'transition-all duration-250 ease-out',
-                  'shadow-[0px_10px_24px_rgba(255,64,147,0.18)]',
-                  'hover:opacity-90',
-                  isActive ? 'opacity-100 rounded-md' : 'opacity-80',
+                  'hover:opacity-90 cursor-pointer',
+                  isActive ? 'bg-white' : '',
                 ].join(' ')}
                 style={{
                   width: isActive ? 150 : 30, // 가운데만 “표지로 확장”
@@ -158,33 +158,34 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
               >
                 {/*  표지(활성일 때만 보임) */}
                 {isActive && (
-                  <div className="absolute inset-0 w-37.5 h-50 overflow-hidden rounded-md">
+                  <div className="absolute inset-0 w-37.5 h-50 overflow-hidden rounded-sm">
                     <Image
                       src={w.thumb}
                       alt={w.title}
                       fill
                       className="object-cover"
                     />
-                    {/* 살짝 그라디언트로 책등 느낌 유지(선택) */}
-                    <div className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-white/25 to-transparent" />
                   </div>
                 )}
 
                 {/*  책등 텍스트(비활성은 세로, 활성은 숨김) */}
                 {!isActive && (
-                  <div className="flex flex-col absolute inset-0 flex items-center justify-start">
-                    <span className="flex flex-col body-2 whitespace-nowrap rotate-90 text-white justify-start">
-                      {w.title}
-                    </span>
+                  <div className="absolute inset-0 flex flex-col justify-start items-center gap-[10px] w-[30px] p-[10px] shrink-0 overflow-hidden">
+                    <div className="flex w-[180px] h-[17px] max-w-[180px] flex-col justify-end pt-12">
+                      <span className="body-2 text-white whitespace-nowrap rotate-90">
+                        {w.title}
+                      </span>
+                    </div>
                   </div>
                 )}
+
                 {!isActive && i > activeIdx && (
                   <Image
                     src="/icons/library/rightGradient.svg"
                     alt=""
                     width={22}
                     height={200}
-                    className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 "
+                    className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5"
                   />
                 )}
                 {!isActive && i < activeIdx && (
@@ -206,9 +207,20 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
 
       {/* 활성 작품 정보(표지 밑) */}
       {active && (
-        <div className="mt-6 flex flex-col items-center px-4">
-          <p className="heading-2 text-black text-center">{active.title}</p>
-          <p className="body-2 mt-3 text-gray-400 text-center">{active.meta}</p>
+        <div className="mt-1 flex flex-col items-center px-2">
+          <p className="heading-3 text-black text-center">{active.title}</p>
+          <p className="body-1 mt-2 text-gray-400 text-center">{active.meta}</p>
+          <p className="caption-1 mt-3 w-14 h-6 inline-flex items-center gap-1 rounded-3xl border border-gray-200 px-2.5 py-1 text-[var(--color-magenta-300)] text-center">
+            <Image
+              src="/search/littleStar.svg"
+              alt="star icon"
+              width={14}
+              height={14}
+              className="inline-block mr-1"
+              priority
+            />
+            {Number(active.rating).toFixed(1)}
+          </p>
         </div>
       )}
     </div>

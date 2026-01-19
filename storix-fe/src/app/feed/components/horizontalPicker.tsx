@@ -67,7 +67,7 @@ export default function HorizontalPicker({
                 <button
                   type="button"
                   onClick={() => onSelect(item.id)}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center cursor-pointer"
                   style={{
                     width: 62, // ✅ 텍스트 max 62px에 맞춰 그룹 폭도 맞춤
                     opacity,

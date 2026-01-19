@@ -83,7 +83,7 @@ export default function WorkHeaderCover({
             <button
               type="button"
               onClick={onReviewWrite}
-              className="flex h-11 flex-1 items-center justify-center gap-1 rounded-xl bg-[var(--color-magenta-100)] text-[var(--color-magenta-400)] caption-1"
+              className="flex h-11 flex-1 items-center justify-center gap-1 rounded-xl bg-[var(--color-magenta-100)] text-[var(--color-magenta-400)] caption-1 cursor-pointer"
             >
               <span className="text-[var(--color-magenta-400)]">+</span>
               리뷰쓰기
@@ -93,7 +93,7 @@ export default function WorkHeaderCover({
               type="button"
               onClick={onTopicroomEnter}
               disabled={isCheckingRoom}
-              className="flex h-11 flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white caption-1 disabled:opacity-50"
+              className="flex h-11 flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white caption-1 disabled:opacity-50 cursor-pointer"
             >
               {isCheckingRoom ? '확인 중...' : '토픽룸 입장'}
             </button>

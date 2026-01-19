@@ -31,7 +31,7 @@ export default function SearchResultWorks({
               className="flex gap-4 border-b border-gray-100 p-4"
             >
               {/* 썸네일 */}
-              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100">
+              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100 cursor-pointer">
                 {w.thumbnailUrl ? (
                   <Image
                     src={w.thumbnailUrl}

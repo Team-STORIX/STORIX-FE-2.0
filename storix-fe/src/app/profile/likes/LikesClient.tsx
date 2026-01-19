@@ -189,7 +189,7 @@ export default function LikesClient() {
                   <button
                     type="button"
                     onClick={() => toggleLike(w.id)}
-                    className="ml-3 transition-opacity hover:opacity-70"
+                    className="ml-3 transition-opacity hover:opacity-70 cursor-pointer"
                     aria-label="관심 작품 토글"
                   >
                     <Image
@@ -233,7 +233,7 @@ export default function LikesClient() {
                   <button
                     type="button"
                     onClick={() => toggleLike(wr.id)}
-                    className="ml-3 transition-opacity hover:opacity-70"
+                    className="ml-3 transition-opacity hover:opacity-70 cursor-pointer"
                     aria-label="관심 작가 토글"
                   >
                     <Image
@@ -283,7 +283,7 @@ function EmptyState({ tab, onClickCta }: { tab: Tab; onClickCta: () => void }) {
 
       <button
         type="button"
-        className="mt-3 cursor-pointer hover:opacity-80 transition-opacity"
+        className="mt-3 cursor-pointer hover:opacity-80  transition-opacity cursor-pointer"
         onClick={onClickCta}
         aria-label="검색으로 이동"
       >

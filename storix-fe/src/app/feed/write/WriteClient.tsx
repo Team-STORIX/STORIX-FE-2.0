@@ -70,7 +70,7 @@ export default function WriteClient({ work }: { work: Work | null }) {
   return (
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       <div className="flex h-[54px] items-center justify-between px-4">
-        <button onClick={() => router.back()}>
+        <button onClick={() => router.back()} className="cursor-pointer">
           <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
         <span className="text-body-1 font-medium">피드</span>

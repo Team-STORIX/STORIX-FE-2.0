@@ -15,7 +15,7 @@ export default function WorkTopBar({ onBack, isLiked, onToggleLike }: Props) {
       <button
         type="button"
         onClick={onBack}
-        className="flex h-8 w-8 items-center justify-center"
+        className="flex h-8 w-8 items-center justify-center cursor-pointer"
         aria-label="뒤로가기"
       >
         <Image src="/icons/back.svg" alt="back" width={24} height={24} />

@@ -68,7 +68,7 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
       // ✅ 성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
       sessionStorage.removeItem(STORAGE_KEY_REVIEW)
 
-      router.replace('/feed')
+      router.replace(`/library/works/${resolvedWork.id}`)
     } catch (e) {
       alert(e instanceof Error ? e.message : '리뷰 등록 실패')
     } finally {
@@ -84,7 +84,7 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
         <button onClick={() => router.back()} className="cursor-pointer">
           <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
-        <span className="text-body-1 font-medium">피드</span>
+        <span className="text-body-1 font-medium">리뷰</span>
         <button
           onClick={onSubmit}
           disabled={!canSubmit || submitting}
@@ -109,14 +109,14 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
               className="rounded-md object-cover"
             />
           ) : (
-            <div className="h-[56px] w-[56px] rounded-md bg-gray-100" />
+            <div className="h-14 w-14 rounded-md bg-gray-100" />
           )}
 
           <div className="flex flex-col">
-            <span className="text-body-1">
+            <span className="heading-4">
               {resolvedWork?.title ?? '작품 제목'}
             </span>
-            <span className="text-caption text-gray-500">
+            <span className="caption-2 text-gray-500 mb-4">
               {resolvedWork?.meta ?? ''}
             </span>
             <RatingInput value={rating} onChange={setRating} />
@@ -127,12 +127,23 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
           <span className="heading-2 mt-6">리뷰 작성</span>
           <div className="mt-6 flex items-center gap-1">
             <span className="caption-1 text-gray-500">스포일러 방지</span>
-            <input
-              type="checkbox"
-              checked={spoiler}
-              onChange={(e) => setSpoiler(e.target.checked)}
-              className="accent-black"
-            />
+            <button
+              type="button"
+              onClick={() => setSpoiler((prev) => !prev)}
+              aria-pressed={spoiler}
+              aria-label="스포일러 방지 토글"
+              className="ml-auto cursor-pointer hover:opacity-80"
+            >
+              <img
+                src={
+                  spoiler
+                    ? '/common/icons/active.svg'
+                    : '/common/icons/deactive.svg'
+                }
+                alt={spoiler ? '활성' : '비활성'}
+                className="h-4.5 w-8"
+              />
+            </button>
           </div>
         </div>
 

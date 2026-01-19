@@ -702,7 +702,7 @@ export default function FeedArticlePage() {
           <button
             type="button"
             onClick={submitComment}
-            className="transition-opacity hover:opacity-70"
+            className="transition-opacity hover:opacity-70 cursor-pointer"
             aria-label="댓글 등록"
             disabled={!canSubmit}
             style={{ opacity: canSubmit ? 1 : 0.4, flexShrink: 0 }}
@@ -811,7 +811,7 @@ function CommentCard({
         <div className="relative" ref={menuRef}>
           <button
             type="button"
-            className="w-6 h-6 transition-opacity hover:opacity-70"
+            className="w-6 h-6 transition-opacity hover:opacity-70 cursor-pointer"
             onClick={() => setOpenMenu((v) => !v)}
             aria-label="댓글 메뉴"
           >
@@ -835,13 +835,13 @@ function CommentCard({
               <div className="relative w-full h-full">
                 <button
                   type="button"
-                  className="w-full h-[34px]"
+                  className="w-full h-[34px] cursor-pointer"
                   onClick={() => setOpenMenu(false)}
                   aria-label="첫번째 메뉴"
                 />
                 <button
                   type="button"
-                  className="w-full h-[34px]"
+                  className="w-full h-[34px] cursor-pointer"
                   onClick={() => setOpenMenu(false)}
                   aria-label="두번째 메뉴"
                 />
@@ -867,7 +867,7 @@ function CommentCard({
       <div className="flex items-center">
         <button
           type="button"
-          className="transition-opacity hover:opacity-70"
+          className="transition-opacity hover:opacity-70 cursor-pointer"
           onClick={() => onToggleLike(comment.id)}
           aria-label="댓글 좋아요"
         >

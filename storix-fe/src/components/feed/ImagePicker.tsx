@@ -48,7 +48,7 @@ export default function ImagePicker({
       <button
         type="button"
         onClick={open}
-        className="inline-flex items-center gap-2"
+        className="inline-flex items-center gap-2 cursor-pointer"
       >
         <Image
           src="/feed/icon-photo.svg"
@@ -78,7 +78,7 @@ export default function ImagePicker({
               <button
                 type="button"
                 onClick={() => removeAt(idx)}
-                className="absolute right-1 top-1 rounded-full bg-black/60 px-2 py-1 text-[10px] text-white"
+                className="absolute right-1 top-1 rounded-full bg-black/60 px-2 py-1 text-[10px] text-white cursor-pointer"
               >
                 X
               </button>

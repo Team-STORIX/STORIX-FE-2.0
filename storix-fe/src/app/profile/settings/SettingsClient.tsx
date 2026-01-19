@@ -65,7 +65,7 @@ export default function SettingsClient() {
         <button
           type="button"
           onClick={handleWithdraw}
-          className="h-[50px] w-full rounded-md border border-[var(--color-warning)] text-[14px] font-medium transition-opacity hover:opacity-80"
+          className="h-[50px] w-full rounded-md border border-[var(--color-warning)] text-[14px] font-medium transition-opacity hover:opacity-80 cursor-pointer"
           style={{ color: 'var(--color-warning)' }}
         >
           회원탈퇴

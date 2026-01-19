@@ -1,15 +1,22 @@
+// src/app/library/list/page.tsx
 'use client'
 
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useInView } from 'react-intersection-observer'
+
 import NavBar from '@/components/common/NavBar'
 import Warning from '@/components/common/Warining'
 import LibraryHeader from '@/components/library/LibraryHeader'
+import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
+
+import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
+import type { LibraryReviewSort } from '@/lib/api/library/library.api'
 
 type SortKey = 'DEFAULT' | 'REVIEW' | 'RATING'
 
-type LibraryWork = {
+type UILibraryWork = {
   id: number
   title: string
   meta: string
@@ -18,58 +25,80 @@ type LibraryWork = {
   reviewCount: number
 }
 
-const MOCK_WORKS: LibraryWork[] = [
-  {
-    id: 1,
-    title: '무림세가 천대받는 막내딸로 태어났습니다',
-    meta: '열매, 시오, 마루별 • 웹툰',
-    thumb: '/image/sample/topicroom-1.webp',
-    rating: 4.5,
-    reviewCount: 100,
-  },
-  {
-    id: 2,
-    title: '상수리나무 아래',
-    meta: 'P, 서말, 나무, 김수지 • 웹툰',
-    thumb: '/image/sample/topicroom-2.webp',
-    rating: 4.5,
-    reviewCount: 100,
-  },
-  {
-    id: 3,
-    title: '재혼황후',
-    meta: '히어리, 소품 • 웹툰',
-    thumb: '/image/sample/topicroom-3.webp',
-    rating: 4.5,
-    reviewCount: 100,
-  },
-]
-
 export default function LibraryListPage() {
   const router = useRouter()
-
-  // 테스트용: 비어있는 화면 보고 싶으면 []로
-  const [works] = useState<LibraryWork[]>(MOCK_WORKS)
-
   const [sort, setSort] = useState<SortKey>('DEFAULT')
 
-  const sortedWorks = useMemo(() => {
-    const copy = [...works]
-    if (sort === 'REVIEW')
-      return copy.sort((a, b) => b.reviewCount - a.reviewCount)
-    if (sort === 'RATING') return copy.sort((a, b) => b.rating - a.rating)
-    return copy
-  }, [works, sort])
+  const [showReviewSheet, setShowReviewSheet] = useState(false)
 
-  const count = works.length
+  // 기존 기능 유지: 서버 정렬은 현재 LATEST / DESC_RATING만 사용
+  const apiSort: LibraryReviewSort = useMemo(() => {
+    if (sort === 'RATING') return 'DESC_RATING'
+    return 'LATEST'
+  }, [sort])
+
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useLibraryReviewInfinite({ sort: apiSort })
+
+  const totalReviewCount = data?.pages?.[0]?.totalReviewCount ?? 0
+
+  const works: UILibraryWork[] = useMemo(() => {
+    const items = data?.pages?.flatMap((p) => p.result.content) ?? []
+
+    const mapped = items.map((w) => {
+      const metaParts: string[] = []
+      const artist = (w as any).artistName
+      const worksType = (w as any).worksType
+      const genre = (w as any).genre
+      if (artist) metaParts.push(artist)
+      if (worksType) metaParts.push(worksType)
+      if (genre) metaParts.push(genre)
+
+      const rating =
+        (w as any).reviewRating ??
+        (w as any).avgRating ??
+        (w as any).rating ??
+        0
+      const reviewCount = (w as any).reviewCount ?? (rating ? 1 : 0)
+
+      return {
+        id: w.worksId,
+        title: w.worksName ?? '',
+        meta: metaParts.join(' • '),
+        thumb: w.thumbnailUrl ?? '',
+        rating: Number(rating ?? 0),
+        reviewCount: Number(reviewCount ?? 0),
+      }
+    })
+
+    // REVIEW 정렬은 클라에서만 보정
+    if (sort === 'REVIEW') {
+      return [...mapped].sort(
+        (a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0),
+      )
+    }
+
+    return mapped
+  }, [data, sort])
+
+  const { ref, inView } = useInView({ threshold: 0 })
+
+  useEffect(() => {
+    if (!inView) return
+    if (!hasNextPage) return
+    if (isFetchingNextPage) return
+    fetchNextPage()
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  const count = totalReviewCount || works.length
 
   return (
-    <div className="px-4">
+    <div className="relative min-h-screen pb-[169px] bg-white">
       {/* 헤더 */}
       <LibraryHeader />
 
       {/* 상단 컨트롤(드롭다운/카운트/뷰 전환) */}
-      <div className="mt-2 flex items-center justify-between px-4 pb-3 border-b border-gray-100">
+      <div className="flex items-center justify-between px-4 py-4.5 border-b border-gray-200">
         {/* 드롭다운 */}
         <div className="relative">
           <select
@@ -91,13 +120,17 @@ export default function LibraryListPage() {
 
           {/* caret */}
           <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" />
-            </svg>
+            <Image
+              src={'/icons/arrow-down.svg'}
+              alt={'정렬 옵션 열기'}
+              width={24}
+              height={24}
+              className="inline-block"
+            />
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <span className="body-2 text-gray-400">{count}개</span>
 
           {/* list → gallery 전환 */}
@@ -105,85 +138,85 @@ export default function LibraryListPage() {
             type="button"
             onClick={() => router.push('/library/gallery')}
             aria-label="갤러리형 보기"
-            className="p-2 hover:opacity-70 cursor-pointer"
+            className="hover:opacity-70 cursor-pointer"
           >
             <Image
               src={'/icons/library/icon-gallery.svg'}
               alt={'갤러리형 보기'}
               width={24}
               height={24}
-              className="inline-block"
+              className=""
             />
           </button>
         </div>
       </div>
 
       {/* 콘텐츠 */}
-      {sortedWorks.length === 0 ? (
-        <div className="px-4">
-          <Warning
-            title="아직 서재에 추가된 작품이 없어요."
-            description="서재에 작품을 추가하고 기록을 시작해보세요."
-            className="pt-24"
-          />
-
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => router.push('/home/search')}
-              className="caprion-1 rounded-lg border border-[var(--color-magenta-100)] px-4 py-2 text-[var(--color-magenta-300)] hover:opacity-70"
-            >
-              서재에 작품 추가하러 가기
-            </button>
+      <div className="px-4">
+        {isLoading ? (
+          <div className="py-10 text-center body-2 text-gray-500">
+            불러오는 중…
           </div>
-        </div>
-      ) : (
-        <div>
-          {sortedWorks.map((w) => (
-            <button
-              key={w.id}
-              type="button"
-              className="w-full px-4 py-4 border-t border-gray-100 text-left hover:bg-gray-50"
-              onClick={() => router.push(`/library/works/${w.id}`)}
-            >
-              <div className="flex">
-                <div className="relative h-[116px] w-[87px] mr-3 overflow-hidden rounded-xl bg-gray-100">
-                  <Image
-                    src={w.thumb}
-                    alt={w.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <div className="flex flex-1 flex-col justify-start">
-                  <p className="body-1 text-black line-clamp-1">{w.title}</p>
-                  <p className="caption-1 text-gray-500 line-clamp-1 mt-1">
-                    {w.meta}
-                  </p>
-
-                  <p className="caption-1 text-[var(--color-magenta-300)] mt-1">
+        ) : works.length === 0 ? (
+          <Warning
+            title="아직 리뷰한 작품이 없어요"
+            buttonText="서재에 작품 추가하러 가기"
+            onButtonClick={() => setShowReviewSheet(true)}
+          />
+        ) : (
+          <div>
+            {works.map((w) => (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => router.push(`/library/works/${w.id}`)}
+                className="flex w-full items-center gap-3 py-4 border-b border-gray-100 text-left hover:opacity-90 cursor-pointer"
+              >
+                <div className="relative h-[72px] w-[54px] overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
+                  {w.thumb ? (
                     <Image
-                      src="/search/littleStar.svg"
-                      alt="star icon"
-                      width={9}
-                      height={10}
-                      className="w-[9px] h-[10px] inline-block mb-0.5"
-                      priority
-                    />{' '}
-                    {w.rating.toFixed(1)}({w.reviewCount})
-                  </p>
+                      src={w.thumb}
+                      alt={w.title}
+                      fill
+                      sizes="54px"
+                      className="object-cover"
+                    />
+                  ) : null}
                 </div>
+
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <p className="truncate body-1 text-gray-900">{w.title}</p>
+                  <p className="truncate body-2 text-gray-500">{w.meta}</p>
+
+                  <div className="flex items-center gap-2">
+                    <span className="body-2 text-gray-700">
+                      ★ {Number(w.rating ?? 0).toFixed(1)}
+                    </span>
+                    <span className="body-2 text-gray-400">
+                      ({w.reviewCount})
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+
+            {/* 무한 스크롤 센티넬 */}
+            <div ref={ref} className="h-6" />
+
+            {isFetchingNextPage ? (
+              <div className="py-4 text-center body-2 text-gray-500">
+                더 불러오는 중…
               </div>
+            ) : null}
+          </div>
+        )}
+      </div>
 
-              <div className="w-full bg-gray-100" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* 하단 네비 */}
       <NavBar active="library" />
+
+      {showReviewSheet && (
+        <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
+      )}
     </div>
   )
 }

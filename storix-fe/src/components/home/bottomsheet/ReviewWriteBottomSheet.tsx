@@ -152,25 +152,27 @@ export default function ReviewWriteBottomSheet({
                   onClick={() =>
                     setSelected((prev) => (prev === id ? null : id))
                   }
-                  className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50"
+                  className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50 cursor-pointer"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-1 min-w-0 items-center gap-3">
                     <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-md bg-gray-100">
                       {w.thumbnailUrl ? (
                         <Image
                           src={w.thumbnailUrl}
                           alt={w.worksName}
-                          fill
                           className="object-cover"
-                          sizes="96px"
+                          width={87}
+                          height={116}
                         />
                       ) : null}
                     </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-body-1">{w.worksName}</span>
-                      <span className="text-caption text-gray-500">
+                    <div className="flex-1 flex flex-col min-w-0 items-start pr-2">
+                      <span className="heading-4 w-full truncate text-left">
+                        {w.worksName}
+                      </span>
+                      <span className="caption-1 w-full truncate text-left text-gray-500">
                         {w.artistName}
-                        <span className="mx-2 text-gray-300">·</span>
+                        <span className="text-gray-300">·</span>
                         {w.worksType}
                       </span>
                     </div>

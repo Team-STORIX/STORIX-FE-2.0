@@ -128,7 +128,7 @@ export default function MyPosts() {
                 </p>
               </div>
             </div>
-            <button className="w-6 h-6 transition-opacity hover:opacity-70">
+            <button className="w-6 h-6 transition-opacity hover:opacity-70 cursor-pointer">
               <Image
                 src="/icons/menu-3dots.svg"
                 alt="메뉴"

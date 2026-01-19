@@ -19,7 +19,7 @@ export default function HashtagChip({
       className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm cursor-pointer
     ${className}`}
     >
-      <span>{label}</span>
+      <span>#{label}</span>
     </button>
   )
 }

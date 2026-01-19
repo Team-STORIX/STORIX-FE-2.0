@@ -143,7 +143,7 @@ export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
                   onClick={() =>
                     setSelected((prev) => (prev === id ? null : id))
                   }
-                  className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50"
+                  className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-md bg-gray-100">
@@ -186,7 +186,7 @@ export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
           <div className="pt-4">
             <button
               onClick={goWritePage}
-              className="h-12 w-full mb-4 rounded-xl bg-black text-body-1 text-white transition-opacity hover:opacity-90"
+              className="h-12 w-full mb-4 rounded-xl bg-black text-body-1 text-white transition-opacity hover:opacity-90 cursor-pointer"
             >
               선택 작품 피드 쓰기
             </button>

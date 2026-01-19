@@ -116,7 +116,7 @@ export default function LoginPage() {
       {/* 둘러보기 버튼 */}
       <div className="absolute top-4 right-4">
         <button
-          className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70"
+          className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70 cursor-pointer"
           style={{ color: 'var(--color-gray-500)' }}
           onClick={() => {
             router.push('/home/demo')

@@ -116,7 +116,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                     setIsPlusOpen(false)
                     setShowReviewSheet(true)
                   }}
-                  className="flex w-full items-center justify-between px-4 py-3 border-b border-gray-200 hover:opacity-70"
+                  className="flex w-full items-center justify-between px-4 py-3 border-b border-gray-200 hover:opacity-70 cursor-pointer"
                 >
                   <span className="body-1 text-gray-800">리뷰 작성</span>
                   <Image
@@ -133,7 +133,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                     setIsPlusOpen(false)
                     setShowFeedSheet(true)
                   }}
-                  className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70"
+                  className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70 cursor-pointer"
                 >
                   <span className="body-1 text-gray-800">피드 작성</span>
                   <Image

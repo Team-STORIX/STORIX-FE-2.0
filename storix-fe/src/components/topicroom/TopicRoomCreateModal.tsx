@@ -101,7 +101,12 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
       >
         {/* Header */}
         <div className="flex items-center justify-end px-4 pt-4">
-          <button type="button" onClick={closeWithAnim} aria-label="닫기">
+          <button
+            type="button"
+            onClick={closeWithAnim}
+            aria-label="닫기"
+            className="cursor-pointer"
+          >
             <Image
               src="/common/icons/cancel.svg"
               alt="닫기"
@@ -124,7 +129,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white"
+                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white cursor-pointer"
               >
                 다음으로
               </button>
@@ -157,7 +162,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white"
+                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white cursor-pointer"
               >
                 네, 확인했어요.
               </button>
@@ -201,7 +206,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
                 disabled={!canCreate || createMut.isPending}
                 onClick={onCreate}
                 className={[
-                  'mt-6 h-12 w-full rounded-xl text-body-1',
+                  'mt-6 h-12 w-full rounded-xl text-body-1 cursor-pointer',
                   canCreate && !createMut.isPending
                     ? 'bg-black text-white'
                     : 'bg-gray-200 text-gray-400',
@@ -254,7 +259,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
               <button
                 type="button"
                 onClick={onGoRoom}
-                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white"
+                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white cursor-pointer"
               >
                 토픽룸으로 이동
               </button>

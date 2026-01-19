@@ -80,28 +80,39 @@ export default function SearchWorksPage() {
 
   const isEmpty = worksPager.items.length === 0 && worksPager.meta !== null
 
-  const onClickWorks = (worksId: number) => {
-    router.push(`/library/works/${worksId}`)
-  }
-
   return (
     <div className="flex w-full flex-col">
       <SearchBar onSearchClick={goSearch} />
 
-      {/* sort (피그마 드롭다운 느낌용) */}
-      {!isEmpty && (
-        <div className="px-4 flex items-center justify-start">
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as WorksSort)}
-            className="py-1 body-2 text-gray-500"
+      <div className="flex justify-between">
+        {/* sort (피그마 드롭다운 느낌용) */}
+        {!isEmpty && (
+          <div className="px-4 flex items-center justify-start">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as WorksSort)}
+              className="py-1 body-2 text-gray-500 cursor-pointer"
+            >
+              <option value="NAME">기본순</option>
+              <option value="RATING">별점순</option>
+              <option value="REVIEW">리뷰순</option>
+            </select>
+          </div>
+        )}
+
+        <div className="px-4 inline-flex items-center justify-end">
+          <button
+            className="py-1 body-2 text-gray-300 cursor-pointer"
+            onClick={() =>
+              window.open(
+                `https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015`,
+              )
+            }
           >
-            <option value="NAME">기본순</option>
-            <option value="RATING">별점순</option>
-            <option value="REVIEW">리뷰순</option>
-          </select>
+            <p className="underline">찾는 작품이 없다면?</p>
+          </button>
         </div>
-      )}
+      </div>
 
       <div className="pb-24">
         <SearchResultWorks

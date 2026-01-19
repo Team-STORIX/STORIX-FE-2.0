@@ -36,7 +36,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
             <FireIcon />
             HOT
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 caption-2 text-gray-900">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 caption-2 text-[var(--color-magenta-300)]">
             <UserIcon />
             {room.memberCount}
           </span>

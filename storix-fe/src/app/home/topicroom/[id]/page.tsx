@@ -91,7 +91,11 @@ export default function TopicRoomPage() {
     <div className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       {/* Top */}
       <div className="flex h-14 items-center justify-between px-4">
-        <button type="button" onClick={() => router.back()} className="h-8 w-8">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="h-8 w-8 cursor-pointer"
+        >
           ‹
         </button>
 
@@ -106,7 +110,7 @@ export default function TopicRoomPage() {
         <button
           type="button"
           onClick={() => leaveMut.mutate()} // “삭제” 요청 = 일단 퇴장(leave)로 구현
-          className="caption-1 text-[var(--color-magenta-300)]"
+          className="caption-1 text-[var(--color-magenta-300)] cursor-pointer"
           disabled={leaveMut.isPending}
         >
           {leaveMut.isPending ? '나가는 중' : '나가기'}
@@ -149,7 +153,7 @@ export default function TopicRoomPage() {
           </div>
           <button
             type="button"
-            className="h-10 w-10 rounded-full bg-gray-200"
+            className="h-10 w-10 rounded-full bg-gray-200 cursor-pointer"
             disabled
           >
             ➤

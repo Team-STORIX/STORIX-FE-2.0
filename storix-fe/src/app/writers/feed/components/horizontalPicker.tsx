@@ -56,7 +56,7 @@ export default function HorizontalPicker({
                 <button
                   type="button"
                   onClick={() => onSelect(item.id)}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center cursor-pointer"
                   style={{
                     width: 62,
                     opacity,
