@@ -107,15 +107,9 @@ export default function LibraryListPage() {
             className="body-2 text-gray-500 pr-7 appearance-none bg-transparent outline-none cursor-pointer"
             aria-label="정렬"
           >
-            <option value="DEFAULT" className="caption-1">
-              기본순
-            </option>
-            <option value="REVIEW" className="caption-1">
-              리뷰순
-            </option>
-            <option value="RATING" className="caption-1">
-              별점순
-            </option>
+            <option value="DEFAULT">전체 작품</option>
+            <option value="RATING">별점 높은 순</option>
+            <option value="REVIEW">리뷰 많은 순</option>
           </select>
 
           {/* caret */}
@@ -170,30 +164,35 @@ export default function LibraryListPage() {
                 key={w.id}
                 type="button"
                 onClick={() => router.push(`/library/works/${w.id}`)}
-                className="flex w-full items-center gap-3 py-4 border-b border-gray-100 text-left hover:opacity-90 cursor-pointer"
+                className="flex w-full gap-4 py-4 border-b border-gray-100 text-left hover:opacity-90 cursor-pointer"
               >
-                <div className="relative h-[72px] w-[54px] overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
+                {/* 썸네일 */}
+                <div className="relative h-[116px] w-[87px] overflow-hidden rounded-sm bg-gray-100 flex-shrink-0">
                   {w.thumb ? (
                     <Image
                       src={w.thumb}
                       alt={w.title}
                       fill
-                      sizes="54px"
                       className="object-cover"
                     />
                   ) : null}
                 </div>
-
+                {/* 텍스트 */}
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <p className="truncate body-1 text-gray-900">{w.title}</p>
+                  <p className="truncate body-1 text-black">{w.title}</p>
                   <p className="truncate body-2 text-gray-500">{w.meta}</p>
 
                   <div className="flex items-center gap-2">
-                    <span className="body-2 text-gray-700">
-                      ★ {Number(w.rating ?? 0).toFixed(1)}
-                    </span>
-                    <span className="body-2 text-gray-400">
-                      ({w.reviewCount})
+                    <span className="caption-1 font-extrabold text-pink-500">
+                      <Image
+                        src="/search/littleStar.svg"
+                        alt="star icon"
+                        width={9}
+                        height={10}
+                        className="inline-block mr-1 mb-0.5"
+                        priority
+                      />
+                      {Number(w.rating ?? 0).toFixed(1)}
                     </span>
                   </div>
                 </div>

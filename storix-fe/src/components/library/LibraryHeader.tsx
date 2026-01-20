@@ -3,7 +3,6 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import SearchIcon from '@/public/icons/header/SearchIcon'
 
 /** 상단 페이지+ 검색 */
 export default function LibraryHeader() {

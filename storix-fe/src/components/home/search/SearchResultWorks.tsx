@@ -26,20 +26,20 @@ export default function SearchResultWorks({
       {works.length > 0 ? (
         <div className="flex flex-col">
           {works.map((w) => (
-            <div
+            <button
               key={w.worksId}
-              className="flex gap-4 border-b border-gray-100 p-4"
+              type="button"
+              onClick={() => onClickWorks(w.worksId)}
+              className="flex w-full gap-4 border-b border-gray-100 p-4 hover:opacity-90 cursor-pointer text-left"
             >
               {/* 썸네일 */}
-              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100 cursor-pointer">
+              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100 ">
                 {w.thumbnailUrl ? (
                   <Image
                     src={w.thumbnailUrl}
                     alt={w.worksName}
                     fill
-                    onClick={() => onClickWorks(w.worksId)}
                     className="object-cover"
-                    sizes="96px"
                   />
                 ) : null}
               </div>
@@ -55,23 +55,20 @@ export default function SearchResultWorks({
                 </p>
 
                 <div className="flex items-center gap-2">
-                  <span className="caption-1 font-extrabold text-pink-500">
+                  <span className="caption-1 text-[var(--color-magenta-300)]">
                     <Image
                       src="/search/littleStar.svg"
                       alt="star icon"
                       width={9}
                       height={10}
-                      className="w-[9px] h-[10px] inline-block mr-1 mb-0.5"
+                      className="inline-block mr-1 mb-0.5"
                       priority
                     />
                     {Number(w.avgRating).toFixed(1)}
-                    <span className="font-semibold text-pink-500">
-                      ({w.reviewsCount})
-                    </span>
                   </span>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       ) : (

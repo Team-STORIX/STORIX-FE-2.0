@@ -51,6 +51,9 @@ export const LibraryReviewItemSchema = z.object({
   platform: z.string().optional(),
   avgRating: z.number().nullable().optional(),
   description: z.string().optional(),
+  artistName: z.string().nullable().optional(),
+  reviewId: z.number().optional(),
+  rating: z.union([z.string(), z.number()]).nullable().optional(),
 })
 
 export const LibraryReviewResultSchema = z.object({
