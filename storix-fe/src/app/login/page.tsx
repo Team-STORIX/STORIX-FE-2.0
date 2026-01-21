@@ -5,8 +5,10 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import axios from 'axios'
 import { Splash } from '@/app/splash'
 import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
+import { useAuthStore } from '@/store/auth.store'
 
 function generateNaverState() {
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
@@ -22,11 +24,48 @@ function generateNaverState() {
 export default function LoginPage() {
   const [showSplash, setShowSplash] = useState(true)
   const router = useRouter()
+  const setAccessToken = useAuthStore((s) => s.setAccessToken)
 
   useEffect(() => {
+    let mounted = true
+
+    // ✅ (추가) /login 진입 시에도 refresh 1회 시도 → 자동로그인
+    const tryRefresh = async () => {
+      try {
+        const baseURL = process.env.NEXT_PUBLIC_API_URL
+        if (!baseURL) return
+
+        const res = await axios.post(
+          `${baseURL}/api/v1/auth/tokens/refresh`,
+          {},
+          {
+            withCredentials: true,
+            validateStatus: (status) => status >= 200 && status < 500,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        )
+
+        const newAccessToken = (res.data as any)?.result?.accessToken
+        if (!mounted) return
+
+        if (res.status >= 200 && res.status < 300 && newAccessToken) {
+          setAccessToken(String(newAccessToken))
+          router.replace('/home')
+          return
+        }
+      } catch {
+        // 실패하면 그냥 로그인 화면 유지
+      }
+    }
+
+    tryRefresh()
+
     const timer = setTimeout(() => setShowSplash(false), 1500)
-    return () => clearTimeout(timer)
-  }, [])
+    return () => {
+      mounted = false
+      clearTimeout(timer)
+    }
+  }, [router, setAccessToken])
 
   const handleKakaoLogin = async () => {
     try {
