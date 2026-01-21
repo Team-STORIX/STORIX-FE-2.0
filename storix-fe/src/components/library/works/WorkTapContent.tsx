@@ -24,7 +24,7 @@ type UIData = {
 const getPlatformIconSrc = (platform: string) => {
   const p = platform.trim()
 
-  if (p.includes('네이버웹툰')) return '/icons/platform/naverWebtoon.png'
+  if (p.includes('네이버 웹툰')) return '/icons/platform/naverWebtoon.png'
   if (p.includes('리디북스')) return '/icons/platform/ridibooks.png'
   if (p.includes('카카오웹툰')) return '/icons/platform/kakaoWebtoon.png'
   if (p.includes('카카오페이지')) return '/icons/platform/kakaoPage.png'
