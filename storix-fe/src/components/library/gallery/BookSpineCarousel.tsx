@@ -214,8 +214,16 @@ export default function BookSpineCarousel({
                 )}
 
                 {!isActive && (
-                  <div className="flex flex-col absolute inset-0 flex items-center justify-start">
-                    <span className="flex flex-col body-2 whitespace-nowrap rotate-90 text-white justify-start">
+                  <div className="absolute inset-0 flex items-center justify-center px-1">
+                    <span
+                      title={w.title}
+                      className="body-2 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed',
+                        maxHeight: 176, // ✅ 책등 높이(200) 안에서 여백 주고 중앙 정렬
+                      }}
+                    >
                       {w.title}
                     </span>
                   </div>

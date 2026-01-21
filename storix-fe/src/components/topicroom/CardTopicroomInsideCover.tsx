@@ -24,13 +24,19 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 pb-4 ">
         {/* HOT / 인원 뱃지 */}
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="inline-flex items-center rounded-full bg-pink-500 px-2 py-0.5 caption-2 text-white">
+          <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">
             <FireIcon />
-            HOT
+            <p className="ml-0.5">HOT</p>
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 caption-2 text-[var(--color-magenta-300)]">
-            <UserIcon />
-            {room.memberCount}
+          <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-3 text-[var(--color-magenta-300)]">
+            <Image
+              src={'/icons/icon-topicroom-people.svg'}
+              alt={'참여 인원'}
+              width={12}
+              height={12}
+              className="inline-block"
+            />
+            <p className="ml-0.5">{room.memberCount}</p>
           </span>
         </div>
 

@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
-import WriteBottomSheet from '@/components/home/bottomsheet/WriteBottomSheet'
 import IconFeed from '@/public/common/icons/navbar/Icon-Feed'
 import IconHome from '@/public/common/icons/navbar/Icon-Home'
 import IconLibrary from '@/public/common/icons/navbar/Icon-Library'
@@ -139,7 +138,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                   type="button"
                   onClick={() => {
                     setIsPlusOpen(false)
-                    setShowFeedSheet(true)
+                    router.push('/feed/write')
                   }}
                   className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70 cursor-pointer"
                 >
@@ -185,9 +184,6 @@ export default function NavBar({ active, onChange }: NavBarProps) {
 
       {showReviewSheet && (
         <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
-      )}
-      {showFeedSheet && (
-        <WriteBottomSheet onClose={() => setShowFeedSheet(false)} />
       )}
     </>
   )

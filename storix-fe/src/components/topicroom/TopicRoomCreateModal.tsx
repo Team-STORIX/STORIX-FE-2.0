@@ -2,10 +2,9 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useMutation } from '@tanstack/react-query'
-import { createTopicRoom } from '@/lib/api/topicroom/topicroom.api'
+import { useCreateTopicRoom } from '@/hooks/topicroom/useCreateTopicRoom'
 
 type WorkMini = {
   id: number
@@ -20,7 +19,7 @@ type Props = {
   work: WorkMini
 }
 
-type Step = 1 | 2 | 3 | 4
+type Step = 1 | 2 | 3
 
 const isValidTopicTitle = (v: string) => /^[0-9A-Za-z가-힣]{2,10}$/.test(v)
 
@@ -29,7 +28,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
 
   const [step, setStep] = useState<Step>(1)
   const [topicRoomName, setTopicRoomName] = useState('')
-  const [createdRoomId, setCreatedRoomId] = useState<number | null>(null)
+  const didNavigateRef = useRef(false) // ✅ 성공 후 페이지 이동 중복 방지
 
   const [isOpenAnim, setIsOpenAnim] = useState(false)
 
@@ -38,7 +37,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
     if (!open) return
     setStep(1)
     setTopicRoomName('')
-    setCreatedRoomId(null)
+    didNavigateRef.current = false // ✅ 모달 재오픈 시 리셋
     requestAnimationFrame(() => setIsOpenAnim(true))
   }, [open])
 
@@ -56,29 +55,32 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
     if (topicRoomName.length === 0)
       return '한글,영문,숫자 2~10자까지 입력 가능해요'
     if (canCreate) return '사용 가능한 제목이에요'
-    return '한글,영문,숫자만 / 2~10자만 가능해요'
+    return '한글,영문,숫자 2~10자까지 입력 가능해요'
   }, [topicRoomName, canCreate])
 
-  const createMut = useMutation({
-    mutationFn: () => createTopicRoom({ worksId: work.id, topicRoomName }),
-    onSuccess: (roomId) => {
-      setCreatedRoomId(roomId)
-      setStep(4)
-    },
-  })
+  // ✅ API 직접 호출 금지 -> React Query 훅으로 통일
+  const createMut = useCreateTopicRoom()
 
   const onCreate = () => {
     if (!canCreate || createMut.isPending) return
-    createMut.mutate()
+    createMut.mutate({ worksId: work.id, topicRoomName })
   }
 
-  const onGoRoom = () => {
-    if (!createdRoomId) return
+  // ✅ 3단계에서 생성 성공 -> 4단계는 모달이 아닌 페이지로 라우팅
+  useEffect(() => {
+    if (!open) return
+    if (step !== 3) return
+    if (!createMut.data) return
+    if (didNavigateRef.current) return
+
+    didNavigateRef.current = true
     closeWithAnim()
     router.push(
-      `/home/topicroom/${createdRoomId}?worksName=${encodeURIComponent(work.title)}`,
+      `/library/works/${work.id}/topicroom?topicRoomId=${createMut.data}&topicRoomName=${encodeURIComponent(
+        topicRoomName,
+      )}`,
     )
-  }
+  }, [open, step, createMut.data, router, work.id, topicRoomName])
 
   if (!open) return null
 
@@ -129,7 +131,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white cursor-pointer"
+                className="mt-7 h-12 w-full rounded-xl bg-black text-body-1 text-white cursor-pointer"
               >
                 다음으로
               </button>
@@ -144,18 +146,23 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
               </p>
 
               <div className="mt-3 flex flex-col items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-magenta-100)]">
-                  <span className="text-[var(--color-magenta-300)]">!</span>
+                <p className="body-2 whitespace-pre-line text-center text-gray-400">
+                  모두가 함께 사용하는 커뮤니티예요.{'\n'}
+                  아래와 같은 제목은 삼가해주세요.
+                </p>
+                <div className="flex pt-4 items-center justify-center">
+                  <Image
+                    src="/common/icons/warningSmall.svg"
+                    alt="경고"
+                    width={40}
+                    height={40}
+                    priority
+                  />
                 </div>
 
                 <p className="caption-1 whitespace-pre-line text-center text-[var(--color-magenta-300)]">
                   특정 이용이나 집단을 비방하는 내용{'\n'}
                   비속어, 혐오 표현이 포함된 내용
-                </p>
-
-                <p className="caption-1 whitespace-pre-line text-center text-gray-400">
-                  모두가 함께 사용하는 커뮤니티예요.{'\n'}
-                  아래와 같은 제목은 삼가해주세요.
                 </p>
               </div>
 
@@ -191,10 +198,10 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
                   className={[
                     'caption-1 mt-2',
                     topicRoomName.length === 0
-                      ? 'text-gray-400'
+                      ? 'text-[var(--color-warning)]'
                       : canCreate
-                        ? 'text-green-600'
-                        : 'text-[var(--color-magenta-300)]',
+                        ? 'text-[var(--color-success)]'
+                        : 'text-[var(--color-warning)]',
                   ].join(' ')}
                 >
                   {helperText}
@@ -217,54 +224,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
             </>
           )}
 
-          {/* Step 4 */}
-          {step === 4 && (
-            <>
-              <p className="heading-2 text-center text-black">
-                첫 토픽룸이 만들어졌어요!
-              </p>
-              <p className="caption-1 mt-2 text-center text-gray-500">
-                이제 토픽룸에서 자유롭게 이야기해 보아요!
-              </p>
-
-              <div className="mt-5 flex justify-center">
-                <div className="relative w-[210px] overflow-hidden rounded-2xl bg-gray-100">
-                  <div className="relative h-[280px] w-full">
-                    <Image
-                      src={work.thumb}
-                      alt={work.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0 p-3">
-                    <div className="flex items-center gap-2">
-                      <span className="caption-1 rounded-md bg-white/90 px-2 py-1 text-black">
-                        🔥 HOT
-                      </span>
-                      <span className="caption-1 rounded-md bg-[var(--color-magenta-300)] px-2 py-1 text-white">
-                        1층
-                      </span>
-                    </div>
-
-                    <p className="body-2 mt-2 text-white">{work.title}</p>
-                    <p className="caption-1 mt-1 text-white/80">
-                      {topicRoomName}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={onGoRoom}
-                className="mt-6 h-12 w-full rounded-xl bg-black text-body-1 text-white cursor-pointer"
-              >
-                토픽룸으로 이동
-              </button>
-            </>
-          )}
+          {/* ✅ Step 4는 페이지로 이동하므로 모달에서 제거 */}
         </div>
       </div>
     </div>

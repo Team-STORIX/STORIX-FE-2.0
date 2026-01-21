@@ -34,6 +34,16 @@ export const LibrarySearchWorkSchema = z.object({
   worksType: z.string().optional(),
   genre: z.string().optional(),
   platform: z.string().optional(),
+
+  // ✅ 서버 응답에 존재 (검색 결과에서 필요)
+  reviewId: z.number().optional(),
+
+  // ✅ rating이 string으로 내려올 수 있음 -> number로 변환
+  rating: z.preprocess((v) => {
+    if (v === null || v === undefined || v === '') return undefined
+    const n = Number(v)
+    return Number.isFinite(n) ? n : undefined
+  }, z.number().optional()),
 })
 
 /** 최근 검색어 */

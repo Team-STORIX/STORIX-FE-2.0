@@ -32,13 +32,19 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 pb-4 ">
         {/* HOT / 인원 뱃지 */}
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="inline-flex items-center rounded-full bg-pink-500 px-2 py-0.5 caption-2 text-white">
+          <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">
             <FireIcon />
-            HOT
+            <p className="ml-0.5">HOT</p>
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 caption-2 text-[var(--color-magenta-300)]">
-            <UserIcon />
-            {room.memberCount}
+          <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-3 text-[var(--color-magenta-300)]">
+            <Image
+              src={'/icons/icon-topicroom-people.svg'}
+              alt={'참여 인원'}
+              width={12}
+              height={12}
+              className="inline-block"
+            />
+            <p className="ml-0.5">{room.memberCount}</p>
           </span>
         </div>
 
@@ -65,22 +71,6 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
 }
 
 /* ===== 아이콘들 ===== */
-
-const UserIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="10"
-    height="10"
-    viewBox="0 0 10 10"
-    fill="none"
-  >
-    <rect x="3.50391" width="3.00235" height="3" fill="#FF4093" />
-    <path
-      d="M5 4C7.76138 4 9.99993 6.06671 10 8.616V10.001L0.574668 10.0001V9.99376H0V8.43554H0.00488663C0.107644 5.96991 2.30409 4 5 4Z"
-      fill="#FF4093"
-    />
-  </svg>
-)
 
 const EnterRoomIcon = () => (
   <svg

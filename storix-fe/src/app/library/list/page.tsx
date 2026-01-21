@@ -10,6 +10,7 @@ import NavBar from '@/components/common/NavBar'
 import Warning from '@/components/common/Warining'
 import LibraryHeader from '@/components/library/LibraryHeader'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
+import LibraryWorksListContent from '@/components/library/LibraryWorksListContent'
 
 import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
 import type { LibraryReviewSort } from '@/lib/api/library/library.api'
@@ -146,69 +147,23 @@ export default function LibraryListPage() {
       </div>
 
       {/* 콘텐츠 */}
-      <div className="px-4">
-        {isLoading ? (
-          <div className="py-10 text-center body-2 text-gray-500">
-            불러오는 중…
-          </div>
-        ) : works.length === 0 ? (
-          <Warning
-            title="아직 리뷰한 작품이 없어요"
-            buttonText="서재에 작품 추가하러 가기"
-            onButtonClick={() => setShowReviewSheet(true)}
+      <div>
+        <div>
+          <LibraryWorksListContent
+            isLoading={isLoading}
+            works={works}
+            empty={
+              <Warning
+                title="아직 리뷰한 작품이 없어요"
+                buttonText="서재에 작품 추가하러 가기"
+                onButtonClick={() => setShowReviewSheet(true)}
+              />
+            }
+            onItemClick={(id) => router.push(`/library/works/${id}`)}
+            infiniteScrollRef={ref}
+            isFetchingNextPage={isFetchingNextPage}
           />
-        ) : (
-          <div>
-            {works.map((w) => (
-              <button
-                key={w.id}
-                type="button"
-                onClick={() => router.push(`/library/works/${w.id}`)}
-                className="flex w-full gap-4 py-4 border-b border-gray-100 text-left hover:opacity-90 cursor-pointer"
-              >
-                {/* 썸네일 */}
-                <div className="relative h-[116px] w-[87px] overflow-hidden rounded-sm bg-gray-100 flex-shrink-0">
-                  {w.thumb ? (
-                    <Image
-                      src={w.thumb}
-                      alt={w.title}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
-                {/* 텍스트 */}
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <p className="truncate body-1 text-black">{w.title}</p>
-                  <p className="truncate body-2 text-gray-500">{w.meta}</p>
-
-                  <div className="flex items-center gap-2">
-                    <span className="caption-1 font-extrabold text-pink-500">
-                      <Image
-                        src="/search/littleStar.svg"
-                        alt="star icon"
-                        width={9}
-                        height={10}
-                        className="inline-block mr-1 mb-0.5"
-                        priority
-                      />
-                      {Number(w.rating ?? 0).toFixed(1)}
-                    </span>
-                  </div>
-                </div>
-              </button>
-            ))}
-
-            {/* 무한 스크롤 센티넬 */}
-            <div ref={ref} className="h-6" />
-
-            {isFetchingNextPage ? (
-              <div className="py-4 text-center body-2 text-gray-500">
-                더 불러오는 중…
-              </div>
-            ) : null}
-          </div>
-        )}
+        </div>
       </div>
 
       <NavBar active="library" />

@@ -8,7 +8,7 @@ import {
 
 type CreateReaderBoardArgs = {
   isWorksSelected: boolean
-  worksId: number
+  worksId: number // ✅ isWorksSelected=false일 때는 0으로 전달
   isSpoiler: boolean
   content: string
   images: File[] // 사용자가 선택한 이미지들(최대 3장)
@@ -17,6 +17,14 @@ type CreateReaderBoardArgs = {
 export function useCreateReaderBoard() {
   return useMutation({
     mutationFn: async ({ images, ...rest }: CreateReaderBoardArgs) => {
+      // ✅ 이미지가 없으면 presigned 생략
+      if (images.length === 0) {
+        return postReaderBoard({
+          ...rest,
+          files: [],
+        })
+      }
+
       // 1) presigned url 발급
       const presignRes = await postBoardImagePresignedUrls({
         files: images.map((f) => ({ contentType: f.type })),
@@ -29,12 +37,10 @@ export function useCreateReaderBoard() {
       )
 
       // 3) objectKey로 게시글 등록
-      const boardRes = await postReaderBoard({
+      return postReaderBoard({
         ...rest,
         files: presigned.map((p) => ({ objectKey: p.objectKey })),
       })
-
-      return boardRes
     },
   })
 }

@@ -1,6 +1,16 @@
 //src/components/library/works/WorkTapContent.tsx
 'use client'
 
+import Image from 'next/image'
+import { useInView } from 'react-intersection-observer'
+import { useEffect } from 'react'
+import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
+
+import {
+  useWorksMyReview,
+  useWorksReviewsInfinite,
+} from '@/hooks/works/useWorksReviews'
+
 type TabKey = 'info' | 'review'
 
 type UIData = {
@@ -8,34 +18,22 @@ type UIData = {
   title: string
   description: string
   keywords: string[]
-  platform: ''
+  platform: string
 }
 
-type ReviewItem = {
-  id: string
-  userName: string
-  avatarColorClass: string
-  content: string
-}
+const getPlatformIconSrc = (platform: string) => {
+  const p = platform.trim()
 
-// 리뷰 API 아직 없으니 UI용 더미만 유지
-const MOCK_REVIEWS: ReviewItem[] = [
-  {
-    id: 'u2',
-    userName: '나는 유저2',
-    avatarColorClass: 'bg-[var(--color-magenta-100)]',
-    content:
-      '와- 이 웹툰 제목만 보고 가벼운 로맨스겠지? 했는데 생각보다 세계관 탄탄해서 바로 만화책처럼 몰입됨...',
-  },
-  {
-    id: 'u3',
-    userName: '나는 유저3',
-    avatarColorClass: 'bg-gray-100',
-    content: '감정선이 너무 섬세해서 한 장면 한 장면 놓치기 싫다.',
-  },
-]
+  if (p.includes('네이버웹툰')) return '/icons/platform/naverWebtoon.png'
+  if (p.includes('리디북스')) return '/icons/platform/ridibooks.png'
+  if (p.includes('카카오웹툰')) return '/icons/platform/kakaoWebtoon.png'
+  if (p.includes('카카오페이지')) return '/icons/platform/kakaoPage.png'
+
+  return null
+}
 
 type Props = {
+  worksId: number
   tab: TabKey
   onChangeTab: (tab: TabKey) => void
   ui: UIData
@@ -43,11 +41,36 @@ type Props = {
 }
 
 export default function WorkTabContent({
+  worksId,
   tab,
   onChangeTab,
   ui,
   onReviewWrite,
 }: Props) {
+  const { data: myReview } = useWorksMyReview(worksId)
+  const {
+    data: reviewPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useWorksReviewsInfinite(worksId)
+
+  const otherReviews = reviewPages?.pages.flatMap((p) => p.content ?? []) ?? []
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+  })
+
+  // ✅ UI 변경 없음: 무한스크롤 트리거
+  useEffect(() => {
+    if (!inView) return
+    if (!hasNextPage) return
+    if (isFetchingNextPage) return
+    fetchNextPage()
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
+
+  const platformIconSrc = ui.platform ? getPlatformIconSrc(ui.platform) : null
+
   return (
     <>
       {/* Tabs */}
@@ -99,10 +122,16 @@ export default function WorkTabContent({
               ) : (
                 <div className="mt-3 flex flex-col gap-2">
                   <div key={ui.platform} className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#2F6BFF]">
-                      <span className="caption-1 text-white font-semibold">
-                        R
-                      </span>
+                    {/* ✅ UI 변경: R 제거 -> 35px 원형 플랫폼 아이콘 */}
+                    <div className="relative h-[35px] w-[35px] overflow-hidden rounded-full bg-gray-100">
+                      {platformIconSrc ? (
+                        <Image
+                          src={platformIconSrc}
+                          alt={ui.platform}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : null}
                     </div>
                     <p className="body-2 text-gray-700">{ui.platform}</p>
                   </div>
@@ -137,17 +166,23 @@ export default function WorkTabContent({
           </div>
         ) : (
           <div>
-            <section className="pt-6">
-              <p className="heading-2 text-black">내 리뷰</p>
+            <section className="bg-gray-50 border-b border-gray-100">
+              <p className="heading-2 text-black px-5 pt-5 pb-3">내 리뷰</p>
               <button
                 type="button"
                 onClick={onReviewWrite}
-                className="mt-3 w-full rounded-xl border border-gray-200 px-4 py-4 text-left cursor-pointer"
+                className="w-full p-5 text-left cursor-pointer "
               >
-                <p className="caption-1 text-gray-500">{ui.title}...</p>
-                <p className="body-2 mt-1 text-gray-700 line-clamp-2">
-                  아직 작성한 리뷰가 없어요. 리뷰를 작성해보세요!
-                </p>
+                {myReview?.content ? (
+                  <p className="inline-flex w-full body-2 mt-1 text-gray-500 line-clamp-2 justify-between">
+                    {myReview.content}
+                    <ForwardArrowIcon />
+                  </p>
+                ) : (
+                  <p className="body-2 mt-1 text-gray-700 line-clamp-2">
+                    아직 작성한 리뷰가 없어요. 리뷰를 작성해보세요!
+                  </p>
+                )}
               </button>
             </section>
 
@@ -155,33 +190,51 @@ export default function WorkTabContent({
               <p className="heading-2 text-black">다른 유저들의 리뷰</p>
 
               <div className="mt-4 flex flex-col gap-4">
-                {MOCK_REVIEWS.map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    className="flex w-full items-start gap-3 rounded-xl border border-gray-100 px-4 py-4 text-left cursor-pointer"
-                  >
-                    <div
-                      className={[
-                        'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
-                        r.avatarColorClass,
-                      ].join(' ')}
-                    >
-                      <span className="caption-1 text-[var(--color-magenta-300)]">
-                        ✦
-                      </span>
-                    </div>
+                {otherReviews.length === 0 ? (
+                  <p className="body-2 text-gray-400">
+                    아직 다른 유저 리뷰가 없어요
+                  </p>
+                ) : (
+                  otherReviews.map((r) => {
+                    const avatarColorClass =
+                      r.reviewId % 2 === 0
+                        ? 'bg-[var(--color-magenta-100)]'
+                        : 'bg-gray-100'
 
-                    <div className="flex-1">
-                      <p className="caption-1 text-gray-600">{r.userName}</p>
-                      <p className="body-2 mt-1 text-gray-700 line-clamp-2">
-                        {r.content}
-                      </p>
-                    </div>
+                    return (
+                      <button
+                        key={r.reviewId}
+                        type="button"
+                        className="flex w-full items-start gap-3 rounded-xl border border-gray-100 px-4 py-4 text-left cursor-pointer"
+                      >
+                        <div
+                          className={[
+                            'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+                            avatarColorClass,
+                          ].join(' ')}
+                        >
+                          <span className="caption-1 text-[var(--color-magenta-300)]">
+                            ✦
+                          </span>
+                        </div>
 
-                    <span className="text-gray-300">›</span>
-                  </button>
-                ))}
+                        <div className="flex-1">
+                          <p className="caption-1 text-gray-600">
+                            {r.userName ?? '익명'}
+                          </p>
+                          <p className="body-2 mt-1 text-gray-700 line-clamp-2">
+                            {r.content ?? ''}
+                          </p>
+                        </div>
+
+                        <span className="text-gray-300">›</span>
+                      </button>
+                    )
+                  })
+                )}
+
+                {/* ✅ UI 변경 없음: 무한스크롤 sentinel */}
+                <div ref={ref} className="h-1" />
               </div>
             </section>
           </div>

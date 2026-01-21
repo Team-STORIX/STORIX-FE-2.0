@@ -35,7 +35,7 @@ export default function ImagePicker({
   }
 
   return (
-    <div className="mt-2">
+    <div>
       <input
         ref={inputRef}
         type="file"

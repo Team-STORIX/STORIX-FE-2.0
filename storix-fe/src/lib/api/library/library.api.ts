@@ -16,9 +16,7 @@ export type LibraryReviewSort = 'LATEST' | 'DESC_RATING' | 'ASC_RATING'
  * GET /api/v1/library/search/works?keyword=&page=
  */
 const LibrarySearchWorksResponseSchema = ApiEnvelopeSchema(
-  z.object({
-    slice: SliceSchema(LibrarySearchWorkSchema),
-  }),
+  SliceSchema(LibrarySearchWorkSchema),
 )
 
 export const getLibrarySearchWorks = async (params: {

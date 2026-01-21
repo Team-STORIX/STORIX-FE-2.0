@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/axios-instance'
 import { z } from 'zod'
+import { ApiEnvelopeSchema } from './works.schema'
 
 const WorksDetailSchema = z.object({
   worksId: z.number(),
@@ -12,17 +13,24 @@ const WorksDetailSchema = z.object({
   genre: z.string().nullable().optional(),
   platform: z.string().nullable().optional(),
   ageClassification: z.string().nullable().optional(),
-  avgRating: z.number().nullable().optional(),
+
+  // ✅ swagger/서버에 따라 string으로 내려올 수도 있어서 안전 변환
+  avgRating: z
+    .preprocess((v) => (v == null ? v : Number(v)), z.number())
+    .nullable()
+    .optional(),
+
+  // ✅ swagger 최신 스펙에서 작품 상세에서 사용하는 값
+  reviewCount: z
+    .preprocess((v) => (v == null ? v : Number(v)), z.number())
+    .nullable()
+    .optional(),
+
   description: z.string().nullable().optional(),
   hashtags: z.array(z.string()).optional(),
 })
 
-const ApiResponseSchema = z.object({
-  isSuccess: z.boolean().optional(),
-  code: z.string().optional(),
-  message: z.string().optional(),
-  result: z.any().optional(),
-})
+const WorksDetailResponseSchema = ApiEnvelopeSchema(WorksDetailSchema)
 
 export type WorksDetail = z.infer<typeof WorksDetailSchema>
 
@@ -31,6 +39,6 @@ export async function getWorksDetail(worksId: number): Promise<WorksDetail> {
     headers: { accept: '*/*' },
   })
 
-  const parsed = ApiResponseSchema.parse(res.data)
-  return WorksDetailSchema.parse(parsed.result)
+  const parsed = WorksDetailResponseSchema.parse(res.data)
+  return parsed.result
 }

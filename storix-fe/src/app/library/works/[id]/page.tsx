@@ -1,11 +1,10 @@
 // src/app/library/works/[id]/page.tsx
 'use client'
 
-import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { getWorksDetail, type WorksDetail } from '@/lib/api/works/works.api'
 import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
+import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 
 import TopicRoomCreateModal from '@/components/topicroom/TopicRoomCreateModal'
 import WorkTopBar from '@/components/library/works/WorkTopBar'
@@ -22,32 +21,13 @@ export default function LibraryWorkHomePage() {
   const [tab, setTab] = useState<TabKey>('info')
   const [isLiked, setIsLiked] = useState(false)
 
-  const [work, setWork] = useState<WorksDetail | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { data: work, isLoading: loading } = useWorksDetail(worksId)
 
   const [isCheckingRoom, setIsCheckingRoom] = useState(false)
   const [topicModalOpen, setTopicModalOpen] = useState(false)
 
-  // 1) 작품 상세 조회 API
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        setLoading(true)
-        const data = await getWorksDetail(worksId)
-        if (mounted) setWork(data)
-      } catch (e) {
-        if (mounted) setWork(null)
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [worksId])
+  // ✅ UI 변경 없음: 작품 상세 조회는 React Query 훅으로 통일
 
-  // 2) UI용 파생값(백엔드 필드가 없을 수도 있어서 안전하게 처리)
   const ui = useMemo(() => {
     if (!work) {
       return {
@@ -82,22 +62,20 @@ export default function LibraryWorkHomePage() {
       metaAuthor,
       metaWorks,
       thumb: work.thumbnailUrl ?? '',
-      rating: (work as any).avgRating ?? 0,
-      reviewCount: (work as any).reviewCount ?? 0,
-      description: (work as any).description ?? '',
-      keywords: (work as any).hashtags ?? [],
-      platform: (work as any).platform ?? '',
+      rating: work.avgRating ?? 0,
+      reviewCount: work.reviewCount ?? 0,
+      description: work.description ?? '',
+      keywords: work.hashtags ?? [],
+      platform: work.platform ?? '',
       worksName: work.worksName ?? '',
       worksType: work.worksType ?? '',
     }
   }, [work, worksId])
 
   const handleReviewWrite = () => {
-    // 리뷰 write 페이지 라우팅
     router.push(`/home/write/review?worksId=${ui.id}`)
   }
 
-  //토픽룸 입장: 조회 → 있으면 바로 이동 / 없으면 생성 모달
   const handleTopicroomEnter = async () => {
     if (!ui.worksName) return
     try {
@@ -158,6 +136,7 @@ export default function LibraryWorkHomePage() {
       />
 
       <WorkTabContent
+        worksId={ui.id}
         tab={tab}
         onChangeTab={setTab}
         ui={{
@@ -174,7 +153,6 @@ export default function LibraryWorkHomePage() {
         open={topicModalOpen}
         onClose={() => setTopicModalOpen(false)}
         work={{
-          // ✅ 모달에 넘어가는 데이터 = 작품 상세 API 기반
           id: ui.id,
           title: ui.title,
           meta: ui.worksType ? `${ui.worksType}` : ui.metaAuthor,

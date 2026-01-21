@@ -31,7 +31,9 @@ export default function Warning({
       />
 
       <div className="flex flex-col items-center mt-2.5 gap-1">
-        <p className="heading-2 text-black">{title}</p>
+        <p className="heading-2 text-black text-center whitespace-pre-line">
+          {title}
+        </p>
         {description ? (
           <p className="body-2 text-gray-500">{description}</p>
         ) : null}

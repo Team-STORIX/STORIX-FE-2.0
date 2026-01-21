@@ -84,12 +84,8 @@ export default function LibraryGalleryPage() {
     return mapped
   }, [data, sort])
 
-  // 디버그용
-  console.log('mapped works:', works)
-
   const sortedWorks = works
-  console.log('page0', data?.pages?.[0])
-  console.log('content0', data?.pages?.[0]?.result?.content)
+
   return (
     <div className="relative min-h-screen pb-[169px] bg-white">
       {/* 헤더 */}

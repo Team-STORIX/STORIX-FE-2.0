@@ -62,7 +62,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full mb-8">
-            <div className="flex w-full h-17 items-center justify-between px-1">
+            <div className="flex w-full items-center justify-between py-4 px-1">
               <div className="flex items-center justify-center">
                 <p className="heading-1">이런 키워드, 좋아하실 것 같아요</p>
               </div>

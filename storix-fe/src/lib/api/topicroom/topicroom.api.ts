@@ -1,33 +1,17 @@
+// src/lib/api/topicroom/topicroom.api.ts
 import { apiClient } from '@/lib/api/axios-instance'
 import { z } from 'zod'
-
-const ApiResponseSchema = z.object({
-  isSuccess: z.boolean().optional(),
-  code: z.string().optional(),
-  message: z.string().optional(),
-  result: z.any().optional(),
-})
-
-const TopicRoomItemSchema = z.object({
-  topicRoomId: z.number(),
-  topicRoomName: z.string(),
-  worksType: z.string().optional(),
-  worksName: z.string(),
-  thumbnailUrl: z.string().nullable().optional(),
-  activeUserNumber: z.number().optional(),
-  lastChatTime: z.string().optional(),
-  isJoined: z.boolean().optional(),
-})
+import {
+  ApiEnvelopeSchema,
+  TopicRoomIdSchema,
+  TopicRoomItemSchema,
+  TopicRoomSearchWrappedSchema,
+} from './topicroom.schema'
 
 export type TopicRoomItem = z.infer<typeof TopicRoomItemSchema>
 
-const SearchWrappedSchema = z.object({
-  result: z.object({
-    content: z.array(TopicRoomItemSchema),
-  }),
-})
-
-const TodaySchema = z.array(TopicRoomItemSchema)
+/** 토픽룸 생성 */
+const CreateTopicRoomResponseSchema = ApiEnvelopeSchema(TopicRoomIdSchema)
 
 export async function createTopicRoom(body: {
   worksId: number
@@ -36,35 +20,47 @@ export async function createTopicRoom(body: {
   const res = await apiClient.post('/api/v1/topic-rooms', body, {
     headers: { accept: '*/*' },
   })
-  const parsed = ApiResponseSchema.parse(res.data)
-  // swagger: result: number(=topicRoomId)
-  const roomId = Number(parsed.result)
-  if (!roomId || Number.isNaN(roomId))
-    throw new Error('createTopicRoom: roomId 파싱 실패')
-  return roomId
+
+  const parsed = CreateTopicRoomResponseSchema.parse(res.data)
+  return parsed.result // ✅ number(topicRoomId)
 }
 
+/** 토픽룸 입장 */
 export async function joinTopicRoom(roomId: number) {
   const res = await apiClient.post(`/api/v1/topic-rooms/${roomId}/join`, null, {
     headers: { accept: '*/*' },
   })
-  return ApiResponseSchema.parse(res.data)
+  return ApiEnvelopeSchema(z.any()).parse(res.data)
 }
 
+/** 토픽룸 퇴장 */
 export async function leaveTopicRoom(roomId: number) {
   const res = await apiClient.delete(`/api/v1/topic-rooms/${roomId}/leave`, {
     headers: { accept: '*/*' },
   })
-  return ApiResponseSchema.parse(res.data)
+  return ApiEnvelopeSchema(z.any()).parse(res.data)
 }
+
+/** 오늘의 토픽룸 */
+const TodayResponseSchema = ApiEnvelopeSchema(z.array(TopicRoomItemSchema))
 
 export async function getTodayTopicRooms() {
   const res = await apiClient.get('/api/v1/topic-rooms/today', {
     headers: { accept: '*/*' },
   })
-  const parsed = ApiResponseSchema.parse(res.data)
-  return TodaySchema.parse(parsed.result)
+  const parsed = TodayResponseSchema.parse(res.data)
+  return parsed.result
 }
+
+/** 토픽룸 검색 */
+const SearchResponseSchema = ApiEnvelopeSchema(
+  z.union([
+    // swagger: result.result.content
+    TopicRoomSearchWrappedSchema,
+    // 혹시 바로 slice/content로 내려오는 케이스
+    z.object({ content: z.array(TopicRoomItemSchema) }),
+  ]),
+)
 
 export async function searchTopicRooms(params: {
   keyword: string
@@ -82,12 +78,15 @@ export async function searchTopicRooms(params: {
     headers: { accept: '*/*' },
   })
 
-  const parsed = ApiResponseSchema.parse(res.data)
+  const parsed = SearchResponseSchema.parse(res.data)
 
-  // swagger: result.result.content 구조
-  const unwrapped = SearchWrappedSchema.safeParse(parsed.result)
-  if (!unwrapped.success) return [] as TopicRoomItem[]
-  return unwrapped.data.result.content
+  // ✅ swagger: result.result.content
+  if ('result' in parsed.result) {
+    return parsed.result.result.content
+  }
+
+  // ✅ 폴백: { content: [] }
+  return parsed.result.content
 }
 
 /**

@@ -10,9 +10,9 @@ export const useLibrarySearchWorksInfinite = (keyword: string) => {
       getLibrarySearchWorks({ keyword, page: Number(pageParam) }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      const slice = lastPage.slice
-      if (slice.last || slice.empty) return undefined
-      return (slice.number ?? 0) + 1
+      // ✅ lastPage 자체가 Page/Slice 형태 (slice 래핑 없음)
+      if (lastPage.last || lastPage.empty) return undefined
+      return (lastPage.number ?? 0) + 1
     },
   })
 }

@@ -2,19 +2,22 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import CheckBox from '@/public/common/icons/CheckBox'
-import { getWorksSearch } from '@/lib/api/search/search.api'
 import type { WorksSearchItem } from '@/lib/api/search/search.schema'
+import { useWorksSearch } from '@/hooks/search/useWorksSearch'
 
 const STORAGE_KEY_FEED = 'storix:selectedWork:feed'
 
 type StoredWork = { id: number; title: string; meta: string; thumb: string }
 
-export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
-  const router = useRouter()
+export default function WriteBottomSheet({
+  onClose,
+  onPick,
+}: {
+  onClose: () => void
+  onPick: (work: StoredWork) => void
+}) {
   const [selected, setSelected] = useState<number | null>(null)
 
   const [keyword, setKeyword] = useState('')
@@ -40,14 +43,10 @@ export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
     setTimeout(onClose, 250)
   }
 
-  const worksQuery = useQuery({
-    queryKey: ['bottomsheet', 'works', debouncedKeyword],
-    enabled: debouncedKeyword.length > 0,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    queryFn: () =>
-      getWorksSearch({ keyword: debouncedKeyword, sort: 'NAME', page: 0 }),
+  const worksQuery = useWorksSearch({
+    keyword: debouncedKeyword,
+    sort: 'NAME',
+    page: 0,
   })
 
   const works: WorksSearchItem[] = worksQuery.data?.result?.content ?? []
@@ -60,12 +59,17 @@ export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
       thumb: w.thumbnailUrl ?? '',
     }
     sessionStorage.setItem(STORAGE_KEY_FEED, JSON.stringify(payload))
+    return payload
   }
 
   const goWritePage = () => {
     if (!selected) return
+    const picked = works.find((w) => Number(w.worksId) === selected)
+    if (!picked) return
+
+    const stored = saveSelectedWorkToSession(picked)
+    onPick(stored)
     handleClose()
-    router.push(`/feed/write/${selected}`)
   }
 
   return (
@@ -145,23 +149,25 @@ export default function WriteBottomSheet({ onClose }: { onClose: () => void }) {
                   }
                   className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50 cursor-pointer"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-1 min-w-0 items-center gap-3">
                     <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-md bg-gray-100">
                       {w.thumbnailUrl ? (
                         <Image
                           src={w.thumbnailUrl}
                           alt={w.worksName}
-                          fill
                           className="object-cover"
-                          sizes="96px"
+                          width={87}
+                          height={116}
                         />
                       ) : null}
                     </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-body-1">{w.worksName}</span>
-                      <span className="text-caption text-gray-500">
+                    <div className="flex-1 flex flex-col min-w-0 items-start pr-2">
+                      <span className="heading-4 w-full truncate text-left">
+                        {w.worksName}
+                      </span>
+                      <span className="caption-1 w-full truncate text-left text-gray-500">
                         {w.artistName}
-                        <span className="mx-2 text-gray-300">·</span>
+                        <span className="text-gray-300">·</span>
                         {w.worksType}
                       </span>
                     </div>
