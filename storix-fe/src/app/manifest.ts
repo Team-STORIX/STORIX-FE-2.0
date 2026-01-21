@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'STORIX',
     short_name: 'STORIX',
     description: 'STORIX PWA',
-    start_url: '/login', // 너 프로젝트는 / 가 /login으로 redirect라 이게 자연스러움
+    start_url: '/', // 너 프로젝트는 / 가 /login으로 redirect라 이게 자연스러움
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#ffffff',

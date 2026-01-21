@@ -74,7 +74,7 @@ export default function TopicRoomCreateSuccessPage() {
                   🔥 HOT
                 </span>
                 <span className="caption-1 rounded-md bg-[var(--color-magenta-300)] px-2 py-1 text-white">
-                  1층
+                  1명
                 </span>
               </div>
 
