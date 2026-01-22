@@ -22,6 +22,7 @@ export default function TopicRoomCreateSuccessPage() {
       title: work?.worksName ?? '',
       thumb: work?.thumbnailUrl ?? '/image/sample/topicroom-1.webp',
       worksName: work?.worksName ?? '',
+      id: work?.worksId ?? '',
     }
   }, [work])
 
@@ -40,7 +41,7 @@ export default function TopicRoomCreateSuccessPage() {
       <div className="pt-4">
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={() => router.push(`/library/works/${ui.id}`)}
           aria-label="뒤로가기"
           className="flex h-8 w-8 items-center justify-center cursor-pointer"
         >

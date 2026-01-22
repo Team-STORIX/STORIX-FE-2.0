@@ -18,7 +18,6 @@ type SearchBarProps = {
 
 export default function SearchBar({
   placeholder = '좋아하는 작품/작가를 검색하세요',
-  onBackClick,
   onSearchClick,
   backHref,
   defaultKeyword = '',
@@ -34,7 +33,7 @@ export default function SearchBar({
 
   const href =
     backHref ??
-    (pathname.startsWith('/home/search')
+    (pathname.startsWith('/home')
       ? '/home'
       : pathname.startsWith('/library/search')
         ? '/library/list'

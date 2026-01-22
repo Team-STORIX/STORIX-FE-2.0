@@ -115,7 +115,7 @@ export default function LibraryWorkHomePage() {
   return (
     <div className="relative min-h-screen bg-white">
       <WorkTopBar
-        onBack={() => router.back()}
+        onBack={() => router.push('/library/list')}
         isLiked={isLiked}
         onToggleLike={() => setIsLiked((v) => !v)}
       />
