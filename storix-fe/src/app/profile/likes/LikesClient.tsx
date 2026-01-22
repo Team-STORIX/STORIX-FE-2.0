@@ -1,7 +1,7 @@
 // src/app/profile/likes/LikesClient.tsx
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 
@@ -9,329 +9,293 @@ import TopBar from './components/topbar'
 import SelectBar from './components/selectBar'
 import NavBar from '@/components/common/NavBar'
 import { useFavoritesStore } from '@/store/favorites.store'
-import { apiClient } from '@/lib/api/axios-instance'
+
+import {
+  getReaderFavoriteArtists,
+  getReaderFavoriteWorks,
+  type FavoriteArtist,
+  type FavoriteWork,
+} from '@/api/profile/readerFavorites.api'
+
+import {
+  postFavoriteArtist,
+  postFavoriteWork,
+  deleteFavoriteArtist,
+  deleteFavoriteWork,
+} from '@/api/favorite/toggleFavorite.api'
 
 type Tab = 'works' | 'writers'
-
-type LikedWork = {
-  id: number
-  title: string
-  author: string
-  kind: '웹툰' | '웹소설'
-  rated?: { score: number } | null
-}
-
-type LikedWriter = {
-  id: number
-  name: string
-  bio: string
-}
-
-async function postFavoriteWork(worksId: number) {
-  await apiClient.post(`/api/v1/favorite/works/${worksId}`)
-}
-async function deleteFavoriteWork(worksId: number) {
-  await apiClient.delete(`/api/v1/favorite/works/${worksId}`)
-}
-async function postFavoriteArtist(artistId: number) {
-  await apiClient.post(`/api/v1/favorite/artist/${artistId}`)
-}
-async function deleteFavoriteArtist(artistId: number) {
-  await apiClient.delete(`/api/v1/favorite/artist/${artistId}`)
-}
 
 export default function LikesClient() {
   const sp = useSearchParams()
   const tab: Tab = (sp.get('tab') as Tab) ?? 'works'
   const router = useRouter()
 
-  // ✅ 전역 store
-  const favoriteWorkIds = useFavoritesStore((s) => s.favoriteWorkIds)
-  const favoriteArtistIds = useFavoritesStore((s) => s.favoriteArtistIds)
+  // ✅ 전역 store (캐시/즉시 반영용)
+  const storeAddWork = useFavoritesStore((s) => s.addFavoriteWork)
+  const storeRemoveWork = useFavoritesStore((s) => s.removeFavoriteWork)
+  const storeAddArtist = useFavoritesStore((s) => s.addFavoriteArtist)
+  const storeRemoveArtist = useFavoritesStore((s) => s.removeFavoriteArtist)
 
-  const addFavoriteWork = useFavoritesStore((s) => s.addFavoriteWork)
-  const removeFavoriteWork = useFavoritesStore((s) => s.removeFavoriteWork)
-  const addFavoriteArtist = useFavoritesStore((s) => s.addFavoriteArtist)
-  const removeFavoriteArtist = useFavoritesStore((s) => s.removeFavoriteArtist)
+  // ✅ API 기반 리스트 state (탭별)
+  const [works, setWorks] = useState<FavoriteWork[]>([])
+  const [writers, setWriters] = useState<FavoriteArtist[]>([])
 
-  // ✅ 더미 마스터 데이터(목록 표시용) — "보이게"만 만드는 목적
-  const worksSeed: LikedWork[] = useMemo(
-    () => [
-      {
-        id: 1,
-        title: '상수리 나무 아래',
-        author: '서말',
-        kind: '웹툰',
-        rated: { score: 4.5 },
-      },
-      {
-        id: 2,
-        title: '전지적독자시점',
-        author: '싱숑',
-        kind: '웹소설',
-        rated: null,
-      },
-      {
-        id: 3,
-        title: '재혼황후',
-        author: '히어리',
-        kind: '웹툰',
-        rated: { score: 5 },
-      },
-      {
-        id: 4,
-        title: '나 혼자만 레벨업',
-        author: '추공',
-        kind: '웹소설',
-        rated: null,
-      },
-      {
-        id: 5,
-        title: '화산귀환',
-        author: '비가',
-        kind: '웹소설',
-        rated: { score: 4.8 },
-      },
-      {
-        id: 6,
-        title: '나노마신',
-        author: '한중월야',
-        kind: '웹소설',
-        rated: null,
-      },
-      { id: 7, title: '여신강림', author: '야옹이', kind: '웹툰', rated: null },
-      {
-        id: 8,
-        title: '외모지상주의',
-        author: '박태준',
-        kind: '웹툰',
-        rated: null,
-      },
-      { id: 9, title: '신의 탑', author: 'SIU', kind: '웹툰', rated: null },
-      {
-        id: 10,
-        title: '유미의 세포들',
-        author: '이동건',
-        kind: '웹툰',
-        rated: null,
-      },
-      {
-        id: 11,
-        title: '고수',
-        author: '문정후',
-        kind: '웹툰',
-        rated: { score: 4.2 },
-      },
-      {
-        id: 12,
-        title: '달빛조각사',
-        author: '남희성',
-        kind: '웹소설',
-        rated: null,
-      },
-    ],
-    [],
-  )
+  const [worksPage, setWorksPage] = useState(0)
+  const [writersPage, setWritersPage] = useState(0)
 
-  const writersSeed: LikedWriter[] = useMemo(
-    () => [
-      { id: 80, name: 'hi', bio: '실제 작가 계정(임시 소개)' },
-      { id: 88, name: '아지', bio: '실제 작가 계정(임시 소개)' },
-      { id: 101, name: '서말', bio: '감정선을 촘촘하게 그려요' },
-      { id: 102, name: '싱숑', bio: '세계관 설계가 탄탄해요' },
-      { id: 103, name: '히어리', bio: '캐릭터 케미 맛집' },
-    ],
-    [],
-  )
+  const [worksLast, setWorksLast] = useState(false)
+  const [writersLast, setWritersLast] = useState(false)
 
-  /**
-   * ✅ 핵심
-   * - 화면 목록은 “처음 들어왔을 때의 즐겨찾기 스냅샷(base)”로 고정
-   * - 토글은 pending만 바꿔서 check/plus 즉시 전환
-   * - 페이지 떠날 때 최종 pending을 store + API에 커밋
-   */
-  const [baseWorkIds, setBaseWorkIds] = useState<number[] | null>(null)
-  const [baseArtistIds, setBaseArtistIds] = useState<number[] | null>(null)
+  const [loading, setLoading] = useState(false)
 
+  // ✅ 토글 pending (탭별)
+  // - 이 페이지에서 보여주는 항목은 기본이 "관심 등록 상태(true)"이므로,
+  //   사용자가 check->plus로 바꾸면 removed에 들어가고,
+  //   plus->check로 다시 돌리면 removed에서 빠진다.
   const [pendingWorkRemoved, setPendingWorkRemoved] = useState<Set<number>>(
-    new Set(),
-  )
-  const [pendingWorkAdded, setPendingWorkAdded] = useState<Set<number>>(
     new Set(),
   )
   const [pendingArtistRemoved, setPendingArtistRemoved] = useState<Set<number>>(
     new Set(),
   )
-  const [pendingArtistAdded, setPendingArtistAdded] = useState<Set<number>>(
-    new Set(),
-  )
 
-  // 페이지 진입 시 base 스냅샷 고정
-  useEffect(() => {
-    if (baseWorkIds === null) setBaseWorkIds(favoriteWorkIds)
-    if (baseArtistIds === null) setBaseArtistIds(favoriteArtistIds)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [favoriteWorkIds, favoriteArtistIds])
-
-  const works = useMemo(() => {
-    const base = new Set(baseWorkIds ?? [])
-    // ✅ base에 포함된 것만 “목록에” 보임 (중요)
-    return worksSeed.filter((w) => base.has(w.id))
-  }, [worksSeed, baseWorkIds])
-
-  const writers = useMemo(() => {
-    const base = new Set(baseArtistIds ?? [])
-    return writersSeed.filter((w) => base.has(w.id))
-  }, [writersSeed, baseArtistIds])
-
-  const isWorkFavoriteEffective = (id: number) => {
-    const baseFav = (baseWorkIds ?? favoriteWorkIds).includes(id)
-    if (pendingWorkAdded.has(id)) return true
-    if (pendingWorkRemoved.has(id)) return false
-    return baseFav
-  }
-
-  const isArtistFavoriteEffective = (id: number) => {
-    const baseFav = (baseArtistIds ?? favoriteArtistIds).includes(id)
-    if (pendingArtistAdded.has(id)) return true
-    if (pendingArtistRemoved.has(id)) return false
-    return baseFav
-  }
-
-  const toggleWork = (id: number) => {
-    const nowFav = isWorkFavoriteEffective(id)
-    if (nowFav) {
-      // check -> plus (제거 예약)
-      setPendingWorkAdded((p) => {
-        const n = new Set(p)
-        n.delete(id)
-        return n
-      })
-      setPendingWorkRemoved((p) => {
-        const n = new Set(p)
-        n.add(id)
-        return n
-      })
-    } else {
-      // plus -> check (제거 예약 취소 or 재추가 예약)
-      setPendingWorkRemoved((p) => {
-        const n = new Set(p)
-        n.delete(id)
-        return n
-      })
-      setPendingWorkAdded((p) => {
-        const n = new Set(p)
-        // base에 없었던 걸 체크로 만들었을 때만 add 예약인데,
-        // 이 페이지는 "관심 목록" 페이지라 보통 base에 있는 것만 나오므로 사실상 거의 안 탐.
-        // 그래도 안전하게 유지.
-        const baseHas = (baseWorkIds ?? favoriteWorkIds).includes(id)
-        if (!baseHas) n.add(id)
-        return n
-      })
-    }
-  }
-
-  const toggleArtist = (id: number) => {
-    const nowFav = isArtistFavoriteEffective(id)
-    if (nowFav) {
-      setPendingArtistAdded((p) => {
-        const n = new Set(p)
-        n.delete(id)
-        return n
-      })
-      setPendingArtistRemoved((p) => {
-        const n = new Set(p)
-        n.add(id)
-        return n
-      })
-    } else {
-      setPendingArtistRemoved((p) => {
-        const n = new Set(p)
-        n.delete(id)
-        return n
-      })
-      setPendingArtistAdded((p) => {
-        const n = new Set(p)
-        const baseHas = (baseArtistIds ?? favoriteArtistIds).includes(id)
-        if (!baseHas) n.add(id)
-        return n
-      })
-    }
-  }
-
-  // ✅ 언마운트 시 커밋
+  // ✅ pending 최신값 ref
   const pendingRef = useRef({
     pendingWorkRemoved,
-    pendingWorkAdded,
     pendingArtistRemoved,
-    pendingArtistAdded,
   })
 
   useEffect(() => {
     pendingRef.current = {
       pendingWorkRemoved,
-      pendingWorkAdded,
       pendingArtistRemoved,
-      pendingArtistAdded,
     }
-  }, [
-    pendingWorkRemoved,
-    pendingWorkAdded,
-    pendingArtistRemoved,
-    pendingArtistAdded,
-  ])
+  }, [pendingWorkRemoved, pendingArtistRemoved])
 
+  // ✅ 커밋 중복 방지 (works/artist 별도 lock)
+  const commitWorksLockRef = useRef(false)
+  const commitArtistsLockRef = useRef(false)
+
+  const commitWorks = useCallback(async () => {
+    if (commitWorksLockRef.current) return
+    commitWorksLockRef.current = true
+    try {
+      const wR = pendingRef.current.pendingWorkRemoved
+      if (!wR || wR.size === 0) return
+
+      // ✅ store 즉시 반영
+      wR.forEach((id) => storeRemoveWork(id))
+
+      // ✅ API best-effort
+      await Promise.allSettled(
+        Array.from(wR).map((id) => deleteFavoriteWork(id)),
+      )
+
+      // ✅ 커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
+      setWorks((prev) => prev.filter((w) => !wR.has(w.worksId)))
+
+      // ✅ pending 초기화
+      setPendingWorkRemoved(new Set())
+    } finally {
+      commitWorksLockRef.current = false
+    }
+  }, [storeRemoveWork])
+
+  const commitArtists = useCallback(async () => {
+    if (commitArtistsLockRef.current) return
+    commitArtistsLockRef.current = true
+    try {
+      const aR = pendingRef.current.pendingArtistRemoved
+      if (!aR || aR.size === 0) return
+
+      // ✅ store 즉시 반영
+      aR.forEach((id) => storeRemoveArtist(id))
+
+      // ✅ API best-effort
+      await Promise.allSettled(
+        Array.from(aR).map((id) => deleteFavoriteArtist(id)),
+      )
+
+      // ✅ 커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
+      setWriters((prev) => prev.filter((a) => !aR.has(a.artistId)))
+
+      // ✅ pending 초기화
+      setPendingArtistRemoved(new Set())
+    } finally {
+      commitArtistsLockRef.current = false
+    }
+  }, [storeRemoveArtist])
+
+  // ✅ 탭 변경을 저장 트리거로 사용 (이전 탭 커밋)
+  const prevTabRef = useRef<Tab>(tab)
+  useEffect(() => {
+    const prev = prevTabRef.current
+    if (prev === tab) return
+    ;(async () => {
+      try {
+        if (prev === 'works') await commitWorks()
+        else await commitArtists()
+      } catch (e) {
+        console.error(e)
+      } finally {
+        prevTabRef.current = tab
+      }
+    })()
+  }, [tab, commitWorks, commitArtists])
+
+  // ✅ 언마운트 시 마지막 커밋
   useEffect(() => {
     return () => {
-      const {
-        pendingWorkRemoved: wR,
-        pendingWorkAdded: wA,
-        pendingArtistRemoved: aR,
-        pendingArtistAdded: aA,
-      } = pendingRef.current
-
-      // ✅ store 반영 → Preference/다른 페이지 즉시 일치
-      wR.forEach((id) => removeFavoriteWork(id))
-      wA.forEach((id) => addFavoriteWork(id))
-      aR.forEach((id) => removeFavoriteArtist(id))
-      aA.forEach((id) => addFavoriteArtist(id))
-
-      // ✅ API best-effort (더미 workId는 400 날 수 있음)
-      ;(async () => {
-        for (const id of Array.from(wR)) {
-          try {
-            await deleteFavoriteWork(id)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        for (const id of Array.from(wA)) {
-          try {
-            await postFavoriteWork(id)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        for (const id of Array.from(aR)) {
-          try {
-            await deleteFavoriteArtist(id)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-        for (const id of Array.from(aA)) {
-          try {
-            await postFavoriteArtist(id)
-          } catch (e) {
-            console.error(e)
-          }
-        }
-      })()
+      // cleanup은 async await가 보장되지 않으니 best-effort 호출만
+      // (요구사항상 "나가면 저장"이라 이 정도로 충분)
+      void commitWorks()
+      void commitArtists()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const hasData = tab === 'works' ? works.length > 0 : writers.length > 0
+  // -------------------------
+  // API fetch (무한스크롤)
+  // -------------------------
+  const fetchWorksPage = useCallback(
+    async (page: number) => {
+      if (loading) return
+      setLoading(true)
+      try {
+        const res = await getReaderFavoriteWorks({ page, sort: 'LATEST' })
+        const content = res.result.content ?? []
+        setWorks((prev) => (page === 0 ? content : [...prev, ...content]))
+        setWorksLast(res.result.last)
+        setWorksPage(page)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [loading],
+  )
+
+  const fetchWritersPage = useCallback(
+    async (page: number) => {
+      if (loading) return
+      setLoading(true)
+      try {
+        const res = await getReaderFavoriteArtists({ page, sort: 'LATEST' })
+        const content = res.result.content ?? []
+        setWriters((prev) => (page === 0 ? content : [...prev, ...content]))
+        setWritersLast(res.result.last)
+        setWritersPage(page)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [loading],
+  )
+
+  // 탭이 바뀌면, 해당 탭이 아직 로딩 전이면 page=0 로드
+  useEffect(() => {
+    if (tab === 'works') {
+      if (works.length === 0) void fetchWorksPage(0)
+    } else {
+      if (writers.length === 0) void fetchWritersPage(0)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
+  // ✅ IntersectionObserver로 무한스크롤 (UI 변화 없음: sentinel div만 추가)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (!entry?.isIntersecting) return
+        if (loading) return
+
+        if (tab === 'works') {
+          if (!worksLast) void fetchWorksPage(worksPage + 1)
+        } else {
+          if (!writersLast) void fetchWritersPage(writersPage + 1)
+        }
+      },
+      { root: null, rootMargin: '200px', threshold: 0.01 },
+    )
+
+    io.observe(el)
+    return () => io.disconnect()
+  }, [
+    tab,
+    loading,
+    worksLast,
+    writersLast,
+    worksPage,
+    writersPage,
+    fetchWorksPage,
+    fetchWritersPage,
+  ])
+
+  // -------------------------
+  // Toggle (아이콘만 즉시 반영)
+  // -------------------------
+  const isWorkFavoriteEffective = useCallback(
+    (worksId: number) => {
+      // 이 페이지에 표시된 것은 원래 관심(true)
+      // removed에 들어가면 plus로 보임
+      if (pendingWorkRemoved.has(worksId)) return false
+      return true
+    },
+    [pendingWorkRemoved],
+  )
+
+  const isArtistFavoriteEffective = useCallback(
+    (artistId: number) => {
+      if (pendingArtistRemoved.has(artistId)) return false
+      return true
+    },
+    [pendingArtistRemoved],
+  )
+
+  const toggleWork = (worksId: number) => {
+    const nowFav = isWorkFavoriteEffective(worksId)
+    if (nowFav) {
+      // check -> plus (제거 예약)
+      setPendingWorkRemoved((p) => {
+        const n = new Set(p)
+        n.add(worksId)
+        return n
+      })
+    } else {
+      // plus -> check (제거 예약 취소)
+      setPendingWorkRemoved((p) => {
+        const n = new Set(p)
+        n.delete(worksId)
+        return n
+      })
+    }
+  }
+
+  const toggleArtist = (artistId: number) => {
+    const nowFav = isArtistFavoriteEffective(artistId)
+    if (nowFav) {
+      setPendingArtistRemoved((p) => {
+        const n = new Set(p)
+        n.add(artistId)
+        return n
+      })
+    } else {
+      setPendingArtistRemoved((p) => {
+        const n = new Set(p)
+        n.delete(artistId)
+        return n
+      })
+    }
+  }
+
+  const hasData = useMemo(() => {
+    return tab === 'works' ? works.length > 0 : writers.length > 0
+  }, [tab, works.length, writers.length])
 
   return (
     <div className="relative w-full min-h-full pb-[169px] bg-white">
@@ -343,10 +307,10 @@ export default function LikesClient() {
           {tab === 'works' ? (
             <div>
               {works.map((w) => {
-                const fav = isWorkFavoriteEffective(w.id)
+                const fav = isWorkFavoriteEffective(w.worksId)
                 return (
                   <div
-                    key={w.id}
+                    key={w.worksId}
                     className="px-4 py-3 flex items-center"
                     style={{
                       borderBottom: '1px solid var(--color-gray-100)',
@@ -354,17 +318,27 @@ export default function LikesClient() {
                       height: 107,
                     }}
                   >
-                    <div className="w-[62px] h-[83px] bg-[var(--color-gray-200)] rounded flex-shrink-0" />
+                    <div className="w-[62px] h-[83px] bg-[var(--color-gray-200)] rounded flex-shrink-0 overflow-hidden relative">
+                      {w.thumbnailUrl ? (
+                        <Image
+                          src={w.thumbnailUrl}
+                          alt={w.worksName}
+                          fill
+                          sizes="62px"
+                          className="object-cover"
+                        />
+                      ) : null}
+                    </div>
 
                     <div className="ml-3 flex-1 min-w-0">
                       <p className="body-1 text-[var(--color-black)] w-[210px] truncate">
-                        {w.title}
+                        {w.worksName}
                       </p>
                       <p className="mt-1 caption-1 text-[var(--color-gray-500)]">
-                        {w.author} · {w.kind}
+                        {w.artistName} · {w.worksType}
                       </p>
 
-                      {w.rated ? (
+                      {w.isReviewed ? (
                         <div className="mt-1 flex items-center">
                           <span
                             className="text-[10px] font-medium tracking-[0.2px] text-[var(--color-primary-main)]"
@@ -381,7 +355,7 @@ export default function LikesClient() {
                             />
                           </span>
                           <span className="ml-0.5 text-[10px] font-medium text-[var(--color-primary-main)]">
-                            {w.rated.score}
+                            {w.rating ?? '-'}
                           </span>
                         </div>
                       ) : (
@@ -391,7 +365,7 @@ export default function LikesClient() {
 
                     <button
                       type="button"
-                      onClick={() => toggleWork(w.id)}
+                      onClick={() => toggleWork(w.worksId)}
                       className="ml-3 transition-opacity hover:opacity-70 cursor-pointer"
                       aria-label="관심 작품 토글"
                     >
@@ -413,10 +387,10 @@ export default function LikesClient() {
           ) : (
             <div>
               {writers.map((wr) => {
-                const fav = isArtistFavoriteEffective(wr.id)
+                const fav = isArtistFavoriteEffective(wr.artistId)
                 return (
                   <div
-                    key={wr.id}
+                    key={wr.artistId}
                     className="px-4 py-3 flex items-center"
                     style={{
                       borderBottom: '1px solid var(--color-gray-100)',
@@ -424,20 +398,30 @@ export default function LikesClient() {
                       height: 88,
                     }}
                   >
-                    <div className="w-[64px] h-[64px] rounded-full bg-[var(--color-gray-200)] flex-shrink-0" />
+                    <div className="w-[64px] h-[64px] rounded-full bg-[var(--color-gray-200)] flex-shrink-0 overflow-hidden relative">
+                      {wr.profileImageUrl ? (
+                        <Image
+                          src={wr.profileImageUrl}
+                          alt={wr.artistName}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                        />
+                      ) : null}
+                    </div>
 
                     <div className="ml-3 flex-1 min-w-0">
                       <p className="body-1 text-[var(--color-black)] truncate">
-                        {wr.name}
+                        {wr.artistName}
                       </p>
                       <p className="mt-1 caption-1 text-[var(--color-gray-500)] truncate">
-                        {wr.bio}
+                        {wr.profileDescription}
                       </p>
                     </div>
 
                     <button
                       type="button"
-                      onClick={() => toggleArtist(wr.id)}
+                      onClick={() => toggleArtist(wr.artistId)}
                       className="ml-3 transition-opacity hover:opacity-70 cursor-pointer"
                       aria-label="관심 작가 토글"
                     >
@@ -457,6 +441,9 @@ export default function LikesClient() {
               })}
             </div>
           )}
+
+          {/* 무한스크롤 sentinel (보이지 않음) */}
+          <div ref={sentinelRef} className="h-1" />
         </div>
       ) : (
         <EmptyState tab={tab} onClickCta={() => router.push('/home/search')} />
@@ -486,7 +473,7 @@ function EmptyState({ tab, onClickCta }: { tab: Tab; onClickCta: () => void }) {
       </h2>
       <button
         type="button"
-        className="mt-3 cursor-pointer hover:opacity-80  transition-opacity cursor-pointer"
+        className="mt-3 cursor-pointer hover:opacity-80 transition-opacity"
         onClick={onClickCta}
         aria-label="검색으로 이동"
       >
