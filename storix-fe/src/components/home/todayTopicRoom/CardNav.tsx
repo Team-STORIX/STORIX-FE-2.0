@@ -19,7 +19,7 @@ export const CardNav = ({ header, roomName }: CardNavProps) => {
       {/* 오른쪽 아이콘 그룹 */}
       <div className="flex items-center gap-4">
         <Link
-          href={`/home/${roomName}`}
+          href={`${roomName}`}
           aria-label="이동"
           className="flex h-6 w-6 items-center justify-center"
         >

@@ -22,7 +22,7 @@ export default function Home() {
         {/* 위쪽만 스크롤 */}
         <div className="flex-1 flex flex-col gap-[24px] overflow-y-auto overflow-x-hidden">
           <div className="flex flex-col items-center text-center">
-            <CardNav header="실시간 작품 이야기!" roomName="topicroom" />
+            <CardNav header="실시간 작품 이야기!" roomName="/home/topicroom" />
             <TopicRoomCoverSlider />
           </div>
 

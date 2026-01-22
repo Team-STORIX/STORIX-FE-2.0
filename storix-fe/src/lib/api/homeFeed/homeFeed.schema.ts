@@ -21,9 +21,12 @@ export const FeedProfileSchema = z.object({
 export const FeedBoardSchema = z.object({
   userId: z.number(),
   boardId: z.number(),
-  isWorksSelected: z.boolean(),
-  worksId: z.number(),
-  lastCreatedTime: z.string(),
+
+  // ✅ 응답에 없는 경우가 있어서 optional 처리
+  isWorksSelected: z.boolean().nullish(), // ✅
+  worksId: z.number().nullish(), // ✅
+  lastCreatedTime: z.string().nullish(), // ✅
+
   content: z.string(),
   likeCount: z.number(),
   replyCount: z.number(),
