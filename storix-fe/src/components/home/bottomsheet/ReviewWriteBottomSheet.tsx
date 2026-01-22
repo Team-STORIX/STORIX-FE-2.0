@@ -3,15 +3,15 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
 import CheckBox from '@/public/common/icons/CheckBox'
-import { getWorksSearch } from '@/lib/api/search/search.api'
-import type { WorksSearchItem } from '@/lib/api/search/search.schema'
 
-const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
-
-type StoredWork = { id: number; title: string; meta: string; thumb: string }
+type Work = {
+  id: number
+  title: string
+  meta: string
+  thumb: string
+}
 
 export default function ReviewWriteBottomSheet({
   onClose,
@@ -21,60 +21,51 @@ export default function ReviewWriteBottomSheet({
   const router = useRouter()
   const [selected, setSelected] = useState<number | null>(null)
 
-  const [keyword, setKeyword] = useState('')
-  const [debouncedKeyword, setDebouncedKeyword] = useState('')
-
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedKeyword(keyword.trim()), 300)
-    return () => clearTimeout(t)
-  }, [keyword])
-
-  useEffect(() => {
-    setSelected(null)
-  }, [debouncedKeyword])
-
-  // 바텀시트 열기/닫기
+  // 바텀시트 열기/닫기 상태
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
+    // 첫 렌더 후 프레임에 열기 → 아래에서 올라오는 모션
     requestAnimationFrame(() => setIsOpen(true))
   }, [])
 
   const handleClose = () => {
+    // 닫기 모션 먼저
     setIsOpen(false)
+    // 모션 끝나면 실제 unmount
     setTimeout(onClose, 250)
   }
 
-  const worksQuery = useQuery({
-    queryKey: ['bottomsheet', 'works', debouncedKeyword],
-    enabled: debouncedKeyword.length > 0,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    queryFn: () =>
-      getWorksSearch({ keyword: debouncedKeyword, sort: 'NAME', page: 0 }),
-  })
-
-  const works: WorksSearchItem[] = worksQuery.data?.result?.content ?? []
-
-  const saveSelectedWorkToSession = (w: WorksSearchItem) => {
-    const payload: StoredWork = {
-      id: Number(w.worksId),
-      title: w.worksName,
-      meta: `${w.artistName} · ${w.worksType}`,
-      thumb: w.thumbnailUrl ?? '',
-    }
-    sessionStorage.setItem(STORAGE_KEY_REVIEW, JSON.stringify(payload))
-  }
+  const works: Work[] = [
+    {
+      id: 1,
+      title: '상수리 나무 아래',
+      meta: '서하/나무 • 웹툰',
+      thumb: '/image/sample/topicroom-1.webp',
+    },
+    {
+      id: 2,
+      title: '상수리 나무 아래',
+      meta: '서하/나무 • 웹툰',
+      thumb: '/image/sample/topicroom-2.webp',
+    },
+    {
+      id: 3,
+      title: '상수리 나무 아래',
+      meta: '서하/나무 • 웹툰',
+      thumb: '/image/sample/topicroom-3.webp',
+    },
+    {
+      id: 4,
+      title: '상수리 나무 아래',
+      meta: '서하/나무 • 웹툰',
+      thumb: '/image/sample/topicroom-4.webp',
+    },
+  ]
 
   const goWritePage = () => {
     if (!selected) return
-
-    const picked = works.find((w) => Number(w.worksId) === selected)
-    if (!picked) return
-
-    saveSelectedWorkToSession(picked)
     handleClose()
-    router.push(`/feed/review/write/${selected}`) // ✅ id는 그대로 라우트로 넘김
+    router.push(`/feed/review/write/${selected}`) // ✅ id만 넘김 (쿼리 없음)
   }
 
   return (
@@ -84,7 +75,7 @@ export default function ReviewWriteBottomSheet({
         'transition-opacity duration-300',
         isOpen ? 'bg-black/40 opacity-100' : 'bg-black/0 opacity-0',
       ].join(' ')}
-      onClick={handleClose}
+      onClick={handleClose} // 바깥(오버레이) 클릭 시 닫기
     >
       <div
         className={[
@@ -94,11 +85,11 @@ export default function ReviewWriteBottomSheet({
           'transform transition-transform duration-200 ease-out will-change-transform',
           isOpen ? 'translate-y-0' : 'translate-y-full',
         ].join(' ')}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()} // 시트 클릭은 닫기 방지
       >
         <div className="flex items-center justify-between py-7">
           <span className="heading-2">작품선택</span>
-          <button onClick={handleClose} className="cursor-pointer">
+          <button onClick={onClose} className="cursor-pointer">
             <Image
               src="/common/icons/cancel.svg"
               alt="닫기"
@@ -112,8 +103,6 @@ export default function ReviewWriteBottomSheet({
           <input
             type="text"
             placeholder="함께 이야기하고 싶은 작품을 검색하세요"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-body-2"
           />
           <Image
@@ -126,78 +115,50 @@ export default function ReviewWriteBottomSheet({
         </div>
 
         <div className="flex flex-col gap-3 overflow-y-auto flex-1">
-          {debouncedKeyword.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center text-body-2 text-gray-400">
-              검색어를 입력하세요
-            </div>
-          ) : worksQuery.isFetching ? (
-            <div className="flex flex-1 items-center justify-center text-body-2 text-gray-400">
-              검색 중...
-            </div>
-          ) : worksQuery.isError ? (
-            <div className="flex flex-1 items-center justify-center text-body-2 text-gray-400">
-              검색에 실패했어요
-            </div>
-          ) : works.length === 0 ? (
-            <div className="flex flex-1 items-center justify-center text-body-2 text-gray-400">
-              검색 결과가 없습니다
-            </div>
-          ) : (
-            works.map((w) => {
-              const id = Number(w.worksId)
-              const isSelected = selected === id
-              return (
-                <button
-                  key={id}
-                  onClick={() =>
-                    setSelected((prev) => (prev === id ? null : id))
-                  }
-                  className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50 cursor-pointer"
-                >
-                  <div className="flex flex-1 min-w-0 items-center gap-3">
-                    <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-md bg-gray-100">
-                      {w.thumbnailUrl ? (
-                        <Image
-                          src={w.thumbnailUrl}
-                          alt={w.worksName}
-                          className="object-cover"
-                          width={87}
-                          height={116}
-                        />
-                      ) : null}
-                    </div>
-                    <div className="flex-1 flex flex-col min-w-0 items-start pr-2">
-                      <span className="heading-4 w-full truncate text-left">
-                        {w.worksName}
-                      </span>
-                      <span className="caption-1 w-full truncate text-left text-gray-500">
-                        {w.artistName}
-                        <span className="text-gray-300">·</span>
-                        {w.worksType}
-                      </span>
-                    </div>
+          {works.map((w) => {
+            const isSelected = selected === w.id
+            return (
+              <button
+                key={w.id}
+                onClick={() =>
+                  setSelected((prev) => (prev === w.id ? null : w.id))
+                }
+                className="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={w.thumb}
+                    alt={w.title}
+                    width={87}
+                    height={116}
+                    className="rounded-md object-cover"
+                  />
+                  <div className="flex flex-col items-start">
+                    <span className="text-body-1">{w.title}</span>
+                    <span className="text-caption text-gray-500">{w.meta}</span>
                   </div>
+                </div>
 
-                  <span
-                    className={
-                      isSelected
-                        ? 'text-[var(--color-magenta-300)]'
-                        : 'text-gray-300'
-                    }
-                  >
-                    <CheckBox />
-                  </span>
-                </button>
-              )
-            })
-          )}
+                <span
+                  className={
+                    isSelected
+                      ? 'text-[var(--color-magenta-300)]'
+                      : 'text-gray-300'
+                  }
+                >
+                  <CheckBox />
+                </span>
+              </button>
+            )
+          })}
         </div>
 
+        {/* ✅ 선택됐을 때만 + 하단 고정 */}
         {selected && (
           <div className="pt-4">
             <button
               onClick={goWritePage}
-              className="h-12 w-full mb-4 rounded-xl bg-black text-body-1 text-white transition-opacity cursor-pointer hover:opacity-90"
+              className="h-12 w-full mb-4 rounded-xl bg-black text-body-1 text-white transition-opacity hover:opacity-90"
             >
               선택 작품 리뷰 쓰기
             </button>

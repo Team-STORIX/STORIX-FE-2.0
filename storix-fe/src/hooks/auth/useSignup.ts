@@ -1,9 +1,9 @@
 // src/hooks/auth/useSignup.ts
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { signup } from '@/lib/api/auth/signup.api'
+import { signup } from '@/api/auth/signup.api'
 import { useAuthStore } from '@/store/auth.store'
-import type { SignupRequest } from '@/lib/api/auth/auth.schema'
+import type { SignupRequest } from '@/api/auth/auth.schema'
 import { AxiosError } from 'axios'
 
 export const useSignup = () => {

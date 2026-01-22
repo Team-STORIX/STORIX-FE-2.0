@@ -1,7 +1,7 @@
 // src/store/profile.store.ts
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import type { MeProfileResult } from '@/lib/api/profile/profile.api'
+import type { MeProfileResult } from '@/api/profile/profile.api'
 
 type ProfileState = {
   me: MeProfileResult | null

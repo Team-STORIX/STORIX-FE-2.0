@@ -16,10 +16,10 @@ export default function HashtagChip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm cursor-pointer
+      className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-[6px] text-sm 
     ${className}`}
     >
-      <span>#{label}</span>
+      <span>{label}</span>
     </button>
   )
 }

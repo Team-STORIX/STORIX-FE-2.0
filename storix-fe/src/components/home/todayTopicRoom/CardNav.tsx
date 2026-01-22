@@ -11,7 +11,7 @@ interface CardNavProps {
 
 export const CardNav = ({ header, roomName }: CardNavProps) => {
   return (
-    <div className="flex w-full items-center justify-between py-4 px-1">
+    <div className="flex w-full h-17 items-center justify-between px-1">
       <div className="flex items-center justify-center">
         <p className="heading-1">{header}</p>
       </div>

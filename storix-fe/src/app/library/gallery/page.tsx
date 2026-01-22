@@ -1,176 +1,145 @@
 //src/app/library/gallery/page.tsx
 'use client'
 
-import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-
 import NavBar from '@/components/common/NavBar'
 import BookSpineCarousel from '@/components/library/gallery/BookSpineCarousel'
-import LibraryHeader from '@/components/library/LibraryHeader'
-// list와 동일: empty 상태 Warning + 리뷰 작성 바텀시트
-import Warning from '@/components/common/Warining'
-import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
-// list와 동일하게 서재 리뷰 작품 API를 사용
-import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
-import type { LibraryReviewSort } from '@/lib/api/library/library.api'
 
 type SortKey = 'DEFAULT' | 'REVIEW' | 'RATING'
 
-type UILibraryWork = {
-  id: number
-  title: string
-  meta: string
-  thumb: string
-  rating: number
-  reviewCount: number
-}
+const MOCK_WORKS = [
+  {
+    id: 1,
+    title: '무림세가 천대받는 손녀딸이 되었다',
+    meta: '웹툰 • 무협',
+    thumb: '/image/sample/topicroom-1.webp',
+    rating: 5.0,
+    reviewCount: 100,
+  },
+  {
+    id: 2,
+    title: '재혼황후',
+    meta: '웹툰 • 로판',
+    thumb: '/image/sample/topicroom-2.webp',
+    rating: 5.0,
+    reviewCount: 100,
+  },
+  {
+    id: 3,
+    title: '상수리 나무 아래',
+    meta: '웹툰 • 로판',
+    thumb: '/image/sample/topicroom-3.webp',
+    rating: 5.0,
+    reviewCount: 100,
+  },
+  {
+    id: 4,
+    title: '재혼황후',
+    meta: '웹툰 • 로판',
+    thumb: '/image/sample/topicroom-4.webp',
+    rating: 5.0,
+    reviewCount: 100,
+  },
+  {
+    id: 5,
+    title: '상수리 나무 아래',
+    meta: '웹툰 • 로판',
+    thumb: '/image/sample/topicroom-1.webp',
+    rating: 5.0,
+    reviewCount: 100,
+  },
+]
 
 export default function LibraryGalleryPage() {
   const router = useRouter()
   const [sort, setSort] = useState<SortKey>('DEFAULT')
-  //  Warning 버튼 누르면 바텀시트 열기
-  const [showReviewSheet, setShowReviewSheet] = useState(false)
+  const works = MOCK_WORKS
 
-  //서버 정렬은 LATEST / DESC_RATING만 사용
-  const apiSort: LibraryReviewSort = useMemo(() => {
-    if (sort === 'RATING') return 'DESC_RATING'
-    return 'LATEST'
-  }, [sort])
-
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useLibraryReviewInfinite({ sort: apiSort })
-
-  const totalReviewCount = data?.pages?.[0]?.totalReviewCount ?? 0
-
-  // UI 모델로 매핑 + rating 추출 방식 동일
-  const works: UILibraryWork[] = useMemo(() => {
-    const items = data?.pages?.flatMap((p) => p.result.content) ?? []
-
-    const mapped = items.map((w) => {
-      const metaParts: string[] = []
-      const artist = (w as any).artistName
-      const worksType = (w as any).worksType
-      const genre = (w as any).genre
-      if (artist) metaParts.push(artist)
-      if (worksType) metaParts.push(worksType)
-      if (genre) metaParts.push(genre)
-
-      const ratingRaw =
-        (w as any).rating ??
-        (w as any).reviewRating ??
-        (w as any).avgRating ??
-        0
-
-      const rating = Number(ratingRaw) || 0
-      const reviewCount = (w as any).reviewCount ?? (rating ? 1 : 0)
-
-      return {
-        id: w.worksId,
-        title: w.worksName ?? '',
-        meta: metaParts.join(' • '),
-        thumb: w.thumbnailUrl ?? '',
-        rating,
-        reviewCount: Number(reviewCount ?? 0),
-      }
-    })
-
-    // REVIEW 정렬은 API가 지원하지 않아서 클라이언트에서만 보정
-    if (sort === 'REVIEW') {
-      return [...mapped].sort((a, b) => b.reviewCount - a.reviewCount)
-    }
-
-    // DEFAULT / RATING은 서버 정렬을 신뢰(list와 동일)s
-    return mapped
-  }, [data, sort])
-
-  const sortedWorks = works
+  const sortedWorks = useMemo(() => {
+    const copy = [...works]
+    if (sort === 'REVIEW')
+      return copy.sort((a, b) => b.reviewCount - a.reviewCount)
+    if (sort === 'RATING') return copy.sort((a, b) => b.rating - a.rating)
+    return copy
+  }, [works, sort])
 
   return (
     <div className="relative min-h-screen pb-[169px] bg-white">
+      <div className="h-[54px]" />
+
       {/* 헤더 */}
-      <LibraryHeader />
+      <div className="flex items-center justify-between px-4 pt-2">
+        <p className="heading-2 text-black">내 서재</p>
+
+        <button
+          type="button"
+          onClick={() => router.push('/library/search')}
+          aria-label="서재 검색"
+          className="p-2 hover:opacity-70"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M10.5 18.5a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      </div>
 
       {/* 상단 컨트롤 */}
-      <div className="flex items-center justify-between px-4 py-4.5 border-b border-gray-200">
+      <div className="mt-2 flex items-center justify-between px-4 mb-25 border-b border-gray-100">
         <div className="relative">
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="body-2 text-gray-500 pr-7 appearance-none bg-transparent outline-none cursor-pointer"
+            className="body-2 text-gray-500 pr-7 appearance-none bg-transparent"
             aria-label="정렬"
           >
-            <option value="DEFAULT">전체 작품</option>
-            <option value="RATING">별점 높은 순</option>
-            <option value="REVIEW">리뷰 많은 순</option>
+            <option value="DEFAULT">기본순</option>
+            <option value="REVIEW">리뷰순</option>
+            <option value="RATING">별점순</option>
           </select>
 
           <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400">
-            <Image
-              src={'/icons/arrow-down.svg'}
-              alt={'정렬 옵션 열기'}
-              width={24}
-              height={24}
-              className="inline-block"
-            />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" />
+            </svg>
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* ✅ (API 연동) 총 개수는 서버값 우선 (UI 텍스트는 동일) */}
-          <span className="body-2 text-gray-400">
-            {totalReviewCount || sortedWorks.length}개
-          </span>
+        <div className="flex items-center gap-3">
+          <span className="body-2 text-gray-400">{sortedWorks.length}개</span>
 
           {/* gallery → list */}
           <button
             type="button"
             onClick={() => router.push('/library/list')}
             aria-label="리스트형 보기"
-            className="hover:opacity-70 cursor-pointer"
+            className="p-2 hover:opacity-70"
           >
-            <Image
-              src={'/icons/library/icon-list.svg'}
-              alt={'리스트형 보기'}
-              width={24}
-              height={24}
-              className=""
-            />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M5 7h14M5 12h14M5 17h14"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
           </button>
         </div>
       </div>
 
-      {/* 페이지네이션으로 추가 로딩 가능 (끝쪽 도달 시 자동 fetchNextPage)*/}
-      {isLoading ? (
-        <div className="px-4 py-10 text-center body-2 text-gray-500">
-          불러오는 중…
-        </div>
-      ) : sortedWorks.length === 0 ? (
-        <div className="px-4">
-          <Warning
-            title="아직 리뷰한 작품이 없어요"
-            description="검색에서 작품을 찾아 리뷰를 작성해보세요"
-            buttonText="작품 검색하기"
-            onButtonClick={() => setShowReviewSheet(true)}
-          />
-        </div>
-      ) : (
-        <BookSpineCarousel
-          works={sortedWorks}
-          hasMore={!!hasNextPage} // (API 연동) 추가 로딩 가능 여부 전달 (UI 변화 없음)
-          isFetchingMore={isFetchingNextPage} // ✅ (API 연동) 중복 fetch 방지용
-          onNeedMore={() => {
-            // (API 연동) UI 변경 없이 다음 페이지 로드
-            if (hasNextPage && !isFetchingNextPage) fetchNextPage()
-          }}
-        />
-      )}
+      <BookSpineCarousel works={MOCK_WORKS} />
 
       <NavBar active="library" />
-
-      {showReviewSheet && (
-        <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
-      )}
     </div>
   )
 }
