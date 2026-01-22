@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-/** 상단 로고 + 검색 + 알림 헤더 */
+/* 상단 로고 + 검색 + 알림 헤더 */
 export default function HomeHeader() {
   return (
     <header className="flex py-4 items-center justify-between">
