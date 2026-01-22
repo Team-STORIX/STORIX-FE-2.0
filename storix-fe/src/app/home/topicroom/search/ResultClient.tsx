@@ -25,7 +25,7 @@ export default function ResultClient() {
     isFetchingNextPage,
   } = useTopicRoomSearchInfinite(keyword, 20)
 
-  const formatTimeAgo = (iso?: string) => {
+  const formatTimeAgo = (iso?: string | null) => {
     if (!iso) return ''
     const t = new Date(iso).getTime()
     if (Number.isNaN(t)) return ''
