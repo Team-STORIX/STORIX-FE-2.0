@@ -1,326 +1,122 @@
 // src/app/profile/myActivity/components/myComments.tsx
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
-import { useDeleteFlow } from '@/hooks/useDeleteFlow'
-import DeleteFlow from '@/components/common/delete/DeleteFlow'
-
-import { getMyActivityReplies } from '@/api/profile/readerActivity.api'
-import { apiClient } from '@/api/axios-instance'
-
-type ActivityReplyItem = {
-  profile: {
-    userId: number
-    profileImageUrl: string | null
-    nickName: string
-  }
-  reply: {
-    replyId: number
-    userId: number
-    boardId: number
-    comment: string
-    lastCreatedTime: string
-    likeCount: number
-    isLiked: boolean
-  }
-}
-
-const FALLBACK_PROFILE = '/profile/profile-default.svg'
-const SORT: 'LATEST' = 'LATEST'
-
-const deleteReply = async (boardId: number, replyId: number) => {
-  const res = await apiClient.delete(
-    `/api/v1/feed/reader/board/${boardId}/reply/${replyId}`,
-  )
-  return res.data
-}
 
 export default function MyComments() {
-  const router = useRouter()
-
-  // ✅ 스크롤 root / sentinel
-  const scrollRef = useRef<HTMLDivElement | null>(null)
-  const sentinelRef = useRef<HTMLDivElement | null>(null)
-
-  // ✅ 데이터 상태
-  const [items, setItems] = useState<ActivityReplyItem[]>([])
-  const [page, setPage] = useState(0)
-  const [isLast, setIsLast] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [initLoading, setInitLoading] = useState(true)
-
-  // ✅ 케밥 메뉴 상태
-  const [openMenuReplyId, setOpenMenuReplyId] = useState<number | null>(null)
-  const openMenuWrapRef = useRef<HTMLDivElement | null>(null)
-
-  const loadFirst = useCallback(async () => {
-    setInitLoading(true)
-    setIsLoading(true)
-    setItems([])
-    setPage(0)
-    setIsLast(false)
-
-    try {
-      const res = await getMyActivityReplies({ sort: SORT, page: 0 })
-      setItems(res.content)
-      setIsLast(res.last)
-      setPage(0)
-    } finally {
-      setIsLoading(false)
-      setInitLoading(false)
-    }
-  }, [])
-
-  const loadMore = useCallback(async () => {
-    if (isLoading || isLast) return
-    const next = page + 1
-    setIsLoading(true)
-
-    try {
-      const res = await getMyActivityReplies({ sort: SORT, page: next })
-      setItems((prev) => [...prev, ...res.content])
-      setIsLast(res.last)
-      setPage(next)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isLast, isLoading, page])
-
-  useEffect(() => {
-    loadFirst()
-  }, [loadFirst])
-
-  // ✅ 여기만 훅 시그니처에 맞게 수정!
-  useInfiniteScroll({
-    root: scrollRef,
-    target: sentinelRef,
-    hasNextPage: !isLast,
-    isLoading: isLoading,
-    onLoadMore: loadMore,
-    rootMargin: '200px',
-  })
-
-  // ✅ 메뉴 바깥 클릭 시 닫기 (메뉴 내부 클릭은 유지)
-  useEffect(() => {
-    if (!openMenuReplyId) return
-
-    const onPointerDown = (e: PointerEvent) => {
-      const wrap = openMenuWrapRef.current
-      if (!wrap) return
-      if (e.target instanceof Node && wrap.contains(e.target)) return
-      setOpenMenuReplyId(null)
-    }
-
-    document.addEventListener('pointerdown', onPointerDown)
-    return () => document.removeEventListener('pointerdown', onPointerDown)
-  }, [openMenuReplyId])
-
-  // ✅ 삭제 플로우
-  const {
-    isDeleteOpen,
-    deleteTarget,
-    deleteDoneOpen,
-    openDeleteModal,
-    closeDeleteModal,
-    confirmDelete,
-    closeDeleteDone,
-  } = useDeleteFlow<ActivityReplyItem>({
-    onConfirm: async (target) => {
-      const { boardId, replyId } = target.reply
-      const data = await deleteReply(boardId, replyId)
-      if (data?.isSuccess === false) {
-        throw new Error(data?.message ?? '삭제에 실패했어요.')
-      }
-      setItems((prev) => prev.filter((x) => x.reply.replyId !== replyId))
-      setOpenMenuReplyId(null)
+  // TODO: API 연동 후 실제 데이터로 대체
+  const comments = [
+    {
+      id: 1,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      content: '정말 재미있는 작품이에요! 다음화가 너무 기대됩니다.',
+      isLiked: true,
+      likeCount: 12,
+      createdAt: '1일 전',
     },
-    doneDurationMs: 1500,
-  })
-
-  if (initLoading) {
-    return (
-      <div
-        className="px-4 py-8 body-2"
-        style={{ color: 'var(--color-gray-400)' }}
-      >
-        불러오는 중...
-      </div>
-    )
-  }
-
-  if (!initLoading && items.length === 0) {
-    return (
-      <div
-        className="px-4 py-8 body-2"
-        style={{ color: 'var(--color-gray-400)' }}
-      >
-        아직 작성한 댓글이 없어요.
-      </div>
-    )
-  }
+    {
+      id: 2,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      content: '주인공의 성장 과정이 인상 깊었어요. 작가님 최고!',
+      isLiked: false,
+      likeCount: 5,
+      createdAt: '3일 전',
+    },
+    {
+      id: 3,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      content:
+        '이 작품을 보면서 정말 많은 감동을 받았습니다. 특히 주인공이 역경을 헤쳐나가는 모습이 너무 인상 깊었고, 주변 인물들과의 관계 형성 과정도 자연스러워서 몰입감이 대단했어요. 작가님의 섬세한 묘사 덕분에 캐릭터들이 살아 숨쉬는 것 같았고, 스토리 전개도 탄탄해서 다음 화가 너무 기대됩니다. 앞으로도 좋은 작품 부탁드려요! 항상 응원하고 있습니다. 정말 최고의 작품이에요.',
+      isLiked: false,
+      likeCount: 0,
+      createdAt: '1주 전',
+    },
+    {
+      id: 4,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      content: '짧은 댓글',
+      isLiked: true,
+      likeCount: 1,
+      createdAt: '2주 전',
+    },
+  ]
 
   return (
-    <>
-      <div ref={scrollRef} className="h-full overflow-y-auto">
-        {items.map((item) => {
-          const profileImage = item.profile.profileImageUrl ?? FALLBACK_PROFILE
-          const isMenuOpen = openMenuReplyId === item.reply.replyId
+    <div>
+      {comments.map((comment) => (
+        <div
+          key={comment.id}
+          className="px-4 py-3 flex flex-col gap-3"
+          style={{
+            borderBottom: '1px solid var(--color-gray-100)',
+            backgroundColor: 'var(--color-white)',
+          }}
+        >
+          {/* 프로필 영역 */}
+          <div className="flex items-center h-8">
+            {/* 프로필 이미지 */}
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-[var(--color-gray-200)] flex-shrink-0">
+              <Image
+                src={comment.user.profileImage}
+                alt="프로필"
+                width={32}
+                height={32}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-          return (
-            <article
-              key={item.reply.replyId}
-              className="px-4 py-3 flex flex-col gap-3 bg-white cursor-pointer transition-opacity hover:opacity-90"
-              style={{ borderBottom: '1px solid var(--color-gray-100)' }}
-              role="button"
-              tabIndex={0}
-              onClick={() => router.push(`/feed/article/${item.reply.boardId}`)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  router.push(`/feed/article/${item.reply.boardId}`)
-                }
-              }}
+            {/* 닉네임 */}
+            <p
+              className="ml-2 text-[14px] font-medium leading-[140%]"
+              style={{ color: 'var(--color-gray-900)' }}
             >
-              <div className="w-full flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-[var(--color-gray-200)] flex-shrink-0">
-                    <Image
-                      src={profileImage}
-                      alt="댓글 프로필"
-                      width={32}
-                      height={32}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div className="ml-2 flex items-center body-2">
-                    <p style={{ color: 'var(--color-gray-900)' }}>
-                      {item.profile.nickName}
-                    </p>
-                    <span
-                      className="mx-1"
-                      style={{ color: 'var(--color-gray-300)' }}
-                    >
-                      ·
-                    </span>
-                    <p style={{ color: 'var(--color-gray-300)' }}>
-                      {item.reply.lastCreatedTime}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 🔽 오른쪽 3dots 메뉴 */}
-                <div
-                  className="relative"
-                  ref={isMenuOpen ? openMenuWrapRef : null}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    className="p-1 transition-opacity hover:opacity-70 cursor-pointer"
-                    aria-label="댓글 메뉴"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setOpenMenuReplyId((prev) =>
-                        prev === item.reply.replyId ? null : item.reply.replyId,
-                      )
-                    }}
-                  >
-                    <Image
-                      src="/icons/menu-3dots.svg"
-                      alt="댓글 메뉴"
-                      width={24}
-                      height={24}
-                    />
-                  </button>
-
-                  {/* ✅ 96x36 고정: <img width/height + tailwind w/h> */}
-                  {isMenuOpen && (
-                    <button
-                      type="button"
-                      className="absolute right-0 top-8 z-50 block w-[96px] h-[36px] rounded-[4px] overflow-hidden transition-opacity hover:opacity-90"
-                      style={{ boxShadow: '0 0 8px rgba(0,0,0,0.25)' }}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        setOpenMenuReplyId(null)
-                        openDeleteModal(item)
-                      }}
-                      aria-label="삭제하기"
-                    >
-                      <img
-                        src="/icons/delete-dropdown.svg"
-                        alt="삭제하기"
-                        width={96}
-                        height={36}
-                        className="block w-[96px] h-[36px] bg-white"
-                        draggable={false}
-                      />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* 댓글 내용 */}
-              <p
-                className="text-[14px] font-medium leading-[140%] break-words"
-                style={{ color: 'var(--color-gray-900)' }}
-              >
-                {item.reply.comment}
-              </p>
-
-              {/* 좋아요 */}
-              <div className="flex items-center">
-                <Image
-                  src={
-                    item.reply.isLiked
-                      ? '/icons/icon-like-pink.svg'
-                      : '/icons/icon-like.svg'
-                  }
-                  alt="좋아요"
-                  width={24}
-                  height={24}
-                />
-                {item.reply.likeCount > 0 && (
-                  <span
-                    className="ml-1 text-[14px] font-bold leading-[140%]"
-                    style={{ color: 'var(--color-gray-500)' }}
-                  >
-                    {item.reply.likeCount}
-                  </span>
-                )}
-              </div>
-            </article>
-          )
-        })}
-
-        <div ref={sentinelRef} style={{ height: 1 }} />
-
-        {isLoading && (
-          <div
-            className="px-4 py-4 body-2"
-            style={{ color: 'var(--color-gray-400)' }}
-          >
-            불러오는 중...
+              {comment.user.nickname}
+            </p>
           </div>
-        )}
-      </div>
 
-      <DeleteFlow<ActivityReplyItem>
-        isDeleteOpen={isDeleteOpen}
-        deleteTarget={deleteTarget}
-        onCloseDelete={closeDeleteModal}
-        onConfirmDelete={confirmDelete}
-        deleteDoneOpen={deleteDoneOpen}
-        onCloseDone={closeDeleteDone}
-        getProfileImage={(t) => t.profile.profileImageUrl ?? FALLBACK_PROFILE}
-        getNickname={(t) => t.profile.nickName}
-      />
-    </>
+          {/* 댓글 내용 */}
+          <p
+            className="text-[14px] font-medium leading-[140%] break-words"
+            style={{ color: 'var(--color-gray-900)' }}
+          >
+            {comment.content}
+          </p>
+
+          {/* 좋아요 */}
+          <div className="flex items-center">
+            <Image
+              src={
+                comment.isLiked
+                  ? '/icons/icon-like-pink.svg'
+                  : '/icons/icon-like.svg'
+              }
+              alt="좋아요"
+              width={24}
+              height={24}
+            />
+            {comment.likeCount > 0 && (
+              <span
+                className="ml-1 text-[14px] font-bold leading-[140%]"
+                style={{ color: 'var(--color-gray-500)' }}
+              >
+                {comment.likeCount}
+              </span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }

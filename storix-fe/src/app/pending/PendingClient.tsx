@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
 import { useProfileStore } from '@/store/profile.store'
-import { getMyProfile } from '@/api/profile/profile.api'
+import { getMyProfile } from '@/lib/api/profile/profile.api'
 
 type Provider = 'kakao' | 'naver'
 
@@ -140,7 +140,7 @@ export default function PendingClient() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <Image
-        src="/icons/logo.svg"
+        src="/icons/logo-black.svg"
         alt="STORIX"
         width={64}
         height={64}

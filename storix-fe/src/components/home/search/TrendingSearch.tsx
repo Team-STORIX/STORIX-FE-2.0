@@ -44,7 +44,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         key={`${rank}-${keyword}`}
         type="button"
         onClick={() => onSelect?.(keyword)}
-        className="flex w-full items-center justify-between pb-3"
+        className="flex w-full items-center justify-between pb-3 cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0">
           <span

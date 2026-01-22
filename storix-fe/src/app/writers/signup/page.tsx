@@ -1,17 +1,21 @@
 // src/app/writers/signup/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { artistLoginUser } from '@/api/auth/artist-login.api'
+import { artistLoginUser } from '@/lib/api/auth/artist-login.api'
 import { useAuthStore } from '@/store/auth.store'
+
+type Step = 'form' | 'final'
 
 export default function WriterSignupPage() {
   const router = useRouter()
   const setAccessToken = useAuthStore((s) => s.setAccessToken)
+
+  const [step, setStep] = useState<Step>('form')
 
   const [writerId, setWriterId] = useState('')
   const [password, setPassword] = useState('')
@@ -20,12 +24,11 @@ export default function WriterSignupPage() {
   const [showWarning, setShowWarning] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // ✅ 입력값이 빈 경우 버튼 비활성화용
+  // ✅ 입력값이 빈 경우 버튼 비활성화용(원하면 UI에도 적용 가능)
   const canSubmit = writerId.trim().length > 0 && password.trim().length > 0
 
   const onLogin = async () => {
     if (isSubmitting) return
-
     if (!canSubmit) {
       setShowWarning(true)
       return
@@ -39,10 +42,10 @@ export default function WriterSignupPage() {
         password: password.trim(),
       })
 
-      // ✅ 디버깅 로그
-      // console.log('[artist-login] raw response:', res)
-      // console.log('[artist-login] isSuccess:', res?.isSuccess)
-      // console.log('[artist-login] accessToken:', res?.result?.accessToken)
+      // ✅ 너가 원한 로그 3줄: "여기"가 정확한 위치!
+      console.log('[artist-login] raw response:', res)
+      console.log('[artist-login] isSuccess:', res?.isSuccess)
+      console.log('[artist-login] accessToken:', res?.result?.accessToken)
 
       const token = res?.result?.accessToken
 
@@ -54,8 +57,8 @@ export default function WriterSignupPage() {
       // ✅ 토큰 저장
       setAccessToken(token)
 
-      // ✅ 로그인 성공 → 작가 로그인 페이지로 이동
-      router.push('/writers/login')
+      // ✅ 로그인 완료 화면(= Final)로 전환
+      setStep('final')
     } catch (e) {
       console.error('[artist-login] error:', e)
       setShowWarning(true)

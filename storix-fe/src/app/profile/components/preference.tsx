@@ -3,92 +3,74 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
-import {
-  getReaderFavoriteArtists,
-  getReaderFavoriteWorks,
-} from '@/api/profile/readerFavorites.api'
-
-type PreviewWriter = {
-  id: number
-  name: string
-  imageUrl: string | null
-}
-
-type PreviewWork = {
-  id: number
-  title: string
-  author: string
-  imageUrl: string | null
-}
-
-const WRITER_LIMIT = 10
-const WORK_LIMIT = 10
+import { useMemo } from 'react'
+import { useFavoritesStore } from '@/store/favorites.store'
 
 export default function Preference() {
-  const [favoriteWritersCount, setFavoriteWritersCount] = useState(0)
-  const [favoriteWorksCount, setFavoriteWorksCount] = useState(0)
+  const favoriteArtistIds = useFavoritesStore((s) => s.favoriteArtistIds)
+  const favoriteWorkIds = useFavoritesStore((s) => s.favoriteWorkIds)
 
-  const [writersPreview, setWritersPreview] = useState<PreviewWriter[]>([])
-  const [worksPreview, setWorksPreview] = useState<PreviewWork[]>([])
+  // ✅ 더미 메타(나중에 API 붙이면 교체)
+  const artistMeta = useMemo(
+    () =>
+      new Map<number, { id: number; name: string; image: string }>([
+        [80, { id: 80, name: 'hi', image: '/profile/profile-default.svg' }],
+        [88, { id: 88, name: '아지', image: '/profile/profile-default.svg' }],
+        [101, { id: 101, name: '서말', image: '/profile/profile-default.svg' }],
+        [102, { id: 102, name: '싱숑', image: '/profile/profile-default.svg' }],
+        [
+          103,
+          { id: 103, name: '히어리', image: '/profile/profile-default.svg' },
+        ],
+      ]),
+    [],
+  )
+
+  const workMeta = useMemo(
+    () =>
+      new Map<
+        number,
+        { id: number; title: string; author: string; image: string }
+      >([
+        [1, { id: 1, title: '상수리 나무 아래', author: '서말', image: '' }],
+        [2, { id: 2, title: '전지적독자시점', author: '싱숑', image: '' }],
+        [3, { id: 3, title: '재혼황후', author: '히어리', image: '' }],
+        [4, { id: 4, title: '나 혼자만 레벨업', author: '추공', image: '' }],
+        [5, { id: 5, title: '화산귀환', author: '비가', image: '' }],
+        [6, { id: 6, title: '나노마신', author: '한중월야', image: '' }],
+        [7, { id: 7, title: '여신강림', author: '야옹이', image: '' }],
+        [8, { id: 8, title: '외모지상주의', author: '박태준', image: '' }],
+        [9, { id: 9, title: '신의 탑', author: 'SIU', image: '' }],
+        [10, { id: 10, title: '유미의 세포들', author: '이동건', image: '' }],
+        [11, { id: 11, title: '고수', author: '문정후', image: '' }],
+        [12, { id: 12, title: '달빛조각사', author: '남희성', image: '' }],
+      ]),
+    [],
+  )
+
+  const favoriteWritersCount = favoriteArtistIds.length
+  const favoriteWorksCount = favoriteWorkIds.length
+
+  const writers = useMemo(
+    () =>
+      favoriteArtistIds
+        .map((id) => artistMeta.get(id))
+        .filter(Boolean)
+        .slice(0, 5),
+    [favoriteArtistIds, artistMeta],
+  )
+
+  const works = useMemo(
+    () =>
+      favoriteWorkIds
+        .map((id) => workMeta.get(id))
+        .filter(Boolean)
+        .slice(0, 4),
+    [favoriteWorkIds, workMeta],
+  )
 
   const hasWriters = favoriteWritersCount > 0
   const hasWorks = favoriteWorksCount > 0
-
-  useEffect(() => {
-    let alive = true
-
-    const run = async () => {
-      try {
-        const [artistsRes, worksRes] = await Promise.all([
-          getReaderFavoriteArtists({ page: 0, sort: 'LATEST' }),
-          getReaderFavoriteWorks({ page: 0, sort: 'LATEST' }),
-        ])
-
-        if (!alive) return
-
-        setFavoriteWritersCount(artistsRes.totalFavoriteArtistCount ?? 0)
-        setFavoriteWorksCount(worksRes.totalFavoriteWorksCount ?? 0)
-
-        setWritersPreview(
-          (artistsRes.result.content ?? []).slice(0, WRITER_LIMIT).map((a) => ({
-            id: a.artistId,
-            name: a.artistName,
-            imageUrl: a.profileImageUrl ?? null,
-          })),
-        )
-
-        setWorksPreview(
-          (worksRes.result.content ?? []).slice(0, WORK_LIMIT).map((w) => ({
-            id: w.worksId,
-            title: w.worksName,
-            author: w.artistName,
-            imageUrl: w.thumbnailUrl ?? null,
-          })),
-        )
-      } catch (e) {
-        console.error(e)
-      }
-    }
-
-    run()
-    return () => {
-      alive = false
-    }
-  }, [])
-
-  const writers = useMemo(
-    () => writersPreview.slice(0, WRITER_LIMIT),
-    [writersPreview],
-  )
-  const works = useMemo(() => worksPreview.slice(0, WORK_LIMIT), [worksPreview])
-
-  // ✅ 작품은 4개만 “칸”에 보여주고, 부족하면 빈칸으로 채워서 간격 규칙 유지
-  const worksForGrid = useMemo(() => works.slice(0, 4), [works])
-  const emptySlots = useMemo(
-    () => Math.max(0, 4 - worksForGrid.length),
-    [worksForGrid.length],
-  )
 
   return (
     <div>
@@ -118,23 +100,13 @@ export default function Preference() {
         </div>
 
         {hasWriters ? (
-          // ✅ 좌우 스크롤 제거: 그냥 영역 안에서 보이는 만큼만
+          // ✅ 핵심: 중간 빠져도 왼쪽부터 채워 보이게
           <div className="flex mt-6 gap-[18px]">
-            {writers.slice(0, 5).map((writer) => (
-              <div key={writer.id} className="flex flex-col items-center">
-                <div className="w-[60px] h-[60px] rounded-full bg-[var(--color-gray-200)] overflow-hidden relative">
-                  {writer.imageUrl ? (
-                    <Image
-                      src={writer.imageUrl}
-                      alt={writer.name}
-                      fill
-                      sizes="60px"
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
-                <p className="mt-2 body-2 text-[var(--color-gray-500)] max-w-[60px] truncate text-center">
-                  {writer.name}
+            {writers.map((writer) => (
+              <div key={writer!.id} className="flex flex-col items-center">
+                <div className="w-[60px] h-[60px] rounded-full bg-[var(--color-gray-200)]" />
+                <p className="mt-2 body-2 text-[var(--color-gray-500)]">
+                  {writer!.name}
                 </p>
               </div>
             ))}
@@ -194,44 +166,22 @@ export default function Preference() {
         </div>
 
         {hasWorks ? (
-          // ✅ 361*163 박스 안에 “4칸 고정 + 자동 간격”
-          <div className="mt-6 w-[361px] h-[163px]">
-            <div className="flex justify-between w-full">
-              {/* 실제 작품 1~4개 */}
-              {worksForGrid.map((work) => (
-                <div key={work.id} className="flex flex-col">
-                  <div
-                    className="w-[87px] h-[116px] bg-[var(--color-gray-200)] rounded overflow-hidden relative"
-                    style={{ aspectRatio: '3/4' }}
-                  >
-                    {work.imageUrl ? (
-                      <Image
-                        src={work.imageUrl}
-                        alt={work.title}
-                        fill
-                        sizes="87px"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <p className="mt-[7px] body-2 text-[var(--color-gray-900)] truncate w-[87px]">
-                    {work.title}
-                  </p>
-                  <p className="mt-[3px] caption-1 text-[var(--color-gray-400)] truncate w-[87px]">
-                    {work.author}
-                  </p>
-                </div>
-              ))}
-
-              {/* ✅ 빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
-              {Array.from({ length: emptySlots }).map((_, idx) => (
-                <div key={`empty-${idx}`} className="flex flex-col opacity-0">
-                  <div className="w-[87px] h-[116px] rounded" />
-                  <p className="mt-[7px] w-[87px]">.</p>
-                  <p className="mt-[3px] w-[87px]">.</p>
-                </div>
-              ))}
-            </div>
+          // ✅ 핵심: 여기서도 왼쪽부터 채움
+          <div className="flex mt-6 gap-[14px]">
+            {works.map((work) => (
+              <div key={work!.id} className="flex flex-col">
+                <div
+                  className="w-[87px] h-[116px] bg-[var(--color-gray-200)] rounded"
+                  style={{ aspectRatio: '3/4' }}
+                />
+                <p className="mt-[7px] body-2 text-[var(--color-gray-900)] truncate w-[87px]">
+                  {work!.title}
+                </p>
+                <p className="mt-[3px] caption-1 text-[var(--color-gray-400)] truncate w-[87px]">
+                  {work!.author}
+                </p>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="mt-6 flex flex-col items-center">

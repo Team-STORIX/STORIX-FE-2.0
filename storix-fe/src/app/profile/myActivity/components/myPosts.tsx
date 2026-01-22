@@ -1,227 +1,272 @@
 // src/app/profile/myActivity/components/myPosts.tsx
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-import PostCard from '@/components/common/post/PostCard'
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
-import { useOpenMenu } from '@/hooks/useOpenMenu'
-
-import { useDeleteFlow } from '@/hooks/useDeleteFlow'
-import DeleteFlow from '@/components/common/delete/DeleteFlow'
-import { useProfileStore } from '@/store/profile.store'
-import {
-  getMyActivityBoards,
-  type ActivityBoardItem,
-} from '@/api/profile/readerActivity.api'
-import { apiClient } from '@/api/axios-instance'
-
-const FALLBACK_PROFILE = '/profile/profile-default.svg'
-const SORT: 'LATEST' = 'LATEST'
-
-// ✅ 게시글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
-const deleteBoard = async (boardId: number) => {
-  const res = await apiClient.delete(`/api/v1/feed/reader/board/${boardId}`)
-  return res.data
-}
-
 export default function MyPosts() {
+  // TODO: API 연동 후 실제 데이터로 대체
   const router = useRouter()
-
-  // ✅ 무한스크롤 root/sentinel
-  const scrollRef = useRef<HTMLDivElement | null>(null)
-  const sentinelRef = useRef<HTMLDivElement | null>(null)
-
-  const me = useProfileStore((s) => s.me)
-  const myUserId = me?.userId
-
-  // ✅ 점3개 메뉴
-  const menu = useOpenMenu<number>()
-
-  // ✅ 상태
-  const [items, setItems] = useState<ActivityBoardItem[]>([])
-  const [page, setPage] = useState(0)
-  const [isLast, setIsLast] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [initLoading, setInitLoading] = useState(true)
-
-  const loadFirst = useCallback(async () => {
-    setInitLoading(true)
-    setIsLoading(true)
-    setItems([])
-    setPage(0)
-    setIsLast(false)
-
-    try {
-      const res = await getMyActivityBoards({ page: 0, sort: SORT })
-      setItems(res.content)
-      setIsLast(res.last)
-      setPage(0)
-    } finally {
-      setIsLoading(false)
-      setInitLoading(false)
-    }
-  }, [])
-
-  const loadMore = useCallback(async () => {
-    if (isLoading || isLast) return
-
-    const next = page + 1
-    setIsLoading(true)
-
-    try {
-      const res = await getMyActivityBoards({ page: next, sort: SORT })
-      setItems((prev) => [...prev, ...res.content])
-      setIsLast(res.last)
-      setPage(next)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [isLast, isLoading, page])
-
-  useEffect(() => {
-    loadFirst()
-  }, [loadFirst])
-
-  // ✅ useInfiniteScroll 훅 시그니처에 맞게 수정 (enabled/onIntersect 제거)
-  useInfiniteScroll({
-    root: scrollRef,
-    target: sentinelRef,
-    hasNextPage: !isLast, // 다음 페이지 있냐
-    isLoading: isLoading, // 로딩 중이냐
-    onLoadMore: loadMore, // 더 불러오기
-    rootMargin: '200px',
-  })
-
-  // ✅ 삭제 플로우 (MyComments랑 동일)
-  const {
-    isDeleteOpen,
-    deleteTarget,
-    deleteDoneOpen,
-    openDeleteModal,
-    closeDeleteModal,
-    confirmDelete,
-    closeDeleteDone,
-  } = useDeleteFlow<ActivityBoardItem>({
-    onConfirm: async (target) => {
-      const boardId = target.board.boardId
-      const data = await deleteBoard(boardId)
-
-      // ✅ 백엔드가 200 + isSuccess:false 로 실패를 줄 수도 있어서 방어
-      if (data?.isSuccess === false) {
-        throw new Error(data?.message ?? '삭제에 실패했어요.')
-      }
-
-      // ✅ UI 목록에서 제거
-      setItems((prev) => prev.filter((x) => x.board.boardId !== boardId))
-
-      // ✅ 메뉴 닫기
-      menu.close()
+  const posts = [
+    {
+      id: 1,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      createdAt: '1일 전',
+      work: {
+        coverImage: '/works/default-cover.jpg',
+        title: '상수리 나무 아래',
+        author: '서말,나무',
+        type: '웹툰',
+        genre: '로판',
+      },
+      hashtags: ['#로판', '#첫사랑', '#성장물'],
+      content:
+        '정말 재미있는 작품이에요! 주인공의 성장 과정이 인상 깊었고 스토리 전개가 탄탄해서 몰입감이 대단했습니다.',
+      isLiked: true,
+      likeCount: 24,
+      commentCount: 12,
     },
-    doneDurationMs: 1500,
-  })
-
-  if (initLoading) {
-    return (
-      <div
-        className="px-4 py-8 body-2"
-        style={{ color: 'var(--color-gray-400)' }}
-      >
-        불러오는 중...
-      </div>
-    )
-  }
-
-  if (!initLoading && items.length === 0) {
-    return (
-      <div
-        className="px-4 py-8 body-2"
-        style={{ color: 'var(--color-gray-400)' }}
-      >
-        아직 작성한 글이 없어요.
-      </div>
-    )
-  }
+    {
+      id: 2,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      createdAt: '3일 전',
+      work: {
+        coverImage: '/works/default-cover.jpg',
+        title: '상수리 나무 아래',
+        author: '서말,나무',
+        type: '웹툰',
+        genre: '로판',
+      },
+      hashtags: ['#로판', '#첫사랑'],
+      content: '이 장면에서 정말 울었어요 ㅠㅠ 감동적이었습니다.',
+      isLiked: false,
+      likeCount: 8,
+      commentCount: 0,
+    },
+    {
+      id: 3,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      createdAt: '1주 전',
+      work: {
+        coverImage: '/works/default-cover.jpg',
+        title: '상수리 나무 아래',
+        author: '서말,나무',
+        type: '웹툰',
+        genre: '로판',
+      },
+      hashtags: ['#로판', '#첫사랑', '#성장물'],
+      content: '짧은 댓글입니다.',
+      isLiked: false,
+      likeCount: 0,
+      commentCount: 3,
+    },
+    {
+      id: 4,
+      user: {
+        profileImage: '/profile/profile-default.svg',
+        nickname: '닉네임',
+      },
+      createdAt: '2주 전',
+      work: {
+        coverImage: '/works/default-cover.jpg',
+        title: '상수리 나무 아래',
+        author: '서말,나무',
+        type: '웹툰',
+        genre: '로판',
+      },
+      hashtags: ['#로판'],
+      content:
+        '첫 리뷰입니다! 기대되는 작품이에요.10화는 그냥 둘 분위기 바뀌는 게 느껴져 ㄹㅈㄷ...엄청 큰 사건은 없는데도 묘하게 계속 보게 됨. 맥시가 예전보다 덜 움츠러든 느낌이라 그게 제일 마음에 들었고, 리프탄은 여전히 말 없는',
+      isLiked: true,
+      likeCount: 1, // 내가 좋아요 누름 -> 최소 1
+      commentCount: 0,
+    },
+  ]
 
   return (
-    <>
-      <div ref={scrollRef} className="h-full overflow-y-auto">
-        {items.map((item) => {
-          const boardId = item.board.boardId
-
-          const images = (item.images ?? [])
-            .slice()
-            .sort((a, b) => a.sortOrder - b.sortOrder)
-            .map((x) => x.imageUrl)
-
-          return (
-            <PostCard
-              key={boardId}
-              variant="list"
-              boardId={boardId}
-              writerUserId={item.profile.userId}
-              profileImageUrl={item.profile.profileImageUrl ?? FALLBACK_PROFILE}
-              nickName={item.profile.nickName}
-              createdAt={item.board.lastCreatedTime}
-              content={item.board.content}
-              images={images}
-              works={
-                item.works
-                  ? {
-                      thumbnailUrl: item.works.thumbnailUrl,
-                      worksName: item.works.worksName,
-                      artistName: item.works.artistName,
-                      worksType: item.works.worksType,
-                      genre: item.works.genre,
-                      hashtags: item.works.hashtags ?? [],
-                    }
-                  : null
-              }
-              isLiked={item.board.isLiked}
-              likeCount={item.board.likeCount}
-              replyCount={item.board.replyCount}
-              onClickDetail={() => router.push(`/feed/article/${boardId}`)}
-              onToggleLike={() => {
-                // (내 활동 글 목록에서 좋아요 토글 필요하면 여기 API 연결)
-              }}
-              onOpenReport={() => {
-                // 내 글 목록이므로 사실 report는 안 뜨는 게 일반적
-                menu.close()
-              }}
-              onOpenDelete={() => {
-                openDeleteModal(item)
-                menu.close()
-              }}
-              isMenuOpen={menu.openId === boardId}
-              onToggleMenu={() => menu.toggle(boardId)}
-              menuRef={menu.bindRef(boardId)}
-              onClickWorksArrow={() => router.push('/feed')}
-            />
-          )
-        })}
-
-        {/* ✅ sentinel */}
-        <div ref={sentinelRef} style={{ height: 1 }} />
-
-        {isLoading && (
-          <div className="px-4 py-4" style={{ color: 'var(--color-gray-400)' }}>
-            불러오는 중...
+    <div>
+      {posts.map((post) => (
+        <div
+          key={post.id}
+          className="py-5"
+          style={{
+            borderBottom: '1px solid var(--color-gray-100)',
+            backgroundColor: 'var(--color-white)',
+          }}
+        >
+          {/* 프로필 영역 */}
+          <div className="px-4 flex items-center justify-between h-[41px]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--color-gray-200)]">
+                <Image
+                  src={post.user.profileImage}
+                  alt="프로필"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col">
+                <p
+                  className="text-[16px] font-medium leading-[140%]"
+                  style={{ color: 'var(--color-gray-900)' }}
+                >
+                  {post.user.nickname}
+                </p>
+                <p
+                  className="mt-[2px] text-[12px] font-medium leading-[140%]"
+                  style={{ color: 'var(--color-gray-300)' }}
+                >
+                  {post.createdAt}
+                </p>
+              </div>
+            </div>
+            <button className="w-6 h-6 transition-opacity hover:opacity-70 cursor-pointer">
+              <Image
+                src="/icons/menu-3dots.svg"
+                alt="메뉴"
+                width={24}
+                height={24}
+              />
+            </button>
           </div>
-        )}
-      </div>
 
-      {/* ✅ 삭제 모달/토스트 (MyComments와 동일) */}
-      <DeleteFlow<ActivityBoardItem>
-        isDeleteOpen={isDeleteOpen}
-        deleteTarget={deleteTarget}
-        onCloseDelete={closeDeleteModal}
-        onConfirmDelete={confirmDelete}
-        deleteDoneOpen={deleteDoneOpen}
-        onCloseDone={closeDeleteDone}
-        getProfileImage={(t) => t.profile.profileImageUrl ?? FALLBACK_PROFILE}
-        getNickname={(t) => t.profile.nickName}
-      />
-    </>
+          {/* 작품 정보 영역 */}
+          <div className="mt-5 px-4">
+            <div
+              className="p-3 rounded-xl flex gap-3"
+              style={{
+                border: '1px solid var(--color-gray-100)',
+                backgroundColor: 'var(--color-white)',
+              }}
+            >
+              {/* 표지 이미지 */}
+              <div
+                className="w-[62px] h-[83px] rounded bg-[var(--color-gray-200)] flex-shrink-0"
+                style={{ aspectRatio: '62/83' }}
+              />
+
+              {/* ✅ 작품 정보 + (오른쪽 화살표) 를 같은 라인에 배치 */}
+              <div className="flex w-full items-stretch">
+                {/* ✅ 기존 작품 정보 (간격/디자인 손대지 않음) */}
+                <div className="flex flex-col justify-between w-[210px]">
+                  {/* 제목 */}
+                  <p
+                    className="text-[16px] font-medium leading-[140%] overflow-hidden text-ellipsis whitespace-nowrap"
+                    style={{ color: 'var(--color-black)' }}
+                  >
+                    {post.work.title}
+                  </p>
+
+                  {/* 작가 정보 */}
+                  <p
+                    className="text-[12px] font-medium leading-[140%]"
+                    style={{ color: 'var(--color-gray-500)' }}
+                  >
+                    {post.work.author} · {post.work.type} · {post.work.genre}
+                  </p>
+
+                  {/* 해시태그 */}
+                  <div className="flex gap-1 flex-wrap">
+                    {post.hashtags.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]"
+                        style={{
+                          border: '1px solid var(--color-gray-100)',
+                          backgroundColor: 'var(--color-gray-50)',
+                          color: 'var(--color-gray-800)',
+                        }}
+                      >
+                        {tag}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ✅ 오른쪽 12px 패딩 + 상하 중앙 화살표 */}
+                <button
+                  type="button"
+                  onClick={() => router.push('/feed')}
+                  className="ml-auto pl-3 flex items-center justify-center cursor-pointer transition-opacity hover:opacity-70"
+                  aria-label="작품 상세 보기"
+                >
+                  <Image
+                    src="/icons/icon-arrow-forward-small.svg"
+                    alt="작품 상세"
+                    width={24}
+                    height={24}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 본문 */}
+          <div className="mt-3 px-4">
+            <div className="relative">
+              <p
+                className="text-[14px] font-medium leading-[140%] line-clamp-3 pr-10"
+                style={{ color: 'var(--color-gray-800)' }}
+              >
+                {post.content}
+              </p>
+            </div>
+          </div>
+
+          {/* 반응 영역 */}
+          <div className="mt-5 px-4 flex items-center">
+            {/* 좋아요 */}
+            <div className="flex items-center">
+              <Image
+                src={
+                  post.isLiked
+                    ? '/icons/icon-like-pink.svg'
+                    : '/icons/icon-like.svg'
+                }
+                alt="좋아요"
+                width={24}
+                height={24}
+              />
+              {post.likeCount > 0 && (
+                <span
+                  className="ml-1 text-[14px] font-bold leading-[140%]"
+                  style={{ color: 'var(--color-gray-500)' }}
+                >
+                  {post.likeCount}
+                </span>
+              )}
+            </div>
+
+            {/* 댓글 */}
+            <div className="flex items-center ml-4">
+              <Image
+                src="/icons/icon-comment.svg"
+                alt="댓글"
+                width={24}
+                height={24}
+              />
+              {post.commentCount > 0 && (
+                <span
+                  className="ml-1 text-[14px] font-bold leading-[140%]"
+                  style={{ color: 'var(--color-gray-500)' }}
+                >
+                  {post.commentCount}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }

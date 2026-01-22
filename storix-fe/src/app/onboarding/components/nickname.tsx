@@ -1,32 +1,36 @@
 'use client'
 
 import Image from 'next/image'
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   checkNicknameValid,
+  // checkNicknameForbidden,  // (보류)
   extractIsAvailableFromValidResponse,
-} from '@/api/auth/nickname.api'
+  // extractIsForbiddenFromForbiddenResponse, // (보류)
+} from '@/lib/api/auth/nickname.api'
 
 interface NicknameProps {
   value: string
   onChange: (value: string) => void
   onAvailabilityChange?: (ok: boolean) => void
-  currentNickname?: string
+
+  // ✅ 추가: 프로필 수정 등 다른 화면에서도 재사용할 수 있게 UI variant 지원
   variant?: 'onboarding' | 'inline'
 }
 
 type Status =
   | 'idle'
+  | 'typing'
   | 'invalid_chars'
-  | 'length'
+  | 'length_basic' // 0~1글자 기본 경고
   | 'spaces_only'
+  | 'forbidden'
   | 'unchecked'
   | 'checking'
   | 'ok'
   | 'taken'
-  | 'same'
-  | 'jamo_only'
-  | 'max_toast'
+
+type MsgType = 'none' | 'basic' | 'toast' | 'error' | 'success'
 
 const MIN = 2
 const MAX = 10
@@ -34,7 +38,6 @@ const MAX = 10
 const MSG_LEN = '한글,영문,숫자 2~10자까지 입력 가능해요'
 const MSG_CHARS = '닉네임은 한글/영문/숫자만 가능해요!'
 const MSG_SPACES = '공백만으론 닉네임을 설정할 수 없어요!'
-const MSG_JAMO_ONLY = '자/모음 만으로는 닉네임을 설정할 수 없어요!'
 const MSG_OK = '사용 가능한 닉네임이에요'
 const MSG_TAKEN = '이미 사용 중인 닉네임이에요'
 
@@ -42,41 +45,34 @@ export default function Nickname({
   value,
   onChange,
   onAvailabilityChange,
-  currentNickname,
   variant = 'onboarding',
 }: NicknameProps) {
   const [focused, setFocused] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
+
+  // 메시지/종류 분리(기본 길이 경고 vs 11번째 토스트)
   const [msg, setMsg] = useState('')
+  const [msgType, setMsgType] = useState<MsgType>('none')
 
   const lastChecked = useRef('')
+
+  // 11번째 입력 시도 토스트 타이머
   const maxToastTimer = useRef<number | null>(null)
 
-  // ✅ 페이지 진입 시 "기존 닉네임" 스냅샷
-  const initialNicknameRef = useRef<string>('')
+  // debounce 금칙어 체크 타이머
+  const forbiddenTimer = useRef<number | null>(null)
 
-  const allowedRegex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9_ ]+$/
+  // ✅ 허용: 한글/영문/숫자/_ + 공백(허용)
+  // 요구사항: ^[ㄱ-ㅎ가-힣a-zA-Z0-9_]+$ 에 "공백도 가능"을 반영하여 스페이스 포함
+  const allowedRegex = /^[ㄱ-ㅎ가-힣a-zA-Z0-9_ ]+$/
 
-  const normalize = (s?: string) => (s ?? '').trim()
   const isAllSpaces = (v: string) => v.length > 0 && v.trim().length === 0
 
-  const isJamoOnly = (v: string) => {
-    const t = v.trim()
-    if (!t) return false
-    return /^[ㄱ-ㅎㅏ-ㅣ]+$/.test(t)
-  }
-
-  const setAvailable = (ok: boolean) => {
-    onAvailabilityChange?.(ok)
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('signup_nickname_available', ok ? 'true' : 'false')
-    }
-  }
-
-  const resetCheck = () => {
-    lastChecked.current = ''
-    setAvailable(false)
-  }
+  const isBasicValid = (v: string) =>
+    v.length >= MIN &&
+    v.length <= MAX &&
+    !isAllSpaces(v) &&
+    allowedRegex.test(v)
 
   const clearMaxToast = () => {
     if (maxToastTimer.current) {
@@ -86,166 +82,210 @@ export default function Nickname({
   }
 
   const showMaxToast = () => {
-    setStatus('max_toast')
+    // 11번째 입력 시도: 토스트 1.5초 ~
     setMsg(MSG_LEN)
+    setMsgType('toast')
 
     clearMaxToast()
     maxToastTimer.current = window.setTimeout(() => {
-      setStatus((prev) => (prev === 'max_toast' ? 'unchecked' : prev))
+      setMsgType((prev) => (prev === 'toast' ? 'none' : prev))
       setMsg((prev) => (prev === MSG_LEN ? '' : prev))
       maxToastTimer.current = null
-    }, 2000)
+    }, 1500)
   }
 
-  useEffect(() => () => clearMaxToast(), [])
-
-  // ✅ 기존 닉네임 스냅샷 고정 (currentNickname 우선, 없으면 value 최초값)
-  useEffect(() => {
-    if (initialNicknameRef.current) return
-
-    const cur = normalize(currentNickname)
-    if (cur) {
-      initialNicknameRef.current = cur
-      return
+  const setAvailabilityFalse = () => {
+    onAvailabilityChange?.(false)
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('signup_nickname_available', 'false')
     }
-
-    const v = normalize(value)
-    if (v) initialNicknameRef.current = v
-  }, [currentNickname, value])
-
-  const sanitize = (raw: string) => {
-    let next = raw.slice(0, MAX)
-    if (!allowedRegex.test(next)) {
-      next = next.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9_ ]/g, '').slice(0, MAX)
-    }
-    return next
   }
 
-  // ✅ "지금 입력값이 기존 닉네임과 동일한가?"
-  const isSameNow = useMemo(() => {
-    const initial = initialNicknameRef.current
-    if (!initial) return false
-    return normalize(value) === initial
-  }, [value])
+  const resetCheck = () => {
+    lastChecked.current = ''
+    setAvailabilityFalse()
+  }
 
-  // ✅ 동일하면: 중복확인 안 해도 바로 완료 가능 + 메시지 없음 + 밑줄 검정
-  useEffect(() => {
-    if (!initialNicknameRef.current) return
+  const setBasicLengthWarning = () => {
+    // 0~1 글자: 계속 떠야 하는 기본 경고
+    setStatus('length_basic')
+    setMsg(MSG_LEN)
+    setMsgType('basic')
+  }
 
-    if (isSameNow) {
-      setStatus('same')
+  const clearIfBasicLengthWarning = () => {
+    // 2글자 되면 기본 길이 경고는 즉시 사라져야 함
+    if (msgType === 'basic' && msg === MSG_LEN) {
       setMsg('')
-      setAvailable(true)
-      lastChecked.current = value
-      return
+      setMsgType('none')
     }
-
-    // 동일이었다가 변경되면 완료 불가로 돌리기(단, 사용자가 직접 입력 중일 때 자연스럽게)
-    if (status === 'same') {
-      setStatus(value ? 'unchecked' : 'idle')
-      setMsg('')
-      setAvailable(false)
-      lastChecked.current = ''
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSameNow, value])
+  }
 
   const handleChange = (raw: string) => {
-    const overMax = raw.length > MAX
-    const next = sanitize(raw)
+    // ✅ 11번째 입력 시도 감지: "이미 10자"인데 "raw는 10자 초과"
+    if (value.length === MAX && raw.length > MAX) {
+      showMaxToast()
+    }
 
+    const next = raw.slice(0, MAX)
+
+    // ✅ 값이 바뀌면(=중복체크 결과 무효) 다음 버튼 비활성화
+    // (10자 초과 시도는 실제 값 변화가 없으므로 resetCheck가 과하게 호출될 수 있지만,
+    //  UX상 '사용 가능' 상태에서 더 입력하려다 막혔다고 해서 결과를 무효화할 필요는 없음)
     if (next !== value) resetCheck()
 
+    // ✅ 로컬 저장 (프로필에서 바로 읽어 쓸 값)
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('signup_nickname', next)
-    }
-
-    onChange(next)
-
-    if (overMax) {
-      showMaxToast()
-      return
-    }
-
-    // 동일이면 effect가 처리하므로 여기서는 종료해도 됨
-    if (
-      initialNicknameRef.current &&
-      normalize(next) === initialNicknameRef.current
-    ) {
-      return
     }
 
     if (!next) {
       setStatus('idle')
       setMsg('')
-      setAvailable(false)
+      setMsgType('none')
+      onChange(next)
       return
     }
 
+    // 공백만: 입력은 허용하되, debounce에서 멈추면 에러 표시
     if (isAllSpaces(next)) {
-      setStatus('spaces_only')
-      setMsg(MSG_SPACES)
-      setAvailable(false)
+      setStatus('typing')
+      // 공백만 에러가 debounce에서 뜰 거라 기본 메시지 일단 제거
+      if (msgType !== 'toast') {
+        setMsg('')
+        setMsgType('none')
+      }
+      onChange(next)
       return
     }
 
+    // 허용 문자 외: 즉시 필터링 + 에러
     if (!allowedRegex.test(next)) {
+      const filtered = next
+        .replace(/[^ㄱ-ㅎ가-힣a-zA-Z0-9_ ]/g, '')
+        .slice(0, MAX)
+      onChange(filtered)
+
+      if (!filtered) {
+        setStatus('idle')
+        setMsg('')
+        setMsgType('none')
+        return
+      }
+
       setStatus('invalid_chars')
       setMsg(MSG_CHARS)
-      setAvailable(false)
+      setMsgType('error')
       return
     }
 
+    // 0~1 글자: 기본 길이 경고 유지
     if (next.length < MIN) {
-      setStatus('length')
-      setMsg(MSG_LEN)
-      setAvailable(false)
+      onChange(next)
+      setBasicLengthWarning()
       return
     }
 
+    // ✅ 2글자 이상이면 기본 길이 경고는 즉시 사라져야 함
+    onChange(next)
+    clearIfBasicLengthWarning()
+
+    // ✅ 기본 정합성 OK (중복체크 전)
     setStatus('unchecked')
-    setMsg('')
-    setAvailable(false)
+    // 토스트(11번째)는 1.5초 후 자동 제거
   }
 
-  // ✅ 동일(isSameNow)이면 무조건 중복확인 버튼 활성화
-  const canCheck = useMemo(() => {
-    if (status === 'checking') return false
-    if (isSameNow) return true // ✅ 동일이면 중복확인도 누를 수 있게
+  /** ✅ debounce(400ms): 공백만 / 금칙어 체크 */
+  useEffect(() => {
+    if (!value) return
 
-    if (!value) return false
-    if (value.length < MIN || value.length > MAX) return false
-    if (isAllSpaces(value)) return false
-    if (!allowedRegex.test(value)) return false
+    // 기존 타이머 정리
+    if (forbiddenTimer.current) {
+      window.clearTimeout(forbiddenTimer.current)
+      forbiddenTimer.current = null
+    }
 
-    return true
-  }, [value, status, isSameNow])
+    forbiddenTimer.current = window.setTimeout(async () => {
+      // 공백만 닉네임 금지
+      if (isAllSpaces(value)) {
+        setStatus('spaces_only')
+        setMsg(MSG_SPACES)
+        setMsgType('error')
+        return
+      }
 
+      // 0~1글자면 기본 길이 경고
+      if (value.length < MIN) {
+        setBasicLengthWarning()
+        return
+      }
+
+      // 허용 문자 아니면 invalid_chars가 이미 잡았을 가능성 높지만 안전망
+      if (!allowedRegex.test(value)) {
+        setStatus('invalid_chars')
+        setMsg(MSG_CHARS)
+        setMsgType('error')
+        return
+      }
+
+      // ✅ 2~10자 & 허용문자 OK → 기본 길이 경고는 즉시 사라져야 함
+      clearIfBasicLengthWarning()
+
+      // ✅ 금칙어 체크 API 호출 (요구사항: debounce로 호출)
+      // try {
+      //   const data = await checkNicknameForbidden(value)
+      //   const { forbidden, message } =
+      //     extractIsForbiddenFromForbiddenResponse(data)
+
+      //   if (forbidden) {
+      //     setStatus('forbidden')
+      //     setMsg(message || '사용할 수 없는 닉네임이에요!')
+      //     setMsgType('error')
+      //     // 금칙어 걸리면 아이콘 gray + 중복체크 불가 상태가 자연스러움
+      //     setAvailabilityFalse()
+      //     return
+      //   }
+
+      //   // 금칙어 OK면 forbidden 상태였다면 unchecked로 복구 (중복체크 전 상태)
+      //   setStatus((prev) => (prev === 'forbidden' ? 'unchecked' : prev))
+      //   // 에러 메시지가 금칙어 메시지였다면 제거 (토스트/다른 메시지는 유지)
+      //   setMsg((prev) => {
+      //     if (msgType === 'toast') return prev
+      //     if (prev && prev !== MSG_OK) return ''
+      //     return prev
+      //   })
+      //   if (msgType !== 'toast') setMsgType('none')
+      // } catch {
+      //   // 금칙어 API가 아직 없거나 실패해도 UX 유지 (무시)
+      // }
+    }, 400)
+
+    return () => {
+      if (forbiddenTimer.current) {
+        window.clearTimeout(forbiddenTimer.current)
+        forbiddenTimer.current = null
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
+  // unmount 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      clearMaxToast()
+      if (forbiddenTimer.current) window.clearTimeout(forbiddenTimer.current)
+    }
+  }, [])
+
+  const canCheck = isBasicValid(value) && status !== 'checking'
+
+  /** ✅ 버튼 클릭 시에만 중복 체크 API 호출 */
   const checkDuplicate = async () => {
-    if (!canCheck) return
+    if (!isBasicValid(value) || status === 'checking') return
 
-    // ✅ 동일: API 호출해도 되고 안 해도 되는데, 요청사항상 "눌릴 수만 있으면" 되니까
-    // API 호출 X로 처리 (빠르고 안정적)
-    if (isSameNow) {
-      clearMaxToast()
-      setStatus('same')
-      setMsg('')
-      setAvailable(true)
-      lastChecked.current = value
-      return
-    }
-
-    if (isJamoOnly(value)) {
-      clearMaxToast()
-      setStatus('jamo_only')
-      setMsg(MSG_JAMO_ONLY)
-      setAvailable(false)
-      return
-    }
-
-    clearMaxToast()
     setStatus('checking')
     setMsg('')
+    setMsgType('none')
 
     try {
       const data = await checkNicknameValid(value)
@@ -255,60 +295,68 @@ export default function Nickname({
         lastChecked.current = value
         setStatus('ok')
         setMsg(MSG_OK)
-        setAvailable(true)
+        setMsgType('success')
+        onAvailabilityChange?.(true)
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('signup_nickname_available', 'true')
+        }
       } else {
         setStatus('taken')
         setMsg(MSG_TAKEN)
-        setAvailable(false)
+        setMsgType('error')
+        setAvailabilityFalse()
       }
     } catch {
       setStatus('taken')
       setMsg('닉네임 확인 중 오류가 발생했어요. 다시 시도해주세요.')
-      setAvailable(false)
+      setMsgType('error')
+      setAvailabilityFalse()
     }
   }
 
   const isWarning =
-    status === 'length' ||
+    status === 'length_basic' ||
     status === 'invalid_chars' ||
     status === 'spaces_only' ||
-    status === 'taken' ||
-    status === 'jamo_only'
+    status === 'forbidden' ||
+    status === 'taken'
 
   const isSuccess = status === 'ok'
-  const isSame = status === 'same'
 
-  const underlineClass = isSame
-    ? 'border-b-2 border-[var(--color-black)]'
-    : isSuccess
-      ? 'border-b-2 border-[var(--color-success)]'
-      : isWarning
-        ? 'border-b-2 border-[var(--color-warning)]'
-        : focused
-          ? 'border-b-2 border-[var(--color-black)]'
-          : 'border-b-2 border-[var(--color-gray-300)]'
+  // ✅ 밑줄(underline)만 상태에 따라 변경
+  const underlineClass = isSuccess
+    ? 'border-b-2 border-[var(--color-success)]'
+    : isWarning
+      ? 'border-b-2 border-[var(--color-warning)]'
+      : focused
+        ? 'border-b border-[var(--color-black)]'
+        : 'border-b border-[var(--color-gray-300)]'
 
+  // ✅ 입력 글자는 항상 검은색(placeholder는 회색)
   const inputTextColor =
     focused || value
       ? 'text-[var(--color-black)]'
       : 'text-[var(--color-gray-300)]'
 
+  // ✅ 아이콘: 경고/에러면 gray, 입력 있고 에러 없으면 pink
   const iconSrc =
     value && !isWarning
       ? '/onboarding/id-check-pink.svg'
       : '/onboarding/id-check-gray.svg'
 
-  const msgColorClass = isSuccess
-    ? 'text-[var(--color-success)]'
-    : msg
-      ? 'text-[var(--color-warning)]'
-      : ''
+  const msgColorClass =
+    msgType === 'success'
+      ? 'text-[var(--color-success)]'
+      : msg
+        ? 'text-[var(--color-warning)]'
+        : ''
 
   return (
     <div>
       {variant === 'onboarding' && (
         <>
           <h1 className="heading-1 text-black">닉네임을 입력하세요</h1>
+
           <p className="body-1 text-[var(--color-gray-500)] mt-[5px]">
             10자 이내의 닉네임을 입력해주세요
           </p>
@@ -328,10 +376,9 @@ export default function Nickname({
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             onKeyDown={(e) => {
-              if ((e.nativeEvent as any).isComposing) return
               if (e.key === 'Enter') {
                 e.preventDefault()
-                checkDuplicate()
+                if (canCheck) checkDuplicate()
               }
             }}
             maxLength={MAX}

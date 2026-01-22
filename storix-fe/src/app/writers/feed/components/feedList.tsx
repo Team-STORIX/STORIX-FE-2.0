@@ -14,7 +14,6 @@ type Post = {
     nickname: string
   }
   createdAt: string
-
   work: {
     coverImage: string
     title: string
@@ -22,7 +21,6 @@ type Post = {
     type: string
     genre: string
   }
-
   hashtags: string[]
   content: string
   isLiked: boolean
@@ -31,13 +29,7 @@ type Post = {
   images?: string[]
 }
 
-type Props = {
-  pick: string
-  posts: Post[] // ✅ API 연결된 데이터는 부모에서 내려주기
-  onReport?: (post: Post) => void // ✅ 신고 클릭 시 액션(필요하면 부모에서 연결)
-}
-
-export default function FeedList({ pick, posts, onReport }: Props) {
+export default function FeedList({ pick }: { pick: string }) {
   const [openMenuPostId, setOpenMenuPostId] = useState<number | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
@@ -49,6 +41,63 @@ export default function FeedList({ pick, posts, onReport }: Props) {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // ✅ 더미 데이터(내 작품에 대한 포스트) — 추후 API로 교체
+  const posts: Post[] = useMemo(
+    () => [
+      {
+        id: 1,
+        workId: 'w1',
+        isAuthorPost: true,
+        user: {
+          profileImage: '/profile/profile-default.svg',
+          nickname: '나(작가)',
+        },
+        createdAt: '1일 전',
+        work: {
+          coverImage: '',
+          title: '상수리 나무 아래',
+          author: '서말,나무',
+          type: '웹툰',
+          genre: '로판',
+        },
+        hashtags: ['#로판', '#첫사랑', '#성장물'],
+        content: '작가 전용 피드 예시입니다.',
+        isLiked: true,
+        likeCount: 24,
+        commentCount: 12,
+        images: [
+          '/works/default-cover.jpg',
+          '/works/default-cover.jpg',
+          '/works/default-cover.jpg',
+        ],
+      },
+      {
+        id: 2,
+        workId: 'w2',
+        isAuthorPost: true,
+        user: {
+          profileImage: '/profile/profile-default.svg',
+          nickname: '나(작가)',
+        },
+        createdAt: '3일 전',
+        work: {
+          coverImage: '',
+          title: '재혼황후',
+          author: '나무',
+          type: '웹툰',
+          genre: '로판',
+        },
+        hashtags: ['#로판', '#궁중'],
+        content: '이 작품은 전개가 빠르고 캐릭터가 진짜 매력적임.',
+        isLiked: false,
+        likeCount: 8,
+        commentCount: 0,
+        images: [],
+      },
+    ],
+    [],
+  )
 
   const filtered = useMemo(() => {
     if (pick === 'all') return posts
@@ -110,17 +159,15 @@ export default function FeedList({ pick, posts, onReport }: Props) {
               </div>
             </div>
 
-            {/* ✅ 점3개 + 드롭다운 (차단 제거 / 신고만) */}
+            {/* 점3개 + 드롭다운(그대로 유지) */}
             <div className="relative" ref={menuRef}>
               <button
-                type="button"
                 className="w-6 h-6 cursor-pointer transition-opacity hover:opacity-70"
                 onClick={() =>
                   setOpenMenuPostId((prev) =>
                     prev === post.id ? null : post.id,
                   )
                 }
-                aria-label="메뉴"
               >
                 <Image
                   src="/icons/menu-3dots.svg"
@@ -132,31 +179,36 @@ export default function FeedList({ pick, posts, onReport }: Props) {
 
               {openMenuPostId === post.id && (
                 <div
-                  className="absolute right-0 top-[30px] z-20"
-                  onClick={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-[28px] z-20 overflow-hidden"
+                  style={{
+                    width: 96,
+                    height: 68,
+                    borderRadius: 4,
+                    background: '#FFF',
+                  }}
                 >
-                  <button
-                    type="button"
-                    className="block w-[96px] h-[36px] rounded-[4px] overflow-hidden"
-                    style={{ boxShadow: '0 0 8px rgba(0,0,0,0.25)' }}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setOpenMenuPostId(null)
-                      onReport?.(post)
-                    }}
-                    aria-label="신고하기"
-                  >
-                    <img
-                      src="/icons/comment-dropdown.svg"
-                      alt="신고하기"
-                      width={96}
-                      height={36}
-                      className="block w-[96px] h-[36px] object-contain bg-white"
-                      draggable={false}
+                  <Image
+                    src="/icons/comment-dropdown.svg"
+                    alt="드롭다운"
+                    width={96}
+                    height={68}
+                    className="absolute inset-0 w-full h-full"
+                  />
+
+                  <div className="relative w-full h-full">
+                    <button
+                      type="button"
+                      className="w-full h-[34px] cursor-pointer"
+                      onClick={() => setOpenMenuPostId(null)}
+                      aria-label="신고하기"
                     />
-                  </button>
+                    <button
+                      type="button"
+                      className="w-full h-[34px] cursor-pointer"
+                      onClick={() => setOpenMenuPostId(null)}
+                      aria-label="차단하기"
+                    />
+                  </div>
                 </div>
               )}
             </div>
