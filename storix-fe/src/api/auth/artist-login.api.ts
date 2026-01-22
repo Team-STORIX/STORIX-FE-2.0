@@ -1,5 +1,5 @@
 // src/api/auth/artist-login.api.ts
-import { apiClient } from '@/lib/api/axios-instance'
+import { apiClient } from '@/api/axios-instance'
 
 export type ArtistLoginRequest = {
   loginId: string

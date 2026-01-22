@@ -22,7 +22,7 @@ export default function RecentSearchChip({
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') onClick?.()
       }}
-      className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 body-2 cursor-default ${className}`}
+      className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 body-2 ${className}`}
     >
       <span>{label}</span>
 
@@ -33,7 +33,7 @@ export default function RecentSearchChip({
           e.stopPropagation() // ✅ 삭제 누르면 검색 클릭이 같이 실행되지 않게
           onRemove?.()
         }}
-        className="ml-1 flex h-4 w-4 items-center justify-center cursor-pointer"
+        className="ml-1 flex h-4 w-4 items-center justify-center"
       >
         <CloseIcon />
       </button>

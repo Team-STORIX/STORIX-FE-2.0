@@ -6,7 +6,7 @@ import {
   SignupResponseSchema,
   type SignupRequest,
   type SignupResponse,
-} from '@/lib/api/auth/auth.schema'
+} from './auth.schema'
 
 // 회원가입
 export const signup = async (

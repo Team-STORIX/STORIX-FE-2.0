@@ -1,6 +1,6 @@
 // src/api/search/search.api.ts
 
-import { apiClient } from '@/lib/api/axios-instance'
+import { apiClient } from '@/api/axios-instance'
 import {
   WorksSearchRawResponseSchema,
   ArtistsSearchRawResponseSchema,
@@ -10,7 +10,7 @@ import {
   RecentResponseSchema,
   DeleteRecentResponseSchema,
   type WorksSort,
-} from '@/lib/api/search/search.schema'
+} from './search.schema'
 
 /*
  * ✅ 핵심

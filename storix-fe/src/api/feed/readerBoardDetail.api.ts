@@ -1,5 +1,5 @@
 // src/api/feed/readerBoardDetail.api.ts
-import { apiClient } from '@/lib/api/axios-instance'
+import { apiClient } from '@/api/axios-instance'
 import type { FeedSort, FeedBoardItem, PageResult } from './readerBoard.api'
 
 type ApiResponse<T> = {

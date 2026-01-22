@@ -4,7 +4,7 @@
 
 import Image from 'next/image'
 import type { RefObject } from 'react'
-import type { ArtistsSearchItem } from '@/lib/api/search/search.schema'
+import type { ArtistsSearchItem } from '@/api/search/search.schema'
 import Warning from '@/components/common/Warining'
 
 type Props = {

@@ -5,7 +5,7 @@
 import { useEffect } from 'react'
 import { useProfileStore } from '@/store/profile.store'
 import { useAuthStore } from '@/store/auth.store'
-import { getMyProfile } from '@/lib/api/profile/profile.api'
+import { getMyProfile } from '@/api/profile/profile.api'
 
 export default function ProfileBootstrap() {
   const me = useProfileStore((s) => s.me)

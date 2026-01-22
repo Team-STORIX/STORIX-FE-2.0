@@ -1,6 +1,6 @@
 // src/api/feed/readerBoardDelete.api.ts
-import { apiClient } from '@/lib/api/axios-instance'
-import type { ApiResponse } from '@/lib/api/types'
+import { apiClient } from '@/api/axios-instance'
+import type { ApiResponse } from '@/api/types'
 
 export const deleteBoard = async (
   boardId: number,
