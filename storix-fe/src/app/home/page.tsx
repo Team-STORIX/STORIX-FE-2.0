@@ -16,21 +16,21 @@ const MOCK_ROOMS: TopicRoomData[] = [
     id: 'room1',
     imageUrl: '/image/sample/topicroom-1.webp', // 일단 public에 더미 이미지 넣어두고 쓰기
     title: '탄서방 시어머니회',
-    subtitle: '웹툰 <상수리나무 아래>',
+    subtitle: '웹툰 상수리나무 아래',
     memberCount: 13,
   },
   {
     id: 'room2',
     imageUrl: '/image/sample/topicroom-2.webp',
     title: '연의 등기우편',
-    subtitle: '웹툰 <연의 편지>',
+    subtitle: '웹툰 연의 편지',
     memberCount: 20,
   },
   {
     id: 'room3',
     imageUrl: '/image/sample/topicroom-3.webp',
     title: '전독시 덕후들 모여라',
-    subtitle: '웹툰 <전지적 독자 시점>',
+    subtitle: '웹툰 전지적 독자 시점',
     memberCount: 22,
   },
 ]
@@ -52,7 +52,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full">
-            <CardNav header="오늘의 피드" roomName="/feed" />
+            <CardNav header="오늘의 피드" roomName="#" />
             <HotFeedSlider />
           </div>
 
@@ -62,18 +62,14 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full mb-8">
-            <div className="flex w-full items-center justify-between py-4 px-1">
-              <div className="flex items-center justify-center">
-                <p className="heading-1">이런 키워드, 좋아하실 것 같아요</p>
-              </div>
-            </div>
+            <CardNav header="이런 키워드, 좋아하실 것 같아요" roomName="#" />
             <HashtagList
               items={[
-                '로맨스',
-                '무협/사극',
-                '액션',
-                '로맨스판타지',
-                '금발남주',
+                '#로맨스',
+                '#무협/사극',
+                '#액션',
+                '#로맨스판타지',
+                '#금발남주',
               ]}
             />
           </div>

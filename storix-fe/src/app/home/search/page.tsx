@@ -13,11 +13,11 @@ import {
 } from '@/hooks/search/useSearch'
 
 const FALLBACK_HASHTAGS = [
-  '로맨스',
-  '무협/사극',
-  '액션',
-  '로맨스판타지',
-  '금발남주',
+  '#로맨스',
+  '#무협/사극',
+  '#액션',
+  '#로맨스판타지',
+  '#금발남주',
 ]
 
 export default function SearchHomePage() {
@@ -38,7 +38,9 @@ export default function SearchHomePage() {
 
   const hashtagLabels =
     trendingItems.length > 0
-      ? trendingItems.map((t) => `${t.keyword}`)
+      ? trendingItems.map((t) =>
+          t.keyword.startsWith('#') ? t.keyword : `#${t.keyword}`,
+        )
       : FALLBACK_HASHTAGS
 
   const goResult = (raw: string) => {
