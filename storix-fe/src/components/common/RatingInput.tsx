@@ -13,13 +13,13 @@ const STAR_URL = '/common/icons/ratingStar.svg'
 export default function RatingInput({
   value,
   onChange,
-  size = 40,
+  size = 33,
   className = '',
 }: Props) {
   const stars = [1, 2, 3, 4, 5]
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-1 ${className}`}>
       {stars.map((i) => {
         // 각 별의 채움 정도: 0, 0.5, 1
         const raw = value - (i - 1)
@@ -73,13 +73,13 @@ export default function RatingInput({
             <button
               type="button"
               aria-label={`${i - 0.5}점`}
-              className="absolute inset-y-0 left-0 z-10 w-1/2"
+              className="absolute inset-y-0 left-0 z-10 w-1/2 cursor-pointer"
               onClick={() => onChange(i - 0.5)}
             />
             <button
               type="button"
               aria-label={`${i}점`}
-              className="absolute inset-y-0 right-0 z-10 w-1/2"
+              className="absolute inset-y-0 right-0 z-10 w-1/2 cursor-pointer"
               onClick={() => onChange(i)}
             />
           </div>

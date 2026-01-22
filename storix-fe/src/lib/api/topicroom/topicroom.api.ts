@@ -3,14 +3,24 @@ import { apiClient } from '@/lib/api/axios-instance'
 import { z } from 'zod'
 import {
   ApiEnvelopeSchema,
+  MyTopicRoomSliceSchema,
   TopicRoomIdSchema,
   TopicRoomItemSchema,
+  TopicRoomMemberSchema,
   TopicRoomSearchWrappedSchema,
+  TopicRoomSearchSliceSchema,
 } from './topicroom.schema'
 
 export type TopicRoomItem = z.infer<typeof TopicRoomItemSchema>
+export type MyTopicRoomSlice = z.infer<typeof MyTopicRoomSliceSchema>
+export type TopicRoomMember = z.infer<typeof TopicRoomMemberSchema>
 
-/** 토픽룸 생성 */
+// ✅ 공통
+const AnyEnvelopeSchema = ApiEnvelopeSchema(z.any())
+
+// -----------------------------
+// POST /api/v1/topic-rooms (토픽룸 생성)
+// -----------------------------
 const CreateTopicRoomResponseSchema = ApiEnvelopeSchema(TopicRoomIdSchema)
 
 export async function createTopicRoom(body: {
@@ -20,53 +30,69 @@ export async function createTopicRoom(body: {
   const res = await apiClient.post('/api/v1/topic-rooms', body, {
     headers: { accept: '*/*' },
   })
-
   const parsed = CreateTopicRoomResponseSchema.parse(res.data)
-  return parsed.result // ✅ number(topicRoomId)
+  return parsed.result
 }
 
-/** 토픽룸 입장 */
+// -----------------------------
+// POST /api/v1/topic-rooms/{roomId}/join (토픽룸 입장)
+// -----------------------------
+const CommonEnvelopeSchema = ApiEnvelopeSchema(z.any())
+
 export async function joinTopicRoom(roomId: number) {
   const res = await apiClient.post(`/api/v1/topic-rooms/${roomId}/join`, null, {
     headers: { accept: '*/*' },
   })
-  return ApiEnvelopeSchema(z.any()).parse(res.data)
+  return CommonEnvelopeSchema.parse(res.data)
 }
 
-/** 토픽룸 퇴장 */
+// -----------------------------
+// DELETE /api/v1/topic-rooms/{roomId}/leave (토픽룸 퇴장)
+// -----------------------------
 export async function leaveTopicRoom(roomId: number) {
   const res = await apiClient.delete(`/api/v1/topic-rooms/${roomId}/leave`, {
     headers: { accept: '*/*' },
   })
-  return ApiEnvelopeSchema(z.any()).parse(res.data)
+  return CommonEnvelopeSchema.parse(res.data)
 }
 
-/** 오늘의 토픽룸 */
-const TodayResponseSchema = ApiEnvelopeSchema(z.array(TopicRoomItemSchema))
+// -----------------------------
+// GET /api/v1/topic-rooms/today (오늘의 토픽룸)
+// -----------------------------
+const TopicRoomListEnvelopeSchema = ApiEnvelopeSchema(
+  z.array(TopicRoomItemSchema),
+)
 
 export async function getTodayTopicRooms() {
   const res = await apiClient.get('/api/v1/topic-rooms/today', {
     headers: { accept: '*/*' },
   })
-  const parsed = TodayResponseSchema.parse(res.data)
+  const parsed = TopicRoomListEnvelopeSchema.parse(res.data)
   return parsed.result
 }
 
-/** 토픽룸 검색 */
-const SearchResponseSchema = ApiEnvelopeSchema(
-  z.union([
-    // swagger: result.result.content
-    TopicRoomSearchWrappedSchema,
-    // 혹시 바로 slice/content로 내려오는 케이스
-    z.object({ content: z.array(TopicRoomItemSchema) }),
-  ]),
-)
+// -----------------------------
+// GET /api/v1/topic-rooms/popular (지금 핫한 토픽룸)
+// -----------------------------
+export async function getPopularTopicRooms() {
+  const res = await apiClient.get('/api/v1/topic-rooms/popular', {
+    headers: { accept: '*/*' },
+  })
+  const parsed = TopicRoomListEnvelopeSchema.parse(res.data)
+  return parsed.result
+}
+
+// -----------------------------
+// GET /api/v1/topic-rooms/search (토픽룸 검색)
+// - swagger: result.result.content
+// -----------------------------
+const SearchEnvelopeSchema = ApiEnvelopeSchema(TopicRoomSearchWrappedSchema)
 
 export async function searchTopicRooms(params: {
   keyword: string
   page?: number
   size?: number
-  sort?: string[] // 예: ["topicRoomName,ASC"]
+  sort?: string[]
 }) {
   const res = await apiClient.get('/api/v1/topic-rooms/search', {
     params: {
@@ -78,15 +104,71 @@ export async function searchTopicRooms(params: {
     headers: { accept: '*/*' },
   })
 
-  const parsed = SearchResponseSchema.parse(res.data)
+  const parsed = SearchEnvelopeSchema.parse(res.data)
+  return parsed.result.result.content
+}
 
-  // ✅ swagger: result.result.content
-  if ('result' in parsed.result) {
-    return parsed.result.result.content
+export async function searchTopicRoomsSlice(params: {
+  keyword: string
+  page?: number
+  size?: number
+  sort?: string[]
+}) {
+  const page = params.page ?? 0
+  const size = params.size ?? 20
+
+  const content = await searchTopicRooms({
+    keyword: params.keyword,
+    page,
+    size,
+    sort: params.sort,
+  })
+
+  // ✅ API가 page meta를 안 주는 구조라, FE에서 slice 형태로 감싸서 통일
+  const slice = {
+    content,
+    number: page, // ✅
+    empty: content.length === 0, // ✅
+    last: content.length < size, // ✅ (size보다 적게 오면 마지막으로 간주)
   }
 
-  // ✅ 폴백: { content: [] }
-  return parsed.result.content
+  return TopicRoomSearchSliceSchema.parse(slice) // ✅
+}
+
+// -----------------------------
+// GET /api/v1/topic-rooms/{roomId}/members (참여자 목록)
+// -----------------------------
+const MembersEnvelopeSchema = ApiEnvelopeSchema(z.array(TopicRoomMemberSchema))
+
+export async function getTopicRoomMembers(roomId: number) {
+  const res = await apiClient.get(`/api/v1/topic-rooms/${roomId}/members`, {
+    headers: { accept: '*/*' },
+  })
+  const parsed = MembersEnvelopeSchema.parse(res.data)
+  return parsed.result
+}
+// -----------------------------
+// GET /api/v1/topic-rooms/me (참여 중인 토픽룸 조회)
+// - page/size/sort 지원
+// - result가 Page/Slice 형태
+// -----------------------------
+const MyTopicRoomsEnvelopeSchema = ApiEnvelopeSchema(MyTopicRoomSliceSchema)
+
+export async function getMyTopicRooms(params?: {
+  page?: number
+  size?: number
+  sort?: string[]
+}) {
+  const res = await apiClient.get('/api/v1/topic-rooms/me', {
+    params: {
+      page: params?.page ?? 0,
+      size: params?.size ?? 3,
+      sort: params?.sort ?? ['topicRoom.lastChatTime,DESC'],
+    },
+    headers: { accept: '*/*' },
+  })
+  const parsed = MyTopicRoomsEnvelopeSchema.parse(res.data)
+  return parsed.result
 }
 
 /**

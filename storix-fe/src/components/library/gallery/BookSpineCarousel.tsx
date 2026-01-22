@@ -1,25 +1,53 @@
-// ✅ src/components/library/gallery/BookSpineCarousel.tsx
+// src/components/library/gallery/BookSpineCarousel.tsx
 'use client'
 
 import Image from 'next/image'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export type Work = {
   id: number
   title: string
   meta: string
   thumb: string
+  rating?: number
 }
 
-const clamp = (n: number, min: number, max: number) =>
-  Math.max(min, Math.min(max, n))
+type BookSpineCarouselProps = {
+  works: Work[]
+  /** 다음 페이지가 남아있는지 (UI 영향 없음) */
+  hasMore?: boolean
+  /** 다음 페이지를 불러오는 중인지 (UI 영향 없음) */
+  isFetchingMore?: boolean
+  /** 끝쪽에 도달했을 때 다음 페이지를 요청하는 콜백 (UI 영향 없음) */
+  onNeedMore?: () => void
+}
 
-export default function BookSpineCarousel({ works }: { works: Work[] }) {
+export default function BookSpineCarousel({
+  works,
+  hasMore,
+  isFetchingMore,
+  onNeedMore,
+}: BookSpineCarouselProps) {
+  const router = useRouter()
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([])
   const rafRef = useRef<number | null>(null)
 
   const [activeIdx, setActiveIdx] = useState(0)
+
+  // ✅ (API 연동) list처럼 페이지네이션으로 계속 불러올 수 있게
+  // 캐러셀에서 활성 인덱스가 끝쪽에 가까워지면 다음 페이지를 요청 (UI는 그대로)
+  useEffect(() => {
+    if (!hasMore) return
+    if (isFetchingMore) return
+    if (!onNeedMore) return
+
+    // 끝에서 3개 전부터 미리 요청
+    if (activeIdx >= Math.max(0, works.length - 3)) {
+      onNeedMore()
+    }
+  }, [activeIdx, works.length, hasMore, isFetchingMore, onNeedMore])
 
   const measureActive = () => {
     const scroller = scrollerRef.current
@@ -73,32 +101,53 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
     const sRect = scroller.getBoundingClientRect()
     const eRect = el.getBoundingClientRect()
 
-    // ✅ (1) 현재 위치 기준으로 “엘리먼트 중심 → 스크롤러 중심” 차이만큼 이동
     const delta = eRect.left + eRect.width / 2 - (sRect.left + sRect.width / 2)
 
-    // ✅ (2) 스크롤러의 scrollLeft에 delta를 더해서 중앙 정렬
     scroller.scrollTo({
       left: scroller.scrollLeft + delta,
       behavior: 'smooth',
     })
 
-    // ✅ (3) 클릭하면 active도 즉시 바뀌게(선택 반응 빨리)
     setActiveIdx(idx)
   }
-  // 마우스 휠로도 가로 이동
-  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const scroller = scrollerRef.current
-    if (!scroller) return
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      e.preventDefault()
-      scroller.scrollLeft += e.deltaY
-      scheduleMeasure()
+
+  const handleBookClick = (idx: number) => {
+    const work = works[idx]
+    if (!work) return
+    // 이미 활성인 책을 다시 누르면 상세로 이동
+    if (idx === activeIdx) {
+      router.push(`/library/works/${work.id}`) // 라우팅
+      return
     }
+
+    // 비활성 책은 기존대로 활성화만
+    scrollToIndex(idx)
   }
 
-  // 드래그
+  useEffect(() => {
+    const el = scrollerRef.current
+    if (!el) return
+
+    const handler = (e: WheelEvent) => {
+      // 세로 스크롤을 가로 스크롤로 변환
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault()
+        el.scrollLeft += e.deltaY
+        scheduleMeasure()
+      }
+    }
+
+    el.addEventListener('wheel', handler, { passive: false })
+    return () => el.removeEventListener('wheel', handler)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const drag = useRef({ down: false, x: 0, left: 0 })
+
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement
+    if (target.closest('button')) return
+
     const scroller = scrollerRef.current
     if (!scroller) return
     drag.current = { down: true, x: e.clientX, left: scroller.scrollLeft }
@@ -119,19 +168,16 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
 
   return (
     <div className="w-full">
-      {/* ✅ 책등 캐러셀 */}
       <div
         ref={scrollerRef}
         onScroll={scheduleMeasure}
-        onWheel={onWheel}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         className="w-full overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth"
         style={{ touchAction: 'pan-x' }}
       >
-        {/* 중앙 정렬용 패딩 */}
-        <div className="flex items-center gap-4 pl-[140px] pr-[620px] py-6">
+        <div className="flex items-center gap-5.5 pl-35 pr-155 py-6">
           {works.map((w, i) => {
             const isActive = i === activeIdx
 
@@ -142,59 +188,66 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
                   itemRefs.current[i] = el
                 }}
                 type="button"
-                onClick={() => scrollToIndex(i)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => handleBookClick(i)}
                 className={[
-                  'relative shrink-0 snap-center rounded-md bg-[var(--color-magenta-300)]',
+                  'relative shrink-0 snap-center rounded-r-sm bg-[var(--color-magenta-300)]',
                   'transition-all duration-250 ease-out',
-                  'shadow-[0px_10px_24px_rgba(255,64,147,0.18)]',
-                  'hover:opacity-90',
-                  isActive ? 'opacity-100' : 'opacity-80',
+                  'hover:opacity-90 cursor-pointer',
+                  isActive ? 'rounded-sm' : '',
                 ].join(' ')}
                 style={{
-                  width: isActive ? 150 : 30, // ✅ 가운데만 “표지로 확장”
+                  width: isActive ? 150 : 30,
                   height: 200,
                 }}
                 aria-label={w.title}
               >
-                {/* ✅ 표지(활성일 때만 보임) */}
                 {isActive && (
-                  <div className="absolute inset-0 w-37.5 h-50 overflow-hidden rounded-md">
+                  <div className="absolute inset-0 w-37.5 h-50 overflow-hidden rounded-sm">
                     <Image
                       src={w.thumb}
                       alt={w.title}
                       fill
                       className="object-cover"
                     />
-                    {/* 살짝 그라디언트로 책등 느낌 유지(선택) */}
-                    <div className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-white/25 to-transparent" />
                   </div>
                 )}
 
-                {/* ✅ 책등 텍스트(비활성은 세로, 활성은 숨김) */}
                 {!isActive && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="body-2 whitespace-nowrap -rotate-90 text-white">
+                  <div className="absolute inset-0 flex items-center justify-center px-1">
+                    <span
+                      title={w.title}
+                      className="body-2 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center"
+                      style={{
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed',
+                        maxHeight: 176, // ✅ 책등 높이(200) 안에서 여백 주고 중앙 정렬
+                      }}
+                    >
                       {w.title}
                     </span>
                   </div>
                 )}
+
                 {!isActive && i > activeIdx && (
                   <Image
                     src="/icons/library/rightGradient.svg"
                     alt=""
                     width={22}
                     height={200}
-                    className="pointer-events-none absolute -left-[22px] top-0 h-full w-[22px]"
+                    className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 "
                   />
                 )}
                 {!isActive && i < activeIdx && (
-                  <Image
-                    src="/icons/library/leftGradient.svg"
-                    alt=""
-                    width={22}
-                    height={200}
-                    className="pointer-events-none absolute -right-[22px] top-0 h-full w-[22px]"
-                  />
+                  <div className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5">
+                    <Image
+                      src="/icons/library/leftGradient.svg"
+                      alt=""
+                      width={22}
+                      height={200}
+                      className=" "
+                    />
+                  </div>
                 )}
               </button>
             )
@@ -202,11 +255,28 @@ export default function BookSpineCarousel({ works }: { works: Work[] }) {
         </div>
       </div>
 
-      {/* ✅ 활성 작품 정보(표지 밑) */}
       {active && (
         <div className="mt-6 flex flex-col items-center px-4">
           <p className="heading-2 text-black text-center">{active.title}</p>
           <p className="body-2 mt-3 text-gray-400 text-center">{active.meta}</p>
+
+          {typeof active.rating === 'number' && (
+            <span
+              className={`caption-1 mt-3 w-14 h-6 inline-flex items-center gap-1 
+            rounded-3xl border border-gray-200 
+            px-2.5 py-1 text-[var(--color-magenta-300)] text-center`}
+            >
+              <Image
+                src="/search/littleStar.svg"
+                alt="star icon"
+                width={14}
+                height={14}
+                className="inline-block mr-1"
+                priority
+              />
+              {Number(active.rating ?? 0).toFixed(1)}
+            </span>
+          )}
         </div>
       )}
     </div>

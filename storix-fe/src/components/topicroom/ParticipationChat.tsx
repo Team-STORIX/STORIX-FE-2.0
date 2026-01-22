@@ -1,7 +1,7 @@
 // src/components/topicroom/ParticipationChat.tsx
 'use client'
 
-import { useState, useMemo, UIEvent } from 'react'
+import { useState, useMemo, UIEvent, useRef } from 'react'
 import Image from 'next/image'
 
 const ITEMS_PER_PAGE = 3
@@ -17,10 +17,15 @@ export interface ParticipationChatItem {
 
 interface ParticipationChatProps {
   list: ParticipationChatItem[]
+  onReachEnd?: () => void // ✅ (끝 페이지 도달 시 다음 페이지 요청)
 }
 
-export default function ParticipationChat({ list }: ParticipationChatProps) {
+export default function ParticipationChat({
+  list,
+  onReachEnd,
+}: ParticipationChatProps) {
   const [currentPage, setCurrentPage] = useState(0)
+  const calledForPagesRef = useRef<number>(0) // ✅ totalPages 기준으로 중복 호출 방지
 
   // 3개씩 끊어서 페이지 배열로 만들기
   const pages = useMemo(
@@ -39,10 +44,21 @@ export default function ParticipationChat({ list }: ParticipationChatProps) {
   const totalPages = pages.length
 
   const handleScroll = (e: UIEvent<HTMLDivElement>) => {
-    const { scrollLeft, clientWidth } = e.currentTarget
+    const { scrollLeft, clientWidth, scrollWidth } = e.currentTarget
     const page = Math.round(scrollLeft / clientWidth)
+
     if (page !== currentPage) {
       setCurrentPage(page)
+    }
+
+    // ✅ 마지막 페이지에 도달했고, 아직 이 totalPages에 대해 요청 안 했으면 호출
+    const atEnd = scrollLeft + clientWidth >= scrollWidth - 1
+    if (
+      (page === totalPages - 1 || atEnd) &&
+      calledForPagesRef.current !== totalPages
+    ) {
+      calledForPagesRef.current = totalPages
+      onReachEnd?.()
     }
   }
 
@@ -77,9 +93,7 @@ export default function ParticipationChat({ list }: ParticipationChatProps) {
                   {/* 가운데 텍스트들 */}
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex justify-between">
-                      <p className="flex body-1 leading-tight text-gray-900">
-                        {subtitle}
-                      </p>
+                      <p className="flex body-1 text-gray-900">{subtitle}</p>
                       <div className="flex ml-2 whitespace-nowrap caption-1 text-gray-500">
                         {memberCount}명 · {timeAgo}
                       </div>

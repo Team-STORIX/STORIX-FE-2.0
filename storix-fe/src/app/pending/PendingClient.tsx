@@ -140,7 +140,7 @@ export default function PendingClient() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <Image
-        src="/icons/logo.svg"
+        src="/icons/logo-black.svg"
         alt="STORIX"
         width={64}
         height={64}
