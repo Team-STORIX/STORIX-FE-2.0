@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
 import { useProfileStore } from '@/store/profile.store'
-import { getMyProfile } from '@/lib/api/profile/profile.api'
+import { getMyProfile } from '@/api/profile/profile.api'
 
 type Provider = 'kakao' | 'naver'
 

@@ -31,7 +31,7 @@ export default function AgreementPage() {
     // ✅ 따라서 marketingAgree도 true로 세팅 (termsAgreed와 동일하게 사용)
     setMarketingAgree(true)
 
-    console.log('[agreement] termsAgreed:', true, 'marketingAgree:', true)
+    // console.log('[agreement] termsAgreed:', true, 'marketingAgree:', true)
 
     // 온보딩 페이지로 이동
     router.push('/onboarding')
@@ -80,11 +80,7 @@ export default function AgreementPage() {
         </div>
 
         <div className="mt-8">
-          <button
-            onClick={handleAllAgree}
-            className="w-full cursor-pointer"
-            type="button"
-          >
+          <button onClick={handleAllAgree} className="w-full" type="button">
             <Image
               src={
                 allAgreed ? '/login/terms-pink.svg' : '/login/terms-gray.svg'
@@ -99,7 +95,7 @@ export default function AgreementPage() {
 
         <div className="mt-5">
           {/* 서비스 이용약관 */}
-          <div className="flex items-center px-3 py-4 h-[52px] cursor-pointer">
+          <div className="flex items-center px-3 py-4 h-[52px]">
             <button
               type="button"
               onClick={() => setAgreement1(!agreement1)}
@@ -130,7 +126,7 @@ export default function AgreementPage() {
             <button
               type="button"
               onClick={() => setAgreement2(!agreement2)}
-              className="flex-shrink-0 cursor-pointer"
+              className="flex-shrink-0"
             >
               <Image
                 src={
@@ -157,7 +153,7 @@ export default function AgreementPage() {
             <button
               type="button"
               onClick={() => setAgreement3(!agreement3)}
-              className="flex-shrink-0 cursor-pointer"
+              className="flex-shrink-0"
             >
               <Image
                 src={
@@ -179,7 +175,7 @@ export default function AgreementPage() {
           <button
             type="button"
             onClick={handleNext}
-            className="w-full transition-opacity hover:opacity-90 cursor-pointer"
+            className="w-full transition-opacity hover:opacity-90"
           >
             <Image
               src="/onboarding/next.svg"
