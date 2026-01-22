@@ -1,107 +1,114 @@
 // src/app/home/topicroom/page.tsx
+'use client' // ✅
 
+import { useCallback, useMemo, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import SearchBar from '@/components/common/SearchBar'
-import ParticipationChat from '@/components/topicroom/ParticipationChat'
+import ParticipationChat, {
+  ParticipationChatItem,
+} from '@/components/topicroom/ParticipationChat'
+import { formatTopicRoomSubtitle } from '@/lib/api/topicroom/formatTopicRoomSubtitle'
 import { CardTopicroomInsideCoverSlider } from '@/components/topicroom/CardTopicroomInsideCoverSlider'
 import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
-
-const userName = '스토릭스' // 나중에 유저 정보 받아오면 바꾸기
-
-const MOCK_LIST = [
-  {
-    id: 1,
-    thumbnail: '/image/sample/topicroom-6.webp',
-    title: '금쪽일기',
-    subtitle: '웹툰 육아일기',
-    memberCount: 13,
-    timeAgo: '1분 전',
-  },
-  {
-    id: 2,
-    thumbnail: '/image/sample/topicroom-2.webp',
-    title: '연의 등기우편',
-    subtitle: '웹툰 연의 편지',
-    memberCount: 13,
-    timeAgo: '1분 전',
-  },
-  {
-    id: 3,
-    thumbnail: '/image/sample/topicroom-3.webp',
-    title: '이착헌이 누구야?',
-    subtitle: '웹소설 <이세계 착한 헌터>',
-    memberCount: 13,
-    timeAgo: '1분 전',
-  },
-  {
-    id: 4,
-    thumbnail: '/image/sample/topicroom-4.webp',
-    title: '이착헌이 누구야?',
-    subtitle: '웹소설 <이세계 착한 헌터>',
-    memberCount: 13,
-    timeAgo: '1분 전',
-  },
-  {
-    id: 5,
-    thumbnail: '/image/sample/topicroom-5.webp',
-    title: '이착헌이 누구야?',
-    subtitle: '웹소설 <이세계 착한 헌터>',
-    memberCount: 13,
-    timeAgo: '1분 전',
-  },
-]
-const MOCK_ROOMS: TopicRoomData[] = [
-  {
-    id: 'room1',
-    imageUrl: '/image/sample/topicroom-1.webp', // 일단 public에 더미 이미지 넣어두고 쓰기
-    title: '탄서방 시어머니회',
-    subtitle: '웹툰 상수리나무 아래',
-    memberCount: 13,
-  },
-  {
-    id: 'room2',
-    imageUrl: '/image/sample/topicroom-2.webp',
-    title: '연의 등기우편',
-    subtitle: '웹툰 연의 편지',
-    memberCount: 20,
-  },
-  {
-    id: 'room3',
-    imageUrl: '/image/sample/topicroom-3.webp',
-    title: '전독시 덕후들 모여라',
-    subtitle: '웹툰 전지적 독자 시점',
-    memberCount: 22,
-  },
-  {
-    id: 'room4',
-    imageUrl: '/image/sample/topicroom-4.webp',
-    title: '손자뻘 무림세가 모임',
-    subtitle: '웹툰 무림세가 천대받는 손녀 딸이 되었다',
-    memberCount: 20,
-  },
-  {
-    id: 'room5',
-    imageUrl: '/image/sample/topicroom-1.webp',
-    title: '탄서방 시어머니회 5',
-    subtitle: '웹툰 상수리나무 아래',
-    memberCount: 22,
-  },
-]
+import { useMyTopicRoomsAll } from '@/hooks/topicroom/useMyTopicRoomsAll' // ✅
+import { usePopularTopicRooms } from '@/hooks/topicroom/usePopularTopicRooms' // ✅
+import { useProfileStore } from '@/store/profile.store'
+import { getMyProfile } from '@/lib/api/profile/profile.api'
 
 export default function TopicRoom() {
+  const formatTimeAgo = (iso?: string | null) => {
+    if (!iso) return ''
+    const t = new Date(iso).getTime()
+    if (Number.isNaN(t)) return ''
+    const diff = Date.now() - t
+    if (diff < 60_000) return '방금 전'
+    const min = Math.floor(diff / 60_000)
+    if (min < 60) return `${min}분 전`
+    const hour = Math.floor(min / 60)
+    if (hour < 24) return `${hour}시간 전`
+    const day = Math.floor(hour / 24)
+    return `${day}일 전`
+  }
+
+  const router = useRouter() // ✅
+
+  const goSearch = (raw: string) => {
+    const k = raw.replace(/^#/, '').trim()
+    if (!k) return
+    router.push(`/home/topicroom/search?keyword=${encodeURIComponent(k)}`) // ✅
+  }
+  // ✅ 참여 중 토픽룸: 페이지당 3개
+  const { data: myRooms } = useMyTopicRoomsAll({ size: 3 })
+
+  // ✅ HOT 토픽룸
+  const { data: popular } = usePopularTopicRooms()
+
+  const participationList = useMemo<ParticipationChatItem[]>(() => {
+    const list = myRooms ?? [] // ✅
+
+    return list.map((r) => ({
+      id: r.topicRoomId,
+      thumbnail: r.thumbnailUrl ?? '/image/sample/topicroom-2.webp',
+      title: r.topicRoomName,
+      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), // ✅
+      memberCount: r.activeUserNumber ?? 0,
+      timeAgo: formatTimeAgo(r.lastChatTime),
+    }))
+  }, [myRooms])
+
+  const hotRooms = useMemo<TopicRoomData[]>(() => {
+    const list = popular ?? []
+    return list.map((r) => ({
+      id: String(r.topicRoomId),
+      imageUrl: r.thumbnailUrl ?? '/image/sample/topicroom-1.webp',
+      title: r.topicRoomName,
+      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName),
+      memberCount: r.activeUserNumber ?? 0,
+    }))
+  }, [popular])
+
+  const me = useProfileStore((s) => s.me)
+  const setMe = useProfileStore((s) => s.setMe)
+
+  // ✅ store가 비어있을 때만 1회 보충 fetch
+  useEffect(() => {
+    let mounted = true
+
+    const hydrate = async () => {
+      if (me) return
+      try {
+        const res = await getMyProfile()
+        if (!res.isSuccess) throw new Error(res.message || 'Failed to load me')
+        if (!mounted) return
+        setMe(res.result)
+      } catch (e) {
+        console.error('[profile] failed to hydrate me', e)
+      }
+    }
+
+    hydrate()
+    return () => {
+      mounted = false
+    }
+  }, [me, setMe])
+
+  const nickname = me?.nickName ?? ''
+
   return (
     <div>
-      <SearchBar />
+      <SearchBar onSearchClick={goSearch} />
       <div className="flex flex-col">
         <div className="px-5 py-4">
-          <p className="heading-1">{userName}님이 참여 중인 토픽룸</p>
+          <p className="heading-1">{nickname}님이 참여 중인 토픽룸</p>
         </div>
         <div className="flex flex-col gap-4">
-          <ParticipationChat list={MOCK_LIST} />
+          <ParticipationChat list={participationList} /> {/* ✅ 페이징 적용 */}
         </div>
         <div className="px-5 py-4">
           <p className="heading-1">지금 HOT한 토픽룸</p>
         </div>
-        <CardTopicroomInsideCoverSlider rooms={MOCK_ROOMS} />
+        <CardTopicroomInsideCoverSlider rooms={hotRooms} />{' '}
+        {/* ✅ popular 연결 */}
       </div>
     </div>
   )
