@@ -80,7 +80,11 @@ export default function AgreementPage() {
         </div>
 
         <div className="mt-8">
-          <button onClick={handleAllAgree} className="w-full" type="button">
+          <button
+            onClick={handleAllAgree}
+            className="w-full cursor-pointer"
+            type="button"
+          >
             <Image
               src={
                 allAgreed ? '/login/terms-pink.svg' : '/login/terms-gray.svg'
@@ -95,7 +99,7 @@ export default function AgreementPage() {
 
         <div className="mt-5">
           {/* 서비스 이용약관 */}
-          <div className="flex items-center px-3 py-4 h-[52px]">
+          <div className="flex items-center px-3 py-4 h-[52px] cursor-pointer">
             <button
               type="button"
               onClick={() => setAgreement1(!agreement1)}
@@ -126,7 +130,7 @@ export default function AgreementPage() {
             <button
               type="button"
               onClick={() => setAgreement2(!agreement2)}
-              className="flex-shrink-0"
+              className="flex-shrink-0 cursor-pointer"
             >
               <Image
                 src={
@@ -153,7 +157,7 @@ export default function AgreementPage() {
             <button
               type="button"
               onClick={() => setAgreement3(!agreement3)}
-              className="flex-shrink-0"
+              className="flex-shrink-0 cursor-pointer"
             >
               <Image
                 src={
@@ -175,7 +179,7 @@ export default function AgreementPage() {
           <button
             type="button"
             onClick={handleNext}
-            className="w-full transition-opacity hover:opacity-90"
+            className="w-full transition-opacity hover:opacity-90 cursor-pointer"
           >
             <Image
               src="/onboarding/next.svg"

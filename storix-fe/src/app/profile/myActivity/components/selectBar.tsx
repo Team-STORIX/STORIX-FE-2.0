@@ -18,7 +18,7 @@ export default function SelectBar({ activeTab, onChange }: SelectBarProps) {
           <button
             key={tab.id}
             onClick={() => onChange(tab.id)}
-            className="px-4 py-2 rounded-[50px] text-[14px] font-medium leading-[140%]"
+            className="px-4 py-2 rounded-[50px] text-[14px] font-medium leading-[140%] cursor-pointer"
             style={
               activeTab === tab.id
                 ? {

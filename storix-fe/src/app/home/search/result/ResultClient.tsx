@@ -59,6 +59,18 @@ export default function SearchResultEmptyOnlyPage() {
   return (
     <div className="flex w-full flex-col">
       <SearchBar onSearchClick={goSearch} />
+      <div className="px-4 inline-flex items-center justify-end">
+        <button
+          className="py-1 body-2 text-gray-300 cursor-pointer"
+          onClick={() =>
+            window.open(
+              `https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015`,
+            )
+          }
+        >
+          <p className="underline">찾는 작품이 없다면?</p>
+        </button>
+      </div>
 
       {showEmpty ? (
         <Warning

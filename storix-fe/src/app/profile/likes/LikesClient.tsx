@@ -9,7 +9,7 @@ import TopBar from './components/topbar'
 import SelectBar from './components/selectBar'
 import NavBar from '@/components/common/NavBar'
 import { useFavoritesStore } from '@/store/favorites.store'
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 type Tab = 'works' | 'writers'
 
@@ -486,7 +486,7 @@ function EmptyState({ tab, onClickCta }: { tab: Tab; onClickCta: () => void }) {
       </h2>
       <button
         type="button"
-        className="mt-3 cursor-pointer hover:opacity-80 transition-opacity"
+        className="mt-3 cursor-pointer hover:opacity-80  transition-opacity cursor-pointer"
         onClick={onClickCta}
         aria-label="검색으로 이동"
       >

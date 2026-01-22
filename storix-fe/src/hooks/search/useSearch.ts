@@ -7,12 +7,12 @@ import {
   getTrendingKeywords,
   getRecentKeywords,
   deleteRecentKeyword,
-} from '@/api/search/search.api'
+} from '@/lib/api/search/search.api'
 import type {
   WorksSort,
   WorksSearchItem,
   ArtistsSearchItem,
-} from '@/api/search/search.schema'
+} from '@/lib/api/search/search.schema'
 
 /**
  * ✅ 요구사항 반영

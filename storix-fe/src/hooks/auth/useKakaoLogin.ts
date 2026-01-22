@@ -1,9 +1,9 @@
 // src/hooks/auth/useKakaoLogin.ts
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { kakaoLogin } from '@/api/auth/kakao.api'
+import { kakaoLogin } from '@/lib/api/auth/kakao.api'
 import { useAuthStore } from '@/store/auth.store'
-import type { KakaoLoginResponse } from '@/api/auth/auth.schema'
+import type { KakaoLoginResponse } from '@/lib/api/auth/auth.schema'
 import { AxiosError } from 'axios'
 
 export const useKakaoLogin = () => {

@@ -96,9 +96,9 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
         likeCount: 24,
         commentCount: 12,
         images: [
-          '/works/default-cover.jpg',
-          '/works/default-cover.jpg',
-          '/works/default-cover.jpg',
+          '/image/sample/topicroom-6.webp',
+          '/image/sample/topicroom-5.webp',
+          '/image/sample/topicroom-4.webp',
         ],
       },
       {
@@ -171,7 +171,7 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
         isLiked: true,
         likeCount: 1,
         commentCount: 0,
-        images: ['/works/default-cover.jpg'],
+        images: ['/image/sample/topicroom-5.webp'],
       },
     ],
     [],
@@ -313,7 +313,7 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
                     {post.images.slice(0, 3).map((src, idx) => (
                       <div
                         key={`${post.id}-img-${idx}`}
-                        className="w-[236px] h-[236px] p-2 rounded-[12px] overflow-hidden flex-shrink-0"
+                        className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
                         style={{
                           border: '1px solid var(--color-gray-100)',
                           background: 'lightgray',
@@ -322,9 +322,9 @@ export default function FeedList({ tab, pick }: { tab: Tab; pick: string }) {
                         <Image
                           src={src}
                           alt={`피드 이미지 ${idx + 1}`}
-                          width={220}
-                          height={220}
-                          className="w-full h-full object-cover rounded-[8px]"
+                          width={236}
+                          height={236}
+                          className="w-full h-full object-cover rounded-[12px]"
                         />
                       </div>
                     ))}

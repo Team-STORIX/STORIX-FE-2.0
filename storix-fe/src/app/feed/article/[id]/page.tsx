@@ -81,9 +81,9 @@ export default function FeedArticlePage() {
         likeCount: 24,
         commentCount: 2,
         images: [
-          '/works/default-cover.jpg',
-          '/works/default-cover.jpg',
-          '/works/default-cover.jpg',
+          '/image/sample/topicroom-6.webp',
+          '/image/sample/topicroom-5.webp',
+          '/image/sample/topicroom-4.webp',
         ],
         comments: [
           {
@@ -609,7 +609,7 @@ export default function FeedArticlePage() {
           <button
             type="button"
             onClick={submitComment}
-            className="transition-opacity hover:opacity-70"
+            className="transition-opacity hover:opacity-70 cursor-pointer"
             aria-label="댓글 등록"
             disabled={!canSubmit}
             style={{ opacity: canSubmit ? 1 : 0.4, flexShrink: 0 }}
@@ -681,7 +681,7 @@ function CommentCard({
         <div className="relative" ref={menuRef}>
           <button
             type="button"
-            className="w-6 h-6 transition-opacity hover:opacity-70"
+            className="w-6 h-6 transition-opacity hover:opacity-70 cursor-pointer"
             onClick={() => setOpenMenu((v) => !v)}
             aria-label="댓글 메뉴"
           >

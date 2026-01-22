@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { artistLoginUser } from '@/api/auth/artist-login.api'
+import { artistLoginUser } from '@/lib/api/auth/artist-login.api'
 import { useAuthStore } from '@/store/auth.store'
 
 type Step = 'form' | 'final'
