@@ -71,8 +71,6 @@ const deleteReply = async (boardId: number, replyId: number) => {
 
 /**
  * ✅ "이미 신고"를 duplicated outcome으로 매핑하기 위한 판별기
- * - 서버가 400 또는 409로 주는 케이스 모두 허용
- * - code/message 기반으로 느슨하게 체크
  */
 const isDuplicatedReportError = (err: unknown) => {
   if (!axios.isAxiosError(err)) return false
@@ -82,8 +80,13 @@ const isDuplicatedReportError = (err: unknown) => {
 
   if (status !== 400 && status !== 409) return false
 
-  const msg = String(data?.message ?? '')
-  const code = String(data?.code ?? '').toUpperCase()
+  const msg = String(
+    data?.message ?? data?.result?.message ?? data?.error?.message ?? '',
+  )
+
+  const code = String(
+    data?.code ?? data?.result?.code ?? data?.errorCode ?? '',
+  ).toUpperCase()
 
   return (
     (msg.includes('이미') && msg.includes('신고')) ||
@@ -93,7 +96,6 @@ const isDuplicatedReportError = (err: unknown) => {
 }
 
 // ✅ 남 댓글 신고 API
-// POST /api/v1/feed/reader/board/{boardId}/reply/{replyId}/report
 const reportReply = async (args: {
   boardId: number
   replyId: number
@@ -127,6 +129,10 @@ export default function FeedArticlePage() {
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   const handleBack = () => router.back()
+
+  // ✅ 하단 댓글 입력창(68px) 위로 토스트/완료 올리기
+  // - 68 + 16 = 84 (조금 더 여유 주고 싶으면 96도 OK)
+  const TOAST_BOTTOM = 84
 
   // ----------------------------
   // ✅ 상세 데이터
@@ -360,21 +366,20 @@ export default function FeedArticlePage() {
   // ----------------------------
   const reportBoardFlow = useReportFlow<ReportTargetBoard>({
     onConfirm: async (t) => {
-      try {
-        await reportBoard({
-          boardId: t.boardId,
-          reportedUserId: t.reportedUserId,
-        })
-        return { status: 'ok' as const }
-      } catch (err) {
-        if (isDuplicatedReportError(err)) {
-          return {
-            status: 'duplicated' as const,
-            message: '이미 신고한 게시글입니다.',
-          }
+      const out = await reportBoard({
+        boardId: t.boardId,
+        reportedUserId: t.reportedUserId,
+      })
+
+      // ✅ 핵심: reportBoard가 duplicated를 "반환"하므로 그대로 리턴
+      if (out.status === 'duplicated') {
+        return {
+          status: 'duplicated' as const,
+          message: out.message || '이미 신고한 게시글입니다.',
         }
-        throw err
       }
+
+      return { status: 'ok' as const }
     },
     doneDurationMs: 1500,
     duplicatedMessage: '이미 신고한 게시글입니다.',
@@ -680,7 +685,7 @@ export default function FeedArticlePage() {
         </div>
       </div>
 
-      {/* ✅ 게시글 신고 (toast props 연결) */}
+      {/* ✅ 게시글 신고 */}
       <ReportFlow<ReportTargetBoard>
         isReportOpen={reportBoardFlow.isReportOpen}
         reportTarget={reportBoardFlow.reportTarget}
@@ -693,9 +698,10 @@ export default function FeedArticlePage() {
         toastOpen={reportBoardFlow.toastOpen}
         toastMessage={reportBoardFlow.toastMessage}
         onCloseToast={reportBoardFlow.closeToast}
+        doneBottom={TOAST_BOTTOM}
       />
 
-      {/* ✅ 댓글 신고 (toast props 연결) */}
+      {/* ✅ 댓글 신고 */}
       <ReportFlow<ReportTargetReply>
         isReportOpen={reportReplyFlow.isReportOpen}
         reportTarget={reportReplyFlow.reportTarget}
@@ -708,6 +714,7 @@ export default function FeedArticlePage() {
         toastOpen={reportReplyFlow.toastOpen}
         toastMessage={reportReplyFlow.toastMessage}
         onCloseToast={reportReplyFlow.closeToast}
+        doneBottom={TOAST_BOTTOM}
       />
 
       {/* ✅ 게시글 삭제 */}
@@ -720,6 +727,7 @@ export default function FeedArticlePage() {
         onCloseDone={deleteBoardFlow.closeDeleteDone}
         getProfileImage={(t) => t.profileImage}
         getNickname={(t) => t.nickname}
+        doneBottom={TOAST_BOTTOM}
       />
 
       {/* ✅ 댓글 삭제 */}
@@ -732,6 +740,7 @@ export default function FeedArticlePage() {
         onCloseDone={deleteReplyFlow.closeDeleteDone}
         getProfileImage={(t) => t.profileImage}
         getNickname={(t) => t.nickname}
+        doneBottom={TOAST_BOTTOM}
       />
     </>
   )
@@ -793,7 +802,6 @@ function ReplyCard(props: {
           </div>
         </div>
 
-        {/* ✅ 남/내 댓글 모두 3dots 노출 */}
         <div
           className="relative"
           ref={menuRef}
@@ -817,7 +825,6 @@ function ReplyCard(props: {
             />
           </button>
 
-          {/* ✅ 96x36 이미지 버튼 (내 댓글=삭제 / 남 댓글=신고) */}
           {isMenuOpen && (
             <button
               type="button"
