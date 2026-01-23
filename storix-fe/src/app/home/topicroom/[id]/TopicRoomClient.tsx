@@ -8,10 +8,27 @@ import { useJoinTopicRoom } from '@/hooks/topicroom/useJoinTopicRoom'
 import { useLeaveTopicRoom } from '@/hooks/topicroom/useLeaveTopicRoom'
 import { useTopicRoomInfoById } from '@/hooks/topicroom/useTopicRoomInfoById'
 import { useTopicRoomStomp } from '@/hooks/topicroom/useTopicRoomStomp'
-import TopicRoomMenu from '@/components/topicroom/TopicRoomMenu' // ✅
-import TopicRoomMessages from '@/components/topicroom/TopicRoomMessages' // ✅
-import TopicRoomInputBar from '@/components/topicroom/TopicRoomInputBar' // ✅
-import TopicRoomLeaveModal from '@/components/topicroom/TopicRoomLeaveModal' // ✅
+import { useChatRoomMessagesInfinite } from '@/hooks/topicroom/useChatRoomMessagesInfinite' // ✅
+import { useAuthStore } from '@/store/auth.store' // ✅
+import { getUserIdFromJwt } from '@/lib/api/utils/jwt' // ✅
+
+import TopicRoomMenu from '@/components/topicroom/TopicRoomMenu'
+import TopicRoomMessages, {
+  TopicRoomUiMessage,
+} from '@/components/topicroom/TopicRoomMessages' // ✅
+import TopicRoomInputBar from '@/components/topicroom/TopicRoomInputBar'
+import TopicRoomLeaveModal from '@/components/topicroom/TopicRoomLeaveModal'
+
+const formatKoreanTime = (value?: string | null) => {
+  if (!value) return ''
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return ''
+  return new Intl.DateTimeFormat('ko-KR', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(d)
+}
 
 export default function TopicRoomPage() {
   const router = useRouter()
@@ -20,6 +37,9 @@ export default function TopicRoomPage() {
 
   const roomId = Number(params.id)
   const worksName = sp.get('worksName') ?? ''
+
+  const accessToken = useAuthStore((s) => s.accessToken) // ✅
+  const myUserId = useMemo(() => getUserIdFromJwt(accessToken), [accessToken]) // ✅
 
   // ✅ 입장/퇴장: 컴포넌트에서 API 직접 호출 금지 -> 훅만
   const joinMut = useJoinTopicRoom()
@@ -33,9 +53,29 @@ export default function TopicRoomPage() {
   // ✅ infoQuery(=findTopicRoomInfoById 기반)에서 isJoined를 확인할 수 있어야 함
   const info = infoQuery.data
 
+  const chatRoomId = useMemo(() => {
+    // ✅ 백엔드가 info에 chatRoomId/roomId 같은 필드로 내려주는 경우를 우선 사용
+    const candidate =
+      (info as any)?.chatRoomId ?? (info as any)?.roomId ?? roomId
+
+    const n = Number(candidate)
+    return Number.isFinite(n) && n > 0 ? n : roomId
+  }, [info, roomId]) // ✅
+
   // ✅ STOMP(Native WebSocket) 연결
-  const { status, messages, sendMessage, disconnect } = useTopicRoomStomp({
-    roomId,
+  const {
+    status,
+    messages: stompMessages,
+    sendMessage,
+    disconnect,
+  } = useTopicRoomStomp({
+    roomId: chatRoomId,
+  })
+
+  const historyQuery = useChatRoomMessagesInfinite({
+    roomId: chatRoomId,
+    size: 20,
+    sort: 'createdAt,DESC',
   })
 
   const [text, setText] = useState('')
@@ -46,11 +86,16 @@ export default function TopicRoomPage() {
   const menuRef = useRef<HTMLDivElement | null>(null)
 
   const didJoinRef = useRef(false) // ✅ StrictMode(DEV) 이중 호출 가드
+
+  // ✅ 과거 로드 시 스크롤 점프 방지용
+  const scrollRef = useRef<HTMLDivElement | null>(null) // ✅
+  const prevScrollHeightRef = useRef(0) // ✅
+  const prevScrollTopRef = useRef(0) // ✅
+
   // 1) 입장 호출
   useEffect(() => {
     if (!roomId) return
     if (didJoinRef.current) return
-
     // ✅ info가 아직 없으면 대기 (불필요한 join 방지)
     if (!info) return
 
@@ -98,6 +143,103 @@ export default function TopicRoomPage() {
     }
   }, [info, worksName])
 
+  // ✅ 과거 메시지 → UI 메시지(시간 오름차순으로)
+  const historyUiMessages: TopicRoomUiMessage[] = useMemo(() => {
+    const pages = historyQuery.data?.pages ?? []
+    const flat = pages.flatMap((p) => p.content)
+    const asc = [...flat].reverse()
+
+    return asc.map((m) => ({
+      key: `h-${m.id}`,
+      serverId: m.id,
+      senderId: m.senderId,
+      senderName: m.senderName ?? null,
+      text: m.message,
+      time: formatKoreanTime(m.createdAt),
+      isMine: !!myUserId && m.senderId === myUserId, // ✅ 내/상대 구분
+    }))
+  }, [historyQuery.data, myUserId])
+
+  // ✅ STOMP 메시지 → UI 메시지(형식이 달라도 최대한 안전하게 매핑)
+  const stompUiMessages: TopicRoomUiMessage[] = useMemo(() => {
+    const arr = (stompMessages ?? []) as any[]
+
+    return arr.map((m, idx) => {
+      const senderId = Number(m.senderId ?? m.senderID ?? m.userId ?? m.userID)
+      const serverId = Number(m.id)
+
+      const text = String(m.message ?? m.text ?? '')
+      const createdAt = m.createdAt ?? m.created_at ?? m.time ?? null
+      const time =
+        typeof createdAt === 'string' &&
+        createdAt.includes(':') &&
+        !createdAt.includes('T')
+          ? createdAt
+          : formatKoreanTime(createdAt)
+
+      const key = Number.isFinite(serverId)
+        ? `s-${serverId}`
+        : `s-gen-${idx}-${senderId}-${time}`
+
+      return {
+        key,
+        serverId: Number.isFinite(serverId) ? serverId : undefined,
+        senderId: Number.isFinite(senderId) ? senderId : undefined,
+        senderName: (m.senderName ??
+          m.userName ??
+          m.nickName ??
+          m.nickname ??
+          null) as string | null,
+        text,
+        time,
+        isMine:
+          !!myUserId && Number.isFinite(senderId) && senderId === myUserId, // ✅ 내/상대 구분
+      }
+    })
+  }, [stompMessages, myUserId])
+
+  // ✅ 과거 + 실시간 합치기(중복 제거: serverId 우선)
+  const mergedMessages: TopicRoomUiMessage[] = useMemo(() => {
+    const map = new Map<string, TopicRoomUiMessage>()
+
+    for (const m of historyUiMessages) {
+      const k = m.serverId ? `id-${m.serverId}` : m.key
+      map.set(k, m)
+    }
+
+    for (const m of stompUiMessages) {
+      const k = m.serverId ? `id-${m.serverId}` : m.key
+      map.set(k, m)
+    }
+
+    return Array.from(map.values())
+  }, [historyUiMessages, stompUiMessages])
+
+  // ✅ 상단 도달 시 과거 로드 + 스크롤 위치 유지
+  const onReachTopLoadPrev = () => {
+    const el = scrollRef.current
+    if (!el) return
+    if (!historyQuery.hasNextPage) return
+    if (historyQuery.isFetchingNextPage) return
+
+    prevScrollHeightRef.current = el.scrollHeight // ✅
+    prevScrollTopRef.current = el.scrollTop // ✅
+
+    historyQuery.fetchNextPage() // ✅
+  }
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    if (!historyQuery.isFetchingNextPage && prevScrollHeightRef.current) {
+      const newHeight = el.scrollHeight
+      const diff = newHeight - prevScrollHeightRef.current
+      el.scrollTop = prevScrollTopRef.current + diff
+      prevScrollHeightRef.current = 0
+      prevScrollTopRef.current = 0
+    }
+  }, [historyQuery.isFetchingNextPage, historyUiMessages.length])
+
   const onSend = () => {
     const ok = sendMessage(text)
     if (!ok) return
@@ -107,12 +249,12 @@ export default function TopicRoomPage() {
 
   const onClickReport = () => {
     setMenuOpen(false)
-    router.push(`/home/topicroom/${roomId}/report`) // ✅ UI 변경
+    router.push(`/home/topicroom/${roomId}/report`) // ✅ UI 변경(기존)
   }
 
   const onClickLeave = () => {
     setMenuOpen(false)
-    setLeaveModalOpen(true) // ✅ UI 변경
+    setLeaveModalOpen(true) // ✅ UI 변경(기존)
   }
 
   const onConfirmLeave = async () => {
@@ -130,13 +272,7 @@ export default function TopicRoomPage() {
           onClick={() => router.back()}
           className="h-8 w-8 cursor-pointer"
         >
-          {' '}
-          <Image
-            src="/icons/back.svg"
-            alt="뒤로가기"
-            width={24}
-            height={24}
-          />{' '}
+          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
 
         <div className="flex flex-col items-center">
@@ -150,8 +286,16 @@ export default function TopicRoomPage() {
         {/* 나가기 버튼 -> 케밥 메뉴 */}
         <TopicRoomMenu onReport={onClickReport} onLeave={onClickLeave} />
       </div>
+
       {/* Body */}
-      <TopicRoomMessages messages={messages} />
+      <TopicRoomMessages
+        messages={mergedMessages} // ✅
+        onReachTop={onReachTopLoadPrev} // ✅ UI 변경(상단에서 과거 로드)
+        isFetchingPrev={historyQuery.isFetchingNextPage} // ✅
+        hasPrev={historyQuery.hasNextPage} // ✅
+        scrollRef={scrollRef} // ✅
+      />
+
       {/* Input */}
       <TopicRoomInputBar
         status={status}
@@ -159,14 +303,15 @@ export default function TopicRoomPage() {
         setText={setText}
         onSend={onSend}
         inputRef={inputRef}
-      />{' '}
+      />
+
       {/* 토픽룸 나가기 모달 */}
       <TopicRoomLeaveModal
         open={leaveModalOpen}
         isPending={leaveMut.isPending}
         onClose={() => setLeaveModalOpen(false)}
         onConfirm={onConfirmLeave}
-      />{' '}
+      />
     </div>
   )
 }

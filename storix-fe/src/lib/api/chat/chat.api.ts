@@ -1,11 +1,6 @@
 // src/lib/api/chat/chat.api.ts
 import { apiClient } from '@/lib/api/axios-instance'
-import { z } from 'zod'
-import {
-  ApiEnvelopeSchema,
-  ChatRoomMessagePageSchema,
-  ChatRoomMessageSchema,
-} from './chat.schema'
+import { ApiEnvelopeSchema, ChatRoomMessagePageSchema } from './chat.schema'
 
 // -----------------------------
 // GET /api/v1/chat/rooms/{roomId}/messages (채팅방 과거 메시지 조회)
@@ -16,7 +11,7 @@ export async function getChatRoomMessages(params: {
   roomId: number
   page?: number
   size?: number
-  sort?: string[] // e.g. ['createdAt,DESC']
+  sort?: string
 }) {
   const res = await apiClient.get(
     `/api/v1/chat/rooms/${params.roomId}/messages`,
@@ -24,7 +19,7 @@ export async function getChatRoomMessages(params: {
       params: {
         page: params.page ?? 0,
         size: params.size ?? 20,
-        sort: params.sort ?? ['createdAt,DESC'],
+        sort: params.sort ?? 'createdAt,DESC',
       },
       headers: { accept: '*/*' },
     },

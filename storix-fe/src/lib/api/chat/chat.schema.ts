@@ -18,7 +18,7 @@ export const ChatRoomMessageSchema = z.object({
   senderId: z.preprocess((v) => Number(v), z.number()), // ✅
   senderName: z.string(),
   message: z.string(),
-  messageType: z.string(), // ✅ ENTER/TALK/EXIT 등 서버 enum 확정되면 z.enum으로 강화 가능
+  messageType: z.string().nullish(), // ✅ ENTER/TALK/EXIT 등 서버 enum 확정되면 z.enum으로 강화 가능
   createdAt: z.string().optional().nullish(), // ✅
 })
 

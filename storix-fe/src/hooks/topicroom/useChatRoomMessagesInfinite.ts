@@ -5,15 +5,16 @@ import { getChatRoomMessages } from '@/lib/api/chat'
 export const useChatRoomMessagesInfinite = (params: {
   roomId: number
   size?: number
-  sort?: string[]
+  sort?: string
 }) => {
   const roomId = params.roomId
   const size = params.size ?? 20
-  const sort = params.sort ?? ['createdAt,DESC']
+  const sort = params.sort ?? 'createdAt,DESC'
+  const isValidRoomId = Number.isFinite(roomId) && roomId > 0 // ✅
 
   return useInfiniteQuery({
-    queryKey: ['chat', 'room', 'messages', roomId, size, sort.join('|')], // ✅ 안정적
-    enabled: !!roomId, // ✅
+    queryKey: ['chat', 'room', 'messages', roomId, size, sort],
+    enabled: isValidRoomId,
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
       getChatRoomMessages({
