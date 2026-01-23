@@ -40,6 +40,7 @@ export type UIPost = {
   id: number
   workId: string
   isWorksSelected: boolean
+  isSpoiler: boolean
 
   profileImage: string
   nickname: string
@@ -76,6 +77,8 @@ const mapToUIPost = (item: AllFeedBoardItem | WorksFeedBoardItem): UIPost => {
     id: board.boardId,
     workId: isWorksSelected ? String(board.worksId) : '',
     isWorksSelected,
+
+    isSpoiler: board.isSpoiler === true,
 
     profileImage: profile.profileImageUrl ?? FALLBACK_PROFILE,
     nickname: profile.nickName,

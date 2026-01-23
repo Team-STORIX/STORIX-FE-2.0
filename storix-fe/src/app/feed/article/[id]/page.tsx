@@ -154,6 +154,7 @@ export default function FeedArticlePage() {
     like: { isLiked: boolean; likeCount: number }
     replyCount: number
     writerUserId: number
+    isSpoiler: boolean
   }>(null)
 
   const [loading, setLoading] = useState(false)
@@ -194,6 +195,7 @@ export default function FeedArticlePage() {
           : null,
         like: { isLiked: b.board.isLiked, likeCount: b.board.likeCount },
         replyCount: b.board.replyCount,
+        isSpoiler: b.board.isSpoiler === true,
         writerUserId: b.board.userId,
       })
 
@@ -525,6 +527,7 @@ export default function FeedArticlePage() {
             content={post.content}
             images={post.images}
             works={post.works}
+            isSpoiler={post.isSpoiler}
             isLiked={post.like.isLiked}
             likeCount={post.like.likeCount}
             replyCount={post.replyCount}

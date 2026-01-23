@@ -31,6 +31,10 @@ type Props = {
   content: string
   images: string[]
   works?: Work | null
+
+  // ✅ NEW: spoiler flag
+  isSpoiler?: boolean
+
   isLiked: boolean
   likeCount: number
   replyCount: number
@@ -146,6 +150,7 @@ export default function PostCard({
   content,
   images,
   works,
+  isSpoiler = false,
   isLiked,
   likeCount,
   replyCount,
@@ -169,17 +174,38 @@ export default function PostCard({
   const myUserId = currentUserId ?? me?.userId
   const isMine = myUserId != null && writerUserId === myUserId
 
+  // =========================================================
+  // ✅ Spoiler overlay: 1st click reveals, next click opens detail
+  // =========================================================
+  const [spoilerRevealed, setSpoilerRevealed] = useState(false)
+  const isSpoilerHidden = isSpoiler && !spoilerRevealed
+
+  const revealSpoiler = (e: React.SyntheticEvent) => {
+    e.stopPropagation()
+    setSpoilerRevealed(true)
+  }
+
   const bodyProps = clickable
     ? {
         role: 'button' as const,
         tabIndex: 0,
         'aria-label': '게시글 상세 보기',
-        onClick: onClickDetail,
+        onClick: (e: React.MouseEvent) => {
+          if (isSpoilerHidden) {
+            e.preventDefault()
+            revealSpoiler(e)
+            return
+          }
+          onClickDetail?.()
+        },
         onKeyDown: (e: React.KeyboardEvent) => {
-          if (!onClickDetail) return
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
-            onClickDetail()
+            if (isSpoilerHidden) {
+              revealSpoiler(e)
+              return
+            }
+            onClickDetail?.()
           }
         },
         className: 'cursor-pointer transition-opacity hover:opacity-90',
@@ -333,90 +359,142 @@ export default function PostCard({
 
       {/* 본문/이미지/반응 */}
       <div {...(bodyProps as any)}>
-        {images.length > 0 && (
-          <div className="mt-4 px-4">
-            <div className="overflow-x-auto">
-              <div className="flex gap-3">
-                {images.slice(0, 3).map((src, idx) => (
-                  <div
-                    key={`${boardId}-img-${idx}`}
-                    className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
-                    style={{
-                      border: '1px solid var(--color-gray-100)',
-                      background: 'lightgray',
-                    }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`피드 이미지 ${idx + 1}`}
-                      width={236}
-                      height={236}
-                      className="w-full h-full object-cover rounded-[8px]"
-                    />
+        <div className="relative">
+          {/* 실제 컨텐츠 (스포일러면 blur) */}
+          <div className={isSpoilerHidden ? 'select-none' : ''}>
+            {images.length > 0 && (
+              <div className="mt-4 px-4">
+                <div className="overflow-x-auto">
+                  <div className="flex gap-3">
+                    {images.slice(0, 3).map((src, idx) => (
+                      <div
+                        key={`${boardId}-img-${idx}`}
+                        className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
+                        style={{
+                          border: '1px solid var(--color-gray-100)',
+                          background: 'lightgray',
+                        }}
+                      >
+                        <Image
+                          src={src}
+                          alt={`피드 이미지 ${idx + 1}`}
+                          width={236}
+                          height={236}
+                          className={[
+                            'w-full h-full object-cover rounded-[8px]',
+                            isSpoilerHidden ? 'blur-md' : '',
+                          ].join(' ')}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-3 px-4">
+              <p
+                className={[
+                  variant === 'list'
+                    ? 'text-[14px] font-medium leading-[140%] line-clamp-3 pr-10'
+                    : 'whitespace-pre-wrap body-2 pr-10',
+                  isSpoilerHidden ? 'blur-md' : '',
+                ].join(' ')}
+                style={{ color: 'var(--color-gray-800)' }}
+              >
+                {content}
+              </p>
+            </div>
+
+            <div className={isSpoilerHidden ? 'blur-md' : ''}>
+              <div className="mt-5 px-4 flex items-center">
+                <button
+                  type="button"
+                  className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleLike()
+                  }}
+                  aria-label="좋아요"
+                >
+                  <Image
+                    src={
+                      isLiked
+                        ? '/icons/icon-like-pink.svg'
+                        : '/icons/icon-like.svg'
+                    }
+                    alt="좋아요"
+                    width={24}
+                    height={24}
+                  />
+                  {likeCount > 0 && (
+                    <span
+                      className="ml-1 text-[14px] font-bold leading-[140%]"
+                      style={{ color: 'var(--color-gray-500)' }}
+                    >
+                      {likeCount}
+                    </span>
+                  )}
+                </button>
+
+                <div className="flex items-center ml-4">
+                  <Image
+                    src="/icons/icon-comment.svg"
+                    alt="댓글"
+                    width={24}
+                    height={24}
+                  />
+                  {replyCount > 0 && (
+                    <span
+                      className="ml-1 text-[14px] font-bold leading-[140%]"
+                      style={{ color: 'var(--color-gray-500)' }}
+                    >
+                      {replyCount}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        )}
 
-        <div className="mt-3 px-4">
-          <p
-            className={
-              variant === 'list'
-                ? 'text-[14px] font-medium leading-[140%] line-clamp-3 pr-10'
-                : 'whitespace-pre-wrap body-2 pr-10'
-            }
-            style={{ color: 'var(--color-gray-800)' }}
-          >
-            {content}
-          </p>
-        </div>
+          {/* 스포일러 덮개 */}
+          {isSpoilerHidden && (
+            <div
+              className="absolute inset-0 z-10 flex items-center justify-center"
+              onClick={revealSpoiler}
+              onPointerDown={(e) => e.stopPropagation()}
+              role="button"
+              tabIndex={0}
+              aria-label="스포일러 보기"
+            >
+              <div
+                className="absolute inset-0"
+                style={{ background: 'rgba(255,255,255,0.70)' }}
+              />
 
-        <div className="mt-5 px-4 flex items-center">
-          <button
-            type="button"
-            className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleLike()
-            }}
-            aria-label="좋아요"
-          >
-            <Image
-              src={
-                isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'
-              }
-              alt="좋아요"
-              width={24}
-              height={24}
-            />
-            {likeCount > 0 && (
-              <span
-                className="ml-1 text-[14px] font-bold leading-[140%]"
-                style={{ color: 'var(--color-gray-500)' }}
+              <div
+                className="relative px-4 py-3 rounded-[12px] text-center"
+                style={{
+                  border: '1px solid var(--color-gray-100)',
+                  background: 'var(--color-white)',
+                  boxShadow: '0 0 8px rgba(0,0,0,0.08)',
+                }}
               >
-                {likeCount}
-              </span>
-            )}
-          </button>
-
-          <div className="flex items-center ml-4">
-            <Image
-              src="/icons/icon-comment.svg"
-              alt="댓글"
-              width={24}
-              height={24}
-            />
-            {replyCount > 0 && (
-              <span
-                className="ml-1 text-[14px] font-bold leading-[140%]"
-                style={{ color: 'var(--color-gray-500)' }}
-              >
-                {replyCount}
-              </span>
-            )}
-          </div>
+                <p
+                  className="text-[14px] font-semibold leading-[140%]"
+                  style={{ color: 'var(--color-gray-900)' }}
+                >
+                  스포일러가 포함된 게시글입니다
+                </p>
+                <p
+                  className="mt-1 text-[12px] font-medium leading-[140%]"
+                  style={{ color: 'var(--color-gray-500)' }}
+                >
+                  탭해서 내용을 확인하세요
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
