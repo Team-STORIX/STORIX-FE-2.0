@@ -11,6 +11,8 @@ export interface TopicRoomData {
   title: string
   subtitle: string
   memberCount: number
+  roomId?: number // ✅
+  worksName?: string // ✅
 }
 
 interface TopicRoomCoverCardProps {
@@ -18,6 +20,15 @@ interface TopicRoomCoverCardProps {
 }
 
 export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
+  const roomId = room.roomId ?? Number(room.id) // ✅
+  const worksName = room.worksName ?? '' // ✅
+  const href =
+    Number.isFinite(roomId) && roomId > 0
+      ? {
+          pathname: `/home/topicroom/${roomId}`,
+          query: worksName ? { worksName } : {},
+        } // ✅
+      : '/home/topicroom' // ✅
   return (
     <div className="relative h-full w-[266px] flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
       {/* 배경 이미지 */}
@@ -51,7 +62,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
 
       {/* 입장 버튼 */}
       <Link
-        href="/home/topicroom"
+        href={href}
         className="
           absolute bottom-3 right-3
           flex h-10 w-10 items-center justify-center

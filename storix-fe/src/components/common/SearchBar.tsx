@@ -13,10 +13,24 @@ type SearchBarProps = {
 
 export default function SearchBar({
   placeholder = '좋아하는 작품/작가를 검색하세요',
-  onBackClick,
   onSearchClick,
 }: SearchBarProps) {
-  const [keyword, setKeyword] = useState('')
+  const [keyword, setKeyword] = useState(defaultKeyword)
+  const router = useRouter()
+  const pathname = usePathname()
+
+  // defaultKeyword 변경 시 input도 갱신
+  useEffect(() => {
+    setKeyword(defaultKeyword)
+  }, [defaultKeyword])
+
+  const href =
+    backHref ??
+    (pathname.startsWith('/home')
+      ? '/home'
+      : pathname.startsWith('/library/search')
+        ? '/library/list'
+        : '/')
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearchClick) {
