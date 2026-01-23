@@ -63,6 +63,19 @@ export const TopicRoomMemberSchema = z.object({
   profileImageUrl: z.string(),
 })
 
+/** 토픽룸 사용자 신고 (POST /api/v1/topic-rooms/{roomId}/report) */
+export const TopicRoomReportRequestSchema = z.object({
+  reportedUserId: z.number(),
+  reason: z.string(), // ✅ 서버 enum이 확정되면 z.enum([...])로 강화
+  otherReason: z.string().nullish(), // ✅ 기타 사유(최대 100자) - UI에서 제한
+})
+
+export type TopicRoomReportRequest = z.infer<
+  typeof TopicRoomReportRequestSchema
+>
+
 export type TopicRoomMember = z.infer<typeof TopicRoomMemberSchema>
 export const TopicRoomSearchSliceSchema = SliceSchema(TopicRoomItemSchema)
 export type TopicRoomSearchSlice = z.infer<typeof TopicRoomSearchSliceSchema>
+export const TopicRoomReportResultSchema = z.string()
+export type TopicRoomReportResult = z.infer<typeof TopicRoomReportResultSchema>
