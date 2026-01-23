@@ -449,58 +449,86 @@ export default function FeedPageClient() {
         <Topbar activeTab={tab} onChange={onChangeTab} />
       </div>
 
-      <HorizontalPicker items={items} selectedId={pick} onSelect={onPick} />
-
-      {/* (선택) 관심작품 로딩 안내를 넣고 싶으면 여기 사용 */}
-      {tab === 'works' && favLoading && (
-        <div
-          className="px-4 py-2 text-[12px]"
-          style={{ color: 'var(--color-gray-500)' }}
-        >
-          관심 작품 불러오는 중...
-        </div>
+      {tab !== 'writers' && (
+        <HorizontalPicker items={items} selectedId={pick} onSelect={onPick} />
       )}
 
-      <FeedList
-        tab={tab}
-        pick={pick}
-        posts={posts}
-        currentUserId={myUserId}
-        menu={menu}
-        onOpenReport={(post) => {
-          openReportModal(post)
-          menu.close()
-        }}
-        onOpenDelete={(post) => {
-          openDeleteModal(post)
-          menu.close()
-        }}
-        onToggleLike={(post) => {
-          handleToggleLike(post)
-        }}
-        onClickWorksArrow={(post) => {
-          // TODO: 작품 상세 이동이 필요하면 연결
-        }}
-      />
+      {/* =========================
+          writers 탭: 준비중 화면
+         ========================= */}
+      {tab === 'writers' ? (
+        <div className="flex flex-col items-center" style={{ marginTop: 196 }}>
+          <img
+            src="/icons/big-star-pink.svg"
+            alt=""
+            width={100}
+            height={100}
+            draggable={false}
+          />
 
-      {/* ✅ sentinel */}
-      <div ref={sentinelRef} className="h-10" />
+          <div className="mt-[22px] text-center">
+            <p className="heading-2 text-[var(--gray-900,#100F0F)]">
+              오픈 준비 중이에요
+            </p>
+            <p className="heading-2 text-[var(--gray-900,#100F0F)]">
+              조금만 기다려주세요
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* works 탭 기존 피드 */}
+          {tab === 'works' && favLoading && (
+            <div
+              className="px-4 py-2 text-[12px]"
+              style={{ color: 'var(--color-gray-500)' }}
+            >
+              관심 작품 불러오는 중...
+            </div>
+          )}
 
-      {errorMsg && (
-        <div
-          className="px-4 py-3 text-[13px]"
-          style={{ color: 'var(--color-gray-600)' }}
-        >
-          {errorMsg}
-        </div>
-      )}
-      {loading && (
-        <div
-          className="px-4 py-3 text-[13px]"
-          style={{ color: 'var(--color-gray-600)' }}
-        >
-          불러오는 중...
-        </div>
+          <FeedList
+            tab={tab}
+            pick={pick}
+            posts={posts}
+            currentUserId={myUserId}
+            menu={menu}
+            onOpenReport={(post) => {
+              openReportModal(post)
+              menu.close()
+            }}
+            onOpenDelete={(post) => {
+              openDeleteModal(post)
+              menu.close()
+            }}
+            onToggleLike={(post) => {
+              handleToggleLike(post)
+            }}
+            onClickWorksArrow={(post) => {
+              // TODO
+            }}
+          />
+
+          {/* sentinel */}
+          <div ref={sentinelRef} className="h-10" />
+
+          {errorMsg && (
+            <div
+              className="px-4 py-3 text-[13px]"
+              style={{ color: 'var(--color-gray-600)' }}
+            >
+              {errorMsg}
+            </div>
+          )}
+          {loading && (
+            <div
+              className="px-4 py-3 text-[13px]"
+              style={{ color: 'var(--color-gray-600)' }}
+            >
+              불러오는 중...
+            </div>
+          )}
+        </>
       )}
 
       <ReportFlow<UIPost>

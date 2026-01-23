@@ -1,6 +1,8 @@
 // src/app/profile/fix/components/nickname.tsx
 'use client'
 
+// 1월23일 20:15 최신코드 냠냠
+
 import Image from 'next/image'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { checkProfileNicknameValid } from '@/api/profile/readerNickname.api'
