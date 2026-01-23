@@ -338,8 +338,7 @@ export default function FeedPageClient() {
           // TODO: 좋아요 토글 API 연결 시 여기서 처리
         }}
         onClickWorksArrow={(post) => {
-          // TODO: 작품 상세 이동이 필요하면 연결
-          // router.push(`/works/${post.workId}`)
+          router.push(`/library/works/${post.workId}`)
         }}
       />
 
