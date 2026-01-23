@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
-import WriteBottomSheet from '@/components/home/bottomsheet/WriteBottomSheet'
 import IconFeed from '@/public/common/icons/navbar/Icon-Feed'
 import IconHome from '@/public/common/icons/navbar/Icon-Home'
 import IconLibrary from '@/public/common/icons/navbar/Icon-Library'
@@ -124,7 +123,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                     setIsPlusOpen(false)
                     setShowReviewSheet(true)
                   }}
-                  className="flex w-full items-center justify-between border-b border-gray-200 px-4 py-3 hover:opacity-70"
+                  className="flex w-full items-center justify-between px-4 py-3 border-b border-gray-200 hover:opacity-70 cursor-pointer"
                 >
                   <span className="body-1 text-gray-800">리뷰 작성</span>
                   <Image
@@ -139,9 +138,9 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                   type="button"
                   onClick={() => {
                     setIsPlusOpen(false)
-                    setShowFeedSheet(true)
+                    router.push('/feed/write')
                   }}
-                  className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70"
+                  className="flex w-full items-center justify-between px-4 py-3 hover:opacity-70 cursor-pointer"
                 >
                   <span className="body-1 text-gray-800">피드 작성</span>
                   <Image
@@ -164,7 +163,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
               'w-14 h-14',
               'cursor-pointer', // ✅ 다른 아이콘처럼 커서 변경
               'transition-transform duration-200 ease-in-out',
-              'hover:opacity-80',
+              'hover:opacity-80 cursor-pointer',
               isPlusOpen ? 'rotate-90' : 'rotate-0',
             ].join(' ')}
             style={{ bottom: 50 }}
@@ -185,9 +184,6 @@ export default function NavBar({ active, onChange }: NavBarProps) {
 
       {showReviewSheet && (
         <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
-      )}
-      {showFeedSheet && (
-        <WriteBottomSheet onClose={() => setShowFeedSheet(false)} />
       )}
     </>
   )

@@ -2,7 +2,13 @@
 'use client'
 
 import Image from 'next/image'
-import React from 'react'
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useProfileStore } from '@/store/profile.store'
 
 type Work = {
@@ -18,39 +24,117 @@ type Variant = 'list' | 'detail'
 
 type Props = {
   variant?: Variant
-
   boardId: number
-
   profileImageUrl: string
   nickName: string
   createdAt: string
-
   content: string
   images: string[]
   works?: Work | null
-
   isLiked: boolean
   likeCount: number
   replyCount: number
-
   onClickDetail?: () => void
   onToggleLike: () => void
-
   onOpenReport: () => void
-
   isMenuOpen: boolean
   onToggleMenu: () => void
   menuRef: (el: HTMLDivElement | null) => void
-
   onClickWorksArrow?: () => void
-
   writerUserId: number
-
-  // ✅ delete (내 글일 때)
   onOpenDelete?: () => void
-
-  // ✅ (추가) 부모에서 내 userId를 넘기면 이걸로 isMine 판정 고정
   currentUserId?: number
+}
+
+function HashtagRow({ tags }: { tags: string[] }) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const measureRef = useRef<HTMLDivElement | null>(null)
+  const [visibleCount, setVisibleCount] = useState(tags.length)
+
+  const recompute = () => {
+    const container = containerRef.current
+    const measure = measureRef.current
+    if (!container || !measure) return
+
+    const containerW = container.clientWidth
+    const nodes = Array.from(measure.children) as HTMLElement[]
+
+    let used = 0
+    let count = 0
+    const gap = 4 // gap-1 = 0.25rem = 4px
+
+    for (let i = 0; i < nodes.length; i++) {
+      const w = nodes[i].offsetWidth
+      const next = count === 0 ? w : used + gap + w
+      if (next <= containerW) {
+        used = next
+        count++
+      } else {
+        break
+      }
+    }
+
+    setVisibleCount(count)
+  }
+
+  // tags 바뀌면 다시 계산
+  useLayoutEffect(() => {
+    setVisibleCount(tags.length)
+    // 다음 프레임에 실제 DOM 폭 측정
+    requestAnimationFrame(recompute)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tags.join('|')])
+
+  // 리사이즈 대응(PWA/회전/뷰포트 변경)
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => recompute())
+    ro.observe(el)
+    return () => ro.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const visibleTags = useMemo(
+    () => tags.slice(0, visibleCount),
+    [tags, visibleCount],
+  )
+
+  if (!tags.length) return null
+
+  return (
+    <div className="w-full max-w-full overflow-hidden" ref={containerRef}>
+      {/* 실제 렌더 */}
+      <div className="inline-flex gap-1 whitespace-nowrap">
+        {visibleTags.map((tag, index) => (
+          <span
+            key={`${tag}-${index}`}
+            className="shrink-0 px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]
+              border border-[var(--color-gray-100)] bg-[var(--color-gray-50)] text-[var(--color-gray-800)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* 폭 측정용(화면에는 안 보임) */}
+      <div
+        ref={measureRef}
+        className="absolute -left-[9999px] -top-[9999px] inline-flex gap-1 whitespace-nowrap pointer-events-none opacity-0"
+        aria-hidden="true"
+      >
+        {tags.map((tag, index) => (
+          <span
+            key={`m-${tag}-${index}`}
+            className="shrink-0 px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]
+              border border-[var(--color-gray-100)] bg-[var(--color-gray-50)] text-[var(--color-gray-800)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function PostCard({
@@ -81,10 +165,8 @@ export default function PostCard({
   const showWorks =
     !!works?.thumbnailUrl && !!works?.worksName && !!works?.artistName
 
-  // ✅ 기본은 store me.userId, but currentUserId가 오면 그걸 우선 사용
   const me = useProfileStore((s) => s.me)
   const myUserId = currentUserId ?? me?.userId
-
   const isMine = myUserId != null && writerUserId === myUserId
 
   const bodyProps = clickable
@@ -168,7 +250,6 @@ export default function PostCard({
               className="absolute right-0 top-[30px] z-20"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* ✅ 96x36 고정 + 내글이면 delete-dropdown, 아니면 comment-dropdown */}
               <button
                 type="button"
                 className="block w-[96px] h-[36px] rounded-[4px] overflow-hidden transition-opacity hover:opacity-90"
@@ -176,7 +257,6 @@ export default function PostCard({
                 onClick={(e) => {
                   e.stopPropagation()
                   onToggleMenu()
-
                   if (isMine) onOpenDelete?.()
                   else onOpenReport()
                 }}
@@ -203,7 +283,7 @@ export default function PostCard({
       {/* 작품 정보(클릭 제외) */}
       {showWorks && (
         <div className="mt-5 px-4" onClick={(e) => e.stopPropagation()}>
-          <div className="p-3 rounded-xl flex gap-3 border border-[var(--color-gray-100)] bg-[var(--color-white)]">
+          <div className="p-3 rounded-xl flex items-center gap-3 border border-[var(--color-gray-100)] bg-[var(--color-white)]">
             {/* 썸네일 */}
             <div className="w-[62px] h-[83px] rounded bg-[var(--color-gray-200)] shrink-0 overflow-hidden">
               <Image
@@ -216,8 +296,8 @@ export default function PostCard({
             </div>
 
             {/* 텍스트 + 화살표 */}
-            <div className="flex w-full items-stretch">
-              <div className="flex flex-col gap-1 min-w-0">
+            <div className="flex w-full items-stretch min-w-0">
+              <div className="flex flex-col gap-1 min-w-0 w-full">
                 <p className="text-[16px] font-medium leading-[140%] truncate text-[var(--color-black)]">
                   {works.worksName}
                 </p>
@@ -226,18 +306,8 @@ export default function PostCard({
                   {works.artistName} · {works.worksType} · {works.genre}
                 </p>
 
-                {/* 해시태그: 2줄까지만 보이게 */}
-                <div className="flex flex-wrap gap-1 max-h-[56px] overflow-hidden">
-                  {works.hashtags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]
-                           border border-[var(--color-gray-100)] bg-[var(--color-gray-50)] text-[var(--color-gray-800)]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {/* ✅ 잘리는 해시태그는 아예 렌더 X */}
+                <HashtagRow tags={works.hashtags ?? []} />
               </div>
 
               <button
