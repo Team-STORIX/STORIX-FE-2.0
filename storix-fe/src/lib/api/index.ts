@@ -9,6 +9,7 @@ export * from './search'
 export * from './works'
 export * from './plus'
 export * from './topicroom'
+export * from './chat'
 export * from './library'
 
 // etc
