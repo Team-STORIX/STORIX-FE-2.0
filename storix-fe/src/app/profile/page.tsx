@@ -11,7 +11,7 @@ import Hashtag from './components/hashtag'
 import NavBar from '@/components/common/NavBar'
 
 import { useProfileStore } from '@/store/profile.store'
-import { getMyProfile } from '@/lib/api/profile/profile.api'
+import { getMyProfile } from '@/api/profile/profile.api'
 
 export default function ProfilePage() {
   const me = useProfileStore((s) => s.me)

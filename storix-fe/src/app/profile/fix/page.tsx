@@ -11,12 +11,12 @@ import {
   updateProfileNickname,
   updateProfileDescription,
   updateProfileImage,
-} from '@/lib/api/profile/profile.api'
+} from '@/api/profile/profile.api'
 import { useProfileStore } from '@/store/profile.store'
 import {
   createProfileImagePresignedPutUrl,
   type ImageContentType,
-} from '@/lib/api/image/image.api'
+} from '@/api/image/image.api'
 
 export default function ProfileFixPage() {
   const router = useRouter()

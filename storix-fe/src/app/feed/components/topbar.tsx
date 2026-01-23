@@ -12,7 +12,7 @@ export default function Topbar({ activeTab, onChange }: TopbarProps) {
       {/* 관심 작품 */}
       <button
         onClick={() => onChange('works')}
-        className="text-[24px] font-bold leading-[140%] transition-opacity hover:opacity-70 cursor-pointer"
+        className="text-[24px] font-bold leading-[140%] transition-opacity hover:opacity-70"
         style={{
           color:
             activeTab === 'works'
@@ -27,7 +27,7 @@ export default function Topbar({ activeTab, onChange }: TopbarProps) {
       {/* 관심 작가 */}
       <button
         onClick={() => onChange('writers')}
-        className="text-[24px] font-bold leading-[140%] transition-opacity hover:opacity-70 cursor-pointer"
+        className="text-[24px] font-bold leading-[140%] transition-opacity hover:opacity-70"
         style={{
           color:
             activeTab === 'writers'
