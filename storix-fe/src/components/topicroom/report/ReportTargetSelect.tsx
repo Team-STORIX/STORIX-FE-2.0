@@ -1,6 +1,7 @@
 // src/components/topicroom/report/ReportTargetSelect.tsx
 'use client'
 
+import Image from 'next/image'
 import { useMemo } from 'react'
 
 type Member = {
@@ -66,7 +67,12 @@ export default function ReportTargetSelect({
               {labelText}
             </span>
           </div>
-          <span className="text-gray-400">⌄</span>
+          <Image
+            src="/icons/arrow-down.svg"
+            alt="드롭다운 열기"
+            width={24}
+            height={24}
+          />
         </button>
         {!hasTarget && (
           <p className="mt-2 caption-1 text-[var(--color-magenta-300)]">

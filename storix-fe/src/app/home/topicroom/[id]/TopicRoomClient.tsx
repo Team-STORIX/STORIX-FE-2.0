@@ -1,7 +1,6 @@
 // src/app/home/topicroom/[id]/TopicRoomClient.tsx
 'use client'
 
-import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useJoinTopicRoom } from '@/hooks/topicroom/useJoinTopicRoom'
@@ -12,12 +11,12 @@ import { useChatRoomMessagesInfinite } from '@/hooks/topicroom/useChatRoomMessag
 import { useAuthStore } from '@/store/auth.store' // ✅
 import { getUserIdFromJwt } from '@/lib/api/utils/jwt' // ✅
 
-import TopicRoomMenu from '@/components/topicroom/TopicRoomMenu'
 import TopicRoomMessages, {
   TopicRoomUiMessage,
 } from '@/components/topicroom/TopicRoomMessages' // ✅
 import TopicRoomInputBar from '@/components/topicroom/TopicRoomInputBar'
 import TopicRoomLeaveModal from '@/components/topicroom/TopicRoomLeaveModal'
+import TopicRoomTopBar from '@/components/topicroom/TopicRoomTopBar'
 
 const formatKoreanTime = (value?: string | null) => {
   if (!value) return ''
@@ -79,11 +78,9 @@ export default function TopicRoomPage() {
   })
 
   const [text, setText] = useState('')
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
-  const [menuOpen, setMenuOpen] = useState(false) // ✅ UI 변경
-  const [leaveModalOpen, setLeaveModalOpen] = useState(false) // ✅ UI 변경
-  const menuRef = useRef<HTMLDivElement | null>(null)
+  const [leaveModalOpen, setLeaveModalOpen] = useState(false)
 
   const didJoinRef = useRef(false) // ✅ StrictMode(DEV) 이중 호출 가드
 
@@ -114,19 +111,6 @@ export default function TopicRoomPage() {
     if (!leaveMut.isSuccess) return
     router.back()
   }, [leaveMut.isSuccess, router])
-
-  // ✅ 메뉴 바깥 클릭 시 닫기
-  useEffect(() => {
-    if (!menuOpen) return
-    const onDown = (e: MouseEvent) => {
-      const el = menuRef.current
-      if (!el) return
-      if (el.contains(e.target as Node)) return
-      setMenuOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [menuOpen])
 
   const header = useMemo(() => {
     if (info) {
@@ -248,13 +232,11 @@ export default function TopicRoomPage() {
   }
 
   const onClickReport = () => {
-    setMenuOpen(false)
-    router.push(`/home/topicroom/${roomId}/report`) // ✅ UI 변경(기존)
+    router.push(`/home/topicroom/${roomId}/report`) // ✅
   }
 
   const onClickLeave = () => {
-    setMenuOpen(false)
-    setLeaveModalOpen(true) // ✅ UI 변경(기존)
+    setLeaveModalOpen(true) // ✅
   }
 
   const onConfirmLeave = async () => {
@@ -266,26 +248,14 @@ export default function TopicRoomPage() {
   return (
     <div className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       {/* Top */}
-      <div className="relative flex h-14 items-center justify-between px-4">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="h-8 w-8 cursor-pointer"
-        >
-          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
-        </button>
-
-        <div className="flex flex-col items-center">
-          <div className="flex items-center gap-1">
-            <span className="body-2">{header.title}</span>
-            <span className="caption-1 text-gray-400">{header.count}</span>
-          </div>
-          <span className="caption-1 text-gray-400">{header.sub}</span>
-        </div>
-
-        {/* 나가기 버튼 -> 케밥 메뉴 */}
-        <TopicRoomMenu onReport={onClickReport} onLeave={onClickLeave} />
-      </div>
+      <TopicRoomTopBar
+        title={header.title}
+        subtitle={header.sub}
+        count={header.count}
+        onBack={() => router.back()}
+        onReport={onClickReport}
+        onLeave={onClickLeave}
+      />
 
       {/* Body */}
       <TopicRoomMessages

@@ -64,22 +64,39 @@ export default function TopicRoomMessages({
       {messages.map((m) => (
         <div key={m.key} className="mb-3">
           <div className={m.isMine ? 'flex justify-end' : 'flex justify-start'}>
-            <div className="flex items-end gap-2 max-w-[85%]">
-              <div
-                className={[
-                  'max-w-[70%] rounded-2xl px-4 py-3 body-2',
-                  m.isMine
-                    ? 'bg-[var(--color-magenta-300)] text-white'
-                    : 'border border-gray-100 bg-white text-gray-800',
-                ].join(' ')}
-              >
-                {m.text}
+            {m.isMine ? (
+              <div className="flex items-end gap-2 w-full justify-end">
+                {!!m.time && (
+                  <span className="caption-1 text-gray-400">{m.time}</span>
+                )}{' '}
+                {/* ✅ */}
+                <div
+                  className={[
+                    'max-w-[70%] rounded-2xl px-3 py-2 body-2',
+                    'bg-[var(--color-magenta-300)] text-white',
+                    `rounded-b-xl rounded-tl-xl rounded-tr-sm`,
+                  ].join(' ')}
+                >
+                  {m.text}
+                </div>
               </div>
-              {!!m.time && (
-                <span className="caption-1 text-gray-400">{m.time}</span>
-              )}{' '}
-              {/* ✅ */}
-            </div>
+            ) : (
+              <div className="flex items-end gap-2">
+                <div
+                  className={[
+                    `max-w-[70%] rounded-2xl px-3 py-2 body-2`,
+                    `border border-gray-300 bg-gray-50 text-gray-900`,
+                    `rounded-b-xl rounded-tr-xl rounded-tl-sm`,
+                  ].join(' ')}
+                >
+                  {m.text}
+                </div>
+                {!!m.time && (
+                  <span className="caption-1 text-gray-400">{m.time}</span>
+                )}{' '}
+                {/* ✅ */}
+              </div>
+            )}
           </div>
         </div>
       ))}

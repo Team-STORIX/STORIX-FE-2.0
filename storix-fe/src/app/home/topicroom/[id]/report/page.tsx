@@ -85,7 +85,7 @@ export default function TopicRoomReportPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <ul className="caption-1 text-gray-500 list-disc pl-5 space-y-1">
+        <ul className="caption-1 bg-gray-50 text-gray-500 list-disc pl-5 -my-4 -mx-4 px-4 py-4 space-y-1">
           <li>
             대화 중 불쾌한 상황이 발생했다면, 다른 유저를 신고할 수 있어요
           </li>

@@ -69,8 +69,11 @@ export default function ReportReasonSelect({
           className="w-full h-[120px] rounded-xl border border-gray-200 bg-white px-4 py-3 body-2 outline-none resize-none"
           disabled={!isOther} // ✅ UI 변경
         />
-        <span className="absolute bottom-3 right-4 caption-1 text-[var(--color-magenta-300)]">
-          {otherLen}/100
+        <span className="absolute bottom-3 right-11 caption-1 text-[var(--color-magenta-300)]">
+          {otherLen}
+        </span>
+        <span className="absolute bottom-3 right-4 caption-1 text-gray-300">
+          /100
         </span>
       </div>
 
