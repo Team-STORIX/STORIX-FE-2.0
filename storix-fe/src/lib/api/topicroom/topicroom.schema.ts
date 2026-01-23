@@ -57,11 +57,19 @@ export const MyTopicRoomSliceSchema = SliceSchema(TopicRoomItemSchema)
 export type MyTopicRoomSlice = z.infer<typeof MyTopicRoomSliceSchema>
 
 /** 토픽룸 참여자 목록 */
-export const TopicRoomMemberSchema = z.object({
-  userId: z.number(),
-  nickName: z.string(),
-  profileImageUrl: z.string(),
-})
+export const TopicRoomMemberSchema = z
+  .object({
+    userId: z.preprocess((v) => Number(v), z.number()), // ✅ 숫자/문자열 모두 대응
+    nickName: z.string().optional(), // ✅
+    nickname: z.string().optional(), // ✅ 백엔드 키 변동 대비
+    profileImageUrl: z.string().nullable().optional(), // ✅ null/undefined 허용
+    profileImage: z.string().nullable().optional(), // ✅ 백엔드 키 변동 대비
+  })
+  .transform((m) => ({
+    userId: m.userId,
+    nickName: m.nickName ?? m.nickname ?? '', // ✅ 최종적으로 nickName 보장
+    profileImageUrl: m.profileImageUrl ?? m.profileImage ?? null, // ✅
+  }))
 
 /** 토픽룸 사용자 신고 (POST /api/v1/topic-rooms/{roomId}/report) */
 export const TopicRoomReportRequestSchema = z.object({
