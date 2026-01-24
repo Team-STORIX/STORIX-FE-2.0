@@ -172,9 +172,6 @@ export default function NavBar({ active, onChange }: NavBarProps) {
       {showReviewSheet && (
         <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
       )}
-      {showFeedSheet && (
-        <WriteBottomSheet onClose={() => setShowFeedSheet(false)} />
-      )}
     </>
   )
 }

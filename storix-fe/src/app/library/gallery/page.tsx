@@ -15,7 +15,7 @@ import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBot
 import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
 import type { LibraryReviewSort } from '@/lib/api/library/library.api'
 
-type SortKey = 'DEFAULT' | 'REVIEW' | 'RATING'
+type SortKey = 'DEFAULT' | 'RATING' | 'RATING_ASC'
 
 type UILibraryWork = {
   id: number
@@ -32,9 +32,8 @@ export default function LibraryGalleryPage() {
   //  Warning 버튼 누르면 바텀시트 열기
   const [showReviewSheet, setShowReviewSheet] = useState(false)
 
-  //서버 정렬은 LATEST / DESC_RATING만 사용
   const apiSort: LibraryReviewSort = useMemo(() => {
-    if (sort === 'RATING') return 'DESC_RATING'
+    if (sort === 'RATING' || sort === 'RATING_ASC') return 'DESC_RATING'
     return 'LATEST'
   }, [sort])
 
@@ -75,12 +74,12 @@ export default function LibraryGalleryPage() {
       }
     })
 
-    // REVIEW 정렬은 API가 지원하지 않아서 클라이언트에서만 보정
-    if (sort === 'REVIEW') {
-      return [...mapped].sort((a, b) => b.reviewCount - a.reviewCount)
+    // 별점 낮은 순은 "별점 높은 순(DESC)" 결과를 역순
+    if (sort === 'RATING_ASC') {
+      return [...mapped].reverse() // ✅
     }
 
-    // DEFAULT / RATING은 서버 정렬을 신뢰(list와 동일)s
+    // DEFAULT / RATING은 서버 정렬을 신뢰(list와 동일)
     return mapped
   }, [data, sort])
 
@@ -102,7 +101,7 @@ export default function LibraryGalleryPage() {
           >
             <option value="DEFAULT">전체 작품</option>
             <option value="RATING">별점 높은 순</option>
-            <option value="REVIEW">리뷰 많은 순</option>
+            <option value="RATING_ASC">별점 낮은 순</option>
           </select>
 
           <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400">

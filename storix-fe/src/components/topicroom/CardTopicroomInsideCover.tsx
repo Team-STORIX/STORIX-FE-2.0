@@ -10,6 +10,15 @@ interface TopicRoomCoverCardProps {
 }
 
 export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
+  const roomId = room.roomId ?? Number(room.id) // ✅
+  const worksName = room.worksName ?? '' // ✅
+  const href =
+    Number.isFinite(roomId) && roomId > 0
+      ? {
+          pathname: `/home/topicroom/${roomId}`,
+          query: worksName ? { worksName } : {},
+        } // ✅
+      : '/home/topicroom' // ✅
   return (
     <div className="relative h-[204px] w-full flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
       {/* 배경 이미지 */}
@@ -41,15 +50,15 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
         </div>
 
         {/* 제목 / 부제목 */}
-        <div className="space-y-0.5 text-white text-left">
-          <p className="heading-2 ">{room.subtitle}</p>
-          <p className="body-1 ">{room.title}</p>
+        <div className="flex-1 min-w-0 max-w-[300px] space-y-0.5 text-white text-left">
+          <p className="heading-2 w-full truncate">{room.subtitle}</p>
+          <p className="body-1">{room.title}</p>
         </div>
       </div>
 
       {/* 오른쪽 아래 플로팅 화살표 버튼 */}
       <Link
-        href="/home/topicroom"
+        href={href}
         className="
           absolute bottom-3 right-3
           flex h-10 w-10 items-center justify-center
