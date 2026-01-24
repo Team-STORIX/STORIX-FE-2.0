@@ -74,8 +74,6 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
     } finally {
       setSubmitting(false)
     }
-    console.log('worksId', resolvedWork.id)
-    console.log('rating', rating)
   }
 
   return (

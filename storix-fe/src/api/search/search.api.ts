@@ -38,8 +38,6 @@ export const getWorksSearch = async (params: {
   const { keyword, sort = 'NAME', page = 0 } = params
   const k = keyword.trim()
 
-  console.log('[API][search/works] request', { keyword: k, sort, page })
-
   const res = await apiClient.get('/api/v1/search/works', {
     params: { keyword: k, sort, page },
   })
@@ -56,16 +54,6 @@ export const getWorksSearch = async (params: {
   // 3) normalized 형태로 다시 한번 보증
   const parsed = WorksSearchResponseSchema.parse(normalized)
 
-  console.log('[API][search/works] response', {
-    number: parsed.result.number,
-    size: parsed.result.size,
-    last: parsed.result.last,
-    empty: parsed.result.empty,
-    numberOfElements: parsed.result.numberOfElements,
-    contentLen: parsed.result.content.length,
-    fallbackRecommendation: rawParsed.result.fallbackRecommendation,
-  })
-
   return parsed
 }
 
@@ -75,8 +63,6 @@ export const getArtistsSearch = async (params: {
 }) => {
   const { keyword, page = 0 } = params
   const k = keyword.trim()
-
-  console.log('[API][search/artists] request', { keyword: k, page })
 
   const res = await apiClient.get('/api/v1/search/artists', {
     params: { keyword: k, page },
@@ -91,51 +77,31 @@ export const getArtistsSearch = async (params: {
 
   const parsed = ArtistsSearchResponseSchema.parse(normalized)
 
-  console.log('[API][search/artists] response', {
-    number: parsed.result.number,
-    size: parsed.result.size,
-    last: parsed.result.last,
-    empty: parsed.result.empty,
-    numberOfElements: parsed.result.numberOfElements,
-    contentLen: parsed.result.content.length,
-    fallbackRecommendation: rawParsed.result.fallbackRecommendation,
-  })
-
   return parsed
 }
 
 export const getTrendingKeywords = async () => {
-  console.log('[API][search/trending] request')
   const res = await apiClient.get('/api/v1/search/trending')
   const parsed = TrendingResponseSchema.parse(res.data)
-  console.log('[API][search/trending] response', {
-    len: parsed.result?.trendingKeywords?.length ?? 0,
-  })
+
   return parsed
 }
 
 export const getRecentKeywords = async () => {
-  console.log('[API][search/recent] request')
   const res = await apiClient.get('/api/v1/search/recent')
   const parsed = RecentResponseSchema.parse(res.data)
-  console.log('[API][search/recent] response', {
-    len: parsed.result?.recentKeywords?.length ?? 0,
-  })
+
   return parsed
 }
 
 export const deleteRecentKeyword = async (keyword: string) => {
   const k = keyword.trim()
-  console.log('[API][search/recent:delete] request', { keyword: k })
 
   const res = await apiClient.delete('/api/v1/search/recent', {
     params: { keyword: k },
   })
 
   const parsed = DeleteRecentResponseSchema.parse(res.data)
-  console.log('[API][search/recent:delete] response', {
-    isSuccess: parsed.isSuccess,
-  })
 
   return parsed
 }

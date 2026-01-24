@@ -21,14 +21,14 @@ interface TopicRoomCoverCardProps {
 
 export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
   const roomId = room.roomId ?? Number(room.id) // ✅
-  const worksName = room.worksName ?? '' // ✅
+  const worksName = room.worksName ?? ''
   const href =
     Number.isFinite(roomId) && roomId > 0
       ? {
           pathname: `/home/topicroom/${roomId}`,
           query: worksName ? { worksName } : {},
-        } // ✅
-      : '/home/topicroom' // ✅
+        }
+      : '/home/topicroom'
   return (
     <div className="relative h-full w-[266px] flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
       {/* 배경 이미지 */}
