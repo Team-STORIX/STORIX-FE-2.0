@@ -62,7 +62,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         <div className="flex items-center justify-end w-5">
           {isUp ? (
             <Image
-              src="/search/trendingUP.svg"
+              src="/search/trendingUp.svg"
               alt="상승"
               width={16}
               height={16}

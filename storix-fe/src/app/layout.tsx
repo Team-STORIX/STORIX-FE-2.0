@@ -34,7 +34,7 @@ export default function RootLayout({
           <ProfileBootstrap />
 
           <main className="flex min-h-dvh w-full justify-center text-gray-900 bg-white">
-            <div className="iphone16-container flex min-h-svh w-full max-w-[393px] flex-col bg-white">
+            <div className="iphone16-container flex min-h-svh w-full max-w-[393px] flex-col">
               <div id="app-scroll-container" className="flex-1">
                 {children}
               </div>

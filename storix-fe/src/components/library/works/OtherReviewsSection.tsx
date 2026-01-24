@@ -20,10 +20,10 @@ export default function OtherReviewsSection({
   sentinelRef,
 }: Props) {
   return (
-    <section className="-mx-4 px-5">
+    <section className="-mx-4 px-5 ">
       <p className="heading-2 px-1 pt-5 pb-3 text-black">다른 유저들의 리뷰</p>
 
-      <div className="flex flex-col mt-5 -mx-5 px-5 border-b border-gray-100">
+      <div className="flex flex-col mt-5 -mx-5 px-5 border-b border-gray-100 ">
         {otherReviews.length === 0 ? (
           <p className="body-2 text-gray-400">아직 다른 유저 리뷰가 없어요</p>
         ) : (
