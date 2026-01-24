@@ -117,8 +117,9 @@ export default function ReportTargetSelect({
                             e.currentTarget.style.display = 'none' // ✅ (401/403/404 등 fallback)
                           }}
                         />
-                      ) : null}
-                      <div className="h-6 w-6 rounded-full bg-gray-200 flex-shrink-0" />
+                      ) : (
+                        <div className="h-6 w-6 rounded-full bg-gray-200 flex-shrink-0" />
+                      )}
                       <span className="body-2 text-gray-800 flex-1 min-w-0 truncate">
                         {m.nickName}
                       </span>
