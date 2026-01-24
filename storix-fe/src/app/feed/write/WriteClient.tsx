@@ -230,7 +230,7 @@ export default function WriteClient() {
 
         <div className="flex justify-between items-center py-3 -mx-4 px-4 border-t border-gray-300 caption-1 text-gray-400">
           <ImagePicker files={images} onChange={setImages} max={3} />
-          {content.length}/500
+          {content.length}/300
         </div>
       </div>
 
