@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
+import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
 
 import TopicRoomCreateModal from '@/components/topicroom/TopicRoomCreateModal'
 import WorkTopBar from '@/components/library/works/WorkTopBar'
@@ -19,7 +20,7 @@ export default function LibraryWorkHomePage() {
   const worksId = Number(params?.id)
 
   const [tab, setTab] = useState<TabKey>('info')
-  const [isLiked, setIsLiked] = useState(false)
+  const { isFavorite, toggleFavorite } = useFavoriteWork(worksId)
 
   const { data: work, isLoading: loading } = useWorksDetail(worksId)
 
@@ -116,8 +117,8 @@ export default function LibraryWorkHomePage() {
     <div className="relative min-h-screen bg-white">
       <WorkTopBar
         onBack={() => router.push('/library/list')}
-        isLiked={isLiked}
-        onToggleLike={() => setIsLiked((v) => !v)}
+        isLiked={isFavorite}
+        onToggleLike={toggleFavorite}
       />
 
       <WorkHeaderCover
