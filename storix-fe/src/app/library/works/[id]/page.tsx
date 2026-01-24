@@ -27,7 +27,7 @@ export default function LibraryWorkHomePage() {
   const [isCheckingRoom, setIsCheckingRoom] = useState(false)
   const [topicModalOpen, setTopicModalOpen] = useState(false)
 
-  // ✅ UI 변경 없음: 작품 상세 조회는 React Query 훅으로 통일
+  //작품 상세 조회는 React Query 훅으로 통일
 
   const ui = useMemo(() => {
     if (!work) {
