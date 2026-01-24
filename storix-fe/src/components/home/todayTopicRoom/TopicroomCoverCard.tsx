@@ -60,8 +60,8 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
         </div>
 
         {/* 제목 / 부제목 */}
-        <div className="space-y-0.5 text-white text-left">
-          <p className="heading-2 ">{room.subtitle}</p>
+        <div className="flex-1 min-w-0 max-w-[200px] space-y-0.5 text-white text-left">
+          <p className="heading-2 w-full truncate">{room.subtitle}</p>
           <p className="body-1 ">{room.title}</p>
         </div>
       </div>

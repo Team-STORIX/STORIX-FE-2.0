@@ -1,7 +1,7 @@
 // src/app/home/topicroom/page.tsx
 'use client' // ✅
 
-import { useCallback, useMemo, useEffect } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SearchBar from '@/components/common/SearchBar'
 import ParticipationChat, {
@@ -53,6 +53,7 @@ export default function TopicRoom() {
       subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), // ✅
       memberCount: r.activeUserNumber ?? 0,
       timeAgo: formatTimeAgo(r.lastChatTime),
+      worksName: r.worksName,
     }))
   }, [myRooms])
 
@@ -102,13 +103,12 @@ export default function TopicRoom() {
           <p className="heading-1">{nickname}님이 참여 중인 토픽룸</p>
         </div>
         <div className="flex flex-col gap-4">
-          <ParticipationChat list={participationList} /> {/* ✅ 페이징 적용 */}
+          <ParticipationChat list={participationList} />
         </div>
         <div className="px-5 py-4">
           <p className="heading-1">지금 HOT한 토픽룸</p>
         </div>
         <CardTopicroomInsideCoverSlider rooms={hotRooms} />{' '}
-        {/* ✅ popular 연결 */}
       </div>
     </div>
   )

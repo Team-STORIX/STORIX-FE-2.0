@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useMemo, UIEvent, useRef } from 'react'
-import Image from 'next/image'
+import ParticipationChatItemView from '@/components/topicroom/ParticipationChatItem'
 
 const ITEMS_PER_PAGE = 3
 
@@ -13,6 +13,7 @@ export interface ParticipationChatItem {
   subtitle: string // 웹소설 <이세계 착한 헌터>
   memberCount: number // 13
   timeAgo: string // '1분 전' 같은 텍스트
+  worksName?: string
 }
 
 interface ParticipationChatProps {
@@ -76,33 +77,9 @@ export default function ParticipationChat({
             key={pageIndex}
             className="w-full flex-shrink-0 snap-start space-y-4"
           >
-            {pageItems.map(
-              ({ id, thumbnail, title, subtitle, memberCount, timeAgo }) => (
-                <div key={id} className="flex w-full items-center px-4 gap-3">
-                  {/* 왼쪽 원형 썸네일 */}
-                  <div className="flex-none h-[60px] w-[60px] overflow-hidden rounded-full">
-                    <Image
-                      src={thumbnail}
-                      alt={title}
-                      width={60}
-                      height={60}
-                      className="h-full w-full rounded-full object-cover object-top"
-                    />
-                  </div>
-
-                  {/* 가운데 텍스트들 */}
-                  <div className="flex flex-col gap-1 w-full">
-                    <div className="flex justify-between">
-                      <p className="flex body-1 text-gray-900">{subtitle}</p>
-                      <div className="flex ml-2 whitespace-nowrap caption-1 text-gray-500">
-                        {memberCount}명 · {timeAgo}
-                      </div>
-                    </div>
-                    <p className="mt-1 caption-1 text-gray-500">{title}</p>
-                  </div>
-                </div>
-              ),
-            )}
+            {pageItems.map((item) => (
+              <ParticipationChatItemView key={item.id} item={item} />
+            ))}
           </div>
         ))}
       </div>

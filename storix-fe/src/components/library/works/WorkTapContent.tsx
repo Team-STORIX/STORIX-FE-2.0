@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
+import OtherReviewsSection from '@/components/library/works/OtherReviewsSection'
 
 import {
   useWorksMyReview,
@@ -61,7 +62,7 @@ export default function WorkTabContent({
     threshold: 0,
   })
 
-  // ✅ UI 변경 없음: 무한스크롤 트리거
+  // 무한스크롤 트리거
   useEffect(() => {
     if (!inView) return
     if (!hasNextPage) return
@@ -166,12 +167,12 @@ export default function WorkTabContent({
           </div>
         ) : (
           <div>
-            <section className="bg-gray-50 border-b border-gray-100">
-              <p className="heading-2 text-black px-5 pt-5 pb-3">내 리뷰</p>
+            <section className="-mx-4 px-5 bg-gray-50 border-b border-gray-100">
+              <p className="heading-2 text-black px-1 pt-5 pb-3">내 리뷰</p>
               <button
                 type="button"
                 onClick={onReviewWrite}
-                className="w-full p-5 text-left cursor-pointer "
+                className="w-full py-5 px-1 text-left cursor-pointer "
               >
                 {myReview?.content ? (
                   <p className="inline-flex w-full body-2 mt-1 text-gray-500 line-clamp-2 justify-between">
@@ -186,57 +187,10 @@ export default function WorkTabContent({
               </button>
             </section>
 
-            <section className="pt-8">
-              <p className="heading-2 text-black">다른 유저들의 리뷰</p>
-
-              <div className="mt-4 flex flex-col gap-4">
-                {otherReviews.length === 0 ? (
-                  <p className="body-2 text-gray-400">
-                    아직 다른 유저 리뷰가 없어요
-                  </p>
-                ) : (
-                  otherReviews.map((r) => {
-                    const avatarColorClass =
-                      r.reviewId % 2 === 0
-                        ? 'bg-[var(--color-magenta-100)]'
-                        : 'bg-gray-100'
-
-                    return (
-                      <button
-                        key={r.reviewId}
-                        type="button"
-                        className="flex w-full items-start gap-3 rounded-xl border border-gray-100 px-4 py-4 text-left cursor-pointer"
-                      >
-                        <div
-                          className={[
-                            'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
-                            avatarColorClass,
-                          ].join(' ')}
-                        >
-                          <span className="caption-1 text-[var(--color-magenta-300)]">
-                            ✦
-                          </span>
-                        </div>
-
-                        <div className="flex-1">
-                          <p className="caption-1 text-gray-600">
-                            {r.userName ?? '익명'}
-                          </p>
-                          <p className="body-2 mt-1 text-gray-700 line-clamp-2">
-                            {r.content ?? ''}
-                          </p>
-                        </div>
-
-                        <span className="text-gray-300">›</span>
-                      </button>
-                    )
-                  })
-                )}
-
-                {/* ✅ UI 변경 없음: 무한스크롤 sentinel */}
-                <div ref={ref} className="h-1" />
-              </div>
-            </section>
+            <OtherReviewsSection
+              otherReviews={otherReviews}
+              sentinelRef={ref}
+            />
           </div>
         )}
       </div>

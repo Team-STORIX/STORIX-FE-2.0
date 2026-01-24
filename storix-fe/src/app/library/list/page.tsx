@@ -15,7 +15,7 @@ import LibraryWorksListContent from '@/components/library/LibraryWorksListConten
 import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
 import type { LibraryReviewSort } from '@/lib/api/library/library.api'
 
-type SortKey = 'DEFAULT' | 'REVIEW' | 'RATING'
+type SortKey = 'DEFAULT' | 'RATING' | 'RATING_ASC'
 
 type UILibraryWork = {
   id: number
@@ -32,9 +32,8 @@ export default function LibraryListPage() {
 
   const [showReviewSheet, setShowReviewSheet] = useState(false)
 
-  // 기존 기능 유지: 서버 정렬은 현재 LATEST / DESC_RATING만 사용
   const apiSort: LibraryReviewSort = useMemo(() => {
-    if (sort === 'RATING') return 'DESC_RATING'
+    if (sort === 'RATING' || sort === 'RATING_ASC') return 'DESC_RATING' // ✅
     return 'LATEST'
   }, [sort])
 
@@ -72,11 +71,9 @@ export default function LibraryListPage() {
       }
     })
 
-    // REVIEW 정렬은 클라에서만 보정
-    if (sort === 'REVIEW') {
-      return [...mapped].sort(
-        (a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0),
-      )
+    // 별점 낮은 순은 "별점 높은 순(DESC)" 결과를 역순
+    if (sort === 'RATING_ASC') {
+      return [...mapped].reverse()
     }
 
     return mapped
@@ -110,7 +107,7 @@ export default function LibraryListPage() {
           >
             <option value="DEFAULT">전체 작품</option>
             <option value="RATING">별점 높은 순</option>
-            <option value="REVIEW">리뷰 많은 순</option>
+            <option value="RATING_ASC">별점 낮은 순</option>
           </select>
 
           {/* caret */}

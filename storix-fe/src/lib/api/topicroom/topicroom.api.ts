@@ -7,6 +7,8 @@ import {
   TopicRoomIdSchema,
   TopicRoomItemSchema,
   TopicRoomMemberSchema,
+  TopicRoomReportRequestSchema,
+  TopicRoomReportResultSchema,
   TopicRoomSearchWrappedSchema,
   TopicRoomSearchSliceSchema,
 } from './topicroom.schema'
@@ -189,4 +191,30 @@ export async function findTopicRoomInfoById(
 ) {
   const list = await searchTopicRooms({ keyword, page: 0, size: 20 })
   return list.find((r) => r.topicRoomId === topicRoomId) ?? null
+}
+
+// -----------------------------
+// POST /api/v1/topic-rooms/{roomId}/report (토픽룸 사용자 신고)
+// -----------------------------
+const ReportEnvelopeSchema = ApiEnvelopeSchema(TopicRoomReportResultSchema)
+
+export async function reportTopicRoomUser(
+  roomId: number,
+  body: {
+    reportedUserId: number
+    reason: string
+    otherReason?: string | null
+  },
+) {
+  // ✅ 요청 바디 검증(필수 필드 누락 방지)
+  const parsedBody = TopicRoomReportRequestSchema.parse(body) // ✅
+
+  const res = await apiClient.post(
+    `/api/v1/topic-rooms/${roomId}/report`,
+    parsedBody,
+    { headers: { accept: '*/*' } },
+  )
+
+  const parsed = ReportEnvelopeSchema.parse(res.data)
+  return parsed.result
 }
