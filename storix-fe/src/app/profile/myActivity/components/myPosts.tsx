@@ -266,6 +266,7 @@ export default function MyPosts() {
               isLiked={item.board.isLiked}
               likeCount={item.board.likeCount}
               replyCount={item.board.replyCount}
+              isSpoiler={item.board.isSpoiler === true}
               onClickDetail={() => router.push(`/feed/article/${boardId}`)}
               onToggleLike={() => handleToggleLike(boardId)} // ✅ 여기만 연결하면 됨
               onOpenReport={() => {

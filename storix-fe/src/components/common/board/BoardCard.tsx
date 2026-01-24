@@ -3,7 +3,7 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useOpenMenu } from '@/hooks/useOpenMenu'
 import { useReportFlow } from '@/hooks/useReportFlow'
 import { useDeleteFlow } from '@/hooks/useDeleteFlow'
@@ -16,13 +16,10 @@ const FALLBACK_PROFILE = '/profile/profile-default.svg'
 
 export type BoardCardData = {
   boardId: number
-
   profile: {
     profileImageUrl: string | null
     nickName: string
-    // userId?: number
   }
-
   board: {
     userId: number
     lastCreatedTime: string
@@ -30,10 +27,10 @@ export type BoardCardData = {
     likeCount: number
     replyCount: number
     isLiked: boolean
+    // ✅ NEW
+    isSpoiler?: boolean
   }
-
   images?: { imageUrl: string; sortOrder: number }[]
-
   works?: null | {
     thumbnailUrl: string
     worksName: string
@@ -49,16 +46,104 @@ type Props = {
   to?: string
   clickable?: boolean
   worksTo?: string
-
   onReportConfirm?: (args: {
     boardId: number
     reportedUserId: number
   }) => Promise<ReportConfirmOutcome> | ReportConfirmOutcome
-
-  // ✅ 좋아요 토글(하트 클릭)
   onToggleLike?: (boardId: number) => void | Promise<void>
-
   onDeleteConfirm?: (args: { boardId: number }) => Promise<void> | void
+}
+
+/**
+ * ✅ 해시태그 1줄 제한:
+ * - 컨테이너 너비 안에 "완전히 들어가는" 태그만 보여줌
+ * - 중간에 잘릴 것 같은 태그는 아예 숨김
+ */
+function HashtagRowOneLine({ tags }: { tags: string[] }) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const measureRef = useRef<HTMLDivElement | null>(null)
+  const [visibleCount, setVisibleCount] = useState(tags.length)
+
+  const recompute = () => {
+    const container = containerRef.current
+    const measure = measureRef.current
+    if (!container || !measure) return
+
+    const containerW = container.clientWidth
+    const nodes = Array.from(measure.children) as HTMLElement[]
+
+    let used = 0
+    let count = 0
+    const gap = 4
+
+    for (let i = 0; i < nodes.length; i++) {
+      const w = nodes[i].offsetWidth
+      const next = count === 0 ? w : used + gap + w
+      if (next <= containerW) {
+        used = next
+        count++
+      } else {
+        break
+      }
+    }
+
+    setVisibleCount(count)
+  }
+
+  useEffect(() => {
+    setVisibleCount(tags.length)
+    requestAnimationFrame(recompute)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tags.join('|')])
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => recompute())
+    ro.observe(el)
+    return () => ro.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const visibleTags = useMemo(
+    () => tags.slice(0, visibleCount),
+    [tags, visibleCount],
+  )
+
+  if (!tags.length) return null
+
+  return (
+    <div className="w-full max-w-full overflow-hidden" ref={containerRef}>
+      <div className="inline-flex gap-1 whitespace-nowrap">
+        {visibleTags.map((tag, index) => (
+          <span
+            key={`${tag}-${index}`}
+            className="shrink-0 px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]
+              border border-[var(--color-gray-100)] bg-[var(--color-gray-50)] text-[var(--color-gray-800)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* 측정용(화면 밖) */}
+      <div
+        ref={measureRef}
+        className="absolute -left-[9999px] -top-[9999px] inline-flex gap-1 whitespace-nowrap pointer-events-none opacity-0"
+        aria-hidden="true"
+      >
+        {tags.map((tag, index) => (
+          <span
+            key={`m-${tag}-${index}`}
+            className="shrink-0 px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]
+              border border-[var(--color-gray-100)] bg-[var(--color-gray-50)] text-[var(--color-gray-800)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function BoardCard({
@@ -87,7 +172,6 @@ export default function BoardCard({
     nickname: string
   }>({
     onConfirm: async (t) => {
-      // ✅ 결과를 그대로 넘겨야 duplicated 토스트가 뜸
       return await onReportConfirm?.({
         boardId: t.boardId,
         reportedUserId: t.reportedUserId,
@@ -109,23 +193,17 @@ export default function BoardCard({
     doneDurationMs: 5000,
   })
 
-  useEffect(() => {
-    // console.log('[BoardCard] debug', {
-    //   boardId,
-    //   myUserId,
-    //   boardUserId: data.board.userId,
-    //   isMine,
-    //   profileUserId: (data as any)?.profile?.userId,
-    //   menuOpenId: menu.openId,
-    // })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardId, myUserId, isMine, menu.openId])
-
   const sortedImages =
     data.images
       ?.slice()
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((x) => x.imageUrl) ?? []
+
+  // ✅ 스포일러 상태(카드 단위)
+  const [spoilerRevealed, setSpoilerRevealed] = useState(false)
+  const isSpoilerActive = data.board.isSpoiler === true
+  const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
+  const revealSpoiler = () => setSpoilerRevealed(true)
 
   return (
     <>
@@ -150,6 +228,7 @@ export default function BoardCard({
           if (e.key === 'Enter' || e.key === ' ') router.push(link)
         }}
       >
+        {/* 상단 프로필/메뉴 */}
         <div
           className="px-4 flex items-center justify-between h-[41px]"
           onClick={(e) => e.stopPropagation()}
@@ -249,33 +328,7 @@ export default function BoardCard({
           </div>
         </div>
 
-        {sortedImages.length > 0 && (
-          <div className="mt-4 px-4">
-            <div className="overflow-x-auto">
-              <div className="flex gap-3">
-                {sortedImages.slice(0, 3).map((src, idx) => (
-                  <div
-                    key={`${boardId}-img-${idx}`}
-                    className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
-                    style={{
-                      border: '1px solid var(--color-gray-100)',
-                      background: 'lightgray',
-                    }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`피드 이미지 ${idx + 1}`}
-                      width={236}
-                      height={236}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
+        {/* ✅ 작품정보는 '절대 가리지 않음' (스포일러 영역 밖) */}
         {data.works && (
           <div className="mt-5 px-4" onClick={(e) => e.stopPropagation()}>
             <div
@@ -295,10 +348,10 @@ export default function BoardCard({
                 />
               </div>
 
-              <div className="flex w-full items-stretch">
-                <div className="flex flex-col justify-between w-[210px]">
+              <div className="flex w-full items-stretch min-w-0">
+                <div className="flex flex-col justify-between min-w-0 w-full">
                   <p
-                    className="text-[16px] font-medium leading-[140%] overflow-hidden text-ellipsis whitespace-nowrap"
+                    className="text-[16px] font-medium leading-[140%] truncate"
                     style={{ color: 'var(--color-black)' }}
                   >
                     {data.works.worksName}
@@ -312,21 +365,11 @@ export default function BoardCard({
                     {data.works.genre}
                   </p>
 
-                  <div className="flex gap-1 flex-wrap">
-                    {data.works.hashtags.map((tag, index) => (
-                      <div
-                        key={index}
-                        className="px-2 py-[6px] rounded text-[10px] font-medium leading-[140%] tracking-[0.2px]"
-                        style={{
-                          border: '1px solid var(--color-gray-100)',
-                          backgroundColor: 'var(--color-gray-50)',
-                          color: 'var(--color-gray-800)',
-                        }}
-                      >
-                        {tag}
-                      </div>
-                    ))}
-                  </div>
+                  <HashtagRowOneLine
+                    tags={(data.works.hashtags ?? []).map((t) =>
+                      t?.startsWith('#') ? t : `#${t}`,
+                    )}
+                  />
                 </div>
 
                 <button
@@ -335,7 +378,7 @@ export default function BoardCard({
                     e.stopPropagation()
                     router.push(worksTo)
                   }}
-                  className="ml-auto pl-3 flex items-center justify-center cursor-pointer transition-opacity hover:opacity-70"
+                  className="ml-auto pl-3 flex items-center justify-center cursor-pointer transition-opacity hover:opacity-70 shrink-0"
                   aria-label="작품 상세 보기"
                 >
                   <Image
@@ -350,15 +393,119 @@ export default function BoardCard({
           </div>
         )}
 
-        <div className="mt-3 px-4">
-          <p
-            className="text-[14px] font-medium leading-[140%] line-clamp-3"
-            style={{ color: 'var(--color-gray-800)' }}
-          >
-            {data.board.content}
-          </p>
+        {/* ✅ 스포일러 적용 영역: 이미지 + 본문만 */}
+        <div className="relative">
+          <div className={isSpoilerHidden ? 'select-none' : ''}>
+            {/* 이미지 */}
+            {sortedImages.length > 0 && (
+              <div className="mt-4 px-4">
+                <div className="overflow-x-auto">
+                  <div className="flex gap-3">
+                    {sortedImages.slice(0, 3).map((src, idx) => (
+                      <div
+                        key={`${boardId}-img-${idx}`}
+                        className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
+                        style={{
+                          border: '1px solid var(--color-gray-100)',
+                          background: 'lightgray',
+                        }}
+                      >
+                        <Image
+                          src={src}
+                          alt={`피드 이미지 ${idx + 1}`}
+                          width={236}
+                          height={236}
+                          className={[
+                            'w-full h-full object-cover',
+                            isSpoilerHidden ? 'blur-md' : '',
+                          ].join(' ')}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 본문 */}
+            <div className="mt-3 px-4">
+              <p
+                className={[
+                  'text-[14px] font-medium leading-[140%] line-clamp-3',
+                  isSpoilerHidden ? 'blur-md' : '',
+                ].join(' ')}
+                style={{ color: 'var(--color-gray-800)' }}
+              >
+                {data.board.content}
+              </p>
+            </div>
+          </div>
+
+          {/* ✅ 스포일러 덮개: 이미지+본문까지만 덮음 */}
+          {isSpoilerHidden && (
+            <div
+              className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer !shadow-none outline-none ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+              style={{
+                boxShadow: 'none',
+                filter: 'none',
+                WebkitFilter: 'none',
+                outline: 'none',
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                revealSpoiler()
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+              role="button"
+              tabIndex={0}
+              aria-label="스포일러 보기"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  revealSpoiler()
+                }
+              }}
+            >
+              {/* 배경 덮개 */}
+              <div
+                className="absolute inset-0 shadow-none"
+                style={{
+                  background: 'rgba(255,255,255,0.70)',
+                  boxShadow: 'none',
+                  filter: 'none',
+                  WebkitFilter: 'none',
+                }}
+              />
+
+              {/* 안내 박스 (그림자 완전 제거) */}
+              <div
+                className="relative px-4 py-3 rounded-[12px] text-center shadow-none"
+                style={{
+                  border: '1px solid var(--color-gray-100)',
+                  background: 'var(--color-white)',
+                  boxShadow: 'none',
+                  filter: 'none',
+                  WebkitFilter: 'none',
+                }}
+              >
+                <p
+                  className="text-[14px] font-semibold leading-[140%]"
+                  style={{ color: 'var(--color-gray-900)' }}
+                >
+                  스포일러가 포함된 게시글입니다
+                </p>
+                <p
+                  className="mt-1 text-[12px] font-medium leading-[140%]"
+                  style={{ color: 'var(--color-gray-500)' }}
+                >
+                  탭해서 내용을 확인하세요
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* ✅ 좋아요/댓글: 항상 노출 */}
         <div
           className="mt-5 px-4 flex items-center"
           onClick={(e) => e.stopPropagation()}
@@ -370,8 +517,8 @@ export default function BoardCard({
               aria-label="좋아요"
               onClick={(e) => {
                 e.preventDefault()
-                e.stopPropagation() // ✅ 카드 클릭(상세 이동) 방지
-                onToggleLike?.(boardId) // ✅ 외부 핸들러 호출
+                e.stopPropagation()
+                onToggleLike?.(boardId)
               }}
             >
               <Image

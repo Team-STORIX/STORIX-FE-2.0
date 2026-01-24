@@ -35,7 +35,7 @@ type Props = {
   likeCount: number
   replyCount: number
 
-  // ✅ NEW: 스포일러 여부 (feed list / detail 모두 대응)
+  // ✅ NEW: 스포일러 여부
   isSpoiler?: boolean
 
   onClickDetail?: () => void
@@ -169,13 +169,10 @@ export default function PostCard({
   const myUserId = currentUserId ?? me?.userId
   const isMine = myUserId != null && writerUserId === myUserId
 
-  // ✅ NEW: 스포일러 해제 상태(카드 단위)
+  // ✅ 스포일러 해제 상태(카드 단위)
   const [spoilerRevealed, setSpoilerRevealed] = useState(false)
-
-  // list에서만 스포일러 UX 적용(상세는 원하면 여기 조건 바꾸면 됨)
   const isSpoilerActive = isSpoiler === true
   const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
-
   const revealSpoiler = () => setSpoilerRevealed(true)
 
   const bodyProps = clickable
@@ -289,7 +286,7 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* 작품 정보(클릭 제외) */}
+      {/* ✅ 작품 정보는 스포일러로 가리지 않음(현재 구조 그대로 OK) */}
       {showWorks && (
         <div className="mt-5 px-4" onClick={(e) => e.stopPropagation()}>
           <div className="p-3 rounded-xl flex items-center gap-3 border border-[var(--color-gray-100)] bg-[var(--color-white)]">
@@ -313,7 +310,11 @@ export default function PostCard({
                   {works.artistName} · {works.worksType} · {works.genre}
                 </p>
 
-                <HashtagRow tags={works.hashtags ?? []} />
+                <HashtagRow
+                  tags={(works.hashtags ?? []).map((t) =>
+                    t?.startsWith('#') ? t : `#${t}`,
+                  )}
+                />
               </div>
 
               <button
@@ -387,10 +388,16 @@ export default function PostCard({
             </div>
           </div>
 
-          {/* ✅ 스포일러 덮개: 이미지+본문까지만 덮음 (좋아요/댓글은 아래에서 항상 노출) */}
+          {/* ✅ 스포일러 덮개: 이미지+본문까지만 덮음 */}
           {isSpoilerHidden && (
             <div
-              className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer"
+              className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer !shadow-none outline-none ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+              style={{
+                boxShadow: 'none',
+                filter: 'none',
+                WebkitFilter: 'none',
+                outline: 'none',
+              }}
               onClick={(e) => {
                 e.stopPropagation()
                 revealSpoiler()
@@ -406,17 +413,26 @@ export default function PostCard({
                 }
               }}
             >
+              {/* 배경 덮개 */}
               <div
-                className="absolute inset-0"
-                style={{ background: 'rgba(255,255,255,0.70)' }}
+                className="absolute inset-0 shadow-none"
+                style={{
+                  background: 'rgba(255,255,255,0.70)',
+                  boxShadow: 'none',
+                  filter: 'none',
+                  WebkitFilter: 'none',
+                }}
               />
 
+              {/* ✅ 안내 박스: 그림자 완전 제거 */}
               <div
-                className="relative px-4 py-3 rounded-[12px] text-center"
+                className="relative px-4 py-3 rounded-[12px] text-center shadow-none"
                 style={{
                   border: '1px solid var(--color-gray-100)',
                   background: 'var(--color-white)',
-                  boxShadow: '0 0 8px rgba(0,0,0,0.08)',
+                  boxShadow: 'none',
+                  filter: 'none',
+                  WebkitFilter: 'none',
                 }}
               >
                 <p
@@ -436,7 +452,7 @@ export default function PostCard({
           )}
         </div>
 
-        {/* ✅ 좋아요/댓글 영역: 스포일러여도 항상 보이게 (덮개 범위 밖) */}
+        {/* ✅ 좋아요/댓글: 항상 노출 */}
         <div className="mt-5 px-4 flex items-center">
           <button
             type="button"
