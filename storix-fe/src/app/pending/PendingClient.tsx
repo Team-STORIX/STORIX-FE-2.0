@@ -108,7 +108,7 @@ export default function PendingClient() {
         setOnboardingToken(onboardingToken)
         router.replace('/agreement')
       } catch (e: any) {
-        console.error('[pending] flow error:', e)
+        //console.error('[pending] flow error:', e)
         setErrorMsg(e?.message ?? String(e))
       }
     }

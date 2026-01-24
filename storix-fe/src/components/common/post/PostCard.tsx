@@ -31,13 +31,13 @@ type Props = {
   content: string
   images: string[]
   works?: Work | null
-
-  // ✅ NEW: spoiler flag
-  isSpoiler?: boolean
-
   isLiked: boolean
   likeCount: number
   replyCount: number
+
+  // ✅ NEW: 스포일러 여부 (feed list / detail 모두 대응)
+  isSpoiler?: boolean
+
   onClickDetail?: () => void
   onToggleLike: () => void
   onOpenReport: () => void
@@ -65,7 +65,7 @@ function HashtagRow({ tags }: { tags: string[] }) {
 
     let used = 0
     let count = 0
-    const gap = 4 // gap-1 = 0.25rem = 4px
+    const gap = 4
 
     for (let i = 0; i < nodes.length; i++) {
       const w = nodes[i].offsetWidth
@@ -81,15 +81,12 @@ function HashtagRow({ tags }: { tags: string[] }) {
     setVisibleCount(count)
   }
 
-  // tags 바뀌면 다시 계산
   useLayoutEffect(() => {
     setVisibleCount(tags.length)
-    // 다음 프레임에 실제 DOM 폭 측정
     requestAnimationFrame(recompute)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tags.join('|')])
 
-  // 리사이즈 대응(PWA/회전/뷰포트 변경)
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -108,7 +105,6 @@ function HashtagRow({ tags }: { tags: string[] }) {
 
   return (
     <div className="w-full max-w-full overflow-hidden" ref={containerRef}>
-      {/* 실제 렌더 */}
       <div className="inline-flex gap-1 whitespace-nowrap">
         {visibleTags.map((tag, index) => (
           <span
@@ -121,7 +117,6 @@ function HashtagRow({ tags }: { tags: string[] }) {
         ))}
       </div>
 
-      {/* 폭 측정용(화면에는 안 보임) */}
       <div
         ref={measureRef}
         className="absolute -left-[9999px] -top-[9999px] inline-flex gap-1 whitespace-nowrap pointer-events-none opacity-0"
@@ -150,10 +145,10 @@ export default function PostCard({
   content,
   images,
   works,
-  isSpoiler = false,
   isLiked,
   likeCount,
   replyCount,
+  isSpoiler = false,
   writerUserId,
   onOpenDelete,
   onClickDetail,
@@ -174,38 +169,26 @@ export default function PostCard({
   const myUserId = currentUserId ?? me?.userId
   const isMine = myUserId != null && writerUserId === myUserId
 
-  // =========================================================
-  // ✅ Spoiler overlay: 1st click reveals, next click opens detail
-  // =========================================================
+  // ✅ NEW: 스포일러 해제 상태(카드 단위)
   const [spoilerRevealed, setSpoilerRevealed] = useState(false)
-  const isSpoilerHidden = isSpoiler && !spoilerRevealed
 
-  const revealSpoiler = (e: React.SyntheticEvent) => {
-    e.stopPropagation()
-    setSpoilerRevealed(true)
-  }
+  // list에서만 스포일러 UX 적용(상세는 원하면 여기 조건 바꾸면 됨)
+  const isSpoilerActive = isSpoiler === true
+  const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
+
+  const revealSpoiler = () => setSpoilerRevealed(true)
 
   const bodyProps = clickable
     ? {
         role: 'button' as const,
         tabIndex: 0,
         'aria-label': '게시글 상세 보기',
-        onClick: (e: React.MouseEvent) => {
-          if (isSpoilerHidden) {
-            e.preventDefault()
-            revealSpoiler(e)
-            return
-          }
-          onClickDetail?.()
-        },
+        onClick: onClickDetail,
         onKeyDown: (e: React.KeyboardEvent) => {
+          if (!onClickDetail) return
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
-            if (isSpoilerHidden) {
-              revealSpoiler(e)
-              return
-            }
-            onClickDetail?.()
+            onClickDetail()
           }
         },
         className: 'cursor-pointer transition-opacity hover:opacity-90',
@@ -310,7 +293,6 @@ export default function PostCard({
       {showWorks && (
         <div className="mt-5 px-4" onClick={(e) => e.stopPropagation()}>
           <div className="p-3 rounded-xl flex items-center gap-3 border border-[var(--color-gray-100)] bg-[var(--color-white)]">
-            {/* 썸네일 */}
             <div className="w-[62px] h-[83px] rounded bg-[var(--color-gray-200)] shrink-0 overflow-hidden">
               <Image
                 src={works.thumbnailUrl}
@@ -321,7 +303,6 @@ export default function PostCard({
               />
             </div>
 
-            {/* 텍스트 + 화살표 */}
             <div className="flex w-full items-stretch min-w-0">
               <div className="flex flex-col gap-1 min-w-0 w-full">
                 <p className="text-[16px] font-medium leading-[140%] truncate text-[var(--color-black)]">
@@ -332,7 +313,6 @@ export default function PostCard({
                   {works.artistName} · {works.worksType} · {works.genre}
                 </p>
 
-                {/* ✅ 잘리는 해시태그는 아예 렌더 X */}
                 <HashtagRow tags={works.hashtags ?? []} />
               </div>
 
@@ -359,8 +339,8 @@ export default function PostCard({
 
       {/* 본문/이미지/반응 */}
       <div {...(bodyProps as any)}>
+        {/* ✅ 스포일러 적용 영역: 이미지 + 본문까지만 */}
         <div className="relative">
-          {/* 실제 컨텐츠 (스포일러면 blur) */}
           <div className={isSpoilerHidden ? 'select-none' : ''}>
             {images.length > 0 && (
               <div className="mt-4 px-4">
@@ -405,67 +385,26 @@ export default function PostCard({
                 {content}
               </p>
             </div>
-
-            <div className={isSpoilerHidden ? 'blur-md' : ''}>
-              <div className="mt-5 px-4 flex items-center">
-                <button
-                  type="button"
-                  className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onToggleLike()
-                  }}
-                  aria-label="좋아요"
-                >
-                  <Image
-                    src={
-                      isLiked
-                        ? '/icons/icon-like-pink.svg'
-                        : '/icons/icon-like.svg'
-                    }
-                    alt="좋아요"
-                    width={24}
-                    height={24}
-                  />
-                  {likeCount > 0 && (
-                    <span
-                      className="ml-1 text-[14px] font-bold leading-[140%]"
-                      style={{ color: 'var(--color-gray-500)' }}
-                    >
-                      {likeCount}
-                    </span>
-                  )}
-                </button>
-
-                <div className="flex items-center ml-4">
-                  <Image
-                    src="/icons/icon-comment.svg"
-                    alt="댓글"
-                    width={24}
-                    height={24}
-                  />
-                  {replyCount > 0 && (
-                    <span
-                      className="ml-1 text-[14px] font-bold leading-[140%]"
-                      style={{ color: 'var(--color-gray-500)' }}
-                    >
-                      {replyCount}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* 스포일러 덮개 */}
+          {/* ✅ 스포일러 덮개: 이미지+본문까지만 덮음 (좋아요/댓글은 아래에서 항상 노출) */}
           {isSpoilerHidden && (
             <div
-              className="absolute inset-0 z-10 flex items-center justify-center"
-              onClick={revealSpoiler}
+              className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation()
+                revealSpoiler()
+              }}
               onPointerDown={(e) => e.stopPropagation()}
               role="button"
               tabIndex={0}
               aria-label="스포일러 보기"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  revealSpoiler()
+                }
+              }}
             >
               <div
                 className="absolute inset-0"
@@ -495,6 +434,53 @@ export default function PostCard({
               </div>
             </div>
           )}
+        </div>
+
+        {/* ✅ 좋아요/댓글 영역: 스포일러여도 항상 보이게 (덮개 범위 밖) */}
+        <div className="mt-5 px-4 flex items-center">
+          <button
+            type="button"
+            className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleLike()
+            }}
+            aria-label="좋아요"
+          >
+            <Image
+              src={
+                isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'
+              }
+              alt="좋아요"
+              width={24}
+              height={24}
+            />
+            {likeCount > 0 && (
+              <span
+                className="ml-1 text-[14px] font-bold leading-[140%]"
+                style={{ color: 'var(--color-gray-500)' }}
+              >
+                {likeCount}
+              </span>
+            )}
+          </button>
+
+          <div className="flex items-center ml-4">
+            <Image
+              src="/icons/icon-comment.svg"
+              alt="댓글"
+              width={24}
+              height={24}
+            />
+            {replyCount > 0 && (
+              <span
+                className="ml-1 text-[14px] font-bold leading-[140%]"
+                style={{ color: 'var(--color-gray-500)' }}
+              >
+                {replyCount}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -30,7 +30,7 @@ export const TopicRoomCoverSlider = ({ rooms }: TopicRoomCoverSliderProps) => {
     }))
   }, [data])
 
-  console.log('api:', roomsFromApi)
+  //console.log('api:', roomsFromApi)
 
   const roomsToRender = rooms ?? roomsFromApi // ✅ (기존 UI 유지 + 홈에서는 API로)
 

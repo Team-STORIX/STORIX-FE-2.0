@@ -108,7 +108,7 @@ export function useReportFlow<T extends BaseReportTarget>(opts: {
       closeReportModal()
       openDone()
     } catch (err) {
-      console.error('[report] failed:', err)
+      // console.error('[report] failed:', err)
       closeReportModal()
     }
   }

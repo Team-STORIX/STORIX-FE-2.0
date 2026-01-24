@@ -137,7 +137,7 @@ export default function LikesClient() {
         if (prev === 'works') await commitWorks()
         else await commitArtists()
       } catch (e) {
-        console.error(e)
+        //console.error(e)
       } finally {
         prevTabRef.current = tab
       }

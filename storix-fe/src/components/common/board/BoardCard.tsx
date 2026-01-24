@@ -110,14 +110,14 @@ export default function BoardCard({
   })
 
   useEffect(() => {
-    console.log('[BoardCard] debug', {
-      boardId,
-      myUserId,
-      boardUserId: data.board.userId,
-      isMine,
-      profileUserId: (data as any)?.profile?.userId,
-      menuOpenId: menu.openId,
-    })
+    // console.log('[BoardCard] debug', {
+    //   boardId,
+    //   myUserId,
+    //   boardUserId: data.board.userId,
+    //   isMine,
+    //   profileUserId: (data as any)?.profile?.userId,
+    //   menuOpenId: menu.openId,
+    // })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId, myUserId, isMine, menu.openId])
 

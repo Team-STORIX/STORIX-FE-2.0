@@ -84,7 +84,7 @@ export const useWorksSearchInfinite = (
     loadingRef.current = false
     stopRef.current = false
 
-    console.log('[PAGER][works] reset', { keyword: k, sort })
+    // console.log('[PAGER][works] reset', { keyword: k, sort })
   }
 
   useEffect(() => {
@@ -103,7 +103,7 @@ export const useWorksSearchInfinite = (
     refetchOnReconnect: false,
     queryFn: async () => {
       requestedPagesRef.current.add(page)
-      console.log('[PAGER][works] fetch page', { keyword: k, sort, page })
+      //console.log('[PAGER][works] fetch page', { keyword: k, sort, page })
       return getWorksSearch({ keyword: k, sort, page })
     },
   })
@@ -126,7 +126,7 @@ export const useWorksSearchInfinite = (
       contentLen: r.content.length,
     }
 
-    console.log('[PAGER][works] response meta', nextMeta)
+    //console.log('[PAGER][works] response meta', nextMeta)
 
     if (Array.isArray(r.content) && r.content.length > 0) {
       const appended: WorksSearchItem[] = []
@@ -148,12 +148,12 @@ export const useWorksSearchInfinite = (
     stopRef.current = stop
     setHasNext(!stop)
 
-    console.log('[PAGER][works] stop 판단', { stop, hasNext: !stop })
+    // console.log('[PAGER][works] stop 판단', { stop, hasNext: !stop })
   }, [query.data])
 
   useEffect(() => {
     if (query.error) {
-      console.error('[PAGER][works] query error', query.error)
+      //console.error('[PAGER][works] query error', query.error)
     }
   }, [query.error])
 
@@ -165,10 +165,10 @@ export const useWorksSearchInfinite = (
     const next = pageRef.current + 1
     if (requestedPagesRef.current.has(next)) return
 
-    console.log('[PAGER][works] requestNext', {
-      current: pageRef.current,
-      next,
-    })
+    // console.log('[PAGER][works] requestNext', {
+    //   current: pageRef.current,
+    //   next,
+    // })
     setPage(next)
   }
 
@@ -219,7 +219,7 @@ export const useArtistsSearchInfinite = (
     loadingRef.current = false
     stopRef.current = false
 
-    console.log('[PAGER][artists] reset', { keyword: k })
+    //console.log('[PAGER][artists] reset', { keyword: k })
   }
 
   useEffect(() => {
@@ -238,7 +238,7 @@ export const useArtistsSearchInfinite = (
     refetchOnReconnect: false,
     queryFn: async () => {
       requestedPagesRef.current.add(page)
-      console.log('[PAGER][artists] fetch page', { keyword: k, page })
+      // console.log('[PAGER][artists] fetch page', { keyword: k, page })
       return getArtistsSearch({ keyword: k, page })
     },
   })
@@ -261,7 +261,7 @@ export const useArtistsSearchInfinite = (
       contentLen: r.content.length,
     }
 
-    console.log('[PAGER][artists] response meta', nextMeta)
+    // console.log('[PAGER][artists] response meta', nextMeta)
 
     if (Array.isArray(r.content) && r.content.length > 0) {
       const appended: ArtistsSearchItem[] = []
@@ -283,12 +283,12 @@ export const useArtistsSearchInfinite = (
     stopRef.current = stop
     setHasNext(!stop)
 
-    console.log('[PAGER][artists] stop 판단', { stop, hasNext: !stop })
+    //console.log('[PAGER][artists] stop 판단', { stop, hasNext: !stop })
   }, [query.data])
 
   useEffect(() => {
     if (query.error) {
-      console.error('[PAGER][works] query error', query.error)
+      //console.error('[PAGER][works] query error', query.error)
     }
   }, [query.error])
 
@@ -300,10 +300,10 @@ export const useArtistsSearchInfinite = (
     const next = pageRef.current + 1
     if (requestedPagesRef.current.has(next)) return
 
-    console.log('[PAGER][artists] requestNext', {
-      current: pageRef.current,
-      next,
-    })
+    // console.log('[PAGER][artists] requestNext', {
+    //   current: pageRef.current,
+    //   next,
+    // })
     setPage(next)
   }
 

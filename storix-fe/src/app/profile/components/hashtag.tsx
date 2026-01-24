@@ -21,7 +21,7 @@ export default function Hashtag() {
 
         setRanks(withSharp)
       } catch (e) {
-        console.error('선호 해시태그 조회 실패', e)
+        //console.error('선호 해시태그 조회 실패', e)
       }
     }
 
