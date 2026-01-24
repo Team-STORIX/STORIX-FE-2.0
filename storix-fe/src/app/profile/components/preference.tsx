@@ -194,43 +194,58 @@ export default function Preference() {
         </div>
 
         {hasWorks ? (
-          // ✅ 361*163 박스 안에 “4칸 고정 + 자동 간격”
-          <div className="mt-6 w-[361px] h-[163px]">
-            <div className="flex justify-between w-full">
-              {/* 실제 작품 1~4개 */}
-              {worksForGrid.map((work) => (
-                <div key={work.id} className="flex flex-col">
-                  <div
-                    className="w-[87px] h-[116px] bg-[var(--color-gray-200)] rounded overflow-hidden relative"
-                    style={{ aspectRatio: '3/4' }}
-                  >
-                    {work.imageUrl ? (
-                      <Image
-                        src={work.imageUrl}
-                        alt={work.title}
-                        fill
-                        sizes="87px"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <p className="mt-[7px] body-2 text-[var(--color-gray-900)] truncate w-[87px]">
-                    {work.title}
-                  </p>
-                  <p className="mt-[3px] caption-1 text-[var(--color-gray-400)] truncate w-[87px]">
-                    {work.author}
-                  </p>
-                </div>
-              ))}
+          // ✅ 좁은 화면이면 가로 스크롤, 넓으면 그냥 4개가 다 보임
+          <div className="mt-6 w-full">
+            <div className="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+              {/* 스크롤바 숨기고 싶으면 아래 스타일 추가(선택) */}
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
 
-              {/* ✅ 빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
-              {Array.from({ length: emptySlots }).map((_, idx) => (
-                <div key={`empty-${idx}`} className="flex flex-col opacity-0">
-                  <div className="w-[87px] h-[116px] rounded" />
-                  <p className="mt-[7px] w-[87px]">.</p>
-                  <p className="mt-[3px] w-[87px]">.</p>
+              {/* ✅ 내부는 '4칸' 기준 최소 너비를 유지 */}
+              <div className="min-w-[361px]">
+                <div className="flex justify-between w-full">
+                  {/* 실제 작품 1~4개 */}
+                  {worksForGrid.map((work) => (
+                    <div key={work.id} className="flex flex-col shrink-0">
+                      <div
+                        className="w-[87px] h-[116px] bg-[var(--color-gray-200)] rounded overflow-hidden relative"
+                        style={{ aspectRatio: '3/4' }}
+                      >
+                        {work.imageUrl ? (
+                          <Image
+                            src={work.imageUrl}
+                            alt={work.title}
+                            fill
+                            sizes="87px"
+                            className="object-cover"
+                          />
+                        ) : null}
+                      </div>
+                      <p className="mt-[7px] body-2 text-[var(--color-gray-900)] truncate w-[87px]">
+                        {work.title}
+                      </p>
+                      <p className="mt-[3px] caption-1 text-[var(--color-gray-400)] truncate w-[87px]">
+                        {work.author}
+                      </p>
+                    </div>
+                  ))}
+
+                  {/* ✅ 빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
+                  {Array.from({ length: emptySlots }).map((_, idx) => (
+                    <div
+                      key={`empty-${idx}`}
+                      className="flex flex-col opacity-0 shrink-0"
+                    >
+                      <div className="w-[87px] h-[116px] rounded" />
+                      <p className="mt-[7px] w-[87px]">.</p>
+                      <p className="mt-[3px] w-[87px]">.</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         ) : (
