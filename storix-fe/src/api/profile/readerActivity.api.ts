@@ -51,6 +51,7 @@ export type ActivityBoard = {
   lastCreatedTime: string
   content: string
   likeCount: number
+  isSpoiler?: boolean
   replyCount: number
   isLiked: boolean
 }
@@ -61,6 +62,7 @@ export type ActivityBoardItem = {
   board: ActivityBoard
   images: ActivityImage[]
   works: ActivityWorks | null
+  isSpoiler?: boolean
 }
 
 /** [독자] 내가 쓴 댓글 조회 아이템 */

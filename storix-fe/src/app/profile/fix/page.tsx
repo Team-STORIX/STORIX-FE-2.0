@@ -217,7 +217,7 @@ export default function ProfileFixPage() {
       window.alert('프로필 수정 완료')
       router.replace('/profile')
     } catch (e: any) {
-      console.error('[profile-fix] submit error:', e)
+      //console.error('[profile-fix] submit error:', e)
       window.alert(e?.message ?? '프로필 수정 중 오류가 발생했어요.')
       setIsPressed(false)
 

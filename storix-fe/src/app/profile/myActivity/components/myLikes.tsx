@@ -232,6 +232,7 @@ export default function MyLikes() {
             likeCount: it.board.likeCount,
             replyCount: it.board.replyCount,
             isLiked: it.board.isLiked,
+            isSpoiler: (it.board as any).isSpoiler ?? false,
           },
           images: it.images?.map((x) => ({
             imageUrl: x.imageUrl,

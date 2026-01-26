@@ -2,6 +2,8 @@
 'use client'
 
 import Image from 'next/image'
+import { useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 
 export type PickerItem = {
   id: string
@@ -15,11 +17,37 @@ type Props = {
   onSelect: (id: string) => void
 }
 
+const ADD_ID = '__add_favorites__'
+const ADD_ICON_SRC = '/feed/add-favorites.svg'
+const ADD_ROUTE = '/home/search'
+
 export default function HorizontalPicker({
   items,
   selectedId,
   onSelect,
 }: Props) {
+  const router = useRouter()
+
+  const computedItems = useMemo(() => {
+    const addItem: PickerItem = { id: ADD_ID, name: '작품 추가' }
+
+    // 'all' 제외하고 하나라도 있으면 관심작품이 있다고 판단
+    const hasFavorites = items.some((it) => it.id !== 'all' && it.id !== ADD_ID)
+
+    // 중복 방지
+    const base = items.filter((it) => it.id !== ADD_ID)
+
+    // ✅ 관심작품이 없으면: "전체" 바로 옆에 추가 아이콘
+    if (!hasFavorites) {
+      const allIdx = base.findIndex((it) => it.id === 'all')
+      if (allIdx === -1) return [addItem, ...base]
+      return [...base.slice(0, allIdx + 1), addItem, ...base.slice(allIdx + 1)]
+    }
+
+    // ✅ 관심작품이 있으면: 맨 마지막에 추가 아이콘
+    return [...base, addItem]
+  }, [items])
+
   return (
     <section
       className="w-full"
@@ -48,17 +76,30 @@ export default function HorizontalPicker({
 
         <div className="flex items-start h-full">
           <div className="inline-flex items-start h-full whitespace-nowrap">
-            {items.map((item, idx) => {
+            {computedItems.map((item, idx) => {
               const isActive = selectedId === item.id
               const isAll = item.id === 'all'
-              const opacity = isActive ? 1 : 0.5
+              const isAdd = item.id === ADD_ID
 
-              const activeText = isAll
-                ? {}
-                : {
-                    color: 'var(--magenta-300-main, #FF4093)',
-                    fontWeight: 700,
-                  }
+              // ✅ 기본은 active=1, inactive=0.5
+              // ✅ hover 시에는 무조건 1로 복귀
+              const opacityClass = isActive ? 'opacity-100' : 'opacity-50'
+
+              const activeText =
+                isAll || isAdd
+                  ? {}
+                  : {
+                      color: 'var(--magenta-300-main, #FF4093)',
+                      fontWeight: 700,
+                    }
+
+              const handleClick = () => {
+                if (isAdd) {
+                  router.push(ADD_ROUTE)
+                  return
+                }
+                onSelect(item.id)
+              }
 
               return (
                 <div
@@ -68,10 +109,10 @@ export default function HorizontalPicker({
                 >
                   <button
                     type="button"
-                    onClick={() => onSelect(item.id)}
-                    className="flex flex-col items-center"
-                    style={{ width: 62, opacity, background: 'transparent' }}
+                    onClick={handleClick}
                     aria-pressed={isActive}
+                    className={`group flex flex-col items-center transition-opacity ${opacityClass} hover:opacity-100`}
+                    style={{ width: 62, background: 'transparent' }}
                   >
                     <div
                       className="relative w-[60px] h-[60px] overflow-hidden rounded-full"
@@ -90,6 +131,16 @@ export default function HorizontalPicker({
                           sizes="60px"
                           className="object-contain"
                           priority
+                        />
+                      ) : isAdd ? (
+                        /* ✅ 관심작품 추가 아이콘 */
+                        <Image
+                          src={ADD_ICON_SRC}
+                          alt="작품 추가"
+                          fill
+                          sizes="60px"
+                          className="object-contain"
+                          priority={idx < 6}
                         />
                       ) : item.thumbnailUrl ? (
                         <Image
@@ -150,7 +201,7 @@ export default function HorizontalPicker({
                     </div>
                   )}
 
-                  {idx !== 0 && idx !== items.length - 1 && (
+                  {idx !== 0 && idx !== computedItems.length - 1 && (
                     <div style={{ width: 16, flex: '0 0 auto' }} />
                   )}
                 </div>

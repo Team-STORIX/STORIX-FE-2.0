@@ -83,7 +83,7 @@ export default function TopicRoom() {
         if (!mounted) return
         setMe(res.result)
       } catch (e) {
-        console.error('[profile] failed to hydrate me', e)
+        //console.error('[profile] failed to hydrate me', e)
       }
     }
 

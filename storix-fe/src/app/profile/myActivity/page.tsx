@@ -34,7 +34,7 @@ export default function MyActivityPage() {
         if (!mounted) return
         setMe(res.result)
       } catch (e) {
-        console.error('[myActivity] failed to hydrate me', e)
+        // console.error('[myActivity] failed to hydrate me', e)
       }
     }
 

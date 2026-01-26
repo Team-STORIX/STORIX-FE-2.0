@@ -57,7 +57,7 @@ export default function WriterSignupPage() {
       //   로그인 성공 → 작가 로그인 페이지로 이동
       router.push('/writers/login')
     } catch (e) {
-      console.error('[artist-login] error:', e)
+      //console.error('[artist-login] error:', e)
       setShowWarning(true)
     } finally {
       setIsSubmitting(false)

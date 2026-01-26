@@ -29,7 +29,7 @@ export const useSignup = () => {
     },
 
     onError: (error: AxiosError) => {
-      console.error('회원가입 실패:', error)
+      // console.error('회원가입 실패:', error)
       clearAuth()
       alert('회원가입에 실패했습니다. 다시 시도해주세요.')
     },

@@ -54,6 +54,7 @@ type DeleteTargetReply = {
 }
 
 const FALLBACK_PROFILE = '/profile/profile-default.svg'
+const MAX_COMMENT_LEN = 300
 
 //   내 글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
 const deleteBoard = async (boardId: number) => {
@@ -316,6 +317,29 @@ export default function FeedArticlePage() {
   // ----------------------------
   const [commentText, setCommentText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  // ✅ 300자 초과 토스트
+  const [limitToastOpen, setLimitToastOpen] = useState(false)
+  const limitToastTimerRef = useRef<number | null>(null)
+
+  const openLimitToast = useCallback(() => {
+    setLimitToastOpen(true)
+    if (limitToastTimerRef.current) {
+      window.clearTimeout(limitToastTimerRef.current)
+    }
+    limitToastTimerRef.current = window.setTimeout(() => {
+      setLimitToastOpen(false)
+      limitToastTimerRef.current = null
+    }, 3000)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (limitToastTimerRef.current) {
+        window.clearTimeout(limitToastTimerRef.current)
+      }
+    }
+  }, [])
 
   const adjustTextarea = useCallback(() => {
     const el = textareaRef.current
@@ -637,7 +661,16 @@ export default function FeedArticlePage() {
               <textarea
                 ref={textareaRef}
                 value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
+                // ✅ 300자 제한 + 301번째 시도 시 토스트
+                onChange={(e) => {
+                  const next = e.target.value
+                  if (next.length > MAX_COMMENT_LEN) {
+                    setCommentText(next.slice(0, MAX_COMMENT_LEN))
+                    openLimitToast()
+                    return
+                  }
+                  setCommentText(next)
+                }}
                 rows={1}
                 placeholder="댓글을 입력하세요"
                 className="w-full bg-transparent outline-none resize-none body-2"
@@ -685,6 +718,24 @@ export default function FeedArticlePage() {
               />
             </button>
           </div>
+
+          {/* ✅ 300자 제한 토스트 (3초) */}
+          {limitToastOpen && (
+            <div
+              className="fixed left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-[12px] body-2"
+              style={{
+                bottom: TOAST_BOTTOM,
+                background: 'rgba(0,0,0,0.75)',
+                color: 'white',
+                width: 320,
+                textAlign: 'center',
+              }}
+              role="status"
+              aria-live="polite"
+            >
+              300자까지 입력 가능합니다
+            </div>
+          )}
         </div>
       </div>
 
