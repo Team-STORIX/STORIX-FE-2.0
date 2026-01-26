@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { useRouter } from 'next/navigation'
 import { useProfileStore } from '@/store/profile.store'
 
 type Work = {
@@ -160,6 +161,7 @@ export default function PostCard({
   onClickWorksArrow,
   currentUserId,
 }: Props) {
+  const router = useRouter()
   const clickable = variant === 'list'
 
   const showWorks =
@@ -175,35 +177,38 @@ export default function PostCard({
   const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
   const revealSpoiler = () => setSpoilerRevealed(true)
 
-  const bodyProps = clickable
-    ? {
-        role: 'button' as const,
-        tabIndex: 0,
-        'aria-label': '게시글 상세 보기',
-        onClick: onClickDetail,
-        onKeyDown: (e: React.KeyboardEvent) => {
-          if (!onClickDetail) return
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            onClickDetail()
-          }
-        },
-        className: 'cursor-pointer transition-opacity hover:opacity-90',
-      }
-    : { className: '' }
+  const goDetail = () => {
+    if (!clickable) return
+    if (onClickDetail) onClickDetail()
+    else router.push(`/feed/article/${boardId}`)
+  }
 
   return (
     <div
-      className="py-5"
+      className={[
+        'py-5',
+        clickable ? 'cursor-pointer transition-opacity hover:opacity-90' : '',
+      ].join(' ')}
       style={{
         borderBottom: '1px solid var(--color-gray-100)',
         backgroundColor: 'var(--color-white)',
       }}
+      onClick={goDetail}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!clickable) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          goDetail()
+        }
+      }}
     >
-      {/* 상단 프로필 한 줄(클릭 제외) */}
+      {/* ✅ 상단 프로필 한 줄(클릭 제외) */}
       <div
-        className="px-4 flex items-center justify-between h-[41px]"
+        className="px-4 flex items-center justify-between h-[41px] cursor-default"
         onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--color-gray-200)]">
@@ -241,6 +246,7 @@ export default function PostCard({
               e.stopPropagation()
               onToggleMenu()
             }}
+            onPointerDown={(e) => e.stopPropagation()}
             aria-label="메뉴"
           >
             <Image
@@ -255,6 +261,7 @@ export default function PostCard({
             <div
               className="absolute right-0 top-[30px] z-20"
               onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
@@ -286,9 +293,9 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* ✅ 작품 정보는 스포일러로 가리지 않음(현재 구조 그대로 OK) */}
+      {/* ✅ 작품 정보 (이제 영역 클릭하면 상세로 이동됨 / 화살표만 예외) */}
       {showWorks && (
-        <div className="mt-5 px-4" onClick={(e) => e.stopPropagation()}>
+        <div className="mt-5 px-4">
           <div className="p-3 rounded-xl flex items-center gap-3 border border-[var(--color-gray-100)] bg-[var(--color-white)]">
             <div className="w-[62px] h-[83px] rounded bg-[var(--color-gray-200)] shrink-0 overflow-hidden">
               <Image
@@ -320,9 +327,10 @@ export default function PostCard({
               <button
                 type="button"
                 onClick={(e) => {
-                  e.stopPropagation()
+                  e.stopPropagation() // ✅ 화살표는 작품 상세(피드 상세 이동 막기)
                   onClickWorksArrow?.()
                 }}
+                onPointerDown={(e) => e.stopPropagation()}
                 className="ml-auto pl-3 flex items-center justify-center hover:opacity-70 transition-opacity cursor-pointer shrink-0"
                 aria-label="작품 상세 보기"
               >
@@ -338,19 +346,22 @@ export default function PostCard({
         </div>
       )}
 
-      {/* 본문/이미지/반응 */}
-      <div {...(bodyProps as any)}>
-        {/* ✅ 스포일러 적용 영역: 이미지 + 본문까지만 */}
+      {/* ✅ 본문/이미지/반응: 프로필(또는 작품영역)과의 간격을 20px로 고정 */}
+      <div className="mt-5">
         <div className="relative">
           <div className={isSpoilerHidden ? 'select-none' : ''}>
+            {/* ✅ 첫 컨텐츠의 mt 제거: 위에서 mt-5로 이미 20px 확보 */}
             {images.length > 0 && (
-              <div className="mt-4 px-4">
+              <div className="px-4">
                 <div className="overflow-x-auto">
                   <div className="flex gap-3">
                     {images.slice(0, 3).map((src, idx) => (
                       <div
                         key={`${boardId}-img-${idx}`}
-                        className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
+                        className={[
+                          'w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0',
+                          isSpoilerHidden ? 'blur-md opacity-10' : '',
+                        ].join(' ')}
                         style={{
                           border: '1px solid var(--color-gray-100)',
                           background: 'lightgray',
@@ -361,10 +372,7 @@ export default function PostCard({
                           alt={`피드 이미지 ${idx + 1}`}
                           width={236}
                           height={236}
-                          className={[
-                            'w-full h-full object-cover rounded-[8px]',
-                            isSpoilerHidden ? 'blur-md' : '',
-                          ].join(' ')}
+                          className="w-full h-full object-cover rounded-[8px]"
                         />
                       </div>
                     ))}
@@ -373,13 +381,14 @@ export default function PostCard({
               </div>
             )}
 
-            <div className="mt-3 px-4">
+            {/* 텍스트: 이미지가 있으면 12px 간격 유지(mt-3), 없으면 바로 시작 */}
+            <div className={images.length > 0 ? 'mt-3 px-4' : 'px-4'}>
               <p
                 className={[
                   variant === 'list'
                     ? 'text-[14px] font-medium leading-[140%] line-clamp-3 pr-10'
                     : 'whitespace-pre-wrap body-2 pr-10',
-                  isSpoilerHidden ? 'blur-md' : '',
+                  isSpoilerHidden ? 'blur-md opacity-10' : '',
                 ].join(' ')}
                 style={{ color: 'var(--color-gray-800)' }}
               >
@@ -388,115 +397,79 @@ export default function PostCard({
             </div>
           </div>
 
-          {/* ✅ 스포일러 덮개: 이미지+본문까지만 덮음 */}
+          {/* ✅ 문구 클릭 시 블러 해제 */}
           {isSpoilerHidden && (
-            <div
-              className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer !shadow-none outline-none ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+            <button
+              type="button"
+              className="absolute left-4 right-4 z-10 text-left"
               style={{
-                boxShadow: 'none',
-                filter: 'none',
-                WebkitFilter: 'none',
-                outline: 'none',
+                top: images.length > 0 ? '16px' : '12px',
+                overflow: 'hidden',
+                color: 'var(--magenta-400, #FF0079)',
+                textAlign: 'justify',
+                textOverflow: 'ellipsis',
+                fontFamily: 'SUIT',
+                fontSize: '14px',
+                fontStyle: 'normal',
+                fontWeight: 500,
+                lineHeight: '140%',
               }}
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation() // ✅ 상세 이동 막고
                 revealSpoiler()
               }}
               onPointerDown={(e) => e.stopPropagation()}
-              role="button"
-              tabIndex={0}
-              aria-label="스포일러 보기"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  revealSpoiler()
-                }
-              }}
+              aria-label="스포일러가 포함된 피드글 보기"
             >
-              {/* 배경 덮개 */}
-              <div
-                className="absolute inset-0 shadow-none"
-                style={{
-                  background: 'rgba(255,255,255,0.70)',
-                  boxShadow: 'none',
-                  filter: 'none',
-                  WebkitFilter: 'none',
-                }}
-              />
-
-              {/* ✅ 안내 박스: 그림자 완전 제거 */}
-              <div
-                className="relative px-4 py-3 rounded-[12px] text-center shadow-none"
-                style={{
-                  border: '1px solid var(--color-gray-100)',
-                  background: 'var(--color-white)',
-                  boxShadow: 'none',
-                  filter: 'none',
-                  WebkitFilter: 'none',
-                }}
-              >
-                <p
-                  className="text-[14px] font-semibold leading-[140%]"
-                  style={{ color: 'var(--color-gray-900)' }}
-                >
-                  스포일러가 포함된 게시글입니다
-                </p>
-                <p
-                  className="mt-1 text-[12px] font-medium leading-[140%]"
-                  style={{ color: 'var(--color-gray-500)' }}
-                >
-                  탭해서 내용을 확인하세요
-                </p>
-              </div>
-            </div>
+              스포일러가 포함된 피드글 보기
+            </button>
           )}
         </div>
+      </div>
 
-        {/* ✅ 좋아요/댓글: 항상 노출 */}
-        <div className="mt-5 px-4 flex items-center">
-          <button
-            type="button"
-            className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleLike()
-            }}
-            aria-label="좋아요"
-          >
-            <Image
-              src={
-                isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'
-              }
-              alt="좋아요"
-              width={24}
-              height={24}
-            />
-            {likeCount > 0 && (
-              <span
-                className="ml-1 text-[14px] font-bold leading-[140%]"
-                style={{ color: 'var(--color-gray-500)' }}
-              >
-                {likeCount}
-              </span>
-            )}
-          </button>
+      {/* ✅ 좋아요/댓글: 하트 영역만 클릭 제외 (stopPropagation) */}
+      <div className="mt-5 px-4 flex items-center">
+        <button
+          type="button"
+          className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation() // ✅ 하트/숫자는 상세 이동 제외
+            onToggleLike()
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          aria-label="좋아요"
+        >
+          <Image
+            src={isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'}
+            alt="좋아요"
+            width={24}
+            height={24}
+          />
+          {likeCount > 0 && (
+            <span
+              className="ml-1 text-[14px] font-bold leading-[140%]"
+              style={{ color: 'var(--color-gray-500)' }}
+            >
+              {likeCount}
+            </span>
+          )}
+        </button>
 
-          <div className="flex items-center ml-4">
-            <Image
-              src="/icons/icon-comment.svg"
-              alt="댓글"
-              width={24}
-              height={24}
-            />
-            {replyCount > 0 && (
-              <span
-                className="ml-1 text-[14px] font-bold leading-[140%]"
-                style={{ color: 'var(--color-gray-500)' }}
-              >
-                {replyCount}
-              </span>
-            )}
-          </div>
+        <div className="flex items-center ml-4">
+          <Image
+            src="/icons/icon-comment.svg"
+            alt="댓글"
+            width={24}
+            height={24}
+          />
+          {replyCount > 0 && (
+            <span
+              className="ml-1 text-[14px] font-bold leading-[140%]"
+              style={{ color: 'var(--color-gray-500)' }}
+            >
+              {replyCount}
+            </span>
+          )}
         </div>
       </div>
     </div>

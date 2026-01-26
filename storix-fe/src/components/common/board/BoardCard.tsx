@@ -27,7 +27,6 @@ export type BoardCardData = {
     likeCount: number
     replyCount: number
     isLiked: boolean
-    // ✅ NEW
     isSpoiler?: boolean
   }
   images?: { imageUrl: string; sortOrder: number }[]
@@ -205,6 +204,11 @@ export default function BoardCard({
   const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
   const revealSpoiler = () => setSpoilerRevealed(true)
 
+  const goDetail = () => {
+    if (!clickable) return
+    router.push(link)
+  }
+
   return (
     <>
       <div
@@ -217,21 +221,22 @@ export default function BoardCard({
           borderBottom: '1px solid var(--color-gray-100)',
           backgroundColor: 'var(--color-white)',
         }}
-        onClick={() => {
-          if (!clickable) return
-          router.push(link)
-        }}
+        onClick={goDetail}
         role={clickable ? 'button' : undefined}
         tabIndex={clickable ? 0 : undefined}
         onKeyDown={(e) => {
           if (!clickable) return
-          if (e.key === 'Enter' || e.key === ' ') router.push(link)
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            goDetail()
+          }
         }}
       >
-        {/* 상단 프로필/메뉴 */}
+        {/* ✅ 상단 프로필/메뉴: 상세 이동 제외 + 커서 기본값 */}
         <div
-          className="px-4 flex items-center justify-between h-[41px]"
+          className="px-4 flex items-center justify-between h-[41px] cursor-default"
           onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--color-gray-200)]">
@@ -268,6 +273,7 @@ export default function BoardCard({
                 e.stopPropagation()
                 menu.toggle(boardId)
               }}
+              onPointerDown={(e) => e.stopPropagation()}
               aria-label="메뉴"
             >
               <Image
@@ -328,9 +334,10 @@ export default function BoardCard({
           </div>
         </div>
 
-        {/* ✅ 작품정보는 '절대 가리지 않음' (스포일러 영역 밖) */}
+        {/* ✅ 작품정보: PostCard처럼 "카드 클릭 범위"에 포함 (stopPropagation 제거)
+            - 화살표 버튼만 예외(작품 상세 이동) */}
         {data.works && (
-          <div className="mt-5 px-4" onClick={(e) => e.stopPropagation()}>
+          <div className="mt-5 px-4">
             <div
               className="p-3 rounded-xl flex gap-3"
               style={{
@@ -375,9 +382,10 @@ export default function BoardCard({
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation()
+                    e.stopPropagation() // ✅ 작품 상세는 게시글 상세 이동 막기
                     router.push(worksTo)
                   }}
+                  onPointerDown={(e) => e.stopPropagation()}
                   className="ml-auto pl-3 flex items-center justify-center cursor-pointer transition-opacity hover:opacity-70 shrink-0"
                   aria-label="작품 상세 보기"
                 >
@@ -393,124 +401,84 @@ export default function BoardCard({
           </div>
         )}
 
-        {/* ✅ 스포일러 적용 영역: 이미지 + 본문만 */}
-        <div className="relative">
-          <div className={isSpoilerHidden ? 'select-none' : ''}>
-            {/* 이미지 */}
-            {sortedImages.length > 0 && (
-              <div className="mt-4 px-4">
-                <div className="overflow-x-auto">
-                  <div className="flex gap-3">
-                    {sortedImages.slice(0, 3).map((src, idx) => (
-                      <div
-                        key={`${boardId}-img-${idx}`}
-                        className="w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0"
-                        style={{
-                          border: '1px solid var(--color-gray-100)',
-                          background: 'lightgray',
-                        }}
-                      >
-                        <Image
-                          src={src}
-                          alt={`피드 이미지 ${idx + 1}`}
-                          width={236}
-                          height={236}
-                          className={[
-                            'w-full h-full object-cover',
-                            isSpoilerHidden ? 'blur-md' : '',
-                          ].join(' ')}
-                        />
-                      </div>
-                    ))}
-                  </div>
+        {/* ✅ 스포일러 영역(이미지+본문만): PostCard와 동일하게 blur/opacity로 모자이크 느낌 */}
+        <div
+          className="mt-5 relative"
+          onClick={(e) => {
+            if (isSpoilerHidden) e.stopPropagation() // ✅ 가려진 상태면 상세 이동 막기
+          }}
+          onPointerDown={(e) => {
+            if (isSpoilerHidden) e.stopPropagation()
+          }}
+        >
+          {/* 이미지 */}
+          {sortedImages.length > 0 && (
+            <div className="px-4">
+              <div className="overflow-x-auto">
+                <div className="flex gap-3">
+                  {sortedImages.slice(0, 3).map((src, idx) => (
+                    <div
+                      key={`${boardId}-img-${idx}`}
+                      className={[
+                        'w-[236px] h-[236px] rounded-[12px] overflow-hidden flex-shrink-0',
+                        isSpoilerHidden ? 'blur-md opacity-10' : '',
+                      ].join(' ')}
+                      style={{ border: '1px solid var(--color-gray-100)' }}
+                    >
+                      <Image
+                        src={src}
+                        alt={`피드 이미지 ${idx + 1}`}
+                        width={236}
+                        height={236}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
-
-            {/* 본문 */}
-            <div className="mt-3 px-4">
-              <p
-                className={[
-                  'text-[14px] font-medium leading-[140%] line-clamp-3',
-                  isSpoilerHidden ? 'blur-md' : '',
-                ].join(' ')}
-                style={{ color: 'var(--color-gray-800)' }}
-              >
-                {data.board.content}
-              </p>
             </div>
+          )}
+
+          {/* 본문 */}
+          <div className={sortedImages.length > 0 ? 'mt-3 px-4' : 'px-4'}>
+            <p
+              className={[
+                'text-[14px] font-medium leading-[140%] line-clamp-3',
+                isSpoilerHidden ? 'blur-md opacity-10 select-none' : '',
+              ].join(' ')}
+              style={{ color: 'var(--color-gray-800)' }}
+            >
+              {data.board.content}
+            </p>
           </div>
 
-          {/* ✅ 스포일러 덮개: 이미지+본문까지만 덮음 */}
+          {/* ✅ 스포일러 문구: 문구만 클릭되게(보드카드 기존 방식 유지) */}
           {isSpoilerHidden && (
-            <div
-              className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer !shadow-none outline-none ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
-              style={{
-                boxShadow: 'none',
-                filter: 'none',
-                WebkitFilter: 'none',
-                outline: 'none',
-              }}
+            <button
+              type="button"
+              className="absolute left-4 top-[12px] z-10 inline-flex w-fit max-w-[calc(100%-32px)]
+                font-medium text-[14px] leading-[140%] text-[var(--color-magenta-400)] truncate"
               onClick={(e) => {
                 e.stopPropagation()
                 revealSpoiler()
               }}
               onPointerDown={(e) => e.stopPropagation()}
-              role="button"
-              tabIndex={0}
-              aria-label="스포일러 보기"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  revealSpoiler()
-                }
-              }}
+              aria-label="스포일러가 포함된 피드글 보기"
             >
-              {/* 배경 덮개 */}
-              <div
-                className="absolute inset-0 shadow-none"
-                style={{
-                  background: 'rgba(255,255,255,0.70)',
-                  boxShadow: 'none',
-                  filter: 'none',
-                  WebkitFilter: 'none',
-                }}
-              />
-
-              {/* 안내 박스 (그림자 완전 제거) */}
-              <div
-                className="relative px-4 py-3 rounded-[12px] text-center shadow-none"
-                style={{
-                  border: '1px solid var(--color-gray-100)',
-                  background: 'var(--color-white)',
-                  boxShadow: 'none',
-                  filter: 'none',
-                  WebkitFilter: 'none',
-                }}
-              >
-                <p
-                  className="text-[14px] font-semibold leading-[140%]"
-                  style={{ color: 'var(--color-gray-900)' }}
-                >
-                  스포일러가 포함된 게시글입니다
-                </p>
-                <p
-                  className="mt-1 text-[12px] font-medium leading-[140%]"
-                  style={{ color: 'var(--color-gray-500)' }}
-                >
-                  탭해서 내용을 확인하세요
-                </p>
-              </div>
-            </div>
+              스포일러가 포함된 피드글 보기
+            </button>
           )}
         </div>
 
-        {/* ✅ 좋아요/댓글: 항상 노출 */}
-        <div
-          className="mt-5 px-4 flex items-center"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center">
+        {/* ✅ 좋아요/댓글
+            - 하트+숫자: 상세 이동 제외 + 커서 기본값으로 통일
+            - 댓글 영역은 PostCard처럼 '상세 이동 가능'로 유지(요구사항에 없었음) */}
+        <div className="mt-5 px-4 flex items-center">
+          <div
+            className="flex items-center cursor-default"
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className="inline-flex items-center cursor-pointer transition-opacity hover:opacity-80"
@@ -520,6 +488,7 @@ export default function BoardCard({
                 e.stopPropagation()
                 onToggleLike?.(boardId)
               }}
+              onPointerDown={(e) => e.stopPropagation()}
             >
               <Image
                 src={
