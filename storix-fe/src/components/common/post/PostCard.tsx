@@ -32,7 +32,7 @@ type Props = {
   images: string[]
   works?: Work | null
 
-  // ✅ NEW: spoiler flag
+  //   NEW: spoiler flag
   isSpoiler?: boolean
 
   isLiked: boolean
@@ -175,7 +175,7 @@ export default function PostCard({
   const isMine = myUserId != null && writerUserId === myUserId
 
   // =========================================================
-  // ✅ Spoiler overlay: 1st click reveals, next click opens detail
+  //   Spoiler overlay: 1st click reveals, next click opens detail
   // =========================================================
   const [spoilerRevealed, setSpoilerRevealed] = useState(false)
   const isSpoilerHidden = isSpoiler && !spoilerRevealed
@@ -332,7 +332,7 @@ export default function PostCard({
                   {works.artistName} · {works.worksType} · {works.genre}
                 </p>
 
-                {/* ✅ 잘리는 해시태그는 아예 렌더 X */}
+                {/*   잘리는 해시태그는 아예 렌더 X */}
                 <HashtagRow tags={works.hashtags ?? []} />
               </div>
 

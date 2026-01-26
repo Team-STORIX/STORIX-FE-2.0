@@ -18,19 +18,19 @@ type Status = 'idle' | 'connecting' | 'open' | 'closed' | 'error'
 export const useTopicRoomStomp = (params: { roomId: number }) => {
   const { roomId } = params
   const { accessToken } = useAuthStore()
-  const myUserId = useProfileStore((s) => s.me?.userId ?? null) // ✅
+  const myUserId = useProfileStore((s) => s.me?.userId ?? null) //
 
   const clientRef = useRef<Client | null>(null)
   const subRef = useRef<StompSubscription | null>(null)
   const subIdRef = useRef<string | null>(null)
 
-  // ✅ 동일 조건에서 중복 connect 방지(StrictMode/리렌더)
-  const sessionKeyRef = useRef<string>('') // ✅
+  //   동일 조건에서 중복 connect 방지(StrictMode/리렌더)
+  const sessionKeyRef = useRef<string>('') //
 
-  // ✅ optimistic 중복 제거
+  //   optimistic 중복 제거
   const pendingSentRef = useRef<
     Array<{ tempId: string; text: string; at: number }>
-  >([]) // ✅
+  >([]) //
 
   const [status, setStatus] = useState<Status>('idle')
   const [messages, setMessages] = useState<TopicRoomUiMsg[]>([])
@@ -41,12 +41,12 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
   )
 
   const unsubscribe = useCallback(() => {
-    // ✅ 요구사항: UNSUBSCRIBE 명시
+    //   요구사항: UNSUBSCRIBE 명시
     try {
       if (subRef.current) {
-        subRef.current.unsubscribe() // ✅
+        subRef.current.unsubscribe() //
       } else if (clientRef.current && subIdRef.current) {
-        clientRef.current.unsubscribe(subIdRef.current) // ✅
+        clientRef.current.unsubscribe(subIdRef.current) //
       }
     } catch {
       // noop
@@ -57,10 +57,10 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
   }, [])
 
   const disconnect = useCallback(async () => {
-    unsubscribe() // ✅
+    unsubscribe() //
     try {
       if (clientRef.current) {
-        await clientRef.current.deactivate() // ✅
+        await clientRef.current.deactivate() //
       }
     } catch {
       // noop
@@ -82,12 +82,12 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
       setMessages((prev) => [
         ...prev,
         {
-          id: tempId, // ✅
+          id: tempId, //
           type: 'me',
-          senderId: myUserId ?? undefined, // ✅
+          senderId: myUserId ?? undefined, //
           text,
           time,
-          createdAt: now.toISOString(), // ✅
+          createdAt: now.toISOString(), //
         },
       ])
     },
@@ -97,29 +97,29 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
   useEffect(() => {
     if (!canConnect) return
 
-    const sessionKey = `room:${roomId}|token:${accessToken}` // ✅
+    const sessionKey = `room:${roomId}|token:${accessToken}` //
     if (sessionKeyRef.current === sessionKey && clientRef.current?.connected) {
-      return // ✅ 이미 같은 조건으로 연결돼 있으면 재연결 금지
+      return //   이미 같은 조건으로 연결돼 있으면 재연결 금지
     }
 
-    sessionKeyRef.current = sessionKey // ✅
+    sessionKeyRef.current = sessionKey //
     setStatus('connecting')
 
     let cancelled = false
 
     ;(async () => {
-      // ✅ 혹시 남아있는 이전 client가 있으면 먼저 확실히 끊고 시작
+      //   혹시 남아있는 이전 client가 있으면 먼저 확실히 끊고 시작
       if (clientRef.current) {
-        await disconnect() // ✅
+        await disconnect() //
       }
       if (cancelled) return
 
       const client = new Client({
-        // ✅ Native WebSocket: brokerURL 직접 입력 (SockJS 금지)
-        brokerURL: STORIX_STOMP_BROKER_URL, // ✅
-        reconnectDelay: 3000, // ✅
+        //   Native WebSocket: brokerURL 직접 입력 (SockJS 금지)
+        brokerURL: STORIX_STOMP_BROKER_URL, //
+        reconnectDelay: 3000, //
         connectHeaders: {
-          Authorization: `Bearer ${accessToken}`, // ✅ JWT 헤더 필수
+          Authorization: `Bearer ${accessToken}`, //   JWT 헤더 필수
         },
         onConnect: () => {
           if (cancelled) return
@@ -128,18 +128,18 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
           const subId = makeSubscriptionId(roomId)
           subIdRef.current = subId
 
-          // ✅ 혹시 reconnect 상황이면 기존 sub 정리 후 재구독
-          unsubscribe() // ✅
+          //   혹시 reconnect 상황이면 기존 sub 정리 후 재구독
+          unsubscribe() //
 
           subRef.current = client.subscribe(
             topicRoomSubPath(roomId),
             (frame) => {
               const uiMsg = normalizeTopicRoomStompMessage(frame.body, {
                 myUserId,
-              }) // ✅
+              }) //
               if (!uiMsg) return
 
-              // ✅ 내 메시지 echo면 optimistic과 중복 제거
+              //   내 메시지 echo면 optimistic과 중복 제거
               if (uiMsg.type === 'me') {
                 const now = Date.now()
                 const idx = pendingSentRef.current.findIndex(
@@ -155,7 +155,7 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
                       m.id === matched.tempId
                         ? {
                             ...m,
-                            id: uiMsg.id, // ✅ server id로 교체
+                            id: uiMsg.id, //   server id로 교체
                             time: uiMsg.time || m.time,
                             createdAt: uiMsg.createdAt ?? m.createdAt,
                             senderId: uiMsg.senderId ?? m.senderId,
@@ -169,10 +169,10 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
 
               setMessages((prev) => [...prev, uiMsg])
             },
-            { id: subId }, // ✅ Subscription ID 필수
+            { id: subId }, //   Subscription ID 필수
           )
 
-          console.log('[STOMP] connected', roomId) // ✅ 디버그(원하면 나중에 제거)
+          console.log('[STOMP] connected', roomId) //   디버그(원하면 나중에 제거)
         },
         onWebSocketClose: () => {
           if (cancelled) return
@@ -194,11 +194,11 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
 
     return () => {
       cancelled = true
-      // ✅ 언마운트/페이지 이동 시 명시적 UNSUBSCRIBE + deactivate
-      void disconnect() // ✅
+      //   언마운트/페이지 이동 시 명시적 UNSUBSCRIBE + deactivate
+      void disconnect() //
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canConnect, roomId, accessToken, myUserId]) // ✅ disconnect/unsubscribe는 내부에서만 사용
+  }, [canConnect, roomId, accessToken, myUserId]) //   disconnect/unsubscribe는 내부에서만 사용
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -208,9 +208,9 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
       const client = clientRef.current
       if (!client || !client.connected) return false
 
-      const tempId = `me_tmp_${Date.now()}_${Math.random().toString(16).slice(2)}` // ✅
-      pendingSentRef.current.push({ tempId, text: t, at: Date.now() }) // ✅
-      appendOptimisticMe(tempId, t) // ✅
+      const tempId = `me_tmp_${Date.now()}_${Math.random().toString(16).slice(2)}` //
+      pendingSentRef.current.push({ tempId, text: t, at: Date.now() }) //
+      appendOptimisticMe(tempId, t) //
 
       client.publish({
         destination: topicRoomPubPath(),

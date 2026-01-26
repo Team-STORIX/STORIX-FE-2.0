@@ -83,7 +83,7 @@ export default function Preference() {
   )
   const works = useMemo(() => worksPreview.slice(0, WORK_LIMIT), [worksPreview])
 
-  // ✅ 작품은 4개만 “칸”에 보여주고, 부족하면 빈칸으로 채워서 간격 규칙 유지
+  //   작품은 4개만 “칸”에 보여주고, 부족하면 빈칸으로 채워서 간격 규칙 유지
   const worksForGrid = useMemo(() => works.slice(0, 4), [works])
   const emptySlots = useMemo(
     () => Math.max(0, 4 - worksForGrid.length),
@@ -118,7 +118,7 @@ export default function Preference() {
         </div>
 
         {hasWriters ? (
-          // ✅ 좌우 스크롤 제거: 그냥 영역 안에서 보이는 만큼만
+          //   좌우 스크롤 제거: 그냥 영역 안에서 보이는 만큼만
           <div className="flex mt-6 gap-[18px]">
             {writers.slice(0, 5).map((writer) => (
               <div key={writer.id} className="flex flex-col items-center">
@@ -194,7 +194,7 @@ export default function Preference() {
         </div>
 
         {hasWorks ? (
-          // ✅ 361*163 박스 안에 “4칸 고정 + 자동 간격”
+          //   361*163 박스 안에 “4칸 고정 + 자동 간격”
           <div className="mt-6 w-[361px] h-[163px]">
             <div className="flex justify-between w-full">
               {/* 실제 작품 1~4개 */}
@@ -223,7 +223,7 @@ export default function Preference() {
                 </div>
               ))}
 
-              {/* ✅ 빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
+              {/*   빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
               {Array.from({ length: emptySlots }).map((_, idx) => (
                 <div key={`empty-${idx}`} className="flex flex-col opacity-0">
                   <div className="w-[87px] h-[116px] rounded" />

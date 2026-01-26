@@ -1,4 +1,4 @@
-// ✅ src/app/feed/review/write/ReviewWriteClient.tsx
+//   src/app/feed/review/write/ReviewWriteClient.tsx
 'use client'
 
 import Image from 'next/image'
@@ -9,6 +9,7 @@ import { createReaderReview } from '@/lib/api/plus/plusWrite'
 
 type Work = { id: number; title: string; meta: string; thumb: string }
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
+const MAX_CONTENT_LENGTH = 500
 
 export default function ReviewWriteClient({ work }: { work: Work | null }) {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
   const [rating, setRating] = useState(0)
   const [submitting, setSubmitting] = useState(false)
 
-  // ✅ work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
+  //   work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
   useEffect(() => {
     if (work?.id && work.id === routeId) {
       setResolvedWork(work)
@@ -43,11 +44,12 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
   }, [work?.id, routeId])
 
   const content = text.trim()
+  const contentLength = text.length
 
   const canSubmit = useMemo(() => {
     if (!resolvedWork?.id) return false
     if (content.length === 0) return false
-    if (content.length > 500) return false
+    if (content.length > MAX_CONTENT_LENGTH) return false
     if (rating < 0.5) return false
     return true
   }, [resolvedWork?.id, content.length, rating])
@@ -65,7 +67,7 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
         content,
       })
 
-      // ✅ 성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
+      //   성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
       sessionStorage.removeItem(STORAGE_KEY_REVIEW)
 
       router.replace(`/library/works/${resolvedWork.id}`)
@@ -147,13 +149,30 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
 
         <textarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          maxLength={MAX_CONTENT_LENGTH}
+          onChange={(e) => {
+            const next = e.target.value
+            setText(
+              next.length > MAX_CONTENT_LENGTH
+                ? next.slice(0, MAX_CONTENT_LENGTH)
+                : next,
+            )
+          }}
           placeholder="좋아하는 작품에 대해 적어보세요!"
           className="mt-4 h-60 w-full resize-none body-1 text-gray-700 outline-none"
         />
 
         <div className="mt-2 flex justify-end px-1 text-caption text-gray-400">
-          {content.length}/500
+          <span
+            className={
+              contentLength === MAX_CONTENT_LENGTH
+                ? 'text-[var(--color-warning)]'
+                : 'text-gray-400'
+            }
+          >
+            {contentLength}
+          </span>
+          /{MAX_CONTENT_LENGTH}
         </div>
       </div>
     </main>

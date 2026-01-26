@@ -16,15 +16,15 @@ import {
 } from '@/api/feed/readerFeed.api'
 import { toggleBoardLike } from '@/api/feed/readerBoard.api'
 
-// ✅ NEW: 관심작품 picker API
+//   NEW: 관심작품 picker API
 import { getFavoriteWorks } from '@/api/feed/readerFavoriteWorks.api'
-// ✅ NEW: worksId 전용 피드 API
+//   NEW: worksId 전용 피드 API
 import {
   getFeedBoardsByWorksId,
   type FeedBoardItem as WorksFeedBoardItem,
 } from '@/api/feed/readerWorksFeed.api'
 
-// ✅ menu + flows + api
+//   menu + flows + api
 import { useOpenMenu } from '@/hooks/useOpenMenu'
 import { useReportFlow } from '@/hooks/useReportFlow'
 import { useDeleteFlow } from '@/hooks/useDeleteFlow'
@@ -121,7 +121,7 @@ const mapToUIPost = (item: AllFeedBoardItem | WorksFeedBoardItem): UIPost => {
   }
 }
 
-// ✅ 게시글 신고 API
+//   게시글 신고 API
 const reportBoard = async (boardId: number, reportedUserId: number) => {
   const res = await apiClient.post(
     `/api/v1/feed/reader/board/${boardId}/report`,
@@ -132,7 +132,7 @@ const reportBoard = async (boardId: number, reportedUserId: number) => {
   return res.data
 }
 
-// ✅ 게시글 삭제 API
+//   게시글 삭제 API
 const deleteBoard = async (boardId: number) => {
   const res = await apiClient.delete(`/api/v1/feed/reader/board/${boardId}`)
   return res.data
@@ -236,7 +236,7 @@ export default function FeedPageClient() {
 
       try {
         const data = await toggleBoardLike(boardId)
-        // ✅ data는 { isLiked: boolean; likeCount: number } 형태라고 했으니 그대로 사용 가능
+        //   data는 { isLiked: boolean; likeCount: number } 형태라고 했으니 그대로 사용 가능
 
         // (선택) 서버값으로 확정 동기화하고 싶으면 아래처럼
         if (
@@ -338,7 +338,7 @@ export default function FeedPageClient() {
     [loading, mode, worksIdNumber],
   )
 
-  // ✅ tab/pick 변경 시: 리셋 + 0페이지 재조회
+  //   tab/pick 변경 시: 리셋 + 0페이지 재조회
   useEffect(() => {
     resetFeed()
     fetchFeedPage(0)
@@ -379,7 +379,7 @@ export default function FeedPageClient() {
   const items = tab === 'works' ? favoriteWorks : writersItems
 
   // =========================================================
-  // ✅ 메뉴/신고/삭제 Flow
+  //   메뉴/신고/삭제 Flow
   // =========================================================
   const me = useProfileStore((s) => s.me)
   const myUserId = me?.userId

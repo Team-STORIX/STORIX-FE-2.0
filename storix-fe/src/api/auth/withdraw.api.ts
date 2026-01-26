@@ -6,7 +6,7 @@ import { WithdrawResponseSchema, type WithdrawResponse } from './auth.schema'
 export const withdrawUser = async (): Promise<WithdrawResponse> => {
   const response = await apiClient.delete('/api/v1/auth/user/withdraw')
 
-  // ✅ 응답 shape이 swagger랑 미세하게 달라도(예: result가 null 등) 탈퇴 흐름은 성공 처리
+  //   응답 shape이 swagger랑 미세하게 달라도(예: result가 null 등) 탈퇴 흐름은 성공 처리
   const parsed = WithdrawResponseSchema.safeParse(response.data)
   if (parsed.success) return parsed.data
 

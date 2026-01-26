@@ -20,7 +20,7 @@ export default function WriterSignupPage() {
   const [showWarning, setShowWarning] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // ✅ 입력값이 빈 경우 버튼 비활성화용
+  //   입력값이 빈 경우 버튼 비활성화용
   const canSubmit = writerId.trim().length > 0 && password.trim().length > 0
 
   const onLogin = async () => {
@@ -39,7 +39,7 @@ export default function WriterSignupPage() {
         password: password.trim(),
       })
 
-      // ✅ 디버깅 로그
+      //   디버깅 로그
       // console.log('[artist-login] raw response:', res)
       // console.log('[artist-login] isSuccess:', res?.isSuccess)
       // console.log('[artist-login] accessToken:', res?.result?.accessToken)
@@ -51,10 +51,10 @@ export default function WriterSignupPage() {
         return
       }
 
-      // ✅ 토큰 저장
+      //   토큰 저장
       setAccessToken(token)
 
-      // ✅ 로그인 성공 → 작가 로그인 페이지로 이동
+      //   로그인 성공 → 작가 로그인 페이지로 이동
       router.push('/writers/login')
     } catch (e) {
       console.error('[artist-login] error:', e)
@@ -66,7 +66,7 @@ export default function WriterSignupPage() {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* ✅ Topbar */}
+      {/*   Topbar */}
       <div className="w-full h-14 px-4 flex items-center bg-white">
         <img
           src="/icons/back.svg"
@@ -78,7 +78,7 @@ export default function WriterSignupPage() {
         />
       </div>
 
-      {/* ✅ 제목/설명 */}
+      {/*   제목/설명 */}
       <div className="mt-[44px] px-4">
         <h1 className="heading-1 text-black">안녕하세요 작가님 반가워요!</h1>
         <p className="body-1 mt-[5px] text-[var(--color-gray-500)]">
@@ -86,7 +86,7 @@ export default function WriterSignupPage() {
         </p>
       </div>
 
-      {/* ✅ 아이디 입력 */}
+      {/*   아이디 입력 */}
       <div className="mt-[80px] px-4">
         <p className="body-1 text-black">아이디</p>
 
@@ -100,7 +100,7 @@ export default function WriterSignupPage() {
         </div>
       </div>
 
-      {/* ✅ 비밀번호 입력 */}
+      {/*   비밀번호 입력 */}
       <div className="mt-[32px] px-4">
         <p className="body-1 text-black">비밀번호</p>
 
@@ -136,7 +136,7 @@ export default function WriterSignupPage() {
 
       <div className="h-[239px]" />
 
-      {/* ✅ 작가 인증 링크 + 로그인 버튼 */}
+      {/*   작가 인증 링크 + 로그인 버튼 */}
       <div className="mt-[139px] flex flex-col items-center px-4">
         <Link
           href="/writers/verify"
@@ -165,7 +165,7 @@ export default function WriterSignupPage() {
         </button>
       </div>
 
-      {/* ✅ 로그인 실패 경고 모달 */}
+      {/*   로그인 실패 경고 모달 */}
       {showWarning && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"

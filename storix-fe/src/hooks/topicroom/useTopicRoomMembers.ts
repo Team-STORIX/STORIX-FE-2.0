@@ -4,8 +4,8 @@ import { getTopicRoomMembers } from '@/lib/api/topicroom'
 
 export const useTopicRoomMembers = (roomId: number) => {
   return useQuery({
-    queryKey: ['topicroom', 'members', roomId], // ✅
-    enabled: Number.isFinite(roomId) && roomId > 0, // ✅
+    queryKey: ['topicroom', 'members', roomId], //
+    enabled: Number.isFinite(roomId) && roomId > 0, //
     queryFn: () => getTopicRoomMembers(roomId),
     refetchOnWindowFocus: false,
     staleTime: 30_000,

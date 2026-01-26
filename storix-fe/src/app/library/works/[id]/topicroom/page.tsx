@@ -37,7 +37,7 @@ export default function TopicRoomCreateSuccessPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white px-4">
-      {/* ✅ UI 변경: 모달이 아닌 페이지이므로 상단 뒤로가기 버튼 노출 */}
+      {/*   UI 변경: 모달이 아닌 페이지이므로 상단 뒤로가기 버튼 노출 */}
       <div className="pt-4">
         <button
           type="button"
@@ -49,7 +49,7 @@ export default function TopicRoomCreateSuccessPage() {
         </button>
       </div>
 
-      {/* ✅ Step 4 UI(기존 4단계 그대로) */}
+      {/*   Step 4 UI(기존 4단계 그대로) */}
       <div className="flex flex-1 flex-col items-center justify-center">
         <p className="heading-2 text-center text-black">
           첫 토픽룸이 만들어졌어요!
@@ -86,7 +86,7 @@ export default function TopicRoomCreateSuccessPage() {
         </div>
       </div>
 
-      {/* ✅ Step 4 버튼(기존 그대로) */}
+      {/*   Step 4 버튼(기존 그대로) */}
       <button
         type="button"
         onClick={onGoRoom}

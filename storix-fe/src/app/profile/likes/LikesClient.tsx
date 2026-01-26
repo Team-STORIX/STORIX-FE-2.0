@@ -31,13 +31,13 @@ export default function LikesClient() {
   const tab: Tab = (sp.get('tab') as Tab) ?? 'works'
   const router = useRouter()
 
-  // ✅ 전역 store (캐시/즉시 반영용)
+  //   전역 store (캐시/즉시 반영용)
   const storeAddWork = useFavoritesStore((s) => s.addFavoriteWork)
   const storeRemoveWork = useFavoritesStore((s) => s.removeFavoriteWork)
   const storeAddArtist = useFavoritesStore((s) => s.addFavoriteArtist)
   const storeRemoveArtist = useFavoritesStore((s) => s.removeFavoriteArtist)
 
-  // ✅ API 기반 리스트 state (탭별)
+  //   API 기반 리스트 state (탭별)
   const [works, setWorks] = useState<FavoriteWork[]>([])
   const [writers, setWriters] = useState<FavoriteArtist[]>([])
 
@@ -49,7 +49,7 @@ export default function LikesClient() {
 
   const [loading, setLoading] = useState(false)
 
-  // ✅ 토글 pending (탭별)
+  //   토글 pending (탭별)
   // - 이 페이지에서 보여주는 항목은 기본이 "관심 등록 상태(true)"이므로,
   //   사용자가 check->plus로 바꾸면 removed에 들어가고,
   //   plus->check로 다시 돌리면 removed에서 빠진다.
@@ -60,7 +60,7 @@ export default function LikesClient() {
     new Set(),
   )
 
-  // ✅ pending 최신값 ref
+  //   pending 최신값 ref
   const pendingRef = useRef({
     pendingWorkRemoved,
     pendingArtistRemoved,
@@ -73,7 +73,7 @@ export default function LikesClient() {
     }
   }, [pendingWorkRemoved, pendingArtistRemoved])
 
-  // ✅ 커밋 중복 방지 (works/artist 별도 lock)
+  //   커밋 중복 방지 (works/artist 별도 lock)
   const commitWorksLockRef = useRef(false)
   const commitArtistsLockRef = useRef(false)
 
@@ -84,18 +84,18 @@ export default function LikesClient() {
       const wR = pendingRef.current.pendingWorkRemoved
       if (!wR || wR.size === 0) return
 
-      // ✅ store 즉시 반영
+      //   store 즉시 반영
       wR.forEach((id) => storeRemoveWork(id))
 
-      // ✅ API best-effort
+      //   API best-effort
       await Promise.allSettled(
         Array.from(wR).map((id) => deleteFavoriteWork(id)),
       )
 
-      // ✅ 커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
+      //   커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
       setWorks((prev) => prev.filter((w) => !wR.has(w.worksId)))
 
-      // ✅ pending 초기화
+      //   pending 초기화
       setPendingWorkRemoved(new Set())
     } finally {
       commitWorksLockRef.current = false
@@ -109,25 +109,25 @@ export default function LikesClient() {
       const aR = pendingRef.current.pendingArtistRemoved
       if (!aR || aR.size === 0) return
 
-      // ✅ store 즉시 반영
+      //   store 즉시 반영
       aR.forEach((id) => storeRemoveArtist(id))
 
-      // ✅ API best-effort
+      //   API best-effort
       await Promise.allSettled(
         Array.from(aR).map((id) => deleteFavoriteArtist(id)),
       )
 
-      // ✅ 커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
+      //   커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
       setWriters((prev) => prev.filter((a) => !aR.has(a.artistId)))
 
-      // ✅ pending 초기화
+      //   pending 초기화
       setPendingArtistRemoved(new Set())
     } finally {
       commitArtistsLockRef.current = false
     }
   }, [storeRemoveArtist])
 
-  // ✅ 탭 변경을 저장 트리거로 사용 (이전 탭 커밋)
+  //   탭 변경을 저장 트리거로 사용 (이전 탭 커밋)
   const prevTabRef = useRef<Tab>(tab)
   useEffect(() => {
     const prev = prevTabRef.current
@@ -144,7 +144,7 @@ export default function LikesClient() {
     })()
   }, [tab, commitWorks, commitArtists])
 
-  // ✅ 언마운트 시 마지막 커밋
+  //   언마운트 시 마지막 커밋
   useEffect(() => {
     return () => {
       // cleanup은 async await가 보장되지 않으니 best-effort 호출만
@@ -202,7 +202,7 @@ export default function LikesClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
-  // ✅ IntersectionObserver로 무한스크롤 (UI 변화 없음: sentinel div만 추가)
+  //   IntersectionObserver로 무한스크롤 (UI 변화 없음: sentinel div만 추가)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     const el = sentinelRef.current

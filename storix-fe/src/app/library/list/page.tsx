@@ -33,7 +33,7 @@ export default function LibraryListPage() {
   const [showReviewSheet, setShowReviewSheet] = useState(false)
 
   const apiSort: LibraryReviewSort = useMemo(() => {
-    if (sort === 'RATING' || sort === 'RATING_ASC') return 'DESC_RATING' // ✅
+    if (sort === 'RATING' || sort === 'RATING_ASC') return 'DESC_RATING' //
     return 'LATEST'
   }, [sort])
 

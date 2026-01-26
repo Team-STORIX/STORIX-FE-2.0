@@ -2,7 +2,7 @@
 import { z } from 'zod'
 
 /**
- * ✅ works/artists 실응답 구조(확정):
+ *   works/artists 실응답 구조(확정):
  * {
  *   isSuccess, code, message,
  *   result: {
@@ -32,7 +32,7 @@ const PageableSchema = z
   .object({
     pageNumber: z.coerce.number(),
     pageSize: z.coerce.number(),
-    // ✅ 기존: sort: z.array(z.any()).default([]),
+    //   기존: sort: z.array(z.any()).default([]),
     sort: z.any().optional(),
     offset: z.coerce.number(),
     unpaged: z.boolean(),
@@ -63,7 +63,7 @@ const SliceSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
       empty: z.boolean(),
 
       pageable: PageableSchema,
-      // ✅ 기존: sort: z.array(SortItemSchema).default([]),
+      //   기존: sort: z.array(SortItemSchema).default([]),
       sort: z.any().optional(),
     })
     .passthrough()
@@ -90,7 +90,7 @@ export const ArtistsSearchItemSchema = z
   })
   .passthrough()
 
-/** ✅ Raw(실응답) 스키마 */
+/**   Raw(실응답) 스키마 */
 export const WorksSearchRawResponseSchema = ApiResponseSchema(
   z.object({
     result: SliceSchema(WorksSearchItemSchema),
@@ -105,7 +105,7 @@ export const ArtistsSearchRawResponseSchema = ApiResponseSchema(
   }),
 )
 
-/** ✅ Normalized(기존 FE 호환) 스키마: result가 곧 Slice */
+/**   Normalized(기존 FE 호환) 스키마: result가 곧 Slice */
 export const WorksSearchResponseSchema = ApiResponseSchema(
   SliceSchema(WorksSearchItemSchema),
 )

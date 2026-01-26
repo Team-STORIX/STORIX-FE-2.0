@@ -11,7 +11,7 @@ interface NicknameProps {
   value: string
   onChange: (value: string) => void
   currentNickname?: string
-  onVerifiedChange?: (ok: boolean) => void // ✅ 부모(완료버튼) 제어용
+  onVerifiedChange?: (ok: boolean) => void //   부모(완료버튼) 제어용
   variant?: 'onboarding' | 'inline'
 }
 
@@ -84,7 +84,7 @@ export default function Nickname({
     (v: string): { st: Status; message: string } => {
       if (!v) return { st: 'idle', message: '' }
 
-      // ✅ 현재 닉네임이면 “검증 완료” 상태로 취급
+      //   현재 닉네임이면 “검증 완료” 상태로 취급
       if (
         normalize(currentNickname) &&
         normalize(v) === normalize(currentNickname)
@@ -103,7 +103,7 @@ export default function Nickname({
     [currentNickname],
   )
 
-  // ✅ (핵심) 초기 1회 + currentNickname이 들어오는 순간(프로필 로드 완료 등)에만 동기화
+  //   (핵심) 초기 1회 + currentNickname이 들어오는 순간(프로필 로드 완료 등)에만 동기화
   // value(타이핑)는 handleChange에서만 처리해서 조합/입력 꼬임을 줄임
   useEffect(() => {
     if (!didInitRef.current) {
@@ -123,7 +123,7 @@ export default function Nickname({
   }, [currentNickname, validate])
 
   const handleChange = (raw: string) => {
-    // ✅ 한글 조합 중에는 sanitize/validate로 건드리면 글자가 “지워지는” 현상 발생
+    //   한글 조합 중에는 sanitize/validate로 건드리면 글자가 “지워지는” 현상 발생
     if (isComposing) {
       onChange(raw)
       return
@@ -132,7 +132,7 @@ export default function Nickname({
     const next = sanitize(raw)
     onChange(next)
 
-    // ✅ 입력이 바뀌면 “중복확인 완료” 해제 (단, same면 다시 true 처리)
+    //   입력이 바뀌면 “중복확인 완료” 해제 (단, same면 다시 true 처리)
     onVerifiedChange?.(false)
 
     const { st, message } = validate(next)
@@ -145,7 +145,7 @@ export default function Nickname({
   const canCheck = useMemo(() => {
     if (status === 'checking') return false
     const { st } = validate(value)
-    // ✅ 중복확인 버튼은 ready/same일 때만
+    //   중복확인 버튼은 ready/same일 때만
     return st === 'ready' || st === 'same'
   }, [value, status, validate])
 
@@ -160,7 +160,7 @@ export default function Nickname({
   const checkDuplicate = async () => {
     if (!canCheck) return
 
-    // ✅ 현재 닉네임이면 서버 호출 없이 “검증 완료”
+    //   현재 닉네임이면 서버 호출 없이 “검증 완료”
     if (isSameNow) {
       setStatus('same')
       setMsg(MSG_SAME) // 메시지 싫으면 ''로 바꿔도 됨
@@ -179,7 +179,7 @@ export default function Nickname({
       const message = (raw?.message ?? '').toString()
       const code = (raw?.code ?? '').toString()
 
-      // ✅ 409/400 등: 중복이면 taken으로
+      //   409/400 등: 중복이면 taken으로
       if (httpStatus >= 400) {
         if (httpStatus === 409 || looksTaken(message, code)) {
           setStatus('taken')
@@ -195,7 +195,7 @@ export default function Nickname({
         return
       }
 
-      // ✅ 200인데도 isSuccess=false로 중복을 표현하는 서버도 많음
+      //   200인데도 isSuccess=false로 중복을 표현하는 서버도 많음
       if (raw?.isSuccess === false) {
         setStatus('taken')
         setMsg(MSG_TAKEN)
@@ -203,7 +203,7 @@ export default function Nickname({
         return
       }
 
-      // ✅ result 파싱 가능하면 그걸 우선
+      //   result 파싱 가능하면 그걸 우선
       if (available === true) {
         setStatus('ok')
         setMsg(MSG_OK)
@@ -217,7 +217,7 @@ export default function Nickname({
         return
       }
 
-      // ✅ 파싱 실패(null)이면 message/code로 판단
+      //   파싱 실패(null)이면 message/code로 판단
       if (looksTaken(message, code)) {
         setStatus('taken')
         setMsg(MSG_TAKEN)
@@ -244,7 +244,7 @@ export default function Nickname({
     status === 'taken' ||
     status === 'error'
 
-  const isSuccess = status === 'ok' || status === 'same' // ✅ same도 성공으로 표시
+  const isSuccess = status === 'ok' || status === 'same' //   same도 성공으로 표시
 
   const underlineClass = isSuccess
     ? 'border-b-2 border-[var(--color-success)]'
@@ -294,7 +294,7 @@ export default function Nickname({
             onCompositionEnd={(e) => {
               setIsComposing(false)
 
-              // ✅ 조합이 끝난 최종 문자열로 sanitize/validate 한 번 수행
+              //   조합이 끝난 최종 문자열로 sanitize/validate 한 번 수행
               const finalRaw = (e.currentTarget as HTMLInputElement).value
               const next = sanitize(finalRaw)
               onChange(next)

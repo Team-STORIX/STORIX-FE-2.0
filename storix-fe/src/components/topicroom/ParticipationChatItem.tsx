@@ -10,7 +10,7 @@ type Props = {
 }
 
 export default function ParticipationChatItem({ item }: Props) {
-  const router = useRouter() // ✅
+  const router = useRouter() //
 
   const { id, thumbnail, title, subtitle, memberCount, timeAgo, worksName } =
     item
@@ -20,8 +20,8 @@ export default function ParticipationChatItem({ item }: Props) {
     : `${memberCount}명`
 
   const handleClick = () => {
-    const qs = worksName ? `?worksName=${encodeURIComponent(worksName)}` : '' // ✅
-    router.push(`/home/topicroom/${id}${qs}`) // ✅
+    const qs = worksName ? `?worksName=${encodeURIComponent(worksName)}` : '' //
+    router.push(`/home/topicroom/${id}${qs}`) //
   }
 
   return (

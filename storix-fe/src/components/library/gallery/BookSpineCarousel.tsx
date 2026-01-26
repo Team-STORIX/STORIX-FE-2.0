@@ -36,7 +36,7 @@ export default function BookSpineCarousel({
 
   const [activeIdx, setActiveIdx] = useState(0)
 
-  // ✅ (API 연동) list처럼 페이지네이션으로 계속 불러올 수 있게
+  //   (API 연동) list처럼 페이지네이션으로 계속 불러올 수 있게
   // 캐러셀에서 활성 인덱스가 끝쪽에 가까워지면 다음 페이지를 요청 (UI는 그대로)
   useEffect(() => {
     if (!hasMore) return
@@ -217,11 +217,11 @@ export default function BookSpineCarousel({
                   <div className="absolute inset-0 flex items-center justify-center px-1">
                     <span
                       title={w.title}
-                      className="body-2 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center"
+                      className="body-2 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center "
                       style={{
                         writingMode: 'vertical-rl',
                         textOrientation: 'mixed',
-                        maxHeight: 176, // ✅ 책등 높이(200) 안에서 여백 주고 중앙 정렬
+                        maxHeight: 176,
                       }}
                     >
                       {w.title}

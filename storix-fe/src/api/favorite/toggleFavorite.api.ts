@@ -43,7 +43,7 @@ export async function deleteFavoriteArtist(artistId: number) {
 }
 
 /**
- * ✅ LikesClient가 기대하는 이름(alias)
+ *   LikesClient가 기대하는 이름(alias)
  * - 기존 코드 변경 최소화를 위해 그대로 export 해줌
  */
 export const addFavoriteWork = postFavoriteWork

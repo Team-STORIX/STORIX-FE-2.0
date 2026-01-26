@@ -26,7 +26,7 @@ export const useLibraryReviewInfinite = ({
       return current + 1
     },
 
-    // ✅ “새로고침/직접 invalidate 할 때만” 다시 가져오게
+    //   “새로고침/직접 invalidate 할 때만” 다시 가져오게
     refetchOnWindowFocus: false,
     staleTime: 30_000,
     refetchOnReconnect: false,

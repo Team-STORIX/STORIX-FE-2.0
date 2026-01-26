@@ -14,12 +14,12 @@ export const useKakaoLogin = () => {
   return useMutation({
     mutationFn: (code: string) => kakaoLogin(code),
     onSuccess: (data: KakaoLoginResponse) => {
-      console.log('✅ 카카오 로그인 응답:', data)
+      console.log('  카카오 로그인 응답:', data)
 
       const { isRegistered, readerLoginResponse, readerPreLoginResponse } =
         data.result
 
-      // ✅ isRegistered 기준 분기 (요구사항)
+      //   isRegistered 기준 분기 (요구사항)
       // true  -> 홈
       // false -> 이용약관
       if (isRegistered && readerLoginResponse?.accessToken) {

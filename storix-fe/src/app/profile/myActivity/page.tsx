@@ -22,7 +22,7 @@ export default function MyActivityPage() {
   const me = useProfileStore((s) => s.me)
   const setMe = useProfileStore((s) => s.setMe)
 
-  // ✅ store 비어있을 때만 1회 보충 fetch
+  //   store 비어있을 때만 1회 보충 fetch
   useEffect(() => {
     let mounted = true
 
@@ -44,7 +44,7 @@ export default function MyActivityPage() {
     }
   }, [me, setMe])
 
-  // ✅ 렌더링용 값 (store 기반)
+  //   렌더링용 값 (store 기반)
   const nickname = me?.nickName ?? ''
   const level = typeof me?.level === 'number' ? me.level : 1
   const profileImageUrl = me?.profileImageUrl || undefined

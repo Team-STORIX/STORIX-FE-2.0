@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation' // ✅
 import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
 
 type OtherReviewItem = {
@@ -12,13 +13,19 @@ type OtherReviewItem = {
 
 type Props = {
   otherReviews: OtherReviewItem[]
-  sentinelRef: (node?: Element | null) => void // ✅ useInView의 ref 그대로 받기
+  sentinelRef: (node?: Element | null) => void //   useInView의 ref 그대로 받기
 }
 
 export default function OtherReviewsSection({
   otherReviews,
   sentinelRef,
 }: Props) {
+  const router = useRouter() // ✅
+
+  const goReviewDetail = (reviewId: number) => {
+    router.push(`/library/works/review/${reviewId}`) // ✅
+  }
+
   return (
     <section className="-mx-4 px-5 ">
       <p className="heading-2 px-1 pt-5 pb-3 text-black">다른 유저들의 리뷰</p>
@@ -33,9 +40,10 @@ export default function OtherReviewsSection({
                 key={r.reviewId}
                 type="button"
                 className="w-full text-left cursor-pointer"
+                onClick={() => goReviewDetail(r.reviewId)} // ✅
               >
                 <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 shrink-0 overflow-hidden flex items-center justify-center">
+                  <div className="h-8 w-8 shrink-0 rounded-full overflow-hidden flex items-center justify-center">
                     {r.profileImageUrl ? (
                       <Image
                         src={r.profileImageUrl}
@@ -45,9 +53,13 @@ export default function OtherReviewsSection({
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="caption-1 text-[var(--color-magenta-300)]">
-                        ✦
-                      </span>
+                      <Image
+                        src={'/common/icons/reviewProfile.svg'}
+                        alt={r.userName ?? 'profile'}
+                        width={32}
+                        height={32}
+                        className="h-full w-full object-cover"
+                      />
                     )}
                   </div>
 
@@ -56,7 +68,7 @@ export default function OtherReviewsSection({
                   </p>
                 </div>
 
-                {/* ✅ 아래: content 블럭 */}
+                {/*   아래: content 블럭 */}
                 <div className="flex py-5 justify-between items-center">
                   <p className="body-2 text-gray-700 whitespace-pre-wrap break-words line-clamp-3">
                     {r.content ?? ''}
@@ -68,7 +80,7 @@ export default function OtherReviewsSection({
           })
         )}
 
-        {/* ✅ UI 변경 없음: 무한스크롤 sentinel */}
+        {/*   UI 변경 없음: 무한스크롤 sentinel */}
         <div ref={sentinelRef} />
       </div>
     </section>

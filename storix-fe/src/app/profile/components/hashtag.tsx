@@ -11,7 +11,7 @@ export default function Hashtag() {
       try {
         const data = await getPreferredHashtags()
 
-        // ✅ 키워드 앞에 # 붙이기
+        //   키워드 앞에 # 붙이기
         const withSharp = Object.fromEntries(
           Object.entries(data).map(([rank, keyword]) => [
             Number(rank),

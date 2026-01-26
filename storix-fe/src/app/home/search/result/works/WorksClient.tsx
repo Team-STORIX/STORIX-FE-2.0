@@ -23,7 +23,7 @@ export default function SearchWorksPage() {
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ iPhone 스크롤 컨테이너 root
+  //   iPhone 스크롤 컨테이너 root
   const scrollRootRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
     scrollRootRef.current = document.getElementById(
@@ -31,7 +31,7 @@ export default function SearchWorksPage() {
     ) as HTMLElement | null
   }, [])
 
-  // ✅ 무한스크롤 트리거
+  //   무한스크롤 트리거
   const lockRef = useRef(false)
   const hasNextRef = useRef(false)
   const fetchingRef = useRef(false)
@@ -122,7 +122,7 @@ export default function SearchWorksPage() {
         />
       </div>
 
-      {/* ✅ 하단 Nav(작품/작가 전환) */}
+      {/*   하단 Nav(작품/작가 전환) */}
       <SearchResultBottomNav keyword={keyword} active="works" />
     </div>
   )

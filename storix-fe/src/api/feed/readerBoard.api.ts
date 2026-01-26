@@ -41,7 +41,7 @@ export type FeedBoardItem = {
     likeCount: number
     replyCount: number
 
-    // ✅ NEW: 스포일러 여부 (피드/works 피드 응답에 존재)
+    //   NEW: 스포일러 여부 (피드/works 피드 응답에 존재)
     isSpoiler?: boolean
 
     isLiked: boolean
@@ -98,7 +98,7 @@ export const toggleBoardLike = async (boardId: number) => {
   return data.result
 }
 
-/** ✅ 신고 결과 타입 */
+/**   신고 결과 타입 */
 export type ReportBoardResult =
   | { status: 'ok' }
   | { status: 'duplicated'; message: string }
@@ -108,7 +108,7 @@ export type ReportBoardResult =
  * POST /api/v1/feed/reader/board/{boardId}/report
  * body: { reportedUserId: number }
  *
- * ✅ 중복 신고(400)면 throw하지 않고 duplicated 반환
+ *   중복 신고(400)면 throw하지 않고 duplicated 반환
  */
 export const reportBoard = async (params: {
   boardId: number
@@ -125,7 +125,7 @@ export const reportBoard = async (params: {
       const status = err.response?.status
       const body = err.response?.data as any
 
-      // ✅ 서버가 "이미 신고함"을 400으로 내려주는 케이스를 UX로 흡수
+      //   서버가 "이미 신고함"을 400으로 내려주는 케이스를 UX로 흡수
       if (status === 400) {
         // 서버 message가 있으면 그걸 쓰고, 없으면 기본 문구
         const msg =

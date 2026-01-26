@@ -111,7 +111,7 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* ✅ 작가 로그인 아이콘을 여기에 통합 */}
+        {/*   작가 로그인 아이콘을 여기에 통합 */}
         <div className="mt-2">
           <Link href="/writers/signup">
             <Image

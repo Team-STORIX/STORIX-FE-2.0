@@ -20,7 +20,7 @@ export const getUserIdFromJwt = (
 
     const data = JSON.parse(json) as Record<string, unknown>
 
-    // ✅ 흔한 케이스들 커버
+    //   흔한 케이스들 커버
     const candidates = [
       data.userId,
       data.id,

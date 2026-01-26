@@ -12,7 +12,7 @@ type SearchBarProps = {
   onSearchClick?: (keyword: string) => void
   backHref?: string
 
-  // ✅ 추가
+  //   추가
   defaultKeyword?: string
 }
 

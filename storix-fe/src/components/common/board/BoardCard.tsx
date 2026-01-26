@@ -55,7 +55,7 @@ type Props = {
     reportedUserId: number
   }) => Promise<ReportConfirmOutcome> | ReportConfirmOutcome
 
-  // ✅ 좋아요 토글(하트 클릭)
+  //   좋아요 토글(하트 클릭)
   onToggleLike?: (boardId: number) => void | Promise<void>
 
   onDeleteConfirm?: (args: { boardId: number }) => Promise<void> | void
@@ -87,7 +87,7 @@ export default function BoardCard({
     nickname: string
   }>({
     onConfirm: async (t) => {
-      // ✅ 결과를 그대로 넘겨야 duplicated 토스트가 뜸
+      //   결과를 그대로 넘겨야 duplicated 토스트가 뜸
       return await onReportConfirm?.({
         boardId: t.boardId,
         reportedUserId: t.reportedUserId,
@@ -370,8 +370,8 @@ export default function BoardCard({
               aria-label="좋아요"
               onClick={(e) => {
                 e.preventDefault()
-                e.stopPropagation() // ✅ 카드 클릭(상세 이동) 방지
-                onToggleLike?.(boardId) // ✅ 외부 핸들러 호출
+                e.stopPropagation() //   카드 클릭(상세 이동) 방지
+                onToggleLike?.(boardId) //   외부 핸들러 호출
               }}
             >
               <Image

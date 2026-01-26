@@ -77,7 +77,7 @@ export default function HorizontalPicker({
                       className="relative w-[60px] h-[60px] overflow-hidden rounded-full"
                       style={{ background: 'var(--gray-100, #EEEDED)' }}
                     >
-                      {/* ✅ 전체 아이템 이미지 처리 */}
+                      {/*   전체 아이템 이미지 처리 */}
                       {isAll ? (
                         <Image
                           src={
@@ -102,7 +102,7 @@ export default function HorizontalPicker({
                         />
                       ) : null}
 
-                      {/* ✅ 활성 오버레이 (전체 제외, 기존 규칙 유지) */}
+                      {/*   활성 오버레이 (전체 제외, 기존 규칙 유지) */}
                       {isActive && !isAll && (
                         <div
                           className="absolute inset-0"
@@ -123,7 +123,7 @@ export default function HorizontalPicker({
                     </p>
                   </button>
 
-                  {/* ✅ 전체 뒤 구분선 */}
+                  {/*   전체 뒤 구분선 */}
                   {idx === 0 && items.length > 1 && (
                     <div
                       className="flex items-start"

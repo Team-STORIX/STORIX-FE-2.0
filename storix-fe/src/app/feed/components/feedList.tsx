@@ -20,7 +20,7 @@ type Props = {
   pick: string
   posts: UIPost[]
 
-  // ✅ FeedPageClient에서 내려줌
+  //   FeedPageClient에서 내려줌
   menu: MenuController<number>
 
   currentUserId?: number
@@ -60,7 +60,7 @@ export default function FeedList({
   return (
     <div>
       {filtered.map((post) => {
-        // ✅ 작품 정보가 “정상적으로 존재할 때만” 작품 영역을 렌더링
+        //   작품 정보가 “정상적으로 존재할 때만” 작품 영역을 렌더링
         // - API 스펙상 작품 미선택이면 works=null 이므로, UI에서도 이 값들이 비어있을 가능성이 큼
         const hasWorks =
           !!post.workId &&

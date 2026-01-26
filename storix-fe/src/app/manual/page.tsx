@@ -64,7 +64,7 @@ export default function ManualPage() {
           />
         </div>
 
-        {/* ✅ 이미지: progress indicator 바로 아래 / 가로 393 */}
+        {/*   이미지: progress indicator 바로 아래 / 가로 393 */}
         <div className="relative mt-[16px] left-1/2 -translate-x-1/2 w-[393px]">
           <img
             src={manualImages[step - 1]}
@@ -74,7 +74,7 @@ export default function ManualPage() {
         </div>
       </div>
 
-      {/* ✅ 하단 버튼: 기존 위치 그대로, 이미지 위에 겹치게 */}
+      {/*   하단 버튼: 기존 위치 그대로, 이미지 위에 겹치게 */}
       <div className="absolute bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-[60]">
         {!isLast ? (
           <img

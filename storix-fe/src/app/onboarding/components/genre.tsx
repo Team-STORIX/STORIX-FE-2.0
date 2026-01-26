@@ -1,6 +1,6 @@
 // src/app/onboarding/components/genre.tsx
 
-// ✅ 백엔드 ENUM 값(전송용) 타입
+//   백엔드 ENUM 값(전송용) 타입
 export type GenreKey =
   | 'ROMANCE'
   | 'FANTASY'
@@ -14,12 +14,12 @@ export type GenreKey =
   | 'DAILY'
 
 interface GenreProps {
-  // ✅ value는 백엔드로 보낼 ENUM 키 배열
+  //   value는 백엔드로 보낼 ENUM 키 배열
   value: GenreKey[]
   onChange: (value: GenreKey[]) => void
 }
 
-// ✅ UI 표시(label)와 API 전송(key)을 분리
+//   UI 표시(label)와 API 전송(key)을 분리
 const GENRE_OPTIONS: Array<{ key: GenreKey; label: string; icon: string }> = [
   { key: 'ROMANCE', label: '로맨스', icon: '/onboarding/romance.svg' },
   { key: 'ROFAN', label: '로판', icon: '/onboarding/rofan.svg' },
@@ -61,7 +61,7 @@ export default function Genre({ value, onChange }: GenreProps) {
         평소 즐겨보는 장르를 선택하세요
       </h1>
 
-      {/* ✅ 기본 문구 / 선택시 문구 + (n/3) */}
+      {/*   기본 문구 / 선택시 문구 + (n/3) */}
       <div className="mt-[5px] flex items-center gap-1">
         <p
           className="text-gray-500"
@@ -100,7 +100,7 @@ export default function Genre({ value, onChange }: GenreProps) {
               }`}
               onClick={() => !isDisabled && handleGenreClick(key)}
             >
-              {/* ✅ 이미지도 선택 시 magenta300, 기본은 gray900 */}
+              {/*   이미지도 선택 시 magenta300, 기본은 gray900 */}
               <div
                 className="w-20 h-20"
                 style={{
@@ -119,7 +119,7 @@ export default function Genre({ value, onChange }: GenreProps) {
                 aria-label={label}
               />
 
-              {/* ✅ 글자도 선택 시 magenta300, 기본은 gray900 */}
+              {/*   글자도 선택 시 magenta300, 기본은 gray900 */}
               <p
                 className={`text-center mt-3 ${
                   isSelected

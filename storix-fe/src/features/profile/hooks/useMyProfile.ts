@@ -24,7 +24,7 @@ export function useMyProfile() {
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
     const getAccessTokenWithRetry = async () => {
-      // ✅ 리다이렉트 직후/rehydrate 직후 토큰이 늦게 들어올 수 있어 재시도
+      //   리다이렉트 직후/rehydrate 직후 토큰이 늦게 들어올 수 있어 재시도
       const MAX_TRIES = 15 // 1.2초
       const INTERVAL_MS = 80
 
@@ -50,7 +50,7 @@ export function useMyProfile() {
           throw new Error('accessToken이 없습니다. 로그인 상태를 확인해주세요.')
         }
 
-        // ✅ 백엔드 API가 없으니 fetchMyProfile은 sessionStorage(my-profile)에서 읽어옴
+        //   백엔드 API가 없으니 fetchMyProfile은 sessionStorage(my-profile)에서 읽어옴
         const res = await fetchMyProfile(accessToken)
 
         if (!cancelled) setData(res as MyProfile)

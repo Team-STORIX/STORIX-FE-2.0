@@ -58,7 +58,7 @@ export default function ReportTargetSelect({
       <div className="relative mt-3">
         <button
           type="button"
-          onClick={() => setDropdownOpen(!dropdownOpen)} // ✅
+          onClick={() => setDropdownOpen(!dropdownOpen)} //
           className="w-full flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 cursor-pointer"
         >
           <div className="flex items-center gap-2 min-w-0">
@@ -79,7 +79,7 @@ export default function ReportTargetSelect({
             신고 대상을 선택해주세요
           </p>
         )}{' '}
-        {/* ✅ UI 변경 */}
+        {/*   UI 변경 */}
         {dropdownOpen && (
           <div className="absolute left-0 right-0 top-[52px] z-20 max-h-[220px] overflow-auto rounded-xl border border-gray-100 bg-white shadow-md">
             {isLoading ? (
@@ -102,8 +102,8 @@ export default function ReportTargetSelect({
                     key={m.userId}
                     type="button"
                     onClick={() => {
-                      setReportedUserId(m.userId) // ✅
-                      setDropdownOpen(false) // ✅
+                      setReportedUserId(m.userId) //
+                      setDropdownOpen(false) //
                     }}
                     className="w-full px-4 py-3 text-left hover:bg-gray-50 cursor-pointer"
                   >
@@ -114,7 +114,7 @@ export default function ReportTargetSelect({
                           alt=""
                           className="h-6 w-6 rounded-full object-cover flex-shrink-0"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none' // ✅ (401/403/404 등 fallback)
+                            e.currentTarget.style.display = 'none' //   (401/403/404 등 fallback)
                           }}
                         />
                       ) : (

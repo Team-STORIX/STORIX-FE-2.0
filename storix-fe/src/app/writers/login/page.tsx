@@ -8,7 +8,7 @@ export default function Final() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* ✅ 상단 뒤로가기 */}
+      {/*   상단 뒤로가기 */}
       <div className="w-full h-14 p-4 flex items-center bg-white">
         <img
           src="/icons/back.svg"
@@ -58,7 +58,7 @@ export default function Final() {
           />
         </div>
 
-        {/* ✅ 시작하기 버튼 */}
+        {/*   시작하기 버튼 */}
         <button
           type="button"
           className="mt-[60px] w-[361px] h-[50px] px-[40px] py-[10px] rounded-[12px] bg-[var(--color-gray-900)] flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"

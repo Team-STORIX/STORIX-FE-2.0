@@ -38,11 +38,11 @@ export default function TopicRoomMessages({
     if (isFetchingPrev) return
 
     if (el.scrollTop <= 24) {
-      onReachTop() // ✅ UI 변경(상단 도달 → 과거 로드)
+      onReachTop() //   UI 변경(상단 도달 → 과거 로드)
     }
   }
 
-  // ✅ 최초 렌더/새 메시지로 바닥 유지(기존 프로젝트 동작과 충돌 시 제거 가능)
+  //   최초 렌더/새 메시지로 바닥 유지(기존 프로젝트 동작과 충돌 시 제거 가능)
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -69,7 +69,7 @@ export default function TopicRoomMessages({
                 {!!m.time && (
                   <span className="caption-1 text-gray-400">{m.time}</span>
                 )}{' '}
-                {/* ✅ */}
+                {/*   */}
                 <div
                   className={[
                     'max-w-[70%] rounded-2xl px-3 py-2 body-2',
@@ -94,7 +94,7 @@ export default function TopicRoomMessages({
                 {!!m.time && (
                   <span className="caption-1 text-gray-400">{m.time}</span>
                 )}{' '}
-                {/* ✅ */}
+                {/*   */}
               </div>
             )}
           </div>

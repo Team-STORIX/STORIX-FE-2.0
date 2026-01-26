@@ -13,7 +13,7 @@ type Props = {
 export default function TrendingSearch({ onSelect, className = '' }: Props) {
   const { data, isLoading, isError } = useTrendingKeywords()
 
-  // ✅ 응답 래핑 케이스 방어 (result / result.result)
+  //   응답 래핑 케이스 방어 (result / result.result)
   const list = useMemo(() => {
     const raw =
       (data as any)?.result?.trendingKeywords ??
@@ -25,7 +25,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
       : []
   }, [data])
 
-  // ✅ 1~10위만
+  //   1~10위만
   const top10 = list.slice(0, 10)
 
   const left = top10.slice(0, 5)

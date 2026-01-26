@@ -52,7 +52,7 @@ export default function Nickname({
   const lastChecked = useRef('')
   const maxToastTimer = useRef<number | null>(null)
 
-  // ✅ 페이지 진입 시 "기존 닉네임" 스냅샷
+  //   페이지 진입 시 "기존 닉네임" 스냅샷
   const initialNicknameRef = useRef<string>('')
 
   const allowedRegex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9_ ]+$/
@@ -99,7 +99,7 @@ export default function Nickname({
 
   useEffect(() => () => clearMaxToast(), [])
 
-  // ✅ 기존 닉네임 스냅샷 고정 (currentNickname 우선, 없으면 value 최초값)
+  //   기존 닉네임 스냅샷 고정 (currentNickname 우선, 없으면 value 최초값)
   useEffect(() => {
     if (initialNicknameRef.current) return
 
@@ -121,14 +121,14 @@ export default function Nickname({
     return next
   }
 
-  // ✅ "지금 입력값이 기존 닉네임과 동일한가?"
+  //   "지금 입력값이 기존 닉네임과 동일한가?"
   const isSameNow = useMemo(() => {
     const initial = initialNicknameRef.current
     if (!initial) return false
     return normalize(value) === initial
   }, [value])
 
-  // ✅ 동일하면: 중복확인 안 해도 바로 완료 가능 + 메시지 없음 + 밑줄 검정
+  //   동일하면: 중복확인 안 해도 바로 완료 가능 + 메시지 없음 + 밑줄 검정
   useEffect(() => {
     if (!initialNicknameRef.current) return
 
@@ -208,10 +208,10 @@ export default function Nickname({
     setAvailable(false)
   }
 
-  // ✅ 동일(isSameNow)이면 무조건 중복확인 버튼 활성화
+  //   동일(isSameNow)이면 무조건 중복확인 버튼 활성화
   const canCheck = useMemo(() => {
     if (status === 'checking') return false
-    if (isSameNow) return true // ✅ 동일이면 중복확인도 누를 수 있게
+    if (isSameNow) return true //   동일이면 중복확인도 누를 수 있게
 
     if (!value) return false
     if (value.length < MIN || value.length > MAX) return false
@@ -224,7 +224,7 @@ export default function Nickname({
   const checkDuplicate = async () => {
     if (!canCheck) return
 
-    // ✅ 동일: API 호출해도 되고 안 해도 되는데, 요청사항상 "눌릴 수만 있으면" 되니까
+    //   동일: API 호출해도 되고 안 해도 되는데, 요청사항상 "눌릴 수만 있으면" 되니까
     // API 호출 X로 처리 (빠르고 안정적)
     if (isSameNow) {
       clearMaxToast()

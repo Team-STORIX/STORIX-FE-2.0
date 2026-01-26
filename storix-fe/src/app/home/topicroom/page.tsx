@@ -1,5 +1,5 @@
 // src/app/home/topicroom/page.tsx
-'use client' // ✅
+'use client' //
 
 import { useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -10,8 +10,8 @@ import ParticipationChat, {
 import { formatTopicRoomSubtitle } from '@/lib/api/topicroom/formatTopicRoomSubtitle'
 import { CardTopicroomInsideCoverSlider } from '@/components/topicroom/CardTopicroomInsideCoverSlider'
 import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
-import { useMyTopicRoomsAll } from '@/hooks/topicroom/useMyTopicRoomsAll' // ✅
-import { usePopularTopicRooms } from '@/hooks/topicroom/usePopularTopicRooms' // ✅
+import { useMyTopicRoomsAll } from '@/hooks/topicroom/useMyTopicRoomsAll' //
+import { usePopularTopicRooms } from '@/hooks/topicroom/usePopularTopicRooms' //
 import { useProfileStore } from '@/store/profile.store'
 import { getMyProfile } from '@/lib/api/profile/profile.api'
 
@@ -30,27 +30,27 @@ export default function TopicRoom() {
     return `${day}일 전`
   }
 
-  const router = useRouter() // ✅
+  const router = useRouter() //
 
   const goSearch = (raw: string) => {
     const k = raw.replace(/^#/, '').trim()
     if (!k) return
-    router.push(`/home/topicroom/search?keyword=${encodeURIComponent(k)}`) // ✅
+    router.push(`/home/topicroom/search?keyword=${encodeURIComponent(k)}`) //
   }
-  // ✅ 참여 중 토픽룸: 페이지당 3개
+  //   참여 중 토픽룸: 페이지당 3개
   const { data: myRooms } = useMyTopicRoomsAll({ size: 3 })
 
-  // ✅ HOT 토픽룸
+  //   HOT 토픽룸
   const { data: popular } = usePopularTopicRooms()
 
   const participationList = useMemo<ParticipationChatItem[]>(() => {
-    const list = myRooms ?? [] // ✅
+    const list = myRooms ?? [] //
 
     return list.map((r) => ({
       id: r.topicRoomId,
       thumbnail: r.thumbnailUrl ?? '/image/sample/topicroom-2.webp',
       title: r.topicRoomName,
-      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), // ✅
+      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), //
       memberCount: r.activeUserNumber ?? 0,
       timeAgo: formatTimeAgo(r.lastChatTime),
       worksName: r.worksName,
@@ -71,7 +71,7 @@ export default function TopicRoom() {
   const me = useProfileStore((s) => s.me)
   const setMe = useProfileStore((s) => s.setMe)
 
-  // ✅ store가 비어있을 때만 1회 보충 fetch
+  //   store가 비어있을 때만 1회 보충 fetch
   useEffect(() => {
     let mounted = true
 

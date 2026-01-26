@@ -11,8 +11,8 @@ export interface TopicRoomData {
   title: string
   subtitle: string
   memberCount: number
-  roomId?: number // ✅
-  worksName?: string // ✅
+  roomId?: number //
+  worksName?: string //
 }
 
 interface TopicRoomCoverCardProps {
@@ -20,7 +20,7 @@ interface TopicRoomCoverCardProps {
 }
 
 export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
-  const roomId = room.roomId ?? Number(room.id) // ✅
+  const roomId = room.roomId ?? Number(room.id) //
   const worksName = room.worksName ?? ''
   const href =
     Number.isFinite(roomId) && roomId > 0

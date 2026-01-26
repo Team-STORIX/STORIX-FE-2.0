@@ -18,7 +18,7 @@ export interface ParticipationChatItem {
 
 interface ParticipationChatProps {
   list: ParticipationChatItem[]
-  onReachEnd?: () => void // ✅ (끝 페이지 도달 시 다음 페이지 요청)
+  onReachEnd?: () => void //   (끝 페이지 도달 시 다음 페이지 요청)
 }
 
 export default function ParticipationChat({
@@ -26,7 +26,7 @@ export default function ParticipationChat({
   onReachEnd,
 }: ParticipationChatProps) {
   const [currentPage, setCurrentPage] = useState(0)
-  const calledForPagesRef = useRef<number>(0) // ✅ totalPages 기준으로 중복 호출 방지
+  const calledForPagesRef = useRef<number>(0) //   totalPages 기준으로 중복 호출 방지
 
   // 3개씩 끊어서 페이지 배열로 만들기
   const pages = useMemo(
@@ -52,7 +52,7 @@ export default function ParticipationChat({
       setCurrentPage(page)
     }
 
-    // ✅ 마지막 페이지에 도달했고, 아직 이 totalPages에 대해 요청 안 했으면 호출
+    //   마지막 페이지에 도달했고, 아직 이 totalPages에 대해 요청 안 했으면 호출
     const atEnd = scrollLeft + clientWidth >= scrollWidth - 1
     if (
       (page === totalPages - 1 || atEnd) &&

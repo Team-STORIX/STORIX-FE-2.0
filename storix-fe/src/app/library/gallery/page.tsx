@@ -76,7 +76,7 @@ export default function LibraryGalleryPage() {
 
     // 별점 낮은 순은 "별점 높은 순(DESC)" 결과를 역순
     if (sort === 'RATING_ASC') {
-      return [...mapped].reverse() // ✅
+      return [...mapped].reverse() //
     }
 
     // DEFAULT / RATING은 서버 정렬을 신뢰(list와 동일)
@@ -116,7 +116,7 @@ export default function LibraryGalleryPage() {
         </div>
 
         <div className="flex items-center gap-4">
-          {/* ✅ (API 연동) 총 개수는 서버값 우선 (UI 텍스트는 동일) */}
+          {/*   (API 연동) 총 개수는 서버값 우선 (UI 텍스트는 동일) */}
           <span className="body-2 text-gray-400">
             {totalReviewCount || sortedWorks.length}개
           </span>
@@ -157,7 +157,7 @@ export default function LibraryGalleryPage() {
         <BookSpineCarousel
           works={sortedWorks}
           hasMore={!!hasNextPage} // (API 연동) 추가 로딩 가능 여부 전달 (UI 변화 없음)
-          isFetchingMore={isFetchingNextPage} // ✅ (API 연동) 중복 fetch 방지용
+          isFetchingMore={isFetchingNextPage} //   (API 연동) 중복 fetch 방지용
           onNeedMore={() => {
             // (API 연동) UI 변경 없이 다음 페이지 로드
             if (hasNextPage && !isFetchingNextPage) fetchNextPage()

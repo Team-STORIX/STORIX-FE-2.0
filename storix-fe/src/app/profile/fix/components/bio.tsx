@@ -11,7 +11,7 @@ export default function Bio() {
   const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  // ✅ 초기 로드: 저장된 값 있으면 로드, 없으면 placeholder 모드(null)
+  //   초기 로드: 저장된 값 있으면 로드, 없으면 placeholder 모드(null)
   useEffect(() => {
     if (typeof window === 'undefined') return
     const saved = sessionStorage.getItem(STORAGE_KEY)

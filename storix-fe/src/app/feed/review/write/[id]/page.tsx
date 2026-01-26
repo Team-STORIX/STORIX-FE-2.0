@@ -1,4 +1,4 @@
-// ✅ src/app/feed/review/write/[id]/page.tsx
+//   src/app/feed/review/write/[id]/page.tsx
 import ReviewWriteClient from '../ReviewWriteClient'
 
 type Work = {

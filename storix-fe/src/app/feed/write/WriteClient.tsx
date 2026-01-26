@@ -1,4 +1,4 @@
-// ✅ src/app/feed/write/WriteClient.tsx
+//   src/app/feed/write/WriteClient.tsx
 'use client'
 
 import Image from 'next/image'
@@ -17,6 +17,7 @@ type SelectedWork = {
 }
 
 const STORAGE_KEY_FEED = 'storix:selectedWork:feed'
+const MAX_CONTENT_LENGTH = 300 // ✅
 
 export default function WriteClient() {
   const router = useRouter()
@@ -32,7 +33,7 @@ export default function WriteClient() {
 
   const createBoard = useCreateReaderBoard()
 
-  // ✅ 새로고침/재진입 시 작품 선택 복구
+  //   새로고침/재진입 시 작품 선택 복구
   useEffect(() => {
     const raw = sessionStorage.getItem(STORAGE_KEY_FEED)
     if (!raw) return
@@ -46,10 +47,11 @@ export default function WriteClient() {
   }, [])
 
   const content = text.trim()
+  const contentLength = text.length // ✅ (입력 제한/카운트 기준)
 
   const canSubmit = useMemo(() => {
     if (content.length === 0) return false
-    if (content.length > 500) return false
+    if (contentLength > MAX_CONTENT_LENGTH) return false // ✅
 
     // 작품 선택이 필요 없는 경우엔 작품 없이도 OK
     if (isWorksNotNeeded) return true
@@ -57,14 +59,14 @@ export default function WriteClient() {
     // 작품 선택이 필요한 경우엔 선택된 작품이 있어야 함
     if (!selectedWork?.id) return false
     return true
-  }, [content.length, isWorksNotNeeded, selectedWork?.id])
+  }, [content.length, contentLength, isWorksNotNeeded, selectedWork?.id]) // ✅
 
   const handleToggleWorksNotNeeded = () => {
     setIsWorksNotNeeded((prev) => {
       const next = !prev
 
       if (next) {
-        // ✅ 토글 ON: 작품 정보/검색바 숨김 + 선택값 제거
+        //   토글 ON: 작품 정보/검색바 숨김 + 선택값 제거
         setSelectedWork(null)
         sessionStorage.removeItem(STORAGE_KEY_FEED)
       }
@@ -88,10 +90,10 @@ export default function WriteClient() {
         images,
       })
 
-      // ✅ 성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
+      //   성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
       sessionStorage.removeItem(STORAGE_KEY_FEED)
 
-      // ✅ 목록 최신화
+      //   목록 최신화
       queryClient.invalidateQueries({ queryKey: ['feed'] })
       queryClient.invalidateQueries({ queryKey: ['plus', 'board'] })
 
@@ -223,14 +225,33 @@ export default function WriteClient() {
 
         <textarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          maxLength={MAX_CONTENT_LENGTH} // ✅
+          onChange={(e) => {
+            const next = e.target.value
+            setText(
+              next.length > MAX_CONTENT_LENGTH
+                ? next.slice(0, MAX_CONTENT_LENGTH)
+                : next,
+            ) // ✅
+          }}
           placeholder="좋아하는 작품에 대해 적어보세요!"
           className="mt-4 h-60 w-full resize-none body-1 text-gray-700 outline-none"
         />
 
         <div className="flex justify-between items-center py-3 -mx-4 px-4 border-t border-gray-300 caption-1 text-gray-400">
           <ImagePicker files={images} onChange={setImages} max={3} />
-          {content.length}/300
+          <span>
+            <span
+              className={
+                contentLength === MAX_CONTENT_LENGTH
+                  ? 'text-[var(--color-warning)]' // ✅ UI 변경
+                  : 'text-gray-400'
+              }
+            >
+              {contentLength}
+            </span>
+            /{MAX_CONTENT_LENGTH}
+          </span>
         </div>
       </div>
 

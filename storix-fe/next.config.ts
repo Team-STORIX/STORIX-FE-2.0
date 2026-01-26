@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
 
-      // ✅ 추가: 리디 표지 CDN
+      //   추가: 리디 표지 CDN
       {
         protocol: 'https',
         hostname: 'img.ridicdn.net',

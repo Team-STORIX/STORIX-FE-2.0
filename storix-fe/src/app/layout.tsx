@@ -17,7 +17,7 @@ const suit = localFont({
 export const metadata: Metadata = {
   title: 'STORIX',
   icons: {
-    icon: '/icons/logo-pink.svg',
+    icon: '/icons/favicon.svg',
   },
 }
 
