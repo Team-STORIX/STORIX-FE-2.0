@@ -12,14 +12,14 @@ export function usePlusWorksSearch({ keyword, size = 20 }: Params) {
   const k = keyword.trim()
 
   return useInfiniteQuery({
-    queryKey: ['plus', 'worksSearch', k, size], // ✅
+    queryKey: ['plus', 'worksSearch', k, size], //
     queryFn: ({ pageParam }) =>
       getPlusWorksSearch({ keyword: k, page: pageParam as number, size }),
     initialPageParam: 0,
     enabled: !!k, //
-    retry: false, // ✅
-    refetchOnWindowFocus: false, // ✅
-    refetchOnReconnect: false, // ✅
+    retry: false, //
+    refetchOnWindowFocus: false, //
+    refetchOnReconnect: false, //
     getNextPageParam: (lastPage) => {
       const slice = lastPage.result
       if (slice.last || slice.empty) return undefined

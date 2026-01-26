@@ -2,6 +2,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation' //
 import HomeHeader from '@/components/home/HomeHeader'
 import { CardNav } from '@/components/home/todayTopicRoom/CardNav'
 import { TopicRoomCoverSlider } from '@/components/home/todayTopicRoom/TopicRoomCoverSlider'
@@ -11,9 +12,16 @@ import HashtagList from '@/components/common/HashtagList'
 import NavBar from '@/components/common/NavBar'
 
 export default function Home() {
+  const router = useRouter() //
   const [active, setActive] = useState<'home' | 'feed' | 'library' | 'profile'>(
     'home',
   )
+
+  const goSearchResult = (raw: string) => {
+    const k = raw.replace(/^#/, '').trim()
+    if (!k) return
+    router.push(`/home/search/result?keyword=${encodeURIComponent(k)}`) //
+  }
 
   return (
     <div className="px-4">
@@ -45,11 +53,14 @@ export default function Home() {
             <HashtagList
               items={[
                 '로맨스',
-                '무협/사극',
-                '액션',
-                '로맨스판타지',
-                '금발남주',
+                '공주',
+                '이세계',
+                '악녀',
+                '판타지',
+                '환생',
+                '청춘',
               ]}
+              onSelect={goSearchResult} //
             />
           </div>
         </div>

@@ -129,23 +129,23 @@ export const PlusReviewDuplicateResponseSchema = z.preprocess((raw) => {
   if (raw && typeof raw === 'object') {
     const r: any = raw
 
-    // ✅ (중요) 에러 응답에서 result가 누락되는 케이스 방어
+    // (중요) 에러 응답에서 result가 누락되는 케이스 방어
     if (r.result === undefined) {
       // 중복 에러 코드면 duplicated=true로 강제
       if (r.isSuccess === false && r.code === 'PLUS_ERROR_004') {
-        return { ...r, result: true } // ✅ result가 없어도 파싱되게
+        return { ...r, result: true } // result가 없어도 파싱되게
       }
       // 그 외 에러는 duplicated=false로 기본값 주입
-      return { ...r, result: false } // ✅
+      return { ...r, result: false } //
     }
 
-    // ✅ 혹시 { result: { result: ... } } 2중 래핑이면 평탄화
+    // 혹시 { result: { result: ... } } 2중 래핑이면 평탄화
     if (
       r.result &&
       typeof r.result === 'object' &&
       r.result.result !== undefined
     ) {
-      return { ...r, result: r.result.result } // ✅
+      return { ...r, result: r.result.result } //
     }
   }
   return raw

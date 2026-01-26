@@ -320,7 +320,7 @@ export default function FeedArticlePage() {
   const [commentText, setCommentText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
-  // ✅ 300자 초과 토스트
+  // 300자 초과 토스트
   const [limitToastOpen, setLimitToastOpen] = useState(false)
   const limitToastTimerRef = useRef<number | null>(null)
 
@@ -667,7 +667,7 @@ export default function FeedArticlePage() {
               <textarea
                 ref={textareaRef}
                 value={commentText}
-                // ✅ 300자 제한 + 301번째 시도 시 토스트
+                // 300자 제한 + 301번째 시도 시 토스트
                 onChange={(e) => {
                   const next = e.target.value
                   if (next.length > MAX_COMMENT_LEN) {

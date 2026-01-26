@@ -4,8 +4,8 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import CheckBox from '@/public/common/icons/CheckBox'
-import type { PlusWorksSearchItem } from '@/lib/api/plus/plus.schema' // ✅
-import { usePlusWorksSearch } from '@/hooks/plus/usePlusWorksSearch' // ✅
+import type { PlusWorksSearchItem } from '@/lib/api/plus/plus.schema' //
+import { usePlusWorksSearch } from '@/hooks/plus/usePlusWorksSearch' //
 
 const STORAGE_KEY_FEED = 'storix:selectedWork:feed'
 
@@ -43,16 +43,16 @@ export default function WriteBottomSheet({
     setTimeout(onClose, 250)
   }
 
-  const worksQuery = usePlusWorksSearch({ keyword: debouncedKeyword, size: 20 }) // ✅
+  const worksQuery = usePlusWorksSearch({ keyword: debouncedKeyword, size: 20 }) //
 
   const works: PlusWorksSearchItem[] =
-    worksQuery.data?.pages.flatMap((p) => p.result.content) ?? [] // ✅
+    worksQuery.data?.pages.flatMap((p) => p.result.content) ?? [] //
 
   const saveSelectedWorkToSession = (w: PlusWorksSearchItem) => {
     const payload: StoredWork = {
       id: Number(w.worksId),
-      title: w.worksName ?? '', // ✅
-      meta: `${w.artistName ?? ''} · ${w.worksType ?? ''}`.trim(), // ✅
+      title: w.worksName ?? '', //
+      meta: `${w.artistName ?? ''} · ${w.worksType ?? ''}`.trim(), //
       thumb: w.thumbnailUrl ?? '',
     }
     sessionStorage.setItem(STORAGE_KEY_FEED, JSON.stringify(payload))
@@ -151,7 +151,7 @@ export default function WriteBottomSheet({
                       {w.thumbnailUrl ? (
                         <Image
                           src={w.thumbnailUrl}
-                          alt={w.worksName ?? ''} // ✅
+                          alt={w.worksName ?? ''} //
                           className="object-cover"
                           width={87}
                           height={116}

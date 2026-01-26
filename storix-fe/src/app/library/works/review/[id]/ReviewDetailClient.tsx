@@ -25,15 +25,15 @@ const formatKoreanDate = (iso?: string) => {
 export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   const router = useRouter()
   const params = useParams<{ id: string }>()
-  const searchParams = useSearchParams() // ✅
-  const fromReviewWrite = searchParams.get('from') === 'reviewWrite' // ✅
+  const searchParams = useSearchParams() //
+  const fromReviewWrite = searchParams.get('from') === 'reviewWrite' //
 
   const handleBack = () => {
     if (fromReviewWrite) {
-      router.push('/library/list') // ✅ 리뷰 작성 후 진입했을 때만 내 서재로
+      router.push('/library/list') // 리뷰 작성 후 진입했을 때만 내 서재로
       return
     }
-    router.back() // ✅ 기존 동작 유지
+    router.back() // 기존 동작 유지
   }
 
   // props가 NaN/0이면 params에서 재파싱 (enabled=false 방지)

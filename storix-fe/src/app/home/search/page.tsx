@@ -14,10 +14,12 @@ import {
 
 const FALLBACK_HASHTAGS = [
   '로맨스',
-  '무협/사극',
-  '액션',
-  '로맨스판타지',
-  '금발남주',
+  '공주',
+  '이세계',
+  '악녀',
+  '판타지',
+  '환생',
+  '청춘',
 ]
 
 export default function SearchHomePage() {

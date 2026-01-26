@@ -201,7 +201,7 @@ export default function BoardCard({
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((x) => x.imageUrl) ?? []
 
-  // ✅ 스포일러 상태(카드 단위)
+  // 스포일러 상태(카드 단위)
   const [spoilerRevealed, setSpoilerRevealed] = useState(false)
   const isSpoilerActive = data.board.isSpoiler === true
   const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
@@ -385,7 +385,7 @@ export default function BoardCard({
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation() // ✅ 작품 상세는 게시글 상세 이동 막기
+                    e.stopPropagation() // 작품 상세는 게시글 상세 이동 막기
                     router.push(worksTo)
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
@@ -408,7 +408,7 @@ export default function BoardCard({
         <div
           className="mt-5 relative"
           onClick={(e) => {
-            if (isSpoilerHidden) e.stopPropagation() // ✅ 가려진 상태면 상세 이동 막기
+            if (isSpoilerHidden) e.stopPropagation() // 가려진 상태면 상세 이동 막기
           }}
           onPointerDown={(e) => {
             if (isSpoilerHidden) e.stopPropagation()

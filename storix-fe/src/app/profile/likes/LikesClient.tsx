@@ -335,7 +335,7 @@ export default function LikesClient() {
                       </p>
 
                       {w.isReviewed ? (
-                        // ✅ 작가 줄 ↔ 평가함: 4px (mt-1)
+                        // 작가 줄 ↔ 평가함: 4px (mt-1)
                         <div className="mt-1 flex items-center">
                           <span
                             className="text-[12px] font-medium tracking-[0.2px] text-[var(--color-primary-main)]"

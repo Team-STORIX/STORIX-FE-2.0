@@ -83,7 +83,7 @@ const WorksReviewDetailOutputSchema = z.object({
 
 export const WorksReviewDetailSchema = z.preprocess((input) => {
   if (input && typeof input === 'object') {
-    // ✅ 서버가 result를 중첩해서 내려주는 케이스 방어 ({ result: { result: ... } })
+    // 서버가 result를 중첩해서 내려주는 케이스 방어 ({ result: { result: ... } })
     let obj: any = input
     for (let i = 0; i < 3; i++) {
       if (obj && typeof obj === 'object' && 'result' in obj) {
@@ -95,7 +95,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
       }
     }
 
-    // ✅ 최신/가능성 높은 응답 형태: { profile: {...}, works: {...}, review: {...} }
+    // 최신/가능성 높은 응답 형태: { profile: {...}, works: {...}, review: {...} }
     if (obj.profile && obj.review) {
       return {
         reviewId: obj.review?.reviewId,
@@ -116,7 +116,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
       }
     }
 
-    // ✅ 혹시 { works: {...}, ...review fields... } 형태
+    // 혹시 { works: {...}, ...review fields... } 형태
     if (obj.works && (obj.reviewId || obj.review?.reviewId)) {
       return {
         reviewId: obj.reviewId ?? obj.review?.reviewId,
@@ -138,7 +138,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
     }
   }
 
-  // ✅ flat 형태는 그대로 통과
+  // flat 형태는 그대로 통과
   return input
 }, WorksReviewDetailOutputSchema)
 

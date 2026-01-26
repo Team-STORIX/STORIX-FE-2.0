@@ -30,7 +30,7 @@ export default function Hashtag() {
     fetchHashtags()
   }, [])
 
-  // ✅ 실제로 보여줄 해시태그가 하나라도 있는지
+  // 실제로 보여줄 해시태그가 하나라도 있는지
   const hasAnyRank = useMemo(
     () => Object.values(ranks).some((v) => v && v.trim().length > 0),
     [ranks],
