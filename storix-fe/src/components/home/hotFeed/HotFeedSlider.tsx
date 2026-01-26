@@ -15,10 +15,7 @@ export default function HotFeedSlider() {
               <HotFeedCard key={i} className="bg-gray-100" /> // ✅ 로딩 스켈레톤(기존 더미 유지)
             ))
           : (data ?? []).map((item) => (
-              <HotFeedCard
-                key={item.board.boardId} // ✅
-                data={item} // ✅
-              />
+              <HotFeedCard key={item.board.boardId} data={item} />
             ))}
       </div>
     </section>

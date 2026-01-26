@@ -34,7 +34,7 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
   return (
     <div
       className={[
-        'flex flex-col w-[353px] h-[164px] rounded-xl shadow-sm flex-shrink-0',
+        'flex flex-col w-[353px] h-[164px] rounded-xl flex-shrink-0',
         'border border-gray-100 bg-white',
         'px-3 py-4 gap-3',
         className ?? '',

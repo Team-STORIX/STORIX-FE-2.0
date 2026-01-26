@@ -6,6 +6,7 @@
   --font-family-sans:
     var(--font-geist-sans), 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-weight-bold: 700;
+  --font-weight-semibold: 600;
   --font-weight-medium: 500;
   --font-weight-extrabold: 800;
   --line-height-tight: 140%;
@@ -100,7 +101,11 @@ body {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
   }
-
+  .heading-4 {
+    font-size: 16px;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+  }
   .body-1 {
     font-size: 16px;
     font-weight: var(--font-weight-medium);
