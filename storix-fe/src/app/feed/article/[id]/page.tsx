@@ -144,6 +144,7 @@ export default function FeedArticlePage() {
     createdAt: string
     content: string
     images: string[]
+    worksId?: number | null
     works: null | {
       thumbnailUrl: string
       worksName: string
@@ -184,6 +185,7 @@ export default function FeedArticlePage() {
           .slice()
           .sort((a, c) => a.sortOrder - c.sortOrder)
           .map((x) => x.imageUrl),
+        worksId: b.works?.worksId ?? b.board?.worksId ?? null,
         works: b.works
           ? {
               thumbnailUrl: b.works.thumbnailUrl,
@@ -576,7 +578,11 @@ export default function FeedArticlePage() {
             isMenuOpen={postMenu.openId === boardId}
             onToggleMenu={() => postMenu.toggle(boardId)}
             menuRef={postMenu.bindRef(boardId)}
-            onClickWorksArrow={() => router.push('/feed')}
+            onClickWorksArrow={() => {
+              const worksId = post?.worksId
+              if (!worksId) return
+              router.push(`/library/works/${worksId}`)
+            }}
           />
         </section>
 

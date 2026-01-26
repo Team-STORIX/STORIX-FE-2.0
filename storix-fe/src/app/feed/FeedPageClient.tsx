@@ -508,7 +508,9 @@ export default function FeedPageClient() {
               handleToggleLike(post)
             }}
             onClickWorksArrow={(post) => {
-              // TODO
+              const worksId = Number.parseInt(post.workId ?? '', 10)
+              if (!Number.isFinite(worksId) || worksId <= 0) return
+              router.push(`/library/works/${worksId}`)
             }}
           />
 
