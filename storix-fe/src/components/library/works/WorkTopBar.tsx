@@ -30,7 +30,7 @@ export default function WorkTopBar({ onBack, isLiked, onToggleLike }: Props) {
         <Image
           src={
             isLiked
-              ? '/icons/icon-like-pink.svg'
+              ? '/icons/icon-add-active.svg'
               : '/icons/icon-add-deactive.svg'
           }
           alt="like"

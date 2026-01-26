@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation' // ✅
+import { useRouter } from 'next/navigation'
 import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
 import OtherReviewsSection from '@/components/library/works/OtherReviewsSection'
 
@@ -49,7 +49,7 @@ export default function WorkTabContent({
   ui,
   onReviewWrite,
 }: Props) {
-  const router = useRouter() // ✅
+  const router = useRouter()
   const { data: myReview } = useWorksMyReview(worksId)
   const {
     data: reviewPages,
@@ -75,7 +75,7 @@ export default function WorkTabContent({
   const platformIconSrc = ui.platform ? getPlatformIconSrc(ui.platform) : null
 
   const goReviewDetail = (reviewId: number) => {
-    router.push(`/library/works/review/${reviewId}`) // ✅
+    router.push(`/library/works/review/${reviewId}`)
   }
 
   return (
@@ -179,9 +179,9 @@ export default function WorkTabContent({
               <button
                 type="button"
                 onClick={() => {
-                  // ✅ 내 리뷰가 있으면 상세로, 없으면 작성으로
+                  // 내 리뷰가 있으면 상세로, 없으면 작성으로
                   if (myReview?.content && myReview.reviewId) {
-                    goReviewDetail(myReview.reviewId) // ✅
+                    goReviewDetail(myReview.reviewId)
                     return
                   }
                   onReviewWrite()

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  useLikeWorksReview, // ✅
+  useLikeWorksReview,
   useWorksReviewDetail,
 } from '@/hooks/works/useWorksReviews'
 
@@ -26,7 +26,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   const router = useRouter()
   const params = useParams<{ id: string }>()
 
-  // ✅ props가 NaN/0이면 params에서 재파싱 (enabled=false 방지)
+  // props가 NaN/0이면 params에서 재파싱 (enabled=false 방지)
   const resolvedReviewId =
     Number.isFinite(reviewId) && reviewId > 0
       ? reviewId
@@ -34,7 +34,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
 
   const { data, isLoading, isError } = useWorksReviewDetail(resolvedReviewId)
 
-  // ✅ reviewId 자체가 유효하지 않으면 API 호출도 못하니 다른 안내
+  // reviewId 자체가 유효하지 않으면 API 호출도 못하니 다른 안내
   if (!Number.isFinite(resolvedReviewId) || resolvedReviewId <= 0) {
     return (
       <div className="p-4 body-2 text-gray-400">잘못된 리뷰 접근이에요</div>
@@ -47,26 +47,26 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
     if (data?.worksType) worksMetaParts.push(data.worksType)
 
     return {
-      worksId: data?.worksId ?? 0, // ✅
+      worksId: data?.worksId ?? 0,
       userName: data?.userName ?? '',
       profileImageUrl: data?.profileImageUrl ?? null,
       worksTitle: data?.worksName ?? '',
       worksMeta: worksMetaParts.join(' · '),
       coverSrc: data?.thumbnailUrl ?? FALLBACK_COVER_SRC,
       rating: typeof data?.rating === 'number' ? data.rating : null,
-      dateText: formatKoreanDate(data?.createdAt),
+      dateText: formatKoreanDate(data?.lastCreatedTime ?? data?.createdAt),
       content: data?.content ?? '',
-      likeCount: typeof data?.likeCount === 'number' ? data.likeCount : 0, // ✅
-      isLiked: !!data?.isLiked, // ✅
+      likeCount: typeof data?.likeCount === 'number' ? data.likeCount : 0,
+      isLiked: !!data?.isLiked,
     }
   }, [data])
 
-  // ✅ 좋아요 mutation (invalidate는 훅 내부에서 처리)
-  const likeMutation = useLikeWorksReview({ worksId: ui.worksId }) // ✅
+  // 좋아요 mutation (invalidate는 훅 내부에서 처리)
+  const likeMutation = useLikeWorksReview({ worksId: ui.worksId })
 
-  // ✅ 즉시 반영용 local state (단건 조회의 likeCount/isLiked로 sync)
-  const [liked, setLiked] = useState(false) // ✅
-  const [likeCount, setLikeCount] = useState(0) // ✅
+  // 즉시 반영용 local state (단건 조회의 likeCount/isLiked로 sync)
+  const [liked, setLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
 
   useEffect(() => {
     setLiked(ui.isLiked)
@@ -76,31 +76,34 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   const onClickLike = async () => {
     if (likeMutation.isPending) return
 
-    // ✅ 이미 좋아요면 중복 요청 방지 (필요 시 해제 기능 붙이기 전까지)
-    if (liked) return
+    const prevLiked = liked
+    const prevCount = likeCount
 
-    // ✅ optimistic UI
-    setLiked(true)
-    setLikeCount((c) => c + 1)
+    // optimistic toggle
+    const nextLiked = !prevLiked
+    const nextCount = Math.max(0, prevCount + (nextLiked ? 1 : -1))
+
+    setLiked(nextLiked)
+    setLikeCount(nextCount)
 
     try {
       const res = await likeMutation.mutateAsync(resolvedReviewId)
 
-      // ✅ 서버가 likeCount/isLiked를 내려주면 그 값으로 보정
-      const nextLiked =
+      // 서버가 isLiked/likeCount 내려주면 그 값으로 최종 보정
+      const serverLiked =
         (res as any)?.isLiked != null ? !!(res as any).isLiked : undefined
-      const nextCount =
+      const serverCount =
         (res as any)?.likeCount != null
           ? Number((res as any).likeCount)
           : undefined
 
-      if (typeof nextLiked === 'boolean') setLiked(nextLiked)
-      if (Number.isFinite(nextCount as number))
-        setLikeCount(nextCount as number)
+      if (typeof serverLiked === 'boolean') setLiked(serverLiked)
+      if (Number.isFinite(serverCount as number))
+        setLikeCount(serverCount as number)
     } catch {
-      // ✅ 실패 시 롤백
-      setLiked(false)
-      setLikeCount((c) => Math.max(0, c - 1))
+      // 실패 시 롤백
+      setLiked(prevLiked)
+      setLikeCount(prevCount)
     }
   }
 
@@ -199,7 +202,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
 
       <div className="flex-1 overflow-y-auto px-4 pb-20">
         {/* 유저 라인 */}
-        <div className="flex items-center gap-3 py-3">
+        <div className="flex items-start gap-3 py-3">
           <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-[var(--color-magenta-300)] flex items-center justify-center">
             {ui.profileImageUrl ? (
               <Image
@@ -210,23 +213,28 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span className="text-white text-sm">✦</span>
+              <Image
+                src={'/common/icons/reviewProfile.svg'}
+                alt={ui.userName || 'profile'}
+                width={40}
+                height={40}
+                className="h-full w-full object-cover"
+              />
             )}
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="heading-4 truncate">{ui.userName}</p>
+            <p className="body-1 truncate">{ui.userName}</p>
           </div>
         </div>
 
         {/* 작품 카드 */}
-        <div className="flex items-center gap-3 py-4">
-          <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-md bg-gray-100">
+        <div className="flex items-center gap-3 -mx-4 px-4 py-5 border-b border-gray-100">
+          <div className="relative h-[121px] w-[87px] shrink-0 overflow-hidden rounded-md bg-gray-100">
             <Image
               src={ui.coverSrc}
               alt={ui.worksTitle}
-              width={87}
-              height={116}
+              fill
               className="object-cover"
               priority
             />
@@ -257,33 +265,34 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
           </div>
         </div>
 
-        <div className="my-4 h-[1px] w-full bg-gray-100" />
-
         {/* 날짜 + 본문 */}
-        {ui.dateText ? (
-          <p className="body-2 text-gray-400">{ui.dateText}</p>
-        ) : null}
+        <div className="flex flex-col py-5 px-2.5 gap-5">
+          {ui.dateText ? (
+            <p className="flex date-text -mx-2.5 px-2.5 border-l-[2px] border-gray-500 ">
+              {ui.dateText}
+            </p>
+          ) : null}
 
-        <p className="body-1 mt-4 whitespace-pre-line text-gray-700 leading-7">
-          {ui.content}
-        </p>
-
-        {/* 좋아요 */}
-        <button
-          type="button"
-          onClick={onClickLike}
-          disabled={liked || likeMutation.isPending}
-          className="mt-6 flex items-center gap-2 text-gray-400 disabled:opacity-60 cursor-pointer"
-          aria-label="리뷰 좋아요"
-        >
-          <Image
-            src={liked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'}
-            alt="좋아요"
-            width={20}
-            height={20}
-          />
-          <span className="caption-1">{likeCount}</span>
-        </button>
+          <p className="flex body-1 whitespace-pre-line text-gray-800 leading-7">
+            {ui.content}
+          </p>
+          {/* 좋아요 */}
+          <button
+            type="button"
+            onClick={onClickLike}
+            disabled={likeMutation.isPending}
+            className="flex items-center gap-1 text-gray-500 cursor-pointer"
+            aria-label="리뷰 좋아요"
+          >
+            <Image
+              src={liked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'}
+              alt="좋아요"
+              width={20}
+              height={20}
+            />
+            <span className="caption-1">{likeCount}</span>
+          </button>
+        </div>
       </div>
 
       {/* 삭제 확인 모달 (UI만, 액션 추후 연동) */}

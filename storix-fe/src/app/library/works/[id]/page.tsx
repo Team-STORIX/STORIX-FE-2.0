@@ -128,7 +128,7 @@ export default function LibraryWorkHomePage() {
     }
 
     //요구 라우팅으로 변경
-    router.push(`/feed/review/write/${ui.id}`) // ✅
+    router.push(`/feed/review/write/${ui.id}`)
   }
 
   const handleTopicroomEnter = async () => {
@@ -215,7 +215,6 @@ export default function LibraryWorkHomePage() {
         }}
       />
 
-      {/* ✅ 토스트: 이미 작성 */}
       {toastOpen && (
         <div
           className="fixed left-1/2 -translate-x-1/2 z-[130]"

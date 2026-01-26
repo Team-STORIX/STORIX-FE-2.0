@@ -73,7 +73,7 @@ const WorksReviewDetailOutputSchema = z.object({
     .optional(),
   isLiked: z.boolean().optional(),
   createdAt: z.string().optional(),
-
+  lastCreatedTime: z.string().optional(),
   worksId: z.number().optional(),
   worksName: z.string().optional(),
   artistName: z.string().optional(),
@@ -107,7 +107,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
         likeCount: obj.review?.likeCount,
         isLiked: obj.review?.isLiked,
         createdAt: obj.review?.createdAt ?? obj.review?.createdDate,
-
+        lastCreatedTime: obj.review?.lastCreatedTime,
         worksId: obj.works?.worksId ?? obj.review?.worksId,
         worksName: obj.works?.worksName ?? obj.works?.title,
         artistName: obj.works?.artistName,
@@ -128,7 +128,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
         likeCount: obj.likeCount,
         isLiked: obj.isLiked,
         createdAt: obj.createdAt ?? obj.createdDate,
-
+        lastCreatedTime: obj.lastCreatedTime,
         worksId: obj.works?.worksId,
         worksName: obj.works?.worksName ?? obj.works?.title,
         artistName: obj.works?.artistName,
