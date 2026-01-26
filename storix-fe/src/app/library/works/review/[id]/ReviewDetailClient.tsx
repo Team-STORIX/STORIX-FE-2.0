@@ -2,7 +2,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   useLikeWorksReview,
@@ -25,6 +25,16 @@ const formatKoreanDate = (iso?: string) => {
 export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   const router = useRouter()
   const params = useParams<{ id: string }>()
+  const searchParams = useSearchParams() // ✅
+  const fromReviewWrite = searchParams.get('from') === 'reviewWrite' // ✅
+
+  const handleBack = () => {
+    if (fromReviewWrite) {
+      router.push('/library/list') // ✅ 리뷰 작성 후 진입했을 때만 내 서재로
+      return
+    }
+    router.back() // ✅ 기존 동작 유지
+  }
 
   // props가 NaN/0이면 params에서 재파싱 (enabled=false 방지)
   const resolvedReviewId =
@@ -147,7 +157,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       {/* TopBar */}
       <div className="flex h-[54px] items-center justify-between px-4">
-        <button onClick={() => router.back()} className="cursor-pointer">
+        <button onClick={handleBack} className="cursor-pointer">
           <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
 

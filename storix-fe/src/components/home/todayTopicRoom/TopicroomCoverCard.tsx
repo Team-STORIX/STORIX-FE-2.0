@@ -40,7 +40,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.30)_0%,rgba(0,0,0,0.30)_100%)]" />
       {/* 텍스트 영역 */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 pb-4 ">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 ">
         {/* HOT / 인원 뱃지 */}
         <div className="mb-2 flex items-center gap-1.5">
           <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">

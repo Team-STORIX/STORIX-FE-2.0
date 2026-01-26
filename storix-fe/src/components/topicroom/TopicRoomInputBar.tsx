@@ -63,7 +63,7 @@ export default function TopicRoomInputBar({
   const hasText = text.trim().length > 0
 
   return (
-    <div className="fixed bottom-0 left-1/2 w-full max-w-[393px] -translate-x-1/2 bg-white px-4 pb-4 pt-3">
+    <div className="fixed bottom-0 left-1/2 w-full max-w-[393px] -translate-x-1/2 bg-white p-4 border-t border-gray-100">
       <div className="flex items-stretch gap-3">
         {/*   input -> textarea (자동 높이) */}
         <div className="flex-1 rounded-[20px] border border-gray-200 bg-gray-50 px-4 min-h-[36px] flex items-center">

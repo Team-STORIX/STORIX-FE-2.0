@@ -96,14 +96,13 @@ export default function LibraryGalleryPage() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="body-2 text-gray-500 pr-7 appearance-none bg-transparent outline-none cursor-pointer"
+            className="body-2 text-gray-500 pr-3 appearance-none bg-transparent outline-none cursor-pointer"
             aria-label="정렬"
           >
             <option value="DEFAULT">전체 작품</option>
             <option value="RATING">별점 높은 순</option>
             <option value="RATING_ASC">별점 낮은 순</option>
           </select>
-
           <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400">
             <Image
               src={'/icons/arrow-down.svg'}

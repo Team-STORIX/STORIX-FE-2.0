@@ -64,7 +64,7 @@ export default function LibraryListPage() {
       return {
         id: w.worksId,
         title: w.worksName ?? '',
-        meta: metaParts.join(' • '),
+        meta: metaParts.join(' · '),
         thumb: w.thumbnailUrl ?? '',
         rating: Number(rating ?? 0),
         reviewCount: Number(reviewCount ?? 0),
@@ -102,7 +102,7 @@ export default function LibraryListPage() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="body-2 text-gray-500 pr-7 appearance-none bg-transparent outline-none cursor-pointer"
+            className="body-2 text-gray-500 pr-3 appearance-none bg-transparent outline-none cursor-pointer"
             aria-label="정렬"
           >
             <option value="DEFAULT">전체 작품</option>

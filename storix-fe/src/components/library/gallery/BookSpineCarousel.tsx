@@ -177,7 +177,7 @@ export default function BookSpineCarousel({
         className="w-full overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth"
         style={{ touchAction: 'pan-x' }}
       >
-        <div className="flex items-center gap-5.5 pl-35 pr-155 py-6">
+        <div className="flex items-center gap-5.5 pl-35 pr-155 py-7">
           {works.map((w, i) => {
             const isActive = i === activeIdx
 
@@ -217,7 +217,7 @@ export default function BookSpineCarousel({
                   <div className="absolute inset-0 flex items-center justify-center px-1">
                     <span
                       title={w.title}
-                      className="body-2 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center "
+                      className="caption-1 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center "
                       style={{
                         writingMode: 'vertical-rl',
                         textOrientation: 'mixed',
@@ -256,9 +256,9 @@ export default function BookSpineCarousel({
       </div>
 
       {active && (
-        <div className="mt-6 flex flex-col items-center px-4">
-          <p className="heading-2 text-black text-center">{active.title}</p>
-          <p className="body-2 mt-3 text-gray-400 text-center">{active.meta}</p>
+        <div className="flex flex-col items-center px-4">
+          <p className="heading-3 text-black text-center">{active.title}</p>
+          <p className="body-1 text-gray-400 text-center">{active.meta}</p>
 
           {typeof active.rating === 'number' && (
             <span

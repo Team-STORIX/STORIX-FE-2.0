@@ -8,16 +8,19 @@ import RatingInput from '@/components/common/RatingInput'
 import { createReaderReview } from '@/lib/api/plus/plusWrite'
 
 type Work = { id: number; title: string; meta: string; thumb: string }
+type Props = {
+  worksId: number
+}
+
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 const MAX_CONTENT_LENGTH = 500
 
-export default function ReviewWriteClient({ work }: { work: Work | null }) {
+export default function ReviewWriteClient({ worksId }: Props) {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const routeId = Number(params?.id)
 
-  const [resolvedWork, setResolvedWork] = useState<Work | null>(work)
-
+  const [resolvedWork, setResolvedWork] = useState<Work | null>(null)
   const [text, setText] = useState('')
   const [spoiler, setSpoiler] = useState(false)
   const [rating, setRating] = useState(0)
@@ -25,23 +28,16 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
 
   //   work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
   useEffect(() => {
-    if (work?.id && work.id === routeId) {
-      setResolvedWork(work)
-      return
-    }
-
     const raw = sessionStorage.getItem(STORAGE_KEY_REVIEW)
     if (!raw) return
 
     try {
       const parsed = JSON.parse(raw) as Work
-      if (parsed?.id === routeId) {
-        setResolvedWork(parsed)
-      }
+      if (parsed?.id === worksId) setResolvedWork(parsed)
     } catch {
       // ignore
     }
-  }, [work?.id, routeId])
+  }, [worksId])
 
   const content = text.trim()
   const contentLength = text.length
@@ -58,18 +54,38 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
     if (!resolvedWork?.id) return
     if (!canSubmit || submitting) return
 
+    // 응답에서 reviewId 뽑는 유틸
+    const extractReviewId = (res: any) => {
+      return (
+        res?.reviewId ??
+        res?.id ??
+        res?.result?.reviewId ??
+        res?.result?.id ??
+        res?.result?.result?.reviewId ??
+        res?.result?.result?.id
+      )
+    }
+
     try {
       setSubmitting(true)
-      await createReaderReview({
+
+      const res = await createReaderReview({
         worksId: resolvedWork.id,
         rating: rating.toFixed(1),
         isSpoiler: spoiler,
         content,
       })
 
-      //   성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
+      // 성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
       sessionStorage.removeItem(STORAGE_KEY_REVIEW)
 
+      const newReviewId = extractReviewId(res)
+      if (newReviewId) {
+        router.replace(`/library/works/review/${newReviewId}?from=reviewWrite`)
+        return
+      }
+
+      // 혹시 reviewId가 응답에 없다면 최소한 작품 상세로
       router.replace(`/library/works/${resolvedWork.id}`)
     } catch (e) {
       alert(e instanceof Error ? e.message : '리뷰 등록 실패')
@@ -116,7 +132,7 @@ export default function ReviewWriteClient({ work }: { work: Work | null }) {
             <span className="heading-4">
               {resolvedWork?.title ?? '작품 제목'}
             </span>
-            <span className="caption-2 text-gray-500 mb-4">
+            <span className="caption-1 text-gray-500 mb-4">
               {resolvedWork?.meta ?? ''}
             </span>
             <RatingInput value={rating} onChange={setRating} />

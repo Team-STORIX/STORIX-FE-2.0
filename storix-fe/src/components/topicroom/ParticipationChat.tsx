@@ -85,13 +85,15 @@ export default function ParticipationChat({
       </div>
 
       {/* 페이지 인디케이터 점 */}
-      {totalPages > 1 && (
+      {totalPages >= 1 && (
         <div className="flex justify-center gap-2 mt-4 mb-4">
           {Array.from({ length: totalPages }).map((_, index) => (
             <span
               key={index}
               className={`h-1.5 w-1.5 rounded-full ${
-                index === currentPage ? 'bg-gray-400' : 'bg-gray-200'
+                index === currentPage
+                  ? 'bg-[var(--color-magenta-300)]'
+                  : 'bg-gray-200'
               }`}
             />
           ))}

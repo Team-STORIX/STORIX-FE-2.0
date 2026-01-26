@@ -82,12 +82,12 @@ export default function WorkTabContent({
     <>
       {/* Tabs */}
       <div className="px-4">
-        <div className="flex border-b border-gray-200">
+        <div className="flex border-b border-gray-200 -mx-4 px-4">
           <button
             type="button"
             onClick={() => onChangeTab('info')}
             className={[
-              'flex-1 py-3 text-center caption-1 cursor-pointer',
+              'flex-1 py-3 text-center body-1 cursor-pointer',
               tab === 'info' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
@@ -97,7 +97,7 @@ export default function WorkTabContent({
             type="button"
             onClick={() => onChangeTab('review')}
             className={[
-              'flex-1 py-3 text-center caption-1 cursor-pointer',
+              'flex-1 py-3 text-center body-1 cursor-pointer',
               tab === 'review' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
@@ -105,10 +105,10 @@ export default function WorkTabContent({
           </button>
         </div>
 
-        <div className="relative">
+        <div className="relative -mx-4 px-4">
           <div
             className={[
-              'absolute -top-[1px] h-[2px] w-1/2 bg-black transition-transform duration-200',
+              'absolute -top-[1px] h-[2px] w-1/2 bg-black transition-transform duration-200 -mx-4 px-4',
               tab === 'info' ? 'translate-x-0' : 'translate-x-full',
             ].join(' ')}
           />
