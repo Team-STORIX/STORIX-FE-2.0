@@ -50,9 +50,6 @@ export default function LikesClient() {
   const [loading, setLoading] = useState(false)
 
   // ✅ 토글 pending (탭별)
-  // - 이 페이지에서 보여주는 항목은 기본이 "관심 등록 상태(true)"이므로,
-  //   사용자가 check->plus로 바꾸면 removed에 들어가고,
-  //   plus->check로 다시 돌리면 removed에서 빠진다.
   const [pendingWorkRemoved, setPendingWorkRemoved] = useState<Set<number>>(
     new Set(),
   )
@@ -84,18 +81,13 @@ export default function LikesClient() {
       const wR = pendingRef.current.pendingWorkRemoved
       if (!wR || wR.size === 0) return
 
-      // ✅ store 즉시 반영
       wR.forEach((id) => storeRemoveWork(id))
 
-      // ✅ API best-effort
       await Promise.allSettled(
         Array.from(wR).map((id) => deleteFavoriteWork(id)),
       )
 
-      // ✅ 커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
       setWorks((prev) => prev.filter((w) => !wR.has(w.worksId)))
-
-      // ✅ pending 초기화
       setPendingWorkRemoved(new Set())
     } finally {
       commitWorksLockRef.current = false
@@ -109,18 +101,13 @@ export default function LikesClient() {
       const aR = pendingRef.current.pendingArtistRemoved
       if (!aR || aR.size === 0) return
 
-      // ✅ store 즉시 반영
       aR.forEach((id) => storeRemoveArtist(id))
 
-      // ✅ API best-effort
       await Promise.allSettled(
         Array.from(aR).map((id) => deleteFavoriteArtist(id)),
       )
 
-      // ✅ 커밋 후 UI도 "삭제된 것으로" 반영: 목록에서 제거
       setWriters((prev) => prev.filter((a) => !aR.has(a.artistId)))
-
-      // ✅ pending 초기화
       setPendingArtistRemoved(new Set())
     } finally {
       commitArtistsLockRef.current = false
@@ -137,7 +124,7 @@ export default function LikesClient() {
         if (prev === 'works') await commitWorks()
         else await commitArtists()
       } catch (e) {
-        console.error(e)
+        // console.error(e)
       } finally {
         prevTabRef.current = tab
       }
@@ -147,8 +134,6 @@ export default function LikesClient() {
   // ✅ 언마운트 시 마지막 커밋
   useEffect(() => {
     return () => {
-      // cleanup은 async await가 보장되지 않으니 best-effort 호출만
-      // (요구사항상 "나가면 저장"이라 이 정도로 충분)
       void commitWorks()
       void commitArtists()
     }
@@ -192,7 +177,6 @@ export default function LikesClient() {
     [loading],
   )
 
-  // 탭이 바뀌면, 해당 탭이 아직 로딩 전이면 page=0 로드
   useEffect(() => {
     if (tab === 'works') {
       if (works.length === 0) void fetchWorksPage(0)
@@ -202,7 +186,7 @@ export default function LikesClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
-  // ✅ IntersectionObserver로 무한스크롤 (UI 변화 없음: sentinel div만 추가)
+  // ✅ IntersectionObserver로 무한스크롤
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     const el = sentinelRef.current
@@ -241,8 +225,6 @@ export default function LikesClient() {
   // -------------------------
   const isWorkFavoriteEffective = useCallback(
     (worksId: number) => {
-      // 이 페이지에 표시된 것은 원래 관심(true)
-      // removed에 들어가면 plus로 보임
       if (pendingWorkRemoved.has(worksId)) return false
       return true
     },
@@ -260,14 +242,12 @@ export default function LikesClient() {
   const toggleWork = (worksId: number) => {
     const nowFav = isWorkFavoriteEffective(worksId)
     if (nowFav) {
-      // check -> plus (제거 예약)
       setPendingWorkRemoved((p) => {
         const n = new Set(p)
         n.add(worksId)
         return n
       })
     } else {
-      // plus -> check (제거 예약 취소)
       setPendingWorkRemoved((p) => {
         const n = new Set(p)
         n.delete(worksId)
@@ -331,17 +311,21 @@ export default function LikesClient() {
                     </div>
 
                     <div className="ml-3 flex-1 min-w-0">
+                      {/* 제목 */}
                       <p className="body-1 text-[var(--color-black)] w-[210px] truncate">
                         {w.worksName}
                       </p>
-                      <p className="mt-1 caption-1 text-[var(--color-gray-500)]">
+
+                      {/* ✅ 제목 ↔ 작가 줄: 4px (mt-1) / ✅ 작가 줄: 14px 확정 (caption-1 제거) */}
+                      <p className="mt-1 body-1 text-[var(--color-gray-500)]">
                         {w.artistName} · {w.worksType}
                       </p>
 
                       {w.isReviewed ? (
+                        // ✅ 작가 줄 ↔ 평가함: 4px (mt-1)
                         <div className="mt-1 flex items-center">
                           <span
-                            className="text-[10px] font-medium tracking-[0.2px] text-[var(--color-primary-main)]"
+                            className="text-[12px] font-medium tracking-[0.2px] text-[var(--color-primary-main)]"
                             style={{ fontFamily: 'SUIT', lineHeight: '138%' }}
                           >
                             평가함
@@ -442,7 +426,6 @@ export default function LikesClient() {
             </div>
           )}
 
-          {/* 무한스크롤 sentinel (보이지 않음) */}
           <div ref={sentinelRef} className="h-1" />
         </div>
       ) : (

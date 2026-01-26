@@ -53,7 +53,7 @@ export function useDeleteFlow<T>(opts: {
       closeDeleteModal()
       openDone()
     } catch (err) {
-      console.error('[delete] failed:', err)
+      //console.error('[delete] failed:', err)
       closeDeleteModal()
     }
   }

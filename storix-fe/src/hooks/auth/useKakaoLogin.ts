@@ -14,7 +14,7 @@ export const useKakaoLogin = () => {
   return useMutation({
     mutationFn: (code: string) => kakaoLogin(code),
     onSuccess: (data: KakaoLoginResponse) => {
-      console.log('✅ 카카오 로그인 응답:', data)
+      // console.log('✅ 카카오 로그인 응답:', data)
 
       const { isRegistered, readerLoginResponse, readerPreLoginResponse } =
         data.result
@@ -34,12 +34,12 @@ export const useKakaoLogin = () => {
         return
       }
 
-      console.error('⚠️ 예상치 못한 응답 형식:', data)
+      //console.error('⚠️ 예상치 못한 응답 형식:', data)
       alert('로그인 처리 중 오류가 발생했습니다.')
     },
     onError: (error: AxiosError) => {
-      console.error('❌ 카카오 로그인 실패:', error)
-      console.error('에러 상세:', error.response?.data)
+      // console.error('❌ 카카오 로그인 실패:', error)
+      // console.error('에러 상세:', error.response?.data)
       alert('로그인에 실패했습니다. 다시 시도해주세요.')
       router.push('/login')
     },

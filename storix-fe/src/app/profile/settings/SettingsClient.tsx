@@ -32,7 +32,7 @@ export default function SettingsClient() {
 
       const res = await logoutUser()
       if (!res.isSuccess) {
-        console.warn('[logout] failed:', res.code, res.message)
+        //console.warn('[logout] failed:', res.code, res.message)
       }
 
       clearAuth()
@@ -40,7 +40,7 @@ export default function SettingsClient() {
       clearMe()
       router.replace('/login')
     } catch (error) {
-      console.error('[logout] error:', error)
+      //console.error('[logout] error:', error)
       clearAuth()
       clearMe()
       router.replace('/login')

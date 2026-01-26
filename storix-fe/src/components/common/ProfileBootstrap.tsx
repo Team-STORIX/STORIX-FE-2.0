@@ -25,7 +25,7 @@ export default function ProfileBootstrap() {
         const res = await getMyProfile()
         if (res?.isSuccess) setMe(res.result)
       } catch (e) {
-        console.error('[ProfileBootstrap] getMyProfile failed:', e)
+        //console.error('[ProfileBootstrap] getMyProfile failed:', e)
       }
     }
 

@@ -42,12 +42,12 @@ export default function LoginPage() {
     const redirectUri = process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI
 
     if (!clientId) {
-      console.error('NEXT_PUBLIC_NAVER_CLIENT_ID is not set')
+      //console.error('NEXT_PUBLIC_NAVER_CLIENT_ID is not set')
       alert('네이버 로그인 설정이 누락되었습니다. (CLIENT_ID)')
       return
     }
     if (!redirectUri) {
-      console.error('NEXT_PUBLIC_NAVER_REDIRECT_URI is not set')
+      //console.error('NEXT_PUBLIC_NAVER_REDIRECT_URI is not set')
       alert('네이버 로그인 설정이 누락되었습니다. (REDIRECT_URI)')
       return
     }
