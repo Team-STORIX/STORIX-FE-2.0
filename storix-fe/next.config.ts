@@ -13,12 +13,12 @@ const withSerwist = withSerwistInit({
   swSrc: 'src/app/sw.ts',
   swDest: 'public/sw.js',
   disable: process.env.NODE_ENV !== 'production',
-  additionalPrecacheEntries: [{ url: '/~offline', revision }],
+  additionalPrecacheEntries: [{ url: '/offline', revision }],
 })
 
 const nextConfig: NextConfig = {
   images: {
-    // ✅ dev에서는 S3 upstream timeout 때문에 next/image 최적화 끄기
+    // dev에서는 S3 upstream timeout 때문에 next/image 최적화 끄기
     unoptimized: process.env.NODE_ENV === 'development',
 
     remotePatterns: [
