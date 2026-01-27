@@ -59,7 +59,8 @@ export default function TopicRoomInputBar({
     }
   }
 
-  const isConnected = String(status).toLowerCase() === 'connected'
+  const statusLower = String(status).toLowerCase()
+  const isConnected = statusLower === 'open' || statusLower === 'connected'
   const hasText = text.trim().length > 0
 
   return (
@@ -83,7 +84,11 @@ export default function TopicRoomInputBar({
         {/* 전송 버튼 */}
         <button
           type="button"
-          onClick={onSend}
+          onClick={() => {
+            if (!isConnected) return // ✅
+            if (!hasText) return // ✅
+            onSend()
+          }}
           disabled={!isConnected || !hasText}
           className={[
             'flex items-center justify-center rounded-full bg-black self-end',
