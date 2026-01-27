@@ -10,7 +10,7 @@ type BaseProps = {
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
 }
 
-// ✅ 기존 코드(text/setText) + 혹시 다른 곳에서 쓰던(value/onChange) 둘 다 지원
+// 기존 코드(text/setText) + 혹시 다른 곳에서 쓰던(value/onChange) 둘 다 지원
 type Props =
   | (BaseProps & {
       text: string
@@ -31,7 +31,7 @@ export default function TopicRoomInputBar(props: Props) {
   const ref =
     'inputRef' in props && props.inputRef ? props.inputRef : internalRef
 
-  // ✅ props normalize
+  // props normalize
   const text = 'text' in props ? props.text : props.value
   const setText =
     'setText' in props ? props.setText : (v: string) => props.onChange(v)
@@ -42,7 +42,7 @@ export default function TopicRoomInputBar(props: Props) {
   const lineHeightRef = useRef<number>(FALLBACK_LINE_HEIGHT)
   const barRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ 키보드 오프셋 (카톡처럼 키보드 위에 붙이기)
+  // 키보드 오프셋 (카톡처럼 키보드 위에 붙이기)
   const [keyboardBottomPx, setKeyboardBottomPx] = useState(0)
 
   const resize = () => {
@@ -66,7 +66,7 @@ export default function TopicRoomInputBar(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text])
 
-  // ✅ visualViewport 기반 키보드 높이 감지
+  // visualViewport 기반 키보드 높이 감지
   useEffect(() => {
     const vv = window.visualViewport
     if (!vv) return
@@ -89,7 +89,7 @@ export default function TopicRoomInputBar(props: Props) {
     }
   }, [])
 
-  // ✅ InputBar 높이를 CSS 변수로 저장(메시지 padding에 쓰고 싶으면 사용)
+  // InputBar 높이를 CSS 변수로 저장(메시지 padding에 쓰고 싶으면 사용)
   useLayoutEffect(() => {
     const el = barRef.current
     if (!el) return
@@ -117,9 +117,9 @@ export default function TopicRoomInputBar(props: Props) {
   return (
     <div
       ref={barRef}
-      className="fixed left-0 right-0 z-[60] bg-white border-t border-gray-100" // ✅ UI 변경
+      className="fixed left-0 right-0 z-[60] bg-white border-t border-gray-100"
       style={{
-        bottom: `calc(env(safe-area-inset-bottom) + ${keyboardBottomPx}px)`, // ✅ UI 변경
+        bottom: `calc(env(safe-area-inset-bottom) + ${keyboardBottomPx}px)`,
       }}
     >
       <div className="mx-auto w-full max-w-[393px] p-4">
@@ -133,7 +133,7 @@ export default function TopicRoomInputBar(props: Props) {
               onInput={resize}
               rows={1}
               className="w-full resize-none bg-transparent body-2 outline-none overflow-y-hidden py-2"
-              style={{ height: 'auto' }}
+              style={{ height: 'auto', fontSize: 16 }}
             />
           </div>
 
