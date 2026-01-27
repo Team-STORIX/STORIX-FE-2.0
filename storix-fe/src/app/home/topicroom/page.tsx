@@ -105,10 +105,10 @@ export default function TopicRoom() {
         <div className="flex flex-col gap-4">
           <ParticipationChat list={participationList} />
         </div>
-        <div className="px-5 py-4">
+        {/* <div className="px-5 py-4">
           <p className="heading-1">지금 HOT한 토픽룸</p>
         </div>
-        <CardTopicroomInsideCoverSlider rooms={hotRooms} />{' '}
+        <CardTopicroomInsideCoverSlider rooms={hotRooms} />{' '} */}
       </div>
     </div>
   )
