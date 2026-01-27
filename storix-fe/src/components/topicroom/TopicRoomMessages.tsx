@@ -54,7 +54,10 @@ export default function TopicRoomMessages({
     <div
       ref={ref}
       onScroll={onScroll}
-      className="flex-1 overflow-y-auto px-4 pb-24 pt-2"
+      className="flex-1 overflow-y-auto px-4 pt-2"
+      style={{
+        paddingBottom: 'calc(var(--topicroom-inputbar-h, 96px) + 16px)',
+      }}
     >
       {isFetchingPrev && (
         <div className="py-2 caption-1 text-gray-400">
