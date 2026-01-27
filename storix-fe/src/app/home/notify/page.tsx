@@ -5,22 +5,10 @@ import NotifyList from '@/components/home/notify/NotifyList'
 
 const NOTIFY_ITEMS = [
   {
-    title: '[이벤트] 당신의 최애캐를 소개하세요!(~3/10)',
-    description: '당신의 최애캐를 소개하는 웹소설 환상의 입덕쇼!',
-    date: '2025.11.09',
+    title: '',
+    description: '',
+    date: '',
     thumbnailSrc: '',
-  },
-  {
-    title: '[이벤트] 당신의 최애캐를 소개하세요!(~3/10)',
-    description: '당신의 최애캐를 소개하는 웹소설 환상의 입덕쇼!',
-    date: '2025.11.09',
-    thumbnailSrc: '',
-  },
-  {
-    title: '[이벤트] 당신의 최애캐를 소개하세요!(~3/10)',
-    description: '당신의 최애캐를 소개하는 웹소설 환상의 입덕쇼!',
-    date: '2025.11.09',
-    thumbnailSrc: '/sample/topicroom-1.jpg',
   },
 ]
 

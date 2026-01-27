@@ -26,7 +26,7 @@ const GENRE_OPTIONS: Array<{ key: GenreKey; label: string; icon: string }> = [
   { key: 'BL', label: 'BL', icon: '/onboarding/bl.svg' },
   { key: 'FANTASY', label: '판타지', icon: '/onboarding/fantasy.svg' },
   { key: 'MODERN_FANTASY', label: '현판', icon: '/onboarding/mofan.svg' },
-  { key: 'ACTION', label: '액션', icon: '/onboarding/action.svg' },
+  { key: 'ACTION', label: '무협', icon: '/onboarding/action.svg' },
   { key: 'DAILY', label: '일상', icon: '/onboarding/daily.svg' },
   { key: 'DRAMA', label: '드라마', icon: '/onboarding/drama.svg' },
   { key: 'THRILLER', label: '스릴러', icon: '/onboarding/thriller.svg' },
