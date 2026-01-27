@@ -80,12 +80,12 @@ export default function TopicRoomInputBar(props: Props) {
     }
 
     update()
-    vv.addEventListener('resize', update)
-    vv.addEventListener('scroll', update)
+    vv.addEventListener('resize', update) //키보드 열림/닫힘은 resize로
+    window.addEventListener('resize', update) //회전/리사이즈 대응
 
     return () => {
       vv.removeEventListener('resize', update)
-      vv.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
     }
   }, [])
 
@@ -117,7 +117,7 @@ export default function TopicRoomInputBar(props: Props) {
   return (
     <div
       ref={barRef}
-      className="fixed left-0 right-0 z-[60] bg-white border-t border-gray-100"
+      className="fixed left-0 right-0 z-[60] bg-white border-t border-gray-100 transform-gpu"
       style={{
         bottom: `calc(env(safe-area-inset-bottom) + ${keyboardBottomPx}px)`,
       }}

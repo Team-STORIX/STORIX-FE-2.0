@@ -49,7 +49,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         <div className="flex items-center gap-3 min-w-0">
           <span
             className={[
-              'body-2 font-semibold inline-flex w-[2ch]',
+              'body-2 font-semibold inline-flex w-[2ch] justify-center',
               rank <= 3 ? 'text-[var(--color-magenta-300)]' : 'text-black',
             ].join(' ')}
           >
