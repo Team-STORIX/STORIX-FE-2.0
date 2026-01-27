@@ -1,7 +1,7 @@
 // src/app/profile/fix/components/nickname.tsx
 'use client'
 
-// 1월23일 20:15 최신코드 냠냠
+// 1월27일 14:23 최신코드 냠냠 (iOS IME 안정화 패치)
 
 import Image from 'next/image'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
@@ -49,7 +49,9 @@ export default function Nickname({
   const [focused, setFocused] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
   const [msg, setMsg] = useState('')
-  const [isComposing, setIsComposing] = useState(false)
+
+  // ✅ iOS IME 안정화: state 대신 ref 사용 (즉시 반영)
+  const isComposingRef = useRef(false)
 
   // 초기 1회 + currentNickname 변경 시 동기화용
   const didInitRef = useRef(false)
@@ -103,8 +105,7 @@ export default function Nickname({
     [currentNickname],
   )
 
-  //   (핵심) 초기 1회 + currentNickname이 들어오는 순간(프로필 로드 완료 등)에만 동기화
-  // value(타이핑)는 handleChange에서만 처리해서 조합/입력 꼬임을 줄임
+  // ✅ 초기 1회 + currentNickname 들어오는 순간에만 동기화
   useEffect(() => {
     if (!didInitRef.current) {
       const { st, message } = validate(value)
@@ -115,6 +116,7 @@ export default function Nickname({
       return
     }
 
+    // currentNickname이 바뀌면 같은 닉네임 판단/메시지 갱신
     const { st, message } = validate(value)
     setStatus(st)
     setMsg(message)
@@ -123,16 +125,17 @@ export default function Nickname({
   }, [currentNickname, validate])
 
   const handleChange = (raw: string) => {
-    //   한글 조합 중에는 sanitize/validate로 건드리면 글자가 “지워지는” 현상 발생
-    if (isComposing) {
-      onChange(raw)
+    // ✅ 조합 중: sanitize/validate/resetCheck/verified 업데이트 금지
+    // iOS에서 여기서 건드리면 첫 한글이 씹히는 경우가 많음
+    if (isComposingRef.current) {
+      onChange(raw.slice(0, MAX)) // MAX만 방어
       return
     }
 
     const next = sanitize(raw)
     onChange(next)
 
-    //   입력이 바뀌면 “중복확인 완료” 해제 (단, same면 다시 true 처리)
+    // 입력이 바뀌면 일단 검증 해제
     onVerifiedChange?.(false)
 
     const { st, message } = validate(next)
@@ -145,7 +148,6 @@ export default function Nickname({
   const canCheck = useMemo(() => {
     if (status === 'checking') return false
     const { st } = validate(value)
-    //   중복확인 버튼은 ready/same일 때만
     return st === 'ready' || st === 'same'
   }, [value, status, validate])
 
@@ -179,7 +181,6 @@ export default function Nickname({
       const message = (raw?.message ?? '').toString()
       const code = (raw?.code ?? '').toString()
 
-      //   409/400 등: 중복이면 taken으로
       if (httpStatus >= 400) {
         if (httpStatus === 409 || looksTaken(message, code)) {
           setStatus('taken')
@@ -188,14 +189,12 @@ export default function Nickname({
           return
         }
 
-        // 진짜 서버 오류
         setStatus('error')
         setMsg('닉네임 확인 중 오류가 발생했어요. 다시 시도해주세요.')
         onVerifiedChange?.(false)
         return
       }
 
-      //   200인데도 isSuccess=false로 중복을 표현하는 서버도 많음
       if (raw?.isSuccess === false) {
         setStatus('taken')
         setMsg(MSG_TAKEN)
@@ -203,7 +202,6 @@ export default function Nickname({
         return
       }
 
-      //   result 파싱 가능하면 그걸 우선
       if (available === true) {
         setStatus('ok')
         setMsg(MSG_OK)
@@ -217,7 +215,6 @@ export default function Nickname({
         return
       }
 
-      //   파싱 실패(null)이면 message/code로 판단
       if (looksTaken(message, code)) {
         setStatus('taken')
         setMsg(MSG_TAKEN)
@@ -225,7 +222,6 @@ export default function Nickname({
         return
       }
 
-      // 판단 불가지만 200+isSuccess=true면 일단 통과
       setStatus('ok')
       setMsg(MSG_OK)
       onVerifiedChange?.(true)
@@ -244,7 +240,7 @@ export default function Nickname({
     status === 'taken' ||
     status === 'error'
 
-  const isSuccess = status === 'ok' || status === 'same' //   same도 성공으로 표시
+  const isSuccess = status === 'ok' || status === 'same'
 
   const underlineClass = isSuccess
     ? 'border-b-2 border-[var(--color-success)]'
@@ -283,22 +279,25 @@ export default function Nickname({
       <div
         className={[
           variant === 'onboarding' ? 'mt-[80px]' : 'mt-0',
-          'w-[361px]',
+          // ✅ iPhone 375에서도 안전하게: 고정폭 제거
+          'w-full max-w-[361px]',
         ].join(' ')}
       >
-        <div className="h-[42px] flex items-center justify-between">
+        <div className="h-[42px] flex items-center gap-2">
           <input
             value={value}
             onChange={(e) => handleChange(e.target.value)}
-            onCompositionStart={() => setIsComposing(true)}
+            onCompositionStart={() => {
+              isComposingRef.current = true
+            }}
             onCompositionEnd={(e) => {
-              setIsComposing(false)
+              isComposingRef.current = false
 
-              //   조합이 끝난 최종 문자열로 sanitize/validate 한 번 수행
+              // ✅ 조합 종료 후 최종값 1회만 sanitize/validate
               const finalRaw = (e.currentTarget as HTMLInputElement).value
               const next = sanitize(finalRaw)
-              onChange(next)
 
+              onChange(next)
               onVerifiedChange?.(false)
 
               const { st, message } = validate(next)
@@ -317,11 +316,16 @@ export default function Nickname({
             }}
             maxLength={MAX}
             placeholder="닉네임을 입력하세요"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
             className={[
-              'w-[254px]',
+              // ✅ 반응형 입력창
+              'flex-1 min-w-0',
               'px-[8px] py-[10px]',
               'bg-transparent outline-none cursor-text',
-              'body-1',
+              // iOS 확대/포커스 이슈 줄이려면 16px 권장(원하면 body-1 유지해도 됨)
+              'text-[16px]',
               'placeholder:text-[var(--color-gray-300)]',
               underlineClass,
               inputTextColor,
@@ -333,7 +337,7 @@ export default function Nickname({
             onClick={checkDuplicate}
             disabled={!canCheck}
             className={[
-              'w-[102px] h-[38px]',
+              'shrink-0 w-[102px] h-[38px]',
               canCheck ? 'cursor-pointer hover:opacity-80' : 'cursor-default',
             ].join(' ')}
             aria-label="닉네임 중복 확인"
