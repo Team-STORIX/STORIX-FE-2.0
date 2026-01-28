@@ -40,7 +40,7 @@ export default function TopicRoomMessages({
     if (isFetchingPrev) return
 
     if (el.scrollTop <= 24) {
-      onReachTop() //   UI 변경(상단 도달 → 과거 로드)
+      onReachTop()
     }
   }
 
@@ -115,7 +115,7 @@ export default function TopicRoomMessages({
                   <div className="flex items-end gap-2">
                     <div
                       className={[
-                        `max-w-[70%] rounded-2xl px-3 py-2 body-2`,
+                        `max-w-[82%] rounded-2xl px-3 py-2 body-2`,
                         `border border-gray-300 bg-gray-50 text-gray-900`,
                         `rounded-b-xl rounded-tr-xl rounded-tl-sm`,
                       ].join(' ')}
