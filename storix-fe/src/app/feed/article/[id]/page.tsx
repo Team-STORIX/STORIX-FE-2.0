@@ -3,12 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import axios from 'axios'
 
 import PostCard from '@/components/common/post/PostCard'
@@ -123,10 +118,9 @@ const reportReply = async (args: {
 
 export default function FeedArticlePage() {
   const router = useRouter()
-  const pathname = usePathname()
-  const sp = useSearchParams()
+
   const returnTo = encodeURIComponent(
-    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
+    `${window.location.pathname}${window.location.search}`,
   )
   const params = useParams<{ id: string }>()
   const boardId = Number(params?.id)

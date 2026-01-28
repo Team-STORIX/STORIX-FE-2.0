@@ -2,12 +2,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
@@ -24,13 +19,11 @@ const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 
 export default function LibraryWorkHomePage() {
   const router = useRouter()
-  const pathname = usePathname()
-  const sp = useSearchParams()
   const params = useParams<{ id: string }>()
   const worksId = Number(params?.id)
 
   const handleBack = () => {
-    const raw = sp.get('returnTo')
+    const raw = new URLSearchParams(window.location.search).get('returnTo')
     if (raw) {
       const decoded = decodeURIComponent(raw)
       if (decoded.startsWith('/')) {

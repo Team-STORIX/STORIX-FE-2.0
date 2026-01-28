@@ -73,22 +73,6 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
 
 /* ===== 아이콘들 ===== */
 
-const UserIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="10"
-    height="10"
-    viewBox="0 0 10 10"
-    fill="none"
-  >
-    <rect x="3.50391" width="3.00235" height="3" fill="#FF4093" />
-    <path
-      d="M5 4C7.76138 4 9.99993 6.06671 10 8.616V10.001L0.574668 10.0001V9.99376H0V8.43554H0.00488663C0.107644 5.96991 2.30409 4 5 4Z"
-      fill="#FF4093"
-    />
-  </svg>
-)
-
 const EnterRoomIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

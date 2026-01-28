@@ -3,7 +3,7 @@
 
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useInView } from 'react-intersection-observer'
 
 import NavBar from '@/components/common/NavBar'
@@ -28,11 +28,6 @@ type UILibraryWork = {
 
 export default function LibraryListPage() {
   const router = useRouter()
-  const pathname = usePathname()
-  const sp = useSearchParams()
-  const returnTo = encodeURIComponent(
-    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
-  )
 
   const [sort, setSort] = useState<SortKey>('DEFAULT')
 
@@ -162,9 +157,12 @@ export default function LibraryListPage() {
                 onButtonClick={() => setShowReviewSheet(true)}
               />
             }
-            onItemClick={(id) =>
+            onItemClick={(id) => {
+              const returnTo = encodeURIComponent(
+                `${window.location.pathname}${window.location.search}`,
+              )
               router.push(`/library/works/${id}?returnTo=${returnTo}`)
-            }
+            }}
             infiniteScrollRef={ref}
             isFetchingNextPage={isFetchingNextPage}
           />
