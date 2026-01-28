@@ -2,23 +2,23 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react' // ✅
-import { useParams, useRouter } from 'next/navigation' // ✅
+import { useEffect, useMemo, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 
 export default function TopicRoomCreateSuccessPage() {
   const router = useRouter()
-  const params = useParams<{ id: string }>() // ✅
-  const worksId = Number(params?.id) // ✅
+  const params = useParams<{ id: string }>()
+  const worksId = Number(params?.id)
 
-  const [topicRoomId, setTopicRoomId] = useState<number>(0) // ✅
-  const [topicRoomName, setTopicRoomName] = useState<string>('') // ✅
+  const [topicRoomId, setTopicRoomId] = useState<number>(0)
+  const [topicRoomName, setTopicRoomName] = useState<string>('')
 
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search) // ✅
-    setTopicRoomId(Number(sp.get('topicRoomId') ?? '')) // ✅
-    setTopicRoomName(sp.get('topicRoomName') ?? '') // ✅
-  }, []) // ✅
+    const sp = new URLSearchParams(window.location.search)
+    setTopicRoomId(Number(sp.get('topicRoomId') ?? ''))
+    setTopicRoomName(sp.get('topicRoomName') ?? '')
+  }, [])
 
   const { data: work } = useWorksDetail(worksId)
 
@@ -42,7 +42,7 @@ export default function TopicRoomCreateSuccessPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white px-4">
-      {/*   UI 변경: 모달이 아닌 페이지이므로 상단 뒤로가기 버튼 노출 */}
+      {/* 모달이 아닌 페이지이므로 상단 뒤로가기 버튼 노출 */}
       <div className="pt-4">
         <button
           type="button"
@@ -50,7 +50,7 @@ export default function TopicRoomCreateSuccessPage() {
             router.push(
               `/library/works/${worksId}?returnTo=${encodeURIComponent(
                 '/library/list',
-              )}`, // ✅
+              )}`,
             )
           }
           aria-label="뒤로가기"
@@ -60,7 +60,7 @@ export default function TopicRoomCreateSuccessPage() {
         </button>
       </div>
 
-      {/*   Step 4 UI(기존 4단계 그대로) */}
+      {/*   Step 4 UI    */}
       <div className="flex flex-1 flex-col items-center justify-center">
         <p className="heading-2 text-center text-black">
           첫 토픽룸이 만들어졌어요!
@@ -70,8 +70,8 @@ export default function TopicRoomCreateSuccessPage() {
         </p>
 
         <div className="mt-5 flex justify-center">
-          <div className="relative w-[210px] overflow-hidden rounded-2xl bg-gray-100">
-            <div className="relative h-[280px] w-full">
+          <div className="relative w-[249px] overflow-hidden rounded-2xl bg-gray-100">
+            <div className="relative h-[360px] w-full">
               <Image
                 src={ui.thumb}
                 alt={ui.title}
@@ -82,23 +82,43 @@ export default function TopicRoomCreateSuccessPage() {
 
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0 p-3">
               <div className="flex items-center gap-2">
-                <span className="caption-1 rounded-md bg-white/90 px-2 py-1 text-black">
+                <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">
                   <FireIcon />
                   <p className="ml-0.5">HOT</p>
                 </span>
-                <span className="caption-1 rounded-md bg-[var(--color-magenta-300)] px-2 py-1 text-white">
-                  1명
+                <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-3 text-[var(--color-magenta-300)]">
+                  <Image
+                    src={'/icons/icon-topicroom-people.svg'}
+                    alt={'참여 인원'}
+                    width={12}
+                    height={12}
+                    className="inline-block"
+                  />
+                  <p className="ml-0.5">1명</p>
                 </span>
               </div>
 
-              <p className="body-2 mt-2 text-white">{ui.title}</p>
-              <p className="caption-1 mt-1 text-white/80">{topicRoomName}</p>
+              {/* 제목 / 부제목 */}
+              <div className="flex-1 min-w-0 max-w-[200px] space-y-0.5 text-white text-left">
+                <p className="heading-2 w-full truncate">{ui.title}</p>
+                <p className="body-1 ">{topicRoomName}</p>
+              </div>
+
+              <div
+                className="
+          absolute bottom-3 right-3
+          flex h-10 w-10 items-center justify-center
+          rounded-full bg-pink-500 text-white shadow-lg
+        "
+              >
+                <EnterRoomIcon />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/*   Step 4 버튼(기존 그대로) */}
+      {/*   Step 4 버튼 */}
       <button
         type="button"
         onClick={onGoRoom}
@@ -110,6 +130,46 @@ export default function TopicRoomCreateSuccessPage() {
     </div>
   )
 }
+
+/* ===== 아이콘들 ===== */
+
+const EnterRoomIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 18 18"
+    fill="none"
+  >
+    <rect x="9.1875" width="7.3125" height="1.5" fill="#ffffff" />
+    <rect y="8.25391" width="11.3164" height="1.5" fill="#ffffff" />
+    <rect
+      x="7.53906"
+      y="4.47656"
+      width="5.34329"
+      height="1.5"
+      transform="rotate(45 7.53906 4.47656)"
+      fill="#ffffff"
+    />
+    <rect
+      x="11.3164"
+      y="9.75391"
+      width="5.34329"
+      height="1.5"
+      transform="rotate(135 11.3164 9.75391)"
+      fill="#ffffff"
+    />
+    <rect
+      x="18"
+      y="1.50781"
+      width="14.9922"
+      height="1.5"
+      transform="rotate(90 18 1.50781)"
+      fill="#ffffff"
+    />
+    <rect x="9.1875" y="16.5" width="7.3125" height="1.5" fill="#ffffff" />
+  </svg>
+)
 
 const FireIcon = () => (
   <svg

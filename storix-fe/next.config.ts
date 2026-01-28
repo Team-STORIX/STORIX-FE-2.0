@@ -42,6 +42,12 @@ const nextConfig: NextConfig = {
 
       {
         protocol: 'https',
+        hostname: 'image-comic.pstatic.net',
+        pathname: '/**',
+      },
+
+      {
+        protocol: 'https',
         hostname:
           'storix-ceos22-begsfeyc07-ds74eslk.s3.ap-southeast-2.amazonaws.com',
         pathname: '/**',
