@@ -3,7 +3,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { useParams, useRouter } from 'next/navigation'
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation'
 import axios from 'axios'
 
 import PostCard from '@/components/common/post/PostCard'
@@ -118,6 +123,11 @@ const reportReply = async (args: {
 
 export default function FeedArticlePage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const sp = useSearchParams()
+  const returnTo = encodeURIComponent(
+    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
+  )
   const params = useParams<{ id: string }>()
   const boardId = Number(params?.id)
 
@@ -581,7 +591,7 @@ export default function FeedArticlePage() {
             onClickWorksArrow={() => {
               const worksId = post?.worksId
               if (!worksId) return
-              router.push(`/library/works/${worksId}`)
+              router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
             }}
           />
         </section>

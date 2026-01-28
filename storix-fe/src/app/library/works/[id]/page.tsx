@@ -2,7 +2,12 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation'
 import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
@@ -19,8 +24,28 @@ const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 
 export default function LibraryWorkHomePage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const sp = useSearchParams()
   const params = useParams<{ id: string }>()
   const worksId = Number(params?.id)
+
+  const handleBack = () => {
+    const raw = sp.get('returnTo')
+    if (raw) {
+      const decoded = decodeURIComponent(raw)
+      if (decoded.startsWith('/')) {
+        router.push(decoded)
+        return
+      }
+    }
+
+    if (window.history.length > 1) {
+      router.back()
+      return
+    }
+
+    router.push('/library/list')
+  }
 
   const [tab, setTab] = useState<TabKey>('info')
   const { isFavorite, toggleFavorite } = useFavoriteWork(worksId)
@@ -170,7 +195,7 @@ export default function LibraryWorkHomePage() {
   return (
     <div className="relative min-h-screen bg-white">
       <WorkTopBar
-        onBack={() => router.push('/library/list')}
+        onBack={handleBack}
         isLiked={isFavorite}
         onToggleLike={toggleFavorite}
       />

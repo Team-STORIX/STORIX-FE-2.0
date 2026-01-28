@@ -143,6 +143,10 @@ export default function FeedPageClient() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
+  const returnTo = encodeURIComponent(
+    `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+  )
+
   const tab: Tab = searchParams.get('tab') === 'writers' ? 'writers' : 'works'
   const pick = searchParams.get('pick') ?? 'all'
 
@@ -510,7 +514,7 @@ export default function FeedPageClient() {
             onClickWorksArrow={(post) => {
               const worksId = Number.parseInt(post.workId ?? '', 10)
               if (!Number.isFinite(worksId) || worksId <= 0) return
-              router.push(`/library/works/${worksId}`)
+              router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
             }}
           />
 

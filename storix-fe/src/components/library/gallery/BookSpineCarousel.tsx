@@ -3,7 +3,7 @@
 
 import Image from 'next/image'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 export type Work = {
   id: number
@@ -30,6 +30,11 @@ export default function BookSpineCarousel({
   onNeedMore,
 }: BookSpineCarouselProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const sp = useSearchParams()
+  const returnTo = encodeURIComponent(
+    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
+  )
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([])
   const rafRef = useRef<number | null>(null)
@@ -116,7 +121,7 @@ export default function BookSpineCarousel({
     if (!work) return
     // 이미 활성인 책을 다시 누르면 상세로 이동
     if (idx === activeIdx) {
-      router.push(`/library/works/${work.id}`) // 라우팅
+      router.push(`/library/works/${work.id}?returnTo=${returnTo}`) // 라우팅
       return
     }
 

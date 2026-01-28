@@ -3,13 +3,20 @@
 
 import Image from 'next/image'
 import { useMemo } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 
 export default function TopicRoomCreateSuccessPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const sp = useSearchParams()
+
+  const returnTo = encodeURIComponent('/library/list')
 
   const worksId = Number(params?.id)
   const topicRoomId = Number(sp.get('topicRoomId') ?? '')
@@ -41,7 +48,9 @@ export default function TopicRoomCreateSuccessPage() {
       <div className="pt-4">
         <button
           type="button"
-          onClick={() => router.push(`/library/works/${ui.id}`)}
+          onClick={() =>
+            router.push(`/library/works/${ui.id}?returnTo=${returnTo}`)
+          }
           aria-label="뒤로가기"
           className="flex h-8 w-8 items-center justify-center cursor-pointer"
         >
