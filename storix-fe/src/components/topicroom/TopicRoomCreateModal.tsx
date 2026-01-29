@@ -28,7 +28,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
 
   const [step, setStep] = useState<Step>(1)
   const [topicRoomName, setTopicRoomName] = useState('')
-  const didNavigateRef = useRef(false) //   성공 후 페이지 이동 중복 방지
+  const didNavigateRef = useRef(false) // ✅ 성공 후 페이지 이동 중복 방지
 
   const [isOpenAnim, setIsOpenAnim] = useState(false)
 
@@ -37,7 +37,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
     if (!open) return
     setStep(1)
     setTopicRoomName('')
-    didNavigateRef.current = false //   모달 재오픈 시 리셋
+    didNavigateRef.current = false // ✅ 모달 재오픈 시 리셋
     requestAnimationFrame(() => setIsOpenAnim(true))
   }, [open])
 
@@ -58,7 +58,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
     return '한글,영문,숫자 2~10자까지 입력 가능해요'
   }, [topicRoomName, canCreate])
 
-  //   API 직접 호출 금지 -> React Query 훅으로 통일
+  // ✅ API 직접 호출 금지 -> React Query 훅으로 통일
   const createMut = useCreateTopicRoom()
 
   const onCreate = () => {
@@ -66,7 +66,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
     createMut.mutate({ worksId: work.id, topicRoomName })
   }
 
-  //   3단계에서 생성 성공 -> 4단계는 모달이 아닌 페이지로 라우팅
+  // ✅ 3단계에서 생성 성공 -> 4단계는 모달이 아닌 페이지로 라우팅
   useEffect(() => {
     if (!open) return
     if (step !== 3) return
@@ -224,7 +224,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
             </>
           )}
 
-          {/*   Step 4는 페이지로 이동하므로 모달에서 제거 */}
+          {/* ✅ Step 4는 페이지로 이동하므로 모달에서 제거 */}
         </div>
       </div>
     </div>

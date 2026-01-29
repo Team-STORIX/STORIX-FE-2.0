@@ -64,10 +64,10 @@ export default function ReportReasonSelect({
       <div className="mt-4 relative">
         <textarea
           value={otherReason}
-          onChange={(e) => setOtherReason(e.target.value.slice(0, 100))} //
+          onChange={(e) => setOtherReason(e.target.value.slice(0, 100))} // ✅
           placeholder="신고 사유를 상세히 남겨 주세요"
           className="w-full h-[120px] rounded-xl border border-gray-200 bg-white px-4 py-3 body-2 outline-none resize-none"
-          disabled={!isOther} //   UI 변경
+          disabled={!isOther} // ✅ UI 변경
         />
         <span className="absolute bottom-3 right-11 caption-1 text-[var(--color-magenta-300)]">
           {otherLen}

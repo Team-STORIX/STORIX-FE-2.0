@@ -4,8 +4,8 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import CheckBox from '@/public/common/icons/CheckBox'
-import type { PlusWorksSearchItem } from '@/lib/api/plus/plus.schema' //
-import { usePlusWorksSearch } from '@/hooks/plus/usePlusWorksSearch' //
+import type { WorksSearchItem } from '@/lib/api/search/search.schema'
+import { useWorksSearch } from '@/hooks/search/useWorksSearch'
 
 const STORAGE_KEY_FEED = 'storix:selectedWork:feed'
 
@@ -43,16 +43,19 @@ export default function WriteBottomSheet({
     setTimeout(onClose, 250)
   }
 
-  const worksQuery = usePlusWorksSearch({ keyword: debouncedKeyword, size: 20 }) //
+  const worksQuery = useWorksSearch({
+    keyword: debouncedKeyword,
+    sort: 'NAME',
+    page: 0,
+  })
 
-  const works: PlusWorksSearchItem[] =
-    worksQuery.data?.pages.flatMap((p) => p.result.content) ?? [] //
+  const works: WorksSearchItem[] = worksQuery.data?.result?.content ?? []
 
-  const saveSelectedWorkToSession = (w: PlusWorksSearchItem) => {
+  const saveSelectedWorkToSession = (w: WorksSearchItem) => {
     const payload: StoredWork = {
       id: Number(w.worksId),
-      title: w.worksName ?? '', //
-      meta: `${w.artistName ?? ''} · ${w.worksType ?? ''}`.trim(), //
+      title: w.worksName,
+      meta: `${w.artistName} · ${w.worksType}`,
       thumb: w.thumbnailUrl ?? '',
     }
     sessionStorage.setItem(STORAGE_KEY_FEED, JSON.stringify(payload))
@@ -151,7 +154,7 @@ export default function WriteBottomSheet({
                       {w.thumbnailUrl ? (
                         <Image
                           src={w.thumbnailUrl}
-                          alt={w.worksName ?? ''} //
+                          alt={w.worksName}
                           className="object-cover"
                           width={87}
                           height={116}
@@ -160,12 +163,12 @@ export default function WriteBottomSheet({
                     </div>
                     <div className="flex-1 flex flex-col min-w-0 items-start pr-2">
                       <span className="heading-4 w-full truncate text-left">
-                        {w.worksName ?? ''} {/* ✅ */}
+                        {w.worksName}
                       </span>
                       <span className="caption-1 w-full truncate text-left text-gray-500">
-                        {w.artistName ?? ''} {/* ✅ */}
+                        {w.artistName}
                         <span className="text-gray-300">·</span>
-                        {w.worksType ?? ''} {/* ✅ */}
+                        {w.worksType}
                       </span>
                     </div>
                   </div>

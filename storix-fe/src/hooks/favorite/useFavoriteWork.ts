@@ -22,24 +22,24 @@ export function useFavoriteWork(worksId?: number) {
 
   const statusQuery = useQuery({
     queryKey,
-    queryFn: () => getFavoriteWorkStatus(worksId!), //   enabled로 가드
+    queryFn: () => getFavoriteWorkStatus(worksId!), // ✅ enabled로 가드
     enabled: !!enabled,
   })
 
   const addMutation = useMutation({
-    mutationFn: () => favoriteWork(worksId!), //   enabled로 가드
+    mutationFn: () => favoriteWork(worksId!), // ✅ enabled로 가드
   })
 
   const removeMutation = useMutation({
-    mutationFn: () => unfavoriteWork(worksId!), //   enabled로 가드
+    mutationFn: () => unfavoriteWork(worksId!), // ✅ enabled로 가드
   })
 
-  //   mutation 성공 시 invalidateQueries (onSuccess 금지 규칙 준수)
+  // ✅ mutation 성공 시 invalidateQueries (onSuccess 금지 규칙 준수)
   useEffect(() => {
     if (addMutation.isSuccess || removeMutation.isSuccess) {
-      queryClient.invalidateQueries({ queryKey }) //
-      addMutation.reset() //
-      removeMutation.reset() //
+      queryClient.invalidateQueries({ queryKey }) // ✅
+      addMutation.reset() // ✅
+      removeMutation.reset() // ✅
     }
   }, [
     addMutation.isSuccess,

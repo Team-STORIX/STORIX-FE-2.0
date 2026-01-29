@@ -69,21 +69,21 @@ export default function NavBar({ active, onChange }: NavBarProps) {
       <div className="fixed z-50 w-full max-w-[393px] bottom-0 left-1/2 -translate-x-1/2">
         <div className="relative w-full">
           <nav className="relative z-10 flex h-[80px] w-full items-start px-5 pt-[15px] pb-3">
-            {/*   왼쪽 절반 중앙에 '피드' */}
+            {/* ✅ 왼쪽 절반 중앙에 '피드' */}
             <div className="flex flex-1 items-center justify-center">
               {renderItem(NAV_ITEMS[0])}
             </div>
 
-            {/*   가운데(플러스) 공간 확보 */}
+            {/* ✅ 가운데(플러스) 공간 확보 */}
             <div className="w-[56px]" />
 
-            {/*   오른쪽 절반 중앙에 '프로필' */}
+            {/* ✅ 오른쪽 절반 중앙에 '프로필' */}
             <div className="flex flex-1 items-center justify-center">
               {renderItem(NAV_ITEMS[1])}
             </div>
           </nav>
 
-          {/*   배경은 nav 아래에 깔리도록 z-0 */}
+          {/* ✅ 배경은 nav 아래에 깔리도록 z-0 */}
           <div className="absolute inset-x-0 bottom-0 z-0 h-[80px]">
             <Image
               src="/common/icons/navbar/navigationbar-background.svg"

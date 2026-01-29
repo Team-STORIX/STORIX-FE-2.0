@@ -33,8 +33,8 @@ type Post = {
 
 type Props = {
   pick: string
-  posts: Post[] //   API 연결된 데이터는 부모에서 내려주기
-  onReport?: (post: Post) => void //   신고 클릭 시 액션(필요하면 부모에서 연결)
+  posts: Post[] // ✅ API 연결된 데이터는 부모에서 내려주기
+  onReport?: (post: Post) => void // ✅ 신고 클릭 시 액션(필요하면 부모에서 연결)
 }
 
 export default function FeedList({ pick, posts, onReport }: Props) {
@@ -110,7 +110,7 @@ export default function FeedList({ pick, posts, onReport }: Props) {
               </div>
             </div>
 
-            {/*   점3개 + 드롭다운 (차단 제거 / 신고만) */}
+            {/* ✅ 점3개 + 드롭다운 (차단 제거 / 신고만) */}
             <div className="relative" ref={menuRef}>
               <button
                 type="button"

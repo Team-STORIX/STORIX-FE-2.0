@@ -20,7 +20,7 @@ export type ReportFlowProps<T> = {
   /** optional: 완료/토스트 하단 위치(기본 88) */
   doneBottom?: number
 
-  //   duplicated toast
+  // ✅ duplicated toast
   toastOpen?: boolean
   toastMessage?: string
   onCloseToast?: () => void
@@ -48,13 +48,13 @@ export default function ReportFlow<T>({
   toastMessage = '',
   onCloseToast,
 }: ReportFlowProps<T>) {
-  //   Portal mount (fixed가 특정 레이아웃에서 잘리는 이슈 방지)
+  // ✅ Portal mount (fixed가 특정 레이아웃에서 잘리는 이슈 방지)
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
   const ui = (
     <>
-      {/*   신고 모달 */}
+      {/* ✅ 신고 모달 */}
       {isReportOpen && reportTarget && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
           {/* 배경 */}
@@ -135,7 +135,7 @@ export default function ReportFlow<T>({
         </div>
       )}
 
-      {/*   신고 완료 팝업 */}
+      {/* ✅ 신고 완료 팝업 */}
       {reportDoneOpen && (
         <div
           className="fixed left-1/2 -translate-x-1/2 z-[120]"
@@ -160,7 +160,7 @@ export default function ReportFlow<T>({
         </div>
       )}
 
-      {/*   중복 신고 토스트 */}
+      {/* ✅ 중복 신고 토스트 */}
       {toastOpen && (
         <div
           className="fixed left-1/2 -translate-x-1/2 z-[130]"
@@ -194,7 +194,7 @@ export default function ReportFlow<T>({
     </>
   )
 
-  //   mounted 전에는 document가 없어서 portal 못 씀
+  // ✅ mounted 전에는 document가 없어서 portal 못 씀
   if (!mounted) return null
   return createPortal(ui, document.body)
 }

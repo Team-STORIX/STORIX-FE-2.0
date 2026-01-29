@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
+import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
 
 interface CardNavProps {
   header?: string
@@ -23,12 +23,7 @@ export const CardNav = ({ header, roomName }: CardNavProps) => {
           aria-label="이동"
           className="flex h-6 w-6 items-center justify-center"
         >
-          <Image
-            src="/icons/icon-arrow-forward.svg"
-            alt="forward arrow"
-            width={24}
-            height={24}
-          />
+          <ForwardArrowIcon />
         </Link>
       </div>
     </div>

@@ -24,7 +24,7 @@ export async function createReaderReview(body: CreateReviewBody) {
 }
 
 export async function createReaderBoard(body: CreateBoardBody) {
-  //   files가 없으면 아예 빼서 전송
+  // ✅ files가 없으면 아예 빼서 전송
   const payload: CreateBoardBody = { ...body }
   if (!payload.files || payload.files.length === 0) delete payload.files
 

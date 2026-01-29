@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthState>()(
         marketingAgree: false,
 
         setAccessToken: (token) => {
-          //   (중요) 기존 코드/훅들이 sessionStorage.getItem('accessToken')로 읽는 경우를 위해
+          // ✅ (중요) 기존 코드/훅들이 sessionStorage.getItem('accessToken')로 읽는 경우를 위해
           //     accessToken 키도 같이 저장해준다.
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('accessToken', token)
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthState>()(
         setMarketingAgree: (agree) => set({ marketingAgree: agree }),
 
         clearAuth: () => {
-          //   accessToken 키도 제거
+          // ✅ accessToken 키도 제거
           if (typeof window !== 'undefined') {
             sessionStorage.removeItem('accessToken')
           }
@@ -74,7 +74,7 @@ export const useAuthStore = create<AuthState>()(
       }),
       {
         name: 'auth-storage',
-        //   SSR 안전 가드: window 없을 때 sessionStorage 접근 방지
+        // ✅ SSR 안전 가드: window 없을 때 sessionStorage 접근 방지
         storage: createJSONStorage(() => {
           if (typeof window === 'undefined') {
             // SSR에서는 storage 사용 불가 -> 더미로 처리
@@ -92,7 +92,7 @@ export const useAuthStore = create<AuthState>()(
           onboardingToken: state.onboardingToken,
           marketingAgree: state.marketingAgree,
         }),
-        //   rehydrate 후 isAuthenticated를 accessToken 유무로 맞춰줌
+        // ✅ rehydrate 후 isAuthenticated를 accessToken 유무로 맞춰줌
         onRehydrateStorage: () => (state) => {
           if (!state) return
           state.isAuthenticated = !!state.accessToken

@@ -14,12 +14,10 @@ import {
 
 const FALLBACK_HASHTAGS = [
   '로맨스',
-  '공주',
-  '이세계',
-  '악녀',
-  '판타지',
-  '환생',
-  '청춘',
+  '무협/사극',
+  '액션',
+  '로맨스판타지',
+  '금발남주',
 ]
 
 export default function SearchHomePage() {
@@ -77,18 +75,7 @@ export default function SearchHomePage() {
 
         <div className="flex flex-col w-full gap-3">
           <p className="body-1 text-gray-900">키워드 추천</p>
-          <HashtagList
-            items={[
-              '로맨스',
-              '공주',
-              '이세계',
-              '악녀',
-              '판타지',
-              '환생',
-              '청춘',
-            ]}
-            onSelect={goResult}
-          />
+          <HashtagList items={hashtagLabels} onSelect={goResult} />
         </div>
 
         <div className="flex flex-col w-full gap-3">

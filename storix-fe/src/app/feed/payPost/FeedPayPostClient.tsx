@@ -19,7 +19,7 @@ import DeleteFlow from '@/components/common/delete/DeleteFlow'
 
 type Tab = 'works' | 'writers'
 
-//   FeedList가 기대하는 게시글 데이터(프로젝트 실제 타입이 있으면 그걸로 교체해도 됨)
+// ✅ FeedList가 기대하는 게시글 데이터(프로젝트 실제 타입이 있으면 그걸로 교체해도 됨)
 type Post = {
   boardId: number
   profile: { userId: number; nickName: string; profileImageUrl: string | null }
@@ -65,10 +65,10 @@ export default function FeedPayPostClient() {
     replaceQuery({ pick: id })
   }
 
-  //   (1) menu 훅
+  // ✅ (1) menu 훅
   const menu = useOpenMenu()
 
-  //   (2) report/delete 훅은 opts 1개 필수
+  // ✅ (2) report/delete 훅은 opts 1개 필수
   //     여기 opts는 "최소로" 넣어둔거라, 너희 훅 정의가 조금 다르면 아래만 이름 맞추면 끝.
   const report = useReportFlow({
     // 보통: onDone, onSuccess, onError 같은 콜백이 있음. 없으면 지워도 됨.
@@ -118,7 +118,7 @@ export default function FeedPayPostClient() {
 
   const items = tab === 'works' ? worksItems : writersItems
 
-  //   (임시) posts mock
+  // ✅ (임시) posts mock
   const posts: Post[] = useMemo(() => {
     const base: Post[] = Array.from({ length: 12 }).map((_, i) => ({
       boardId: i + 1,
@@ -158,7 +158,7 @@ export default function FeedPayPostClient() {
     return base.filter((p) => p.profile.nickName.includes(pick))
   }, [pick, tab])
 
-  //   신고/삭제 열기: openXModal로 호출 (너희 에러 메시지에 있는 정확한 함수명)
+  // ✅ 신고/삭제 열기: openXModal로 호출 (너희 에러 메시지에 있는 정확한 함수명)
   const onOpenReport = (post: Post) => {
     // BaseReportTarget 구조는 프로젝트에 정의되어 있을 텐데,
     // 최소로 boardId만 넣어도 되는 구조면 이대로 OK.
@@ -177,7 +177,7 @@ export default function FeedPayPostClient() {
 
       <HorizontalPicker items={items} selectedId={pick} onSelect={onPick} />
 
-      {/*   FeedList가 요구하던 props들 전부 전달 */}
+      {/* ✅ FeedList가 요구하던 props들 전부 전달 */}
       <FeedList
         tab={tab}
         pick={pick}
@@ -187,7 +187,7 @@ export default function FeedPayPostClient() {
         onOpenDelete={onOpenDelete as any}
       />
 
-      {/*   플로우 렌더 */}
+      {/* ✅ 플로우 렌더 */}
       <ReportFlow {...(report as any)} />
       <DeleteFlow {...(del as any)} />
 

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import type { RefObject } from 'react'
 import type { WorksSearchItem } from '@/lib/api/search/search.schema'
 import Warning from '@/components/common/Warining'
@@ -18,13 +18,8 @@ export default function SearchResultWorks({
   loadMoreRef,
 }: Props) {
   const router = useRouter()
-  const pathname = usePathname()
-  const sp = useSearchParams()
-  const returnTo = encodeURIComponent(
-    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
-  )
   const onClickWorks = (worksId: number) => {
-    router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
+    router.push(`/library/works/${worksId}`)
   }
   return (
     <section className="flex w-full flex-col gap-3">

@@ -17,7 +17,6 @@ import {
   postUpdateMyReview,
   postWorksReviewLike,
   postWorksReviewReport,
-  type UpdateMyReviewPayload,
 } from '@/lib/api/works'
 
 export const useWorksMyReview = (worksId: number) => {
@@ -83,7 +82,7 @@ export const useReportWorksReview = () => {
 export const useUpdateMyReview = (params: { worksId: number }) => {
   const qc = useQueryClient()
   const m = useMutation({
-    mutationFn: (p: { reviewId: number; payload: UpdateMyReviewPayload }) =>
+    mutationFn: (p: { reviewId: number; payload: unknown }) =>
       postUpdateMyReview(p),
   })
 

@@ -24,7 +24,7 @@ export const useSignup = () => {
       const token = response.result.accessToken
       setAccessToken(token)
 
-      //   온보딩(회원가입) 완료 직후: manual 노출 → manual에서 home으로
+      // ✅ 온보딩(회원가입) 완료 직후: manual 노출 → manual에서 home으로
       router.replace('/manual')
     },
 

@@ -25,7 +25,7 @@ export default function PayPostManualPage() {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/*   Topbar */}
+      {/* ✅ Topbar */}
       <div className="relative flex h-14 w-full items-center bg-white px-4">
         <img
           src="/icons/back.svg"
@@ -37,7 +37,7 @@ export default function PayPostManualPage() {
         />
       </div>
 
-      {/*   가이드 이미지 */}
+      {/* ✅ 가이드 이미지 */}
       <div className="mx-auto w-[393px]">
         <div className="relative h-[606px] w-[393px] overflow-hidden">
           {images.map((src, i) => (
@@ -55,12 +55,12 @@ export default function PayPostManualPage() {
         </div>
       </div>
 
-      {/*   인디케이터 */}
+      {/* ✅ 인디케이터 */}
       <p className="mt-2 body-2 text-center text-[var(--color-gray-400)]">
         {index + 1} / {images.length}
       </p>
 
-      {/*   링크 + 버튼 */}
+      {/* ✅ 링크 + 버튼 */}
       <div className="mt-4 flex flex-col items-center px-4 pb-8">
         {/* 노션 링크 */}
         <a

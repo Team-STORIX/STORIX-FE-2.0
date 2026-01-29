@@ -1,7 +1,7 @@
 // src/lib/api/homeFeed/homeFeed.schema.ts
 import { z } from 'zod'
 
-/**   공통 Envelope (isSuccess/code/message/result) */
+/** ✅ 공통 Envelope (isSuccess/code/message/result) */
 export const ApiEnvelopeSchema = <T extends z.ZodTypeAny>(result: T) =>
   z.object({
     isSuccess: z.boolean(),
@@ -11,10 +11,10 @@ export const ApiEnvelopeSchema = <T extends z.ZodTypeAny>(result: T) =>
     timestamp: z.string().optional(),
   })
 
-/**   오늘의 피드 item */
+/** ✅ 오늘의 피드 item */
 export const FeedProfileSchema = z.object({
   userId: z.number(),
-  profileImageUrl: z.string().nullish(), //   null/undefined 허용
+  profileImageUrl: z.string().nullish(), // ✅ null/undefined 허용
   nickName: z.string(),
 })
 
@@ -22,10 +22,10 @@ export const FeedBoardSchema = z.object({
   userId: z.number(),
   boardId: z.number(),
 
-  //   응답에 없는 경우가 있어서 optional 처리
-  isWorksSelected: z.boolean().nullish(), //
-  worksId: z.number().nullish(), //
-  lastCreatedTime: z.string().nullish(), //
+  // ✅ 응답에 없는 경우가 있어서 optional 처리
+  isWorksSelected: z.boolean().nullish(), // ✅
+  worksId: z.number().nullish(), // ✅
+  lastCreatedTime: z.string().nullish(), // ✅
 
   content: z.string(),
   likeCount: z.number(),
@@ -41,7 +41,7 @@ export const TodayFeedItemSchema = z.object({
 
 export type TodayFeedItem = z.infer<typeof TodayFeedItemSchema>
 
-/**   GET /api/v1/home/feeds/today 응답 */
+/** ✅ GET /api/v1/home/feeds/today 응답 */
 export const TodayFeedEnvelopeSchema = ApiEnvelopeSchema(
   z.array(TodayFeedItemSchema),
 )

@@ -40,26 +40,26 @@ export default function ResultClient() {
   }
 
   // isJoined 체크 + join 후 이동
-  const joinMut = useJoinTopicRoom() //
+  const joinMut = useJoinTopicRoom() // ✅
   const pendingJoinRef = useRef<{
     roomId: number
     worksName: string
-  } | null>(null) //
+  } | null>(null) // ✅
 
   const items = useMemo(() => {
-    const pages = data?.pages ?? [] //
-    const flat = pages.flatMap((p) => p.content ?? []) //
+    const pages = data?.pages ?? [] // ✅
+    const flat = pages.flatMap((p) => p.content ?? []) // ✅
 
     return flat.map((r) => ({
       id: r.topicRoomId,
-      roomId: r.topicRoomId, //
+      roomId: r.topicRoomId, // ✅
       thumbnail: r.thumbnailUrl ?? '/image/sample/topicroom-2.webp',
       title: r.topicRoomName,
-      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), //
+      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), // ✅
       memberCount: r.activeUserNumber ?? 0,
       timeAgo: formatTimeAgo(r.lastChatTime),
       worksName: r.worksName,
-      isJoined: !!r.isJoined, //
+      isJoined: !!r.isJoined, // ✅
     }))
   }, [data])
 
@@ -73,18 +73,18 @@ export default function ResultClient() {
         const first = entries[0]
         if (!first?.isIntersecting) return
         if (isFetchingNextPage) return
-        fetchNextPage() //
+        fetchNextPage() // ✅
       },
       { root: null, rootMargin: '200px', threshold: 0 },
     )
 
     io.observe(el)
     return () => io.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]) //
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]) // ✅
 
   const pushToRoom = (roomId: number, worksName: string) => {
     router.push(
-      `/home/topicroom/${roomId}?worksName=${encodeURIComponent(worksName ?? '')}`, //
+      `/home/topicroom/${roomId}?worksName=${encodeURIComponent(worksName ?? '')}`, // ✅
     )
   }
 
@@ -93,14 +93,14 @@ export default function ResultClient() {
     const pending = pendingJoinRef.current
     if (!pending) return
 
-    pendingJoinRef.current = null //
-    pushToRoom(pending.roomId, pending.worksName) //
-  }, [joinMut.isSuccess]) //   onSuccess 금지(A안) -> useEffect로 처리
+    pendingJoinRef.current = null // ✅
+    pushToRoom(pending.roomId, pending.worksName) // ✅
+  }, [joinMut.isSuccess]) // ✅ onSuccess 금지(A안) -> useEffect로 처리
 
   const goSearch = (raw: string) => {
     const k = raw.replace(/^#/, '').trim()
     if (!k) return
-    router.push(`/home/topicroom/search?keyword=${encodeURIComponent(k)}`) //
+    router.push(`/home/topicroom/search?keyword=${encodeURIComponent(k)}`) // ✅
   }
 
   const handleItemClick = (id: number | string) => {
@@ -112,22 +112,22 @@ export default function ResultClient() {
 
     if (!Number.isFinite(roomId) || roomId <= 0) return
 
-    //   이미 참여 중이면 바로 이동
+    // ✅ 이미 참여 중이면 바로 이동
     if (found.isJoined) {
       pushToRoom(roomId, worksName)
       return
     }
 
-    //   join 진행 중이면 중복 클릭 방지
+    // ✅ join 진행 중이면 중복 클릭 방지
     if (joinMut.isPending) return
 
-    //   join 후 성공하면 useEffect에서 이동
-    pendingJoinRef.current = { roomId, worksName } //
-    joinMut.mutate(roomId) //
+    // ✅ join 후 성공하면 useEffect에서 이동
+    pendingJoinRef.current = { roomId, worksName } // ✅
+    joinMut.mutate(roomId) // ✅
   }
 
   // 무한스크롤 트리거
-  const sentinelRef = useRef<HTMLDivElement | null>(null) //
+  const sentinelRef = useRef<HTMLDivElement | null>(null) // ✅
 
   return (
     <main className="min-h-screen bg-white">
@@ -157,7 +157,7 @@ export default function ResultClient() {
       ) : (
         <>
           <TopicRoomSearchList list={items} onItemClick={handleItemClick} />
-          <div ref={sentinelRef} className="h-1" /> {/*   무한스크롤 트리거 */}
+          <div ref={sentinelRef} className="h-1" /> {/* ✅ 무한스크롤 트리거 */}
           {isFetchingNextPage && (
             <div className="px-4 py-6 body-2 text-gray-400">불러오는 중…</div>
           )}{' '}

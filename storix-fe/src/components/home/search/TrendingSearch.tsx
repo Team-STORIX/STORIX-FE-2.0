@@ -13,7 +13,7 @@ type Props = {
 export default function TrendingSearch({ onSelect, className = '' }: Props) {
   const { data, isLoading, isError } = useTrendingKeywords()
 
-  //   응답 래핑 케이스 방어 (result / result.result)
+  // ✅ 응답 래핑 케이스 방어 (result / result.result)
   const list = useMemo(() => {
     const raw =
       (data as any)?.result?.trendingKeywords ??
@@ -25,7 +25,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
       : []
   }, [data])
 
-  //   1~10위만
+  // ✅ 1~10위만
   const top10 = list.slice(0, 10)
 
   const left = top10.slice(0, 5)
@@ -49,7 +49,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         <div className="flex items-center gap-3 min-w-0">
           <span
             className={[
-              'body-2 font-semibold inline-flex w-[2ch] justify-center',
+              'body-2 font-semibold',
               rank <= 3 ? 'text-[var(--color-magenta-300)]' : 'text-black',
             ].join(' ')}
           >
@@ -62,7 +62,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         <div className="flex items-center justify-end w-5">
           {isUp ? (
             <Image
-              src="/search/trendingUp.svg"
+              src="/search/trendingUP.svg"
               alt="상승"
               width={16}
               height={16}

@@ -24,7 +24,7 @@ import {
 } from '@/api/feed/readerBoard.api'
 
 /**
- *   게시글 좋아요 토글 API
+ * ✅ 게시글 좋아요 토글 API
  * POST /api/v1/feed/reader/board/{boardId}/like
  */
 const toggleBoardLike = async (boardId: number) => {
@@ -33,7 +33,7 @@ const toggleBoardLike = async (boardId: number) => {
 }
 
 /**
- *   "이미 신고" 판별(백엔드가 400/409 등으로 줄 수 있어 방어)
+ * ✅ "이미 신고" 판별(백엔드가 400/409 등으로 줄 수 있어 방어)
  */
 const isDuplicatedReportError = (err: unknown) => {
   if (!axios.isAxiosError(err)) return false
@@ -63,7 +63,7 @@ export default function MyLikes() {
   const [isLoading, setIsLoading] = useState(false)
   const [initLoading, setInitLoading] = useState(true)
 
-  //   연타 방지
+  // ✅ 연타 방지
   const [likePending, setLikePending] = useState<Record<number, boolean>>({})
 
   const loadFirst = useCallback(async () => {
@@ -113,7 +113,7 @@ export default function MyLikes() {
   })
 
   /**
-   *   좋아요 해제(토글) 핸들러: 성공 시 목록에서 제거, 실패 시 롤백
+   * ✅ 좋아요 해제(토글) 핸들러: 성공 시 목록에서 제거, 실패 시 롤백
    */
   const handleUnlike = useCallback(
     async (boardId: number) => {
@@ -147,7 +147,7 @@ export default function MyLikes() {
   )
 
   /**
-   *   게시글 신고: BoardCard가 duplicated 토스트 띄울 수 있게 outcome 반환
+   * ✅ 게시글 신고: BoardCard가 duplicated 토스트 띄울 수 있게 outcome 반환
    */
   const handleReportConfirm = useCallback(
     async (args: {
@@ -155,7 +155,7 @@ export default function MyLikes() {
       reportedUserId: number
     }): Promise<ReportConfirmOutcome> => {
       try {
-        //   너가 올린 reportBoard는 ReportBoardResult를 return(throw 아님)
+        // ✅ 너가 올린 reportBoard는 ReportBoardResult를 return(throw 아님)
         const out = await reportBoard({
           boardId: args.boardId,
           reportedUserId: args.reportedUserId,
@@ -181,7 +181,7 @@ export default function MyLikes() {
   )
 
   /**
-   *   게시글 삭제(필요 없으면 BoardCard에 안 넘겨도 됨)
+   * ✅ 게시글 삭제(필요 없으면 BoardCard에 안 넘겨도 됨)
    */
   const handleDeleteConfirm = useCallback(async (args: { boardId: number }) => {
     const data = await deleteBoardApi(args.boardId)

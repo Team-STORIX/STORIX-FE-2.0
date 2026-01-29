@@ -5,7 +5,7 @@ import axios from 'axios'
 export type ReportReplyArgs = {
   boardId: number
   replyId: number
-  reportedUserId?: number //   optional
+  reportedUserId?: number // ✅ optional
 }
 
 export const reportReply = async ({
@@ -13,14 +13,14 @@ export const reportReply = async ({
   replyId,
   reportedUserId,
 }: ReportReplyArgs) => {
-  //   숫자 검증 (undefined/string 방지)
+  // ✅ 숫자 검증 (undefined/string 방지)
   if (!Number.isFinite(boardId) || !Number.isFinite(replyId)) {
     throw new Error('Invalid boardId/replyId')
   }
 
   const url = `/api/v1/feed/reader/board/${boardId}/reply/${replyId}/report`
 
-  //   서버가 바디를 안 받는 케이스가 많아서: 있을 때만 전송
+  // ✅ 서버가 바디를 안 받는 케이스가 많아서: 있을 때만 전송
   const body =
     typeof reportedUserId === 'number' && Number.isFinite(reportedUserId)
       ? { reportedUserId }
@@ -35,7 +35,7 @@ export const reportReply = async ({
   }
 }
 
-//   "이미 신고" 판별용 유틸 (백엔드 메시지/코드가 다를 수 있으니 느슨하게)
+// ✅ "이미 신고" 판별용 유틸 (백엔드 메시지/코드가 다를 수 있으니 느슨하게)
 export const isAlreadyReportedError = (e: unknown) => {
   if (!axios.isAxiosError(e)) return false
   const data: any = e.response?.data

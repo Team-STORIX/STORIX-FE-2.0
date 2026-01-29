@@ -1,4 +1,3 @@
-// src/components/topicroom/TopicRoomTopBar.tsx
 'use client'
 
 import Image from 'next/image'
@@ -21,7 +20,7 @@ export default function TopicRoomTopBar({
   onReport,
   onLeave,
 }: Props) {
-  const [open, setOpen] = useState(false) //
+  const [open, setOpen] = useState(false) // ✅
   const wrapRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -37,27 +36,27 @@ export default function TopicRoomTopBar({
   }, [open])
 
   const handleReport = () => {
-    setOpen(false) //
+    setOpen(false) // ✅
     onReport()
   }
 
   const handleLeave = () => {
-    setOpen(false) //
+    setOpen(false) // ✅
     onLeave()
   }
 
   return (
     <div
-      className="relative flex items-center justify-between px-4 py-2"
+      className="relative flex h-14 items-center justify-between px-4"
       ref={wrapRef}
     >
-      <button type="button" onClick={onBack} className="h-6 w-6 cursor-pointer">
+      <button type="button" onClick={onBack} className="h-8 w-8 cursor-pointer">
         <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
       </button>
 
-      {/*   가운데: title / subtitle / 참여인원 */}
-      <div className="flex flex-col items-start flex-1 min-w-0 px-3">
-        <div className="flex items-center gap-1 pb-1 max-w-full">
+      {/* ✅ 가운데: title / subtitle / 참여인원 */}
+      <div className="flex flex-col items-start  flex-1 min-w-0 px-2">
+        <div className="flex items-center gap-1 max-w-full">
           <span className="heading-2 max-w-[200px] truncate">{title}</span>{' '}
           <span className="body-2 text-gray-400">{count}</span>
         </div>
@@ -68,13 +67,13 @@ export default function TopicRoomTopBar({
         )}{' '}
       </div>
 
-      {/*   케밥 + 드롭다운(TopicRoomMenu 흡수) */}
+      {/* ✅ 케밥 + 드롭다운(TopicRoomMenu 흡수) */}
       <div className="relative">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="h-6 w-6 cursor-pointer flex items-center justify-center"
-          onPointerDown={(e) => e.stopPropagation()} //   (드래그 캡처 클릭 씹힘 방지)
+          className="h-8 w-8 cursor-pointer flex items-center justify-center"
+          onPointerDown={(e) => e.stopPropagation()} // ✅ (드래그 캡처 클릭 씹힘 방지)
         >
           <Image
             src="/icons/menu-3dots.svg"
@@ -90,7 +89,7 @@ export default function TopicRoomTopBar({
               type="button"
               className="w-full px-4 py-3 text-left body-2 text-gray-900 rounded-t-xl cursor-pointer transition-bg hover:bg-gray-50"
               onClick={handleReport}
-              onPointerDown={(e) => e.stopPropagation()} //
+              onPointerDown={(e) => e.stopPropagation()} // ✅
             >
               신고하기
             </button>
@@ -99,7 +98,7 @@ export default function TopicRoomTopBar({
               type="button"
               className="w-full px-4 py-3 text-left body-2 text-[var(--color-magenta-300)] rounded-b-xl cursor-pointer transition-bg hover:bg-gray-50"
               onClick={handleLeave}
-              onPointerDown={(e) => e.stopPropagation()} //
+              onPointerDown={(e) => e.stopPropagation()} // ✅
             >
               나가기
             </button>

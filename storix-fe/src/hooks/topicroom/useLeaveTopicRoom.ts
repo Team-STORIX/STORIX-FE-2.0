@@ -11,17 +11,17 @@ export const useLeaveTopicRoom = () => {
     mutationFn: (roomId: number) => leaveTopicRoom(roomId),
   })
 
-  //   onSuccess 금지(A안) -> useEffect로 invalidate
+  // ✅ onSuccess 금지(A안) -> useEffect로 invalidate
   useEffect(() => {
     if (!mutation.isSuccess) return
     if (didInvalidateRef.current) return
 
     didInvalidateRef.current = true
-    qc.invalidateQueries({ queryKey: ['topicroom'] }) //
+    qc.invalidateQueries({ queryKey: ['topicroom'] }) // ✅
   }, [mutation.isSuccess, qc])
 
   useEffect(() => {
-    if (mutation.isPending) didInvalidateRef.current = false //
+    if (mutation.isPending) didInvalidateRef.current = false // ✅
   }, [mutation.isPending])
 
   return mutation

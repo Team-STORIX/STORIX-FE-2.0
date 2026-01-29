@@ -4,7 +4,6 @@
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
 import OtherReviewsSection from '@/components/library/works/OtherReviewsSection'
 
@@ -49,7 +48,6 @@ export default function WorkTabContent({
   ui,
   onReviewWrite,
 }: Props) {
-  const router = useRouter()
   const { data: myReview } = useWorksMyReview(worksId)
   const {
     data: reviewPages,
@@ -74,20 +72,16 @@ export default function WorkTabContent({
 
   const platformIconSrc = ui.platform ? getPlatformIconSrc(ui.platform) : null
 
-  const goReviewDetail = (reviewId: number) => {
-    router.push(`/library/works/review/${reviewId}`)
-  }
-
   return (
     <>
       {/* Tabs */}
       <div className="px-4">
-        <div className="flex border-b border-gray-200 -mx-4">
+        <div className="flex border-b border-gray-200">
           <button
             type="button"
             onClick={() => onChangeTab('info')}
             className={[
-              'flex-1 py-3 text-center body-1 cursor-pointer',
+              'flex-1 py-3 text-center caption-1 cursor-pointer',
               tab === 'info' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
@@ -97,7 +91,7 @@ export default function WorkTabContent({
             type="button"
             onClick={() => onChangeTab('review')}
             className={[
-              'flex-1 py-3 text-center body-1 cursor-pointer',
+              'flex-1 py-3 text-center caption-1 cursor-pointer',
               tab === 'review' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
@@ -105,10 +99,10 @@ export default function WorkTabContent({
           </button>
         </div>
 
-        <div className="relative -mx-4 px-4">
+        <div className="relative">
           <div
             className={[
-              'absolute -top-[1px] h-[2px] w-1/2 bg-black transition-transform duration-200 -mx-4 px-4',
+              'absolute -top-[1px] h-[2px] w-1/2 bg-black transition-transform duration-200',
               tab === 'info' ? 'translate-x-0' : 'translate-x-full',
             ].join(' ')}
           />
@@ -129,7 +123,7 @@ export default function WorkTabContent({
               ) : (
                 <div className="mt-3 flex flex-col gap-2">
                   <div key={ui.platform} className="flex items-center gap-3">
-                    {/*   UI 변경: R 제거 -> 35px 원형 플랫폼 아이콘 */}
+                    {/* ✅ UI 변경: R 제거 -> 35px 원형 플랫폼 아이콘 */}
                     <div className="relative h-[35px] w-[35px] overflow-hidden rounded-full bg-gray-100">
                       {platformIconSrc ? (
                         <Image
@@ -175,17 +169,9 @@ export default function WorkTabContent({
           <div>
             <section className="-mx-4 px-5 bg-gray-50 border-b border-gray-100">
               <p className="heading-2 text-black px-1 pt-5 pb-3">내 리뷰</p>
-
               <button
                 type="button"
-                onClick={() => {
-                  // 내 리뷰가 있으면 상세로, 없으면 작성으로
-                  if (myReview?.content && myReview.reviewId) {
-                    goReviewDetail(myReview.reviewId)
-                    return
-                  }
-                  onReviewWrite()
-                }}
+                onClick={onReviewWrite}
                 className="w-full py-5 px-1 text-left cursor-pointer "
               >
                 {myReview?.content ? (

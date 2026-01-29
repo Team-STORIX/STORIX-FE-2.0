@@ -24,7 +24,7 @@ export default function OnboardingPage() {
   const [genres, setGenres] = useState<GenreKey[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 
-  //   1단계(닉네임)에서만 쓰는 "다음으로" 활성화 상태
+  // ✅ 1단계(닉네임)에서만 쓰는 "다음으로" 활성화 상태
   const [canGoNextNickname, setCanGoNextNickname] = useState(false)
 
   const isStepValid = () => {
@@ -88,12 +88,12 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative w-full min-h-screen bg-white">
-      {/*   Topbar: absolute 제거 → 레이아웃 흐름에 포함 */}
+      {/* ✅ Topbar: absolute 제거 → 레이아웃 흐름에 포함 */}
       <div className="sticky top-0 z-50 bg-white">
         <Topbar onBack={handleBack} />
       </div>
 
-      {/*   Progress: absolute 제거 → Topbar 아래로 자연스럽게 내려옴 */}
+      {/* ✅ Progress: absolute 제거 → Topbar 아래로 자연스럽게 내려옴 */}
       {step <= 4 && (
         <div className="px-4 pt-4">
           <img
@@ -105,7 +105,7 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/*   컨텐츠 영역: 위쪽 큰 padding 제거(전체가 같이 위로 올라감) */}
+      {/* ✅ 컨텐츠 영역: 위쪽 큰 padding 제거(전체가 같이 위로 올라감) */}
       <div className="px-4" style={{ paddingTop: 24, paddingBottom: 134 }}>
         {step === 1 && (
           <Nickname
@@ -122,7 +122,7 @@ export default function OnboardingPage() {
         {step === 5 && <Final />}
       </div>
 
-      {/*   하단 다음 버튼: 기존 유지 */}
+      {/* ✅ 하단 다음 버튼: 기존 유지 */}
       <div className="fixed bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-50">
         <img
           src={

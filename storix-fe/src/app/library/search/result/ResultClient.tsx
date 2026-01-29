@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useInView } from 'react-intersection-observer'
 
 import SearchBar from '@/components/common/SearchBar'
@@ -16,12 +16,8 @@ import { useLibrarySearchWorksInfinite } from '@/hooks/library/useLibrarySearchW
 
 export default function ResultClient() {
   const router = useRouter()
-  const pathname = usePathname()
   const sp = useSearchParams()
   const keyword = (sp.get('keyword') ?? '').trim()
-  const returnTo = encodeURIComponent(
-    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
-  )
   const [showReviewSheet, setShowReviewSheet] = useState(false)
 
   const {
@@ -95,9 +91,7 @@ export default function ResultClient() {
               onButtonClick={() => setShowReviewSheet(true)}
             />
           }
-          onItemClick={(id) =>
-            router.push(`/library/works/${id}?returnTo=${returnTo}`)
-          }
+          onItemClick={(id) => router.push(`/library/works/${id}`)}
           infiniteScrollRef={ref}
           isFetchingNextPage={isFetchingNextPage}
         />

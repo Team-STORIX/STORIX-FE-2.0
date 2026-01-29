@@ -13,13 +13,13 @@ export const ApiEnvelopeSchema = <T extends z.ZodTypeAny>(result: T) =>
 
 /** 과거 메시지 item */
 export const ChatRoomMessageSchema = z.object({
-  id: z.preprocess((v) => Number(v), z.number()), //
-  roomId: z.preprocess((v) => Number(v), z.number()), //
-  senderId: z.preprocess((v) => Number(v), z.number()), //
+  id: z.preprocess((v) => Number(v), z.number()), // ✅
+  roomId: z.preprocess((v) => Number(v), z.number()), // ✅
+  senderId: z.preprocess((v) => Number(v), z.number()), // ✅
   senderName: z.string(),
   message: z.string(),
-  messageType: z.string().nullish(), //   ENTER/TALK/EXIT 등 서버 enum 확정되면 z.enum으로 강화 가능
-  createdAt: z.string().optional().nullish(), //
+  messageType: z.string().nullish(), // ✅ ENTER/TALK/EXIT 등 서버 enum 확정되면 z.enum으로 강화 가능
+  createdAt: z.string().optional().nullish(), // ✅
 })
 
 export type ChatRoomMessage = z.infer<typeof ChatRoomMessageSchema>
@@ -27,13 +27,13 @@ export type ChatRoomMessage = z.infer<typeof ChatRoomMessageSchema>
 /**
  * Spring Page 형태(과거 메시지 조회용)
  * - nextPage 계산을 last/empty/number 기반으로 통일하기 위해
- *   number/last/empty는 default로 안전하게 둠 (필드 누락 시 파싱 실패 방지)
+ *   number/last/empty는 default로 안전하게 둠 (필드 누락 시 파싱 실패 방지) ✅
  */
 export const ChatRoomMessagePageSchema = z.object({
   content: z.array(ChatRoomMessageSchema),
-  number: z.number().default(0), //
-  last: z.boolean().default(false), //
-  empty: z.boolean().default(false), //
+  number: z.number().default(0), // ✅
+  last: z.boolean().default(false), // ✅
+  empty: z.boolean().default(false), // ✅
   first: z.boolean().optional(),
   size: z.number().optional(),
   numberOfElements: z.number().optional(),

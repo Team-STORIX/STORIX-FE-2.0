@@ -1,4 +1,4 @@
-//   src/components/common/RatingInput.tsx
+// ✅ src/components/common/RatingInput.tsx
 'use client'
 
 type Props = {

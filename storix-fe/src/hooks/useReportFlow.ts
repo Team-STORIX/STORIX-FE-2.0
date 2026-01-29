@@ -29,7 +29,7 @@ export function useReportFlow<T extends BaseReportTarget>(opts: {
   const [reportDoneOpen, setReportDoneOpen] = useState(false)
   const timerRef = useRef<number | null>(null)
 
-  //   toast
+  // ✅ toast
   const [toastOpen, setToastOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef<number | null>(null)
@@ -92,7 +92,7 @@ export function useReportFlow<T extends BaseReportTarget>(opts: {
     try {
       const out = await opts.onConfirm(reportTarget)
 
-      //   duplicated 처리
+      // ✅ duplicated 처리
       if (
         out &&
         typeof out === 'object' &&
@@ -104,7 +104,7 @@ export function useReportFlow<T extends BaseReportTarget>(opts: {
         return
       }
 
-      //   ok(혹은 void면 ok로 처리)
+      // ✅ ok(혹은 void면 ok로 처리)
       closeReportModal()
       openDone()
     } catch (err) {
@@ -141,7 +141,7 @@ export function useReportFlow<T extends BaseReportTarget>(opts: {
     confirmReport: handleReportConfirm,
     closeReportDone,
 
-    //   toast
+    // ✅ toast
     toastOpen,
     toastMessage,
     closeToast,

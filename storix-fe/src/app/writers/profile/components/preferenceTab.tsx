@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 export default function PreferenceTab() {
   const pathname = usePathname()
 
-  //   writers 기준 경로 체크
+  // ✅ writers 기준 경로 체크
   const isActivityTab = pathname === '/writers/profile'
 
   return (

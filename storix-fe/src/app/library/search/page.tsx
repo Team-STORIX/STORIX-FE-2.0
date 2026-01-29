@@ -31,10 +31,12 @@ export default function LibrarySearchPage() {
   return (
     <main className="min-h-screen bg-white">
       <SearchBar
-        placeholder="내 서재 내 작품/작가를 검색해보세요"
+        placeholder="좋아하는 작품/작가를 검색하세요"
         onSearchClick={goResult}
         backHref="/library/list"
       />
+
+      {/* ✅ UI 변경: 검색 결과는 result 페이지에서 보여줌 */}
       <section className="px-4 pt-5">
         <p className="body-1 text-gray-900">최근 검색어</p>
 

@@ -14,7 +14,7 @@ export default function PayingModal({
 }: PayingModalProps) {
   if (!open) return null
 
-  //   API 연동 전 예시 값
+  // ✅ API 연동 전 예시 값
   const n = 1000
   const m = 200
 

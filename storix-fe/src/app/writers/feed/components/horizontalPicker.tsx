@@ -62,7 +62,7 @@ export default function HorizontalPicker({
                     )}
                   </div>
 
-                  {/*   SUIT / 14 / 500 / 140% / center */}
+                  {/* ✅ SUIT / 14 / 500 / 140% / center */}
                   <p
                     className="mt-2 w-[62px] truncate body-2 text-center"
                     style={{

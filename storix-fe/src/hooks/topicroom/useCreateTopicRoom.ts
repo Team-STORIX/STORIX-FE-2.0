@@ -17,16 +17,16 @@ export function useCreateTopicRoom() {
     mutationFn: (vars: Vars) => createTopicRoom(vars),
   })
 
-  //   onSuccess 금지(A안) -> 후처리는 훅 내부 useEffect로 처리
+  // ✅ onSuccess 금지(A안) -> 후처리는 훅 내부 useEffect로 처리
   useEffect(() => {
     if (!mutation.isSuccess) return
     if (didInvalidateRef.current) return
 
     didInvalidateRef.current = true
-    queryClient.invalidateQueries({ queryKey: ['topicroom'] }) //   토픽룸 관련 캐시 갱신
+    queryClient.invalidateQueries({ queryKey: ['topicroom'] }) // ✅ 토픽룸 관련 캐시 갱신
   }, [mutation.isSuccess, queryClient])
 
-  //   재시도/재호출 시 invalidate 다시 가능하도록 리셋
+  // ✅ 재시도/재호출 시 invalidate 다시 가능하도록 리셋
   useEffect(() => {
     if (mutation.isPending) {
       didInvalidateRef.current = false

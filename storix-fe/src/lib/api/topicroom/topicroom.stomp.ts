@@ -4,10 +4,10 @@ import {
   type TopicRoomUiMsg,
 } from './topicroom.stomp.schema'
 
-export const STORIX_STOMP_BROKER_URL = 'wss://api.storix.kr/ws-stomp' //
+export const STORIX_STOMP_BROKER_URL = 'wss://api.storix.kr/ws-stomp' // ✅
 
-export const topicRoomSubPath = (roomId: number) => `/sub/chat/room/${roomId}` //
-export const topicRoomPubPath = () => `/pub/chat/message` //
+export const topicRoomSubPath = (roomId: number) => `/sub/chat/room/${roomId}` // ✅
+export const topicRoomPubPath = () => `/pub/chat/message` // ✅
 
 const safeId = (v: unknown) => {
   if (typeof v === 'string' && v.length > 0) return v
@@ -44,21 +44,21 @@ export function normalizeTopicRoomStompMessage(
   const isMe =
     !!options?.myUserId &&
     typeof m.senderId === 'number' &&
-    m.senderId === options.myUserId //
+    m.senderId === options.myUserId // ✅
 
   return {
-    id: safeId(m.messageId ?? m.createdAt ?? Date.now()), //
-    type: isMe ? 'me' : 'other', //
+    id: safeId(m.messageId ?? m.createdAt ?? Date.now()), // ✅
+    type: isMe ? 'me' : 'other', // ✅
     userName: m.senderName,
-    senderId: m.senderId, //
+    senderId: m.senderId, // ✅
     text: m.message,
     time: formatKoTime(m.createdAt),
-    createdAt: m.createdAt, //
+    createdAt: m.createdAt, // ✅
   }
 }
 
 export const makeSubscriptionId = (roomId: number) => {
-  //   subscribe 시 id 필수
+  // ✅ subscribe 시 id 필수
   const uuid =
     typeof crypto !== 'undefined' && 'randomUUID' in crypto
       ? crypto.randomUUID()

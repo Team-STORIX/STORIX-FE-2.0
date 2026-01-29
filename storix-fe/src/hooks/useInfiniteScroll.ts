@@ -57,7 +57,7 @@ export function useInfiniteScroll({
         if (!hasNextPage) return
         if (isLoading) return
 
-        //   바닥에 계속 붙어있을 때 요청 폭주 방지
+        // ✅ 바닥에 계속 붙어있을 때 요청 폭주 방지
         const now = Date.now()
         if (lockRef.current) return
         if (now - lastFireAtRef.current < throttleMs) return

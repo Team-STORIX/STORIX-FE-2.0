@@ -4,7 +4,7 @@ import { getTodayHomeFeeds } from '@/lib/api/homeFeed'
 
 export const useTodayHomeFeeds = () => {
   return useQuery({
-    queryKey: ['home', 'feeds', 'today'], //
+    queryKey: ['home', 'feeds', 'today'], // ✅
     queryFn: () => getTodayHomeFeeds(),
   })
 }

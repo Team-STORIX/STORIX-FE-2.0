@@ -49,8 +49,6 @@ type Props = {
     boardId: number
     reportedUserId: number
   }) => Promise<ReportConfirmOutcome> | ReportConfirmOutcome
-
-  //   좋아요 토글(하트 클릭)
   onToggleLike?: (boardId: number) => void | Promise<void>
   onDeleteConfirm?: (args: { boardId: number }) => Promise<void> | void
 }
@@ -173,7 +171,6 @@ export default function BoardCard({
     nickname: string
   }>({
     onConfirm: async (t) => {
-      //   결과를 그대로 넘겨야 duplicated 토스트가 뜸
       return await onReportConfirm?.({
         boardId: t.boardId,
         reportedUserId: t.reportedUserId,
@@ -201,7 +198,7 @@ export default function BoardCard({
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((x) => x.imageUrl) ?? []
 
-  // 스포일러 상태(카드 단위)
+  // ✅ 스포일러 상태(카드 단위)
   const [spoilerRevealed, setSpoilerRevealed] = useState(false)
   const isSpoilerActive = data.board.isSpoiler === true
   const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
@@ -385,7 +382,7 @@ export default function BoardCard({
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation() // 작품 상세는 게시글 상세 이동 막기
+                    e.stopPropagation() // ✅ 작품 상세는 게시글 상세 이동 막기
                     router.push(worksTo)
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
@@ -408,7 +405,7 @@ export default function BoardCard({
         <div
           className="mt-5 relative"
           onClick={(e) => {
-            if (isSpoilerHidden) e.stopPropagation() // 가려진 상태면 상세 이동 막기
+            if (isSpoilerHidden) e.stopPropagation() // ✅ 가려진 상태면 상세 이동 막기
           }}
           onPointerDown={(e) => {
             if (isSpoilerHidden) e.stopPropagation()
@@ -488,8 +485,8 @@ export default function BoardCard({
               aria-label="좋아요"
               onClick={(e) => {
                 e.preventDefault()
-                e.stopPropagation() //   카드 클릭(상세 이동) 방지
-                onToggleLike?.(boardId) //   외부 핸들러 호출
+                e.stopPropagation()
+                onToggleLike?.(boardId)
               }}
               onPointerDown={(e) => e.stopPropagation()}
             >

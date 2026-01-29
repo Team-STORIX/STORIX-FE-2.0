@@ -8,7 +8,7 @@ import {
 
 type CreateReaderBoardArgs = {
   isWorksSelected: boolean
-  worksId: number //   isWorksSelected=false일 때는 0으로 전달
+  worksId: number // ✅ isWorksSelected=false일 때는 0으로 전달
   isSpoiler: boolean
   content: string
   images: File[] // 사용자가 선택한 이미지들(최대 3장)
@@ -17,7 +17,7 @@ type CreateReaderBoardArgs = {
 export function useCreateReaderBoard() {
   return useMutation({
     mutationFn: async ({ images, ...rest }: CreateReaderBoardArgs) => {
-      //   이미지가 없으면 presigned 생략
+      // ✅ 이미지가 없으면 presigned 생략
       if (images.length === 0) {
         return postReaderBoard({
           ...rest,

@@ -72,7 +72,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
         좋아하는 작품을 선택하세요
       </h1>
 
-      {/*   0개일 땐 두 줄만 / 1개 이상이면 문구+카운트로 변경 */}
+      {/* ✅ 0개일 땐 두 줄만 / 1개 이상이면 문구+카운트로 변경 */}
       {!hasPickedAny ? (
         <p
           className="body-1 mt-[5px]"
@@ -118,7 +118,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
                 }
               }}
             >
-              {/*   카드 외곽은 그대로, '선택 효과'는 표지(이미지) 영역에만 */}
+              {/* ✅ 카드 외곽은 그대로, '선택 효과'는 표지(이미지) 영역에만 */}
               <div className="w-full h-full rounded-[8px] overflow-hidden">
                 {/* 표지 */}
                 <div
@@ -137,7 +137,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
                       : '2px solid transparent',
                   }}
                 >
-                  {/*   선택 핑크 필터(썸네일이 위에 깔려도 무조건 보이게 오버레이로) */}
+                  {/* ✅ 선택 핑크 필터(썸네일이 위에 깔려도 무조건 보이게 오버레이로) */}
                   {selected && (
                     <div
                       className="absolute inset-0 rounded-[8px]"
@@ -145,7 +145,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
                     />
                   )}
 
-                  {/*   체크 아이콘: 표지 내 좌상단 (8,8), 24x24 */}
+                  {/* ✅ 체크 아이콘: 표지 내 좌상단 (8,8), 24x24 */}
                   {selected && (
                     <img
                       src="/icons/check-pink.svg"

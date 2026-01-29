@@ -17,7 +17,7 @@ export type TopicRoomItem = z.infer<typeof TopicRoomItemSchema>
 export type MyTopicRoomSlice = z.infer<typeof MyTopicRoomSliceSchema>
 export type TopicRoomMember = z.infer<typeof TopicRoomMemberSchema>
 
-//   공통
+// ✅ 공통
 const AnyEnvelopeSchema = ApiEnvelopeSchema(z.any())
 
 // -----------------------------
@@ -126,15 +126,15 @@ export async function searchTopicRoomsSlice(params: {
     sort: params.sort,
   })
 
-  //   API가 page meta를 안 주는 구조라, FE에서 slice 형태로 감싸서 통일
+  // ✅ API가 page meta를 안 주는 구조라, FE에서 slice 형태로 감싸서 통일
   const slice = {
     content,
-    number: page, //
-    empty: content.length === 0, //
-    last: content.length < size, //   (size보다 적게 오면 마지막으로 간주)
+    number: page, // ✅
+    empty: content.length === 0, // ✅
+    last: content.length < size, // ✅ (size보다 적게 오면 마지막으로 간주)
   }
 
-  return TopicRoomSearchSliceSchema.parse(slice) //
+  return TopicRoomSearchSliceSchema.parse(slice) // ✅
 }
 
 // -----------------------------
@@ -206,8 +206,8 @@ export async function reportTopicRoomUser(
     otherReason?: string | null
   },
 ) {
-  //   요청 바디 검증(필수 필드 누락 방지)
-  const parsedBody = TopicRoomReportRequestSchema.parse(body) //
+  // ✅ 요청 바디 검증(필수 필드 누락 방지)
+  const parsedBody = TopicRoomReportRequestSchema.parse(body) // ✅
 
   const res = await apiClient.post(
     `/api/v1/topic-rooms/${roomId}/report`,

@@ -72,7 +72,7 @@ export const createReply = async (params: {
   return data.result
 }
 
-/**   deleteReply는 딱 1개만! */
+/** ✅ deleteReply는 딱 1개만! */
 export const deleteReply = async (params: {
   boardId: number
   replyId: number

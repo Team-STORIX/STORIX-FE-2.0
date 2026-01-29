@@ -13,7 +13,7 @@ export const useReportTopicRoomUser = () => {
   const qc = useQueryClient()
 
   return useMutation({
-    mutationKey: ['topicroom', 'report'], //
+    mutationKey: ['topicroom', 'report'], // ✅
     mutationFn: (vars: Vars) =>
       reportTopicRoomUser(vars.roomId, {
         reportedUserId: vars.reportedUserId,
@@ -21,10 +21,10 @@ export const useReportTopicRoomUser = () => {
         otherReason: vars.otherReason ?? null,
       }),
     onSettled: async (_data, _error, vars) => {
-      //   성공 시 invalidateQueries로 갱신(규칙 준수)
+      // ✅ 성공 시 invalidateQueries로 갱신(규칙 준수)
       await qc.invalidateQueries({
         queryKey: ['topicroom', 'members', vars.roomId],
-      }) //
+      }) // ✅
     },
   })
 }

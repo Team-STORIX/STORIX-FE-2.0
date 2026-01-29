@@ -12,8 +12,8 @@ export default function MyTasteCard() {
         fill
         className="object-cover object-top"
       />
-      <div className="pointer-events-none absolute inset-0" />
-      <p className="absolute heading-2 bottom-0 text-[var(--color-magenta-50)] pb-4">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,64,147,0)_27.74%,#FF4093_119.41%)]" />
+      <p className="absolute heading-2 bottom-0 text-white pb-4">
         슥 - 넘기기만 해도 취향이 보여요
       </p>
     </div>

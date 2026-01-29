@@ -10,8 +10,8 @@ export const useTopicRoomInfoById = (params: {
   const topicRoomId = params.topicRoomId
 
   return useQuery({
-    queryKey: ['topicroom', 'info', keyword, topicRoomId], //
-    enabled: !!keyword && !!topicRoomId, //
+    queryKey: ['topicroom', 'info', keyword, topicRoomId], // ✅
+    enabled: !!keyword && !!topicRoomId, // ✅
     queryFn: () => findTopicRoomInfoById(keyword, topicRoomId),
   })
 }

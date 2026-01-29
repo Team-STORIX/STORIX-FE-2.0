@@ -20,14 +20,14 @@ import { apiClient } from '@/api/axios-instance'
 const FALLBACK_PROFILE = '/profile/profile-default.svg'
 const SORT: 'LATEST' = 'LATEST'
 
-//   게시글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
+// ✅ 게시글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
 const deleteBoard = async (boardId: number) => {
   const res = await apiClient.delete(`/api/v1/feed/reader/board/${boardId}`)
   return res.data
 }
 
 /**
- *   좋아요 토글 API
+ * ✅ 좋아요 토글 API
  * 여기 엔드포인트가 프로젝트에 이미 있으면 그걸 쓰면 되고,
  * 없으면 "어떤 API로 좋아요 토글하는지" 알려줘야 정확히 연결 가능.
  *
@@ -42,24 +42,24 @@ const toggleBoardLike = async (boardId: number) => {
 export default function MyPosts() {
   const router = useRouter()
 
-  //   무한스크롤 root/sentinel
+  // ✅ 무한스크롤 root/sentinel
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   const me = useProfileStore((s) => s.me)
   const myUserId = me?.userId
 
-  //   점3개 메뉴
+  // ✅ 점3개 메뉴
   const menu = useOpenMenu<number>()
 
-  //   상태
+  // ✅ 상태
   const [items, setItems] = useState<ActivityBoardItem[]>([])
   const [page, setPage] = useState(0)
   const [isLast, setIsLast] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [initLoading, setInitLoading] = useState(true)
 
-  //   좋아요 토글 중(연타 방지)
+  // ✅ 좋아요 토글 중(연타 방지)
   const [likePending, setLikePending] = useState<Record<number, boolean>>({})
 
   const loadFirst = useCallback(async () => {
@@ -109,7 +109,7 @@ export default function MyPosts() {
     rootMargin: '200px',
   })
 
-  //   좋아요 토글 핸들러 (낙관적 업데이트 + 실패 롤백)
+  // ✅ 좋아요 토글 핸들러 (낙관적 업데이트 + 실패 롤백)
   const handleToggleLike = useCallback(
     async (boardId: number) => {
       if (likePending[boardId]) return
@@ -144,7 +144,7 @@ export default function MyPosts() {
       try {
         const data = await toggleBoardLike(boardId)
 
-        //   백엔드가 200 + isSuccess:false 방어
+        // ✅ 백엔드가 200 + isSuccess:false 방어
         if (data?.isSuccess === false) {
           throw new Error(data?.message ?? '좋아요 처리에 실패했어요.')
         }
@@ -183,7 +183,7 @@ export default function MyPosts() {
     [items, likePending],
   )
 
-  //   삭제 플로우
+  // ✅ 삭제 플로우
   const {
     isDeleteOpen,
     deleteTarget,
@@ -268,7 +268,7 @@ export default function MyPosts() {
               replyCount={item.board.replyCount}
               isSpoiler={item.board.isSpoiler === true}
               onClickDetail={() => router.push(`/feed/article/${boardId}`)}
-              onToggleLike={() => handleToggleLike(boardId)} //   여기만 연결하면 됨
+              onToggleLike={() => handleToggleLike(boardId)} // ✅ 여기만 연결하면 됨
               onOpenReport={() => {
                 menu.close()
               }}

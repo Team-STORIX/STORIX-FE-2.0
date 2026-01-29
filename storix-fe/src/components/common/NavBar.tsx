@@ -73,7 +73,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
 
   return (
     <>
-      {/*   plus 열렸을 때: nav 밖 클릭으로 닫히게 + 뒤 화면 클릭 막기 */}
+      {/* ✅ plus 열렸을 때: nav 밖 클릭으로 닫히게 + 뒤 화면 클릭 막기 */}
       {isPlusOpen && (
         <button
           type="button"
@@ -161,7 +161,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             className={[
               'absolute left-1/2 z-50 -translate-x-1/2',
               'w-14 h-14',
-              'cursor-pointer', //   다른 아이콘처럼 커서 변경
+              'cursor-pointer', // ✅ 다른 아이콘처럼 커서 변경
               'transition-transform duration-200 ease-in-out',
               'hover:opacity-80 cursor-pointer',
               isPlusOpen ? 'rotate-90' : 'rotate-0',

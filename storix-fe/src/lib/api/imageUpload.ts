@@ -17,7 +17,7 @@ export function validateImages(files: File[], max = 3) {
   }
 }
 
-//   게시물 이미지 업로드 presigned 발급: POST /api/v1/image/board (최대 3장):contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
+// ✅ 게시물 이미지 업로드 presigned 발급: POST /api/v1/image/board (최대 3장):contentReference[oaicite:3]{index=3}:contentReference[oaicite:4]{index=4}
 export async function getBoardPresignedUrls(files: File[]) {
   const body: PresignReq = {
     files: files.map((f) => ({ contentType: f.type })),
@@ -35,7 +35,7 @@ export async function getBoardPresignedUrls(files: File[]) {
   return result
 }
 
-//   presigned url에 PUT 업로드 (Authorization ❌):contentReference[oaicite:5]{index=5}
+// ✅ presigned url에 PUT 업로드 (Authorization ❌):contentReference[oaicite:5]{index=5}
 export async function putToPresignedUrl(url: string, file: File) {
   const res = await fetch(url, {
     method: 'PUT',

@@ -19,7 +19,7 @@ export default function SearchResultEmptyOnlyPage() {
     if (!keyword) router.replace('/home/search')
   }, [keyword, router])
 
-  //   0페이지 요청해서 존재 여부만 판단(페이저 훅 그대로 사용)
+  // ✅ 0페이지 요청해서 존재 여부만 판단(페이저 훅 그대로 사용)
   const worksPager = useWorksSearchInfinite(keyword, 'NAME')
   const artistsPager = useArtistsSearchInfinite(keyword)
 
@@ -32,7 +32,7 @@ export default function SearchResultEmptyOnlyPage() {
   const isReady = worksReady && artistsReady
   const hasAny = worksHasAny || artistsHasAny
 
-  //   결과가 하나라도 있으면 자동으로 works 화면으로 이동
+  // ✅ 결과가 하나라도 있으면 자동으로 works 화면으로 이동
   useEffect(() => {
     if (!keyword) return
     if (!isReady) return
@@ -49,7 +49,7 @@ export default function SearchResultEmptyOnlyPage() {
     router.push(`/home/search/result?keyword=${encodeURIComponent(k)}`)
   }
 
-  //   준비 전엔 깜빡임 방지
+  // ✅ 준비 전엔 깜빡임 방지
   const showEmpty = useMemo(() => {
     if (!keyword) return false
     if (!isReady) return false

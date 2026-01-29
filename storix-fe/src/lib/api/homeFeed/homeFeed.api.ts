@@ -2,7 +2,7 @@
 import { apiClient } from '@/lib/api/axios-instance'
 import { TodayFeedEnvelopeSchema } from './homeFeed.schema'
 
-/**   오늘의 피드 조회 */
+/** ✅ 오늘의 피드 조회 */
 export async function getTodayHomeFeeds() {
   const res = await apiClient.get('/api/v1/home/feeds/today', {
     headers: { accept: '*/*' },

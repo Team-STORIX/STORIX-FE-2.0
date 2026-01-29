@@ -15,20 +15,23 @@ export default function NotifyCard({
   title,
   description,
   date,
+  thumbnailSrc,
   className = '',
 }: NotifyCardProps) {
   return (
     <div className={`w-full ${className}`}>
       <div className="flex items-start gap-4 rounded-2xl bg-white px-4 py-4 border-bottom">
         {/* 왼쪽 동그란 썸네일 */}
-        <div className="mt-1 h-6 w-6 flex-shrink-0 overflow-hidden rounded-full">
-          <Image
-            src="/common/icons/notification-gray.svg"
-            alt="STORIX"
-            width={24}
-            height={24}
-            priority
-          />
+        <div className="mt-1 h-6 w-6 flex-shrink-0 overflow-hidden rounded-full bg-gray-100">
+          {thumbnailSrc && (
+            <Image
+              src={thumbnailSrc}
+              alt={title}
+              width={40}
+              height={40}
+              className="h-full w-full object-cover"
+            />
+          )}
         </div>
 
         {/* 오른쪽 텍스트 영역 */}

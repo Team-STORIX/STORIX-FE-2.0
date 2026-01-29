@@ -10,15 +10,15 @@ interface TopicRoomCoverCardProps {
 }
 
 export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
-  const roomId = room.roomId ?? Number(room.id)
-  const worksName = room.worksName ?? ''
+  const roomId = room.roomId ?? Number(room.id) // ✅
+  const worksName = room.worksName ?? '' // ✅
   const href =
     Number.isFinite(roomId) && roomId > 0
       ? {
           pathname: `/home/topicroom/${roomId}`,
           query: worksName ? { worksName } : {},
-        }
-      : '/home/topicroom'
+        } // ✅
+      : '/home/topicroom' // ✅
   return (
     <div className="relative h-[204px] w-full flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
       {/* 배경 이미지 */}
@@ -30,7 +30,7 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.30)_0%,rgba(0,0,0,0.30)_100%)]" />
       {/* 텍스트 영역 */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 ">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 pb-4 ">
         {/* HOT / 인원 뱃지 */}
         <div className="mb-2 flex items-center gap-1.5">
           <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">
@@ -72,6 +72,22 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
 }
 
 /* ===== 아이콘들 ===== */
+
+const UserIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="10"
+    height="10"
+    viewBox="0 0 10 10"
+    fill="none"
+  >
+    <rect x="3.50391" width="3.00235" height="3" fill="#FF4093" />
+    <path
+      d="M5 4C7.76138 4 9.99993 6.06671 10 8.616V10.001L0.574668 10.0001V9.99376H0V8.43554H0.00488663C0.107644 5.96991 2.30409 4 5 4Z"
+      fill="#FF4093"
+    />
+  </svg>
+)
 
 const EnterRoomIcon = () => (
   <svg

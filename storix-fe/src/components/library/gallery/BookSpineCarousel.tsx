@@ -3,9 +3,7 @@
 
 import Image from 'next/image'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import RightGradient from '@/public/icons/library/RightGradient'
-import LeftGradient from '@/public/icons/library/LeftGradient'
+import { useRouter } from 'next/navigation'
 
 export type Work = {
   id: number
@@ -32,18 +30,13 @@ export default function BookSpineCarousel({
   onNeedMore,
 }: BookSpineCarouselProps) {
   const router = useRouter()
-  const pathname = usePathname()
-  const sp = useSearchParams()
-  const returnTo = encodeURIComponent(
-    `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
-  )
   const scrollerRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([])
   const rafRef = useRef<number | null>(null)
 
   const [activeIdx, setActiveIdx] = useState(0)
 
-  //   (API 연동) list처럼 페이지네이션으로 계속 불러올 수 있게
+  // ✅ (API 연동) list처럼 페이지네이션으로 계속 불러올 수 있게
   // 캐러셀에서 활성 인덱스가 끝쪽에 가까워지면 다음 페이지를 요청 (UI는 그대로)
   useEffect(() => {
     if (!hasMore) return
@@ -123,7 +116,7 @@ export default function BookSpineCarousel({
     if (!work) return
     // 이미 활성인 책을 다시 누르면 상세로 이동
     if (idx === activeIdx) {
-      router.push(`/library/works/${work.id}?returnTo=${returnTo}`) // 라우팅
+      router.push(`/library/works/${work.id}`) // 라우팅
       return
     }
 
@@ -184,7 +177,7 @@ export default function BookSpineCarousel({
         className="w-full overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth"
         style={{ touchAction: 'pan-x' }}
       >
-        <div className="flex items-center gap-5.5 pl-35 pr-155 py-7">
+        <div className="flex items-center gap-5.5 pl-35 pr-155 py-6">
           {works.map((w, i) => {
             const isActive = i === activeIdx
 
@@ -198,12 +191,10 @@ export default function BookSpineCarousel({
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => handleBookClick(i)}
                 className={[
-                  'relative shrink-0 snap-center bg-[var(--color-magenta-300)]',
+                  'relative shrink-0 snap-center rounded-r-sm bg-[var(--color-magenta-300)]',
                   'transition-all duration-250 ease-out',
                   'hover:opacity-90 cursor-pointer',
                   isActive ? 'rounded-sm' : '',
-                  !isActive && i > activeIdx ? 'rounded-r-sm' : '',
-                  !isActive && i < activeIdx ? 'rounded-l-sm' : '',
                 ].join(' ')}
                 style={{
                   width: isActive ? 150 : 30,
@@ -223,37 +214,39 @@ export default function BookSpineCarousel({
                 )}
 
                 {!isActive && (
-                  <div className="absolute inset-0 px-2 pt-2 flex justify-start items-start">
-                    {/* 회전 담당(박스가 얇아지지 않도록 display만 보장) */}
+                  <div className="absolute inset-0 flex items-center justify-center px-1">
                     <span
-                      className="absolute top-2 left-5.5"
+                      title={w.title}
+                      className="body-2 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center"
                       style={{
-                        transform: 'rotate(90deg)',
-                        transformOrigin: 'top left',
+                        writingMode: 'vertical-rl',
+                        textOrientation: 'mixed',
+                        maxHeight: 176, // ✅ 책등 높이(200) 안에서 여백 주고 중앙 정렬
                       }}
                     >
-                      {/* ellipsis 담당(폭 제한 + overflow-hidden 필수) */}
-                      <span
-                        title={w.title}
-                        className="caption-1 text-white block overflow-hidden text-ellipsis whitespace-nowrap text-left"
-                        style={{
-                          width: 176,
-                        }}
-                      >
-                        {w.title}
-                      </span>
+                      {w.title}
                     </span>
                   </div>
                 )}
 
                 {!isActive && i > activeIdx && (
-                  <div className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 ">
-                    <RightGradient />
-                  </div>
+                  <Image
+                    src="/icons/library/rightGradient.svg"
+                    alt=""
+                    width={22}
+                    height={200}
+                    className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 "
+                  />
                 )}
                 {!isActive && i < activeIdx && (
-                  <div className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5 ">
-                    <LeftGradient />
+                  <div className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5">
+                    <Image
+                      src="/icons/library/leftGradient.svg"
+                      alt=""
+                      width={22}
+                      height={200}
+                      className=" "
+                    />
                   </div>
                 )}
               </button>
@@ -263,15 +256,13 @@ export default function BookSpineCarousel({
       </div>
 
       {active && (
-        <div className="flex flex-col items-center px-4">
-          <p className="heading-3 text-black text-center mb-2">
-            {active.title}
-          </p>
-          <p className="body-1 text-gray-400 text-center mb-3">{active.meta}</p>
+        <div className="mt-6 flex flex-col items-center px-4">
+          <p className="heading-2 text-black text-center">{active.title}</p>
+          <p className="body-2 mt-3 text-gray-400 text-center">{active.meta}</p>
 
           {typeof active.rating === 'number' && (
             <span
-              className={`caption-1 w-14 h-6 inline-flex items-center gap-1 
+              className={`caption-1 mt-3 w-14 h-6 inline-flex items-center gap-1 
             rounded-3xl border border-gray-200 
             px-2.5 py-1 text-[var(--color-magenta-300)] text-center`}
             >

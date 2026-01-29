@@ -13,7 +13,7 @@ import {
 } from './search.schema'
 
 /*
- *   핵심
+ * ✅ 핵심
  * - works/artists는 실응답이 result가 2중 구조(res.data.result.result)
  * - api 레이어에서 slice로 "정규화"해서 밖으로는 항상 res.result.content 로 읽게 만든다.
  * - 무한요청 디버깅을 위해 요청/응답 메타를 로그로 남긴다.

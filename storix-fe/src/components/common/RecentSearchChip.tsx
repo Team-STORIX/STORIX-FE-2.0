@@ -30,7 +30,7 @@ export default function RecentSearchChip({
         type="button"
         aria-label="최근 검색어 삭제"
         onClick={(e) => {
-          e.stopPropagation() //   삭제 누르면 검색 클릭이 같이 실행되지 않게
+          e.stopPropagation() // ✅ 삭제 누르면 검색 클릭이 같이 실행되지 않게
           onRemove?.()
         }}
         className="ml-1 flex h-4 w-4 items-center justify-center cursor-pointer"

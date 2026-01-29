@@ -20,7 +20,7 @@ export default function Warning({
 }: WarningProps) {
   return (
     <div
-      className={`flex w-full flex-col items-center justify-center gap-3 mt-48 px-4 ${className}`}
+      className={`flex w-full flex-col items-center justify-center gap-3 mt-37 px-4 py-10 ${className}`}
     >
       <Image
         src="/common/icons/warningLarge.svg"

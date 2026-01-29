@@ -29,7 +29,7 @@ export default function Genre({ genreData }: Props) {
     '스릴러',
   ]
 
-  //   API 없으면 기본값(테스트용) 유지
+  // ✅ API 없으면 기본값(테스트용) 유지
   const fallback: Record<GenreKey, number> = {
     로맨스: 90,
     로판: 70,

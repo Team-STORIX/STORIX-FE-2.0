@@ -11,26 +11,26 @@ import { useTodayTopicRooms } from '@/hooks/topicroom/useTodayTopicRooms'
 
 /** 토픽룸 커버 슬라이더(가로 스크롤) */
 interface TopicRoomCoverSliderProps {
-  rooms?: TopicRoomData[] //   (기존 props 유지 + 홈에서는 props 없이 API 사용)
+  rooms?: TopicRoomData[] // ✅ (기존 props 유지 + 홈에서는 props 없이 API 사용)
 }
 
 export const TopicRoomCoverSlider = ({ rooms }: TopicRoomCoverSliderProps) => {
-  const { data } = useTodayTopicRooms() //
+  const { data } = useTodayTopicRooms() // ✅
 
   const roomsFromApi = useMemo<TopicRoomData[]>(() => {
     if (!data) return []
     return data.map((r) => ({
-      id: String(r.topicRoomId), //
-      imageUrl: r.thumbnailUrl ?? '/image/sample/topicroom-1.webp', //   (썸네일 없으면 기존 더미 이미지 사용)
-      title: r.topicRoomName, //
-      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), //
-      memberCount: r.activeUserNumber ?? 0, //
-      roomId: r.topicRoomId, //   (입장 링크용)
-      worksName: r.worksName, //   (입장 페이지에서 header 구성용)
+      id: String(r.topicRoomId), // ✅
+      imageUrl: r.thumbnailUrl ?? '/image/sample/topicroom-1.webp', // ✅ (썸네일 없으면 기존 더미 이미지 사용)
+      title: r.topicRoomName, // ✅
+      subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), // ✅
+      memberCount: r.activeUserNumber ?? 0, // ✅
+      roomId: r.topicRoomId, // ✅ (입장 링크용)
+      worksName: r.worksName, // ✅ (입장 페이지에서 header 구성용)
     }))
   }, [data])
 
-  const roomsToRender = rooms ?? roomsFromApi //   (기존 UI 유지 + 홈에서는 API로)
+  const roomsToRender = rooms ?? roomsFromApi // ✅ (기존 UI 유지 + 홈에서는 API로)
 
   return (
     <section className="w-full">

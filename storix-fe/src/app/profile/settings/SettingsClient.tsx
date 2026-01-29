@@ -98,9 +98,9 @@ export default function SettingsClient() {
         </div>
       </div>
 
-      {/*   내용 영역 */}
+      {/* ✅ 내용 영역 */}
       <div className="flex flex-1 flex-col px-4 py-8">
-        {/*   상단: 이용약관 */}
+        {/* ✅ 상단: 이용약관 */}
         <a
           href={TERMS_URL}
           target="_blank"
@@ -116,7 +116,7 @@ export default function SettingsClient() {
           </span>
         </a>
 
-        {/*   하단으로 밀기 */}
+        {/* ✅ 하단으로 밀기 */}
         <div className="mt-auto space-y-3 pt-10">
           {/* 로그아웃 */}
           <button

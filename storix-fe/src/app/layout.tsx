@@ -3,7 +3,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Providers } from './providers'
-import { Suspense } from 'react'
 import '@/styles/globals.css'
 
 import ProfileBootstrap from '@/components/common/ProfileBootstrap'
@@ -20,7 +19,7 @@ const suit = localFont({
 export const metadata: Metadata = {
   title: 'STORIX',
   icons: {
-    icon: '/icons/favicon.svg',
+    icon: '/icons/logo-pink.svg',
   },
 }
 
@@ -33,10 +32,9 @@ export default function RootLayout({
     <html lang="ko" className={`${suit.className}`}>
       <body className="min-h-dvh overflow-y-auto justify-center">
         <Providers>
+          {/* ✅ GA 스크립트는 여기 한 번만 */}
           <GoogleAnalytics />
-          <Suspense fallback={null}>
-            <GAListener />
-          </Suspense>
+          <GAListener />
 
           {/* 앱 시작 시 내 프로필 보장 */}
           <ProfileBootstrap />

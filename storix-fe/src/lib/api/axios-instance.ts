@@ -10,13 +10,13 @@ import { useAuthStore } from '@/store/auth.store'
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
-  withCredentials: true, //   배포환경에서 refreshToken 쿠키 전송
+  withCredentials: true, // ✅ 배포환경에서 refreshToken 쿠키 전송
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-//   Axios v1 헤더( AxiosHeaders )까지 고려해서 Authorization 읽기
+// ✅ Axios v1 헤더( AxiosHeaders )까지 고려해서 Authorization 읽기
 const getAuthHeader = (headers: any): string | undefined => {
   if (!headers) return undefined
   // AxiosHeaders
@@ -41,7 +41,7 @@ const setAuthHeader = (headers: any, value: string) => {
   headers.Authorization = value
 }
 
-//   refresh/로그인/회원가입 같은 “비로그인 단계” 요청은 refresh 로직 금지
+// ✅ refresh/로그인/회원가입 같은 “비로그인 단계” 요청은 refresh 로직 금지
 const isNoRefreshEndpoint = (url?: string) => {
   if (!url) return false
   // baseURL 붙기 전/후 모두 대비해서 includes로 처리
@@ -61,7 +61,7 @@ apiClient.interceptors.request.use(
     const { accessToken } = useAuthStore.getState()
     if (!config.headers) return config
 
-    //   signup 등에서 Authorization을 직접 넣은 경우 -> 그대로 둔다 (정확히 체크)
+    // ✅ signup 등에서 Authorization을 직접 넣은 경우 -> 그대로 둔다 (정확히 체크)
     const existingAuth = getAuthHeader(config.headers)
     const hasAuthHeader =
       typeof existingAuth === 'string' && existingAuth.length > 0
@@ -83,7 +83,7 @@ apiClient.interceptors.response.use(
       _retry?: boolean
     }
 
-    //   refresh 금지 endpoint면 바로 에러 반환 (온보딩/회원가입에서 refresh 타지 않게)
+    // ✅ refresh 금지 endpoint면 바로 에러 반환 (온보딩/회원가입에서 refresh 타지 않게)
     if (isNoRefreshEndpoint(originalRequest?.url)) {
       return Promise.reject(error)
     }
@@ -100,7 +100,7 @@ apiClient.interceptors.response.use(
         )
 
         const data: any = response.data
-        //   백엔드가 result를 중첩해서 내려주는 케이스 방어
+        // ✅ 백엔드가 result를 중첩해서 내려주는 케이스 방어
 
         let r: any = data?.result
         for (
@@ -130,7 +130,7 @@ apiClient.interceptors.response.use(
         }
         return apiClient(originalRequest)
       } catch (refreshError) {
-        //   여기서도 “온보딩/회원가입 흐름”이면 clearAuth/리다이렉트 금지
+        // ✅ 여기서도 “온보딩/회원가입 흐름”이면 clearAuth/리다이렉트 금지
         // (혹시라도 url 매칭이 새어도 안전하게)
         if (isNoRefreshEndpoint(originalRequest?.url)) {
           return Promise.reject(refreshError)
