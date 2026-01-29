@@ -88,7 +88,7 @@ export const TopicRoomCoverSlider = ({ rooms }: TopicRoomCoverSliderProps) => {
       <div
         ref={sliderRef}
         onScroll={handleScroll}
-        className="flex h-[354px] overflow-x-auto no-scrollbar px-4 -mx-4 gap-3 snap-x snap-mandatory scroll-smooth"
+        className="flex h-[354px] overflow-x-auto no-scrollbar px-4 gap-3 snap-x snap-mandatory scroll-smooth"
       >
         {roomsToRender.map((room, index) => {
           const snapClass = index === 2 ? 'snap-end' : 'snap-start'

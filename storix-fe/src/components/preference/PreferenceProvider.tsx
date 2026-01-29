@@ -6,15 +6,29 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
+import {
+  usePreferenceAnalyze,
+  usePreferenceExploration,
+  usePreferenceResults,
+} from '@/hooks/preference/usePreference'
+import type {
+  PreferenceExplorationWork,
+  PreferenceResultWork,
+} from '@/lib/api/preference'
+import { ZodError } from 'zod'
 
 export type PreferenceWork = {
   id: number
   title: string
-  meta: string // 작가/장르/플랫폼 등 한 줄
-  ratingText?: string // "평점 +4.5" 같은 텍스트
   imageSrc: string
+  genre: string
+  description: string
+  hashtags: string[]
+  meta?: string
+  ratingText?: string
 }
 
 type Choice = 'like' | 'dislike'
@@ -33,47 +47,8 @@ type PreferenceContextValue = {
   isDone: boolean
 }
 
-const STORAGE_KEY = 'storix_preference_state_v1'
-
 const PreferenceContext = createContext<PreferenceContextValue | null>(null)
-
-const DUMMY_WORKS: PreferenceWork[] = [
-  {
-    id: 1,
-    title: '상수리나무 아래',
-    meta: 'P.서말 · 나무김수지 · 웹툰',
-    ratingText: '평점 +4.5',
-    imageSrc: '/image/sample/topicroom-1.webp',
-  },
-  {
-    id: 2,
-    title: '재혼황후',
-    meta: '히어리 · 숨풀 · 웹툰',
-    ratingText: '평점 +4.5',
-    imageSrc: '/image/sample/topicroom-2.webp',
-  },
-  {
-    id: 3,
-    title: '전지적 독자 시점',
-    meta: 'UMI · 슬리피-C · 웹툰',
-    ratingText: '평점 +4.5',
-    imageSrc: '/image/sample/topicroom-3.webp',
-  },
-  {
-    id: 4,
-    title: '연의 편지',
-    meta: '조현아 · 웹툰',
-    ratingText: '평점 +4.5',
-    imageSrc: '/image/sample/topicroom-4.webp',
-  },
-  {
-    id: 5,
-    title: '친애하는 X',
-    meta: '반지은 · 웹툰',
-    ratingText: '평점 +4.5',
-    imageSrc: '/image/sample/topicroom-5.webp',
-  },
-]
+const STORAGE_KEY = 'storix.preference.progress.v1'
 
 function buildInitialState(works: PreferenceWork[]): PreferenceState {
   const s: PreferenceState = {}
@@ -81,40 +56,132 @@ function buildInitialState(works: PreferenceWork[]): PreferenceState {
   return s
 }
 
+// 썸네일 없을 때 샘플 이미지 fallback
+const fallbackImage = (worksId: number) => {
+  const idx = ((worksId % 5) + 5) % 5
+  return `/image/sample/topicroom-${idx + 1}.webp`
+}
+
+const mapExplorationToWork = (
+  w: PreferenceExplorationWork,
+): PreferenceWork => ({
+  id: w.worksId,
+  title: w.worksName,
+  imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
+  genre: w.genre ?? '',
+  description: w.description ?? '',
+  hashtags: Array.isArray(w.hashtags) ? w.hashtags : [],
+  meta: `${w.artistName} · ${w.platform} · ${w.genre}`,
+})
+
+const mapResultToWork = (w: PreferenceResultWork): PreferenceWork => {
+  const authorLine = [w.author, w.illustrator, w.worksType].filter(Boolean)
+  return {
+    id: w.worksId,
+    title: w.worksName,
+    imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
+    genre: w.genre ?? '',
+    description: '',
+    hashtags: [],
+    meta: `${authorLine.join(' · ')} · ${w.genre}`,
+  }
+}
+
 export default function PreferenceProvider({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const works = DUMMY_WORKS
+  const explorationQuery = usePreferenceExploration()
+  const resultsQuery = usePreferenceResults(true)
+  const analyzeMutation = usePreferenceAnalyze()
+
+  // 토스트(하루 1회 제한 안내)
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const toastTimerRef = useRef<number | null>(null)
+  const limitedToastShownRef = useRef(false)
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg)
+    setToastOpen(true)
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current)
+    toastTimerRef.current = window.setTimeout(() => {
+      setToastOpen(false)
+      toastTimerRef.current = null
+    }, 2000)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current)
+      toastTimerRef.current = null
+    }
+  }, [])
+
+  const works = useMemo<PreferenceWork[]>(() => {
+    const raw = explorationQuery.data?.result ?? []
+    return raw.map(mapExplorationToWork)
+  }, [explorationQuery.data])
+
+  // "하루 1번 제한" = 탐색 목록이 빈 배열로 내려오는 케이스 → 토스트 1회
+  useEffect(() => {
+    if (!explorationQuery.isSuccess) return
+    if (limitedToastShownRef.current) return
+    const list = explorationQuery.data?.result ?? []
+    if (Array.isArray(list) && list.length === 0) {
+      limitedToastShownRef.current = true
+      showToast(
+        explorationQuery.data?.message?.trim() ||
+          '오늘은 이미 취향 탐색을 완료했어요. 내일 다시 시도해 주세요.',
+      )
+    }
+  }, [explorationQuery.isSuccess, explorationQuery.data])
+
+  const savedStateRef = useRef<PreferenceState | null>(null)
 
   const [state, setState] = useState<PreferenceState>(() =>
-    buildInitialState(works),
+    buildInitialState([]),
   )
 
-  // localStorage hydrate
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (!raw) return
-      const parsed = JSON.parse(raw) as PreferenceState
+  const didInitRef = useRef(false)
 
-      // id 정합성/누락 보정
-      const next = buildInitialState(works)
+  useEffect(() => {
+    // 최초 1회 저장값 읽기(리마운트/리로드 대비)
+    if (savedStateRef.current) return
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY)
+      if (!raw) return
+      savedStateRef.current = JSON.parse(raw) as PreferenceState
+    } catch {
+      savedStateRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    // works가 처음 채워질 때만 초기화 + 저장된 진행상태 merge
+    if (didInitRef.current) return
+    if (!works || works.length === 0) return
+
+    const saved = savedStateRef.current
+    const next = buildInitialState(works)
+
+    if (saved) {
       for (const w of works) {
-        const v = parsed[w.id]
+        const v = saved[w.id]
         next[w.id] = v === 'like' || v === 'dislike' ? v : null
       }
-      setState(next)
-    } catch {
-      // ignore
     }
+
+    setState(next)
+    didInitRef.current = true
   }, [works])
 
-  // persist
   useEffect(() => {
+    //: 진행상태 persist (리마운트돼도 복구 가능)
+    if (!didInitRef.current) return
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     } catch {
       // ignore
     }
@@ -125,35 +192,63 @@ export default function PreferenceProvider({
   }, [state, works])
 
   const currentWork = currentIndex >= 0 ? works[currentIndex] : null
-
   const isDone = currentWork == null
 
-  const likedWorks = useMemo(
+  // 결과 API 있으면 결과 기준으로 리스트 구성(제한 걸린 날에도 리스트 보여줄 수 있음)
+  const likedWorksFromResult = useMemo(() => {
+    const r = resultsQuery.data?.result
+    if (!r) return null
+    return r.likedWorks.map(mapResultToWork)
+  }, [resultsQuery.data])
+
+  const dislikedWorksFromResult = useMemo(() => {
+    const r = resultsQuery.data?.result
+    if (!r) return null
+    return r.dislikedWorks.map(mapResultToWork)
+  }, [resultsQuery.data])
+
+  const likedWorksLocal = useMemo(
     () => works.filter((w) => state[w.id] === 'like'),
     [works, state],
   )
-  const dislikedWorks = useMemo(
+  const dislikedWorksLocal = useMemo(
     () => works.filter((w) => state[w.id] === 'dislike'),
     [works, state],
   )
 
-  const like = () => {
+  const likedWorks = likedWorksFromResult ?? likedWorksLocal
+  const dislikedWorks = dislikedWorksFromResult ?? dislikedWorksLocal
+
+  const submitChoice = async (choice: Choice) => {
     if (!currentWork) return
-    setState((prev) => ({ ...prev, [currentWork.id]: 'like' }))
+    if (analyzeMutation.isPending) return
+
+    const worksId = currentWork.id
+    setState((prev) => ({ ...prev, [worksId]: choice }))
+
+    try {
+      await analyzeMutation.mutateAsync({
+        worksId,
+        isLiked: choice === 'like',
+      })
+    } catch (e) {
+      // 200 OK인데 프론트 파싱 실패(ZodError)면 롤백하면 "첫 작품으로 복귀" 현상 발생
+      if (e instanceof ZodError) {
+        showToast('일시적인 응답 처리 오류가 발생했어요. 계속 진행할게요.')
+        return
+      }
+
+      // 진짜 요청 실패(네트워크/서버)만 롤백
+      setState((prev) => ({ ...prev, [worksId]: null }))
+      showToast('요청에 실패했어요. 잠시 후 다시 시도해 주세요.')
+    }
   }
 
-  const dislike = () => {
-    if (!currentWork) return
-    setState((prev) => ({ ...prev, [currentWork.id]: 'dislike' }))
-  }
+  const like = () => submitChoice('like')
+  const dislike = () => submitChoice('dislike')
 
   const reset = () => {
     setState(buildInitialState(works))
-    try {
-      localStorage.removeItem(STORAGE_KEY)
-    } catch {
-      // ignore
-    }
   }
 
   const value: PreferenceContextValue = {
@@ -172,6 +267,26 @@ export default function PreferenceProvider({
   return (
     <PreferenceContext.Provider value={value}>
       {children}
+
+      {toastOpen && (
+        <div
+          className="fixed inset-0 z-[130] flex items-center justify-center px-4"
+          role="status"
+          aria-live="polite"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className="relative flex items-center gap-2 px-4 h-[56px] rounded-[12px] shadow-md"
+            style={{
+              width: 333,
+              backgroundColor: 'var(--color-gray-900)',
+              color: 'var(--color-white)',
+            }}
+          >
+            <span className="body-2">{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </PreferenceContext.Provider>
   )
 }
