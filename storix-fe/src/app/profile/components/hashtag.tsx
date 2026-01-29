@@ -1,28 +1,27 @@
 // src/app/profile/components/hashtag.tsx
 'use client'
 
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { getPreferredHashtags } from '@/api/profile/readerHashtags.api'
 
 export default function Hashtag() {
+  const router = useRouter()
   const [ranks, setRanks] = useState<Record<number, string>>({})
 
   useEffect(() => {
     const fetchHashtags = async () => {
       try {
         const data = await getPreferredHashtags()
-
-        // ✅ 키워드 앞에 # 붙이기
         const withSharp = Object.fromEntries(
           Object.entries(data).map(([rank, keyword]) => [
             Number(rank),
             keyword ? `#${keyword}` : '',
           ]),
         )
-
         setRanks(withSharp)
-      } catch (e) {
-        // console.error('선호 해시태그 조회 실패', e)
+      } catch {
         setRanks({})
       }
     }
@@ -30,28 +29,37 @@ export default function Hashtag() {
     fetchHashtags()
   }, [])
 
-  // ✅ 실제로 보여줄 해시태그가 하나라도 있는지
   const hasAnyRank = useMemo(
-    () => Object.values(ranks).some((v) => v && v.trim().length > 0),
+    () => Object.values(ranks).some((v) => v?.trim().length > 0),
     [ranks],
   )
 
   return (
     <div className="px-4 py-8">
-      <h2 className="text-[18px] font-semibold leading-[140%] text-[var(--color-gray-900)]">
+      <h2 className="heading-3 text-[var(--color-gray-900)] font-semibold">
         선호 해시태그
       </h2>
 
       <div className="mt-[56px] w-full h-[178px] relative">
         {!hasAnyRank ? (
-          /* ✅ 결과 없을 때 중앙 안내 문구 */
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <p className="mt-1 text-[14px] font-medium leading-[140%] text-[var(--color-gray-400)]">
-              관심작품을 설정하면
+            <p className="mt-[40px] heading-3 font-semibold text-[var(--color-gray-500)]">
+              아직 선호 해시태그가 없어요...
             </p>
-            <p className="mt-1 text-[14px] font-medium leading-[140%] text-[var(--color-gray-400)]">
-              선호 해시태그를 분석해드려요
-            </p>
+
+            <button
+              type="button"
+              onClick={() => router.push('/home/search')}
+              className="mt-[12px] cursor-pointer hover:opacity-80 transition-opacity"
+              aria-label="검색으로 이동"
+            >
+              <Image
+                src="/profile/find-books.svg"
+                alt="관심 작품 찾기"
+                width={131}
+                height={36}
+              />
+            </button>
           </div>
         ) : (
           <>
@@ -65,7 +73,7 @@ export default function Hashtag() {
 
             {/* 3위 */}
             <p
-              className="absolute text-[18px] font-semibold leading-[140%] text-[var(--color-magenta-200)]"
+              className="absolute heading-3 text-[var(--color-magenta-200)]"
               style={{ left: 90, top: 22.4, fontFamily: 'Pretendard' }}
             >
               {ranks[3] || ''}
