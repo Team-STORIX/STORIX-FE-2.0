@@ -37,7 +37,11 @@ export default function WorkTopBar({ onBack, isLiked, onToggleLike }: Props) {
           width={20}
           height={20}
         />
-        <span className="caption-1 text-gray-500">관심</span>
+        {isLiked ? (
+          <span className="body-2 text-black">관심중</span>
+        ) : (
+          <span className="body-2 text-gray-400">관심</span>
+        )}
       </button>
     </div>
   )
