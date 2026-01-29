@@ -15,7 +15,6 @@ export default function NotifyCard({
   title,
   description,
   date,
-  thumbnailSrc,
   className = '',
 }: NotifyCardProps) {
   return (

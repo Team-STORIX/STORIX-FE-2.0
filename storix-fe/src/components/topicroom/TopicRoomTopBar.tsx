@@ -47,7 +47,7 @@ export default function TopicRoomTopBar({
 
   return (
     <div
-      className="relative flex items-center justify-between px-4 py-3"
+      className="relative flex items-center justify-between px-4 py-2"
       ref={wrapRef}
     >
       <button type="button" onClick={onBack} className="h-6 w-6 cursor-pointer">
@@ -56,7 +56,7 @@ export default function TopicRoomTopBar({
 
       {/*   가운데: title / subtitle / 참여인원 */}
       <div className="flex flex-col items-start flex-1 min-w-0 px-3">
-        <div className="flex items-center gap-1.5 pb-1 max-w-full">
+        <div className="flex items-center gap-1 pb-1 max-w-full">
           <span className="heading-2 max-w-[200px] truncate">{title}</span>{' '}
           <span className="body-2 text-gray-400">{count}</span>
         </div>
