@@ -1,12 +1,15 @@
+// src/hooks/useInfiniteScroll.ts
+
 'use client'
 
 import { useEffect, useRef } from 'react'
+import type { RefObject } from 'react'
 
 type Params = {
   /** 스크롤 컨테이너. 없으면 viewport(window) 기준 */
-  root?: React.RefObject<Element | null>
+  root?: RefObject<Element | null>
   /** 관측할 sentinel */
-  target: React.RefObject<Element | null>
+  target: RefObject<Element | null>
 
   /** 다음 페이지가 있냐 (ex. !last) */
   hasNextPage: boolean
@@ -20,6 +23,9 @@ type Params = {
   rootMargin?: string
   /** 한번 intersect 후 다음 intersect 허용까지의 최소 간격(ms) */
   throttleMs?: number
+
+  /** 필요할 때만 활성화 */
+  enabled?: boolean
 }
 
 export function useInfiniteScroll({
@@ -30,14 +36,17 @@ export function useInfiniteScroll({
   onLoadMore,
   rootMargin = '200px',
   throttleMs = 400,
+  enabled = true,
 }: Params) {
   const lockRef = useRef(false)
   const lastFireAtRef = useRef(0)
+  const timeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
+    if (!enabled) return
+
     const targetEl = target.current
     if (!targetEl) return
-    if (!hasNextPage) return
 
     const rootEl = root?.current ?? null
 
@@ -58,10 +67,14 @@ export function useInfiniteScroll({
 
         try {
           await onLoadMore()
+        } catch {
+          // 필요하면 여기서 로깅/토스트 처리
         } finally {
           // 다음 tick에서 락 해제 (연속 intersect 대비)
-          setTimeout(() => {
+          if (timeoutRef.current) window.clearTimeout(timeoutRef.current)
+          timeoutRef.current = window.setTimeout(() => {
             lockRef.current = false
+            timeoutRef.current = null
           }, throttleMs)
         }
       },
@@ -73,6 +86,23 @@ export function useInfiniteScroll({
     )
 
     obs.observe(targetEl)
-    return () => obs.disconnect()
-  }, [root, target, hasNextPage, isLoading, onLoadMore, rootMargin, throttleMs])
+
+    return () => {
+      obs.disconnect()
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      lockRef.current = false
+    }
+  }, [
+    enabled,
+    root,
+    target,
+    hasNextPage,
+    isLoading,
+    onLoadMore,
+    rootMargin,
+    throttleMs,
+  ])
 }

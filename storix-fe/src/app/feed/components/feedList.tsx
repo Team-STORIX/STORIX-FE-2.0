@@ -29,6 +29,9 @@ type Props = {
   onOpenDelete: (post: UIPost) => void
   onToggleLike?: (post: UIPost) => void
   onClickWorksArrow?: (post: UIPost) => void
+
+  // ✅ 추가: FeedPageClient에서 “상세 이동”을 제어하고 싶을 때(스크롤 복원 등)
+  onClickDetail?: (post: UIPost) => void
 }
 
 export default function FeedList({
@@ -41,6 +44,7 @@ export default function FeedList({
   onOpenDelete,
   onToggleLike,
   onClickWorksArrow,
+  onClickDetail, // ✅ 추가
 }: Props) {
   const router = useRouter()
 
@@ -51,17 +55,17 @@ export default function FeedList({
   }, [posts, pick, tab])
 
   const goDetail = useCallback(
-    (boardId: number) => {
-      router.push(`/feed/article/${boardId}`)
+    (post: UIPost) => {
+      // ✅ 외부에서 주입되면(스크롤 저장/복원 로직) 그걸 우선 사용
+      if (onClickDetail) return onClickDetail(post)
+      router.push(`/feed/article/${post.id}`)
     },
-    [router],
+    [onClickDetail, router],
   )
 
   return (
     <div>
       {filtered.map((post) => {
-        // ✅ 작품 정보가 “정상적으로 존재할 때만” 작품 영역을 렌더링
-        // - API 스펙상 작품 미선택이면 works=null 이므로, UI에서도 이 값들이 비어있을 가능성이 큼
         const hasWorks =
           !!post.workId &&
           !!post.work?.coverImage &&
@@ -96,7 +100,7 @@ export default function FeedList({
             isLiked={post.isLiked}
             likeCount={post.likeCount}
             replyCount={post.commentCount}
-            onClickDetail={() => goDetail(post.id)}
+            onClickDetail={() => goDetail(post)} // ✅ 여기만 변경
             onToggleLike={() => onToggleLike?.(post)}
             onOpenReport={() => {
               onOpenReport(post)
