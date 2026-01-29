@@ -11,8 +11,8 @@ export interface TopicRoomData {
   title: string
   subtitle: string
   memberCount: number
-  roomId?: number // ✅
-  worksName?: string // ✅
+  roomId?: number //
+  worksName?: string //
 }
 
 interface TopicRoomCoverCardProps {
@@ -20,15 +20,15 @@ interface TopicRoomCoverCardProps {
 }
 
 export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
-  const roomId = room.roomId ?? Number(room.id) // ✅
-  const worksName = room.worksName ?? '' // ✅
+  const roomId = room.roomId ?? Number(room.id) //
+  const worksName = room.worksName ?? ''
   const href =
     Number.isFinite(roomId) && roomId > 0
       ? {
           pathname: `/home/topicroom/${roomId}`,
           query: worksName ? { worksName } : {},
-        } // ✅
-      : '/home/topicroom' // ✅
+        }
+      : '/home/topicroom'
   return (
     <div className="relative h-full w-[266px] flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
       {/* 배경 이미지 */}
@@ -40,7 +40,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.30)_0%,rgba(0,0,0,0.30)_100%)]" />
       {/* 텍스트 영역 */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 pb-4 ">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 ">
         {/* HOT / 인원 뱃지 */}
         <div className="mb-2 flex items-center gap-1.5">
           <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">

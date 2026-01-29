@@ -84,7 +84,7 @@ export default function SearchArtistsPage() {
         />
       </div>
 
-      {/* ✅ 하단 Nav(작품/작가 전환) */}
+      {/*   하단 Nav(작품/작가 전환) */}
       <SearchResultBottomNav keyword={keyword} active="artists" />
     </div>
   )

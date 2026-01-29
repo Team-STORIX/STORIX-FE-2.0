@@ -65,7 +65,7 @@ const deleteBoard = async (boardId: number) => {
   return res.data
 }
 
-// ✅ 내 댓글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId}/reply/{replyId})
+//   내 댓글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId}/reply/{replyId})
 const deleteReply = async (boardId: number, replyId: number) => {
   const res = await apiClient.delete(
     `/api/v1/feed/reader/board/${boardId}/reply/${replyId}`,
@@ -74,7 +74,7 @@ const deleteReply = async (boardId: number, replyId: number) => {
 }
 
 /**
- * ✅ "이미 신고"를 duplicated outcome으로 매핑하기 위한 판별기
+ *   "이미 신고"를 duplicated outcome으로 매핑하기 위한 판별기
  */
 const isDuplicatedReportError = (err: unknown) => {
   if (!axios.isAxiosError(err)) return false
@@ -99,7 +99,7 @@ const isDuplicatedReportError = (err: unknown) => {
   )
 }
 
-// ✅ 남 댓글 신고 API
+//   남 댓글 신고 API
 const reportReply = async (args: {
   boardId: number
   replyId: number
@@ -121,14 +121,18 @@ const reportReply = async (args: {
 
 export default function FeedArticlePage() {
   const router = useRouter()
+
+  const returnTo = encodeURIComponent(
+    `${window.location.pathname}${window.location.search}`,
+  )
   const params = useParams<{ id: string }>()
   const boardId = Number(params?.id)
 
-  // ✅ 내 userId
+  //   내 userId
   const me = useProfileStore((s) => s.me)
   const myUserId = me?.userId
 
-  // ✅ 무한스크롤 root/sentinel
+  //   무한스크롤 root/sentinel
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
@@ -155,7 +159,8 @@ export default function FeedArticlePage() {
     router.back()
   }
 
-  // ✅ 하단 댓글 입력창(68px) 위로 토스트/완료 올리기
+  //   하단 댓글 입력창(68px) 위로 토스트/완료 올리기
+  // - 68 + 16 = 84 (조금 더 여유 주고 싶으면 96도 OK)
   const TOAST_BOTTOM = 84
 
   // ✅ 댓글 추가 후 맨 아래로 스크롤 (overflow-y-auto 컨테이너 기준)
@@ -166,7 +171,7 @@ export default function FeedArticlePage() {
   }, [])
 
   // ----------------------------
-  // ✅ 상세 데이터
+  //   상세 데이터
   // ----------------------------
   const [post, setPost] = useState<null | {
     profileImage: string
@@ -174,6 +179,7 @@ export default function FeedArticlePage() {
     createdAt: string
     content: string
     images: string[]
+    worksId?: number | null
     works: null | {
       thumbnailUrl: string
       worksName: string
@@ -191,7 +197,7 @@ export default function FeedArticlePage() {
   const [loading, setLoading] = useState(false)
 
   // ----------------------------
-  // ✅ 댓글 페이징(무한)
+  //   댓글 페이징(무한)
   // ----------------------------
   const [replies, setReplies] = useState<ReplyItem[]>([])
   const [replyPage, setReplyPage] = useState(0)
@@ -214,6 +220,7 @@ export default function FeedArticlePage() {
           .slice()
           .sort((a, c) => a.sortOrder - c.sortOrder)
           .map((x) => x.imageUrl),
+        worksId: b.works?.worksId ?? b.board?.worksId ?? null,
         works: b.works
           ? {
               thumbnailUrl: b.works.thumbnailUrl,
@@ -266,13 +273,13 @@ export default function FeedArticlePage() {
   })
 
   // ----------------------------
-  // ✅ 케밥 메뉴(게시글/댓글)
+  //   케밥 메뉴(게시글/댓글)
   // ----------------------------
   const postMenu = useOpenMenu<number>() // boardId
   const replyMenu = useOpenMenu<number>() // replyId
 
   // ----------------------------
-  // ✅ 게시글 좋아요
+  //   게시글 좋아요
   // ----------------------------
   const togglePostLike = async () => {
     if (!post) return
@@ -299,7 +306,7 @@ export default function FeedArticlePage() {
   }
 
   // ----------------------------
-  // ✅ 댓글 좋아요
+  //   댓글 좋아요
   // ----------------------------
   const onToggleReplyLike = async (replyId: number) => {
     // optimistic
@@ -343,12 +350,12 @@ export default function FeedArticlePage() {
   }
 
   // ----------------------------
-  // ✅ 댓글 작성
+  //   댓글 작성
   // ----------------------------
   const [commentText, setCommentText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
-  // ✅ 300자 초과 토스트
+  // 300자 초과 토스트
   const [limitToastOpen, setLimitToastOpen] = useState(false)
   const limitToastTimerRef = useRef<number | null>(null)
 
@@ -425,7 +432,7 @@ export default function FeedArticlePage() {
   }
 
   // ----------------------------
-  // ✅ 신고 flow (게시글/댓글)
+  //   신고 flow (게시글/댓글)
   // ----------------------------
   const reportBoardFlow = useReportFlow<ReportTargetBoard>({
     onConfirm: async (t) => {
@@ -434,6 +441,7 @@ export default function FeedArticlePage() {
         reportedUserId: t.reportedUserId,
       })
 
+      //   핵심: reportBoard가 duplicated를 "반환"하므로 그대로 리턴
       if (out.status === 'duplicated') {
         return {
           status: 'duplicated' as const,
@@ -457,6 +465,7 @@ export default function FeedArticlePage() {
           reportedUserId: t.reportedUserId,
         })
 
+        //   백엔드가 200 + isSuccess:false로 중복을 줄 수도 있어서 방어
         if (data?.isSuccess === false) {
           const msg = String(data?.message ?? '')
           if (msg.includes('이미') && msg.includes('신고')) {
@@ -485,7 +494,7 @@ export default function FeedArticlePage() {
   })
 
   // ----------------------------
-  // ✅ 삭제 flow (게시글/댓글)
+  //   삭제 flow (게시글/댓글)
   // ----------------------------
   const deleteBoardFlow = useDeleteFlow<DeleteTargetBoard>({
     onConfirm: async (t) => {
@@ -611,7 +620,11 @@ export default function FeedArticlePage() {
             isMenuOpen={postMenu.openId === boardId}
             onToggleMenu={() => postMenu.toggle(boardId)}
             menuRef={postMenu.bindRef(boardId)}
-            onClickWorksArrow={() => router.push('/feed')}
+            onClickWorksArrow={() => {
+              const worksId = post?.worksId
+              if (!worksId) return
+              router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
+            }}
           />
         </section>
 
@@ -696,7 +709,7 @@ export default function FeedArticlePage() {
               <textarea
                 ref={textareaRef}
                 value={commentText}
-                // ✅ 300자 제한 + 301번째 시도 시 토스트
+                // 300자 제한 + 301번째 시도 시 토스트
                 onChange={(e) => {
                   const next = e.target.value
                   if (next.length > MAX_COMMENT_LEN) {
@@ -774,7 +787,7 @@ export default function FeedArticlePage() {
         </div>
       </div>
 
-      {/* ✅ 게시글 신고 */}
+      {/*   게시글 신고 */}
       <ReportFlow<ReportTargetBoard>
         isReportOpen={reportBoardFlow.isReportOpen}
         reportTarget={reportBoardFlow.reportTarget}
@@ -790,7 +803,7 @@ export default function FeedArticlePage() {
         doneBottom={TOAST_BOTTOM}
       />
 
-      {/* ✅ 댓글 신고 */}
+      {/*   댓글 신고 */}
       <ReportFlow<ReportTargetReply>
         isReportOpen={reportReplyFlow.isReportOpen}
         reportTarget={reportReplyFlow.reportTarget}
@@ -806,7 +819,7 @@ export default function FeedArticlePage() {
         doneBottom={TOAST_BOTTOM}
       />
 
-      {/* ✅ 게시글 삭제 */}
+      {/*   게시글 삭제 */}
       <DeleteFlow<DeleteTargetBoard>
         isDeleteOpen={deleteBoardFlow.isDeleteOpen}
         deleteTarget={deleteBoardFlow.deleteTarget}
@@ -819,7 +832,7 @@ export default function FeedArticlePage() {
         doneBottom={TOAST_BOTTOM}
       />
 
-      {/* ✅ 댓글 삭제 */}
+      {/*   댓글 삭제 */}
       <DeleteFlow<DeleteTargetReply>
         isDeleteOpen={deleteReplyFlow.isDeleteOpen}
         deleteTarget={deleteReplyFlow.deleteTarget}

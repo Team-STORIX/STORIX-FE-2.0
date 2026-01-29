@@ -24,7 +24,7 @@ const STORAGE_KEY = 'storix_favorites_v2'
 export const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set, get) => ({
-      // ✅ API 기반이므로 초기값은 빈 배열
+      // API 기반이므로 초기값은 빈 배열
       favoriteWorkIds: [],
       favoriteArtistIds: [],
 
@@ -71,7 +71,7 @@ export const useFavoritesStore = create<FavoritesState>()(
       version: 2,
 
       /**
-       * ✅ migrate를 제공해서 "예전 스키마(v0/v1)"가 있어도
+       * migrate를 제공해서 "예전 스키마(v0/v1)"가 있어도
        * 최소한 배열 형태로 안전하게 정리해서 부팅되게 함
        */
       migrate: (persistedState: any, version) => {

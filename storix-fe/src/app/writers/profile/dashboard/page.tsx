@@ -12,7 +12,7 @@ import Articles from '@/app/writers/profile/components/articles'
 import Profit from '@/app/writers/profile/components/profit'
 
 export default function ProfilePage() {
-  // ✅ 임시 기본값 (로그인 없이 접근 가능)
+  //   임시 기본값 (로그인 없이 접근 가능)
   const [nickname] = useState('작가님')
   const [level] = useState<number>(1)
   const [profileImageUrl] = useState<string | undefined>(undefined)
@@ -30,7 +30,7 @@ export default function ProfilePage() {
 
       <PreferenceTab />
 
-      {/* ✅ dashboard 컨텐츠 */}
+      {/*   dashboard 컨텐츠 */}
       <MyBooks />
       <Articles />
       <Profit />

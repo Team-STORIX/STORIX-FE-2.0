@@ -13,15 +13,20 @@ const withSerwist = withSerwistInit({
   swSrc: 'src/app/sw.ts',
   swDest: 'public/sw.js',
   disable: process.env.NODE_ENV !== 'production',
-  additionalPrecacheEntries: [{ url: '/~offline', revision }],
+  additionalPrecacheEntries: [{ url: '/offline', revision }],
 })
 
 const nextConfig: NextConfig = {
   images: {
-    // ✅ dev에서는 S3 upstream timeout 때문에 next/image 최적화 끄기
-    unoptimized: process.env.NODE_ENV === 'development',
+    // dev에서는 S3 upstream timeout 때문에 next/image 최적화 끄기
+    unoptimized: true,
 
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'd3rtpnzvkc675z.cloudfront.net',
+        pathname: '/**',
+      },
       {
         protocol: 'https',
         hostname: 'page-images.kakaoentcdn.com',
@@ -39,6 +44,12 @@ const nextConfig: NextConfig = {
       },
 
       { protocol: 'https', hostname: 'img.ridicdn.net', pathname: '/**' },
+
+      {
+        protocol: 'https',
+        hostname: 'image-comic.pstatic.net',
+        pathname: '/**',
+      },
 
       {
         protocol: 'https',

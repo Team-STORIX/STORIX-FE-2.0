@@ -2,33 +2,25 @@
 
 import TopNotifyNavigation from '@/components/home/notify/TopNotifyNavigation'
 import NotifyList from '@/components/home/notify/NotifyList'
+import type { NotifyCardProps } from '@/components/home/notify/NotifyCard'
+import Warning from '@/components/common/Warining'
 
-const NOTIFY_ITEMS = [
-  {
-    title: '[이벤트] 당신의 최애캐를 소개하세요!(~3/10)',
-    description: '당신의 최애캐를 소개하는 웹소설 환상의 입덕쇼!',
-    date: '2025.11.09',
-    thumbnailSrc: '',
-  },
-  {
-    title: '[이벤트] 당신의 최애캐를 소개하세요!(~3/10)',
-    description: '당신의 최애캐를 소개하는 웹소설 환상의 입덕쇼!',
-    date: '2025.11.09',
-    thumbnailSrc: '',
-  },
-  {
-    title: '[이벤트] 당신의 최애캐를 소개하세요!(~3/10)',
-    description: '당신의 최애캐를 소개하는 웹소설 환상의 입덕쇼!',
-    date: '2025.11.09',
-    thumbnailSrc: '/sample/topicroom-1.jpg',
-  },
-]
+const NOTIFY_ITEMS: NotifyCardProps[] = []
 
 export default function notify() {
+  const isEmpty = NOTIFY_ITEMS.length === 0
+
   return (
     <div>
       <TopNotifyNavigation />
-      <NotifyList items={NOTIFY_ITEMS} />
+      {isEmpty ? (
+        <Warning
+          title="알림이 없어요"
+          description="좋아요, 댓글, 팔로우 요청, 친구 새소식 등"
+        />
+      ) : (
+        <NotifyList items={NOTIFY_ITEMS} />
+      )}
     </div>
   )
 }

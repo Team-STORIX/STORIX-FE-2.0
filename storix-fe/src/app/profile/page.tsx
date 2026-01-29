@@ -17,7 +17,7 @@ export default function ProfilePage() {
   const me = useProfileStore((s) => s.me)
   const setMe = useProfileStore((s) => s.setMe)
 
-  // ✅ store가 비어있을 때만 1회 보충 fetch
+  //   store가 비어있을 때만 1회 보충 fetch
   useEffect(() => {
     let mounted = true
 
@@ -39,7 +39,7 @@ export default function ProfilePage() {
     }
   }, [me, setMe])
 
-  // ✅ 렌더링용 값 (store 기반)
+  //   렌더링용 값 (store 기반)
   const nickname = me?.nickName ?? ''
   const level = typeof me?.level === 'number' ? me.level : 1
   const profileImageUrl = me?.profileImageUrl || undefined

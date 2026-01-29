@@ -4,7 +4,7 @@ import { getPopularTopicRooms } from '@/lib/api/topicroom'
 
 export const usePopularTopicRooms = () => {
   return useQuery({
-    queryKey: ['topicroom', 'popular'], // ✅
+    queryKey: ['topicroom', 'popular'], //
     queryFn: () => getPopularTopicRooms(),
   })
 }

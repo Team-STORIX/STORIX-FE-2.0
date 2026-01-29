@@ -37,14 +37,14 @@ export default function HorizontalPicker({
     // 중복 방지
     const base = items.filter((it) => it.id !== ADD_ID)
 
-    // ✅ 관심작품이 없으면: "전체" 바로 옆에 추가 아이콘
+    //  관심작품이 없으면: "전체" 바로 옆에 추가 아이콘
     if (!hasFavorites) {
       const allIdx = base.findIndex((it) => it.id === 'all')
       if (allIdx === -1) return [addItem, ...base]
       return [...base.slice(0, allIdx + 1), addItem, ...base.slice(allIdx + 1)]
     }
 
-    // ✅ 관심작품이 있으면: 맨 마지막에 추가 아이콘
+    //  관심작품이 있으면: 맨 마지막에 추가 아이콘
     return [...base, addItem]
   }, [items])
 
@@ -81,8 +81,8 @@ export default function HorizontalPicker({
               const isAll = item.id === 'all'
               const isAdd = item.id === ADD_ID
 
-              // ✅ 기본은 active=1, inactive=0.5
-              // ✅ hover 시에는 무조건 1로 복귀
+              //  기본은 active=1, inactive=0.5
+              //  hover 시에는 무조건 1로 복귀
               const opacityClass = isActive ? 'opacity-100' : 'opacity-50'
 
               const activeText =
@@ -118,7 +118,7 @@ export default function HorizontalPicker({
                       className="relative w-[60px] h-[60px] overflow-hidden rounded-full"
                       style={{ background: 'var(--gray-100, #EEEDED)' }}
                     >
-                      {/* ✅ 전체 아이템 */}
+                      {/*  전체 아이템 */}
                       {isAll ? (
                         <Image
                           src={
@@ -133,7 +133,7 @@ export default function HorizontalPicker({
                           priority
                         />
                       ) : isAdd ? (
-                        /* ✅ 관심작품 추가 아이콘 */
+                        /*  관심작품 추가 아이콘 */
                         <Image
                           src={ADD_ICON_SRC}
                           alt="작품 추가"
@@ -153,7 +153,7 @@ export default function HorizontalPicker({
                         />
                       ) : null}
 
-                      {/* ✅ 활성 오버레이 (전체/추가 제외, 기존 규칙 유지) */}
+                      {/*  활성 오버레이 (전체/추가 제외, 기존 규칙 유지) */}
                       {isActive && !isAll && !isAdd && (
                         <div
                           className="absolute inset-0"
@@ -174,7 +174,7 @@ export default function HorizontalPicker({
                     </p>
                   </button>
 
-                  {/* ✅ 전체 뒤 구분선 (computedItems 기준으로 유지) */}
+                  {/*  전체 뒤 구분선 (computedItems 기준으로 유지) */}
                   {idx === 0 && computedItems.length > 1 && (
                     <div
                       className="flex items-start"

@@ -42,7 +42,7 @@ export default function MyBooks() {
           </span>
         </div>
 
-        {/* ✅ arrow는 보여주되, 클릭 비활성(요구사항) */}
+        {/*   arrow는 보여주되, 클릭 비활성(요구사항) */}
         <button
           type="button"
           className="opacity-60 cursor-not-allowed"

@@ -10,7 +10,7 @@ import HorizontalPicker, {
 import FeedList from '@/app/writers/feed/components/feedList'
 import NavBar from '@/app/writers/feed/components/navigationBar'
 
-// ✅ writers/feedList.tsx에서 기대하는 Post 타입이 정확히 뭔지 모르니,
+//   writers/feedList.tsx에서 기대하는 Post 타입이 정확히 뭔지 모르니,
 //    "최소 필드"로 맞춘 mock 타입(필드가 더 필요하면 추가하면 됨)
 type Post = {
   id: number
@@ -63,7 +63,7 @@ export default function WritersFeedClient() {
     [],
   )
 
-  // ✅ (임시) FeedList에 넘길 posts
+  //   (임시) FeedList에 넘길 posts
   //    나중에 API 연결하면 이 부분만 교체하면 됨.
   const posts: Post[] = useMemo(() => {
     const base: Post[] = Array.from({ length: 12 }).map((_, i) => ({
@@ -99,21 +99,21 @@ export default function WritersFeedClient() {
 
   return (
     <div className="relative w-full min-h-full pb-[169px] bg-white">
-      {/* ✅ 타이틀 영역 */}
+      {/*   타이틀 영역 */}
       <div className="w-[393px] px-5 py-4 flex items-start gap-5">
         <h1 className="text-[24px] font-bold leading-[140%] text-[var(--gray-900)]">
           내 작품
         </h1>
       </div>
 
-      {/* ✅ 작품 선택 Picker */}
+      {/*   작품 선택 Picker */}
       <HorizontalPicker
         items={myWorksItems}
         selectedId={pick}
         onSelect={replaceQuery}
       />
 
-      {/* ✅ posts 필수 props 충족 */}
+      {/*   posts 필수 props 충족 */}
       <FeedList pick={pick} posts={posts as any} />
 
       <NavBar active="feed" />

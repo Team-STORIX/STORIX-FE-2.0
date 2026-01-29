@@ -4,7 +4,7 @@ import { getRecommendedHashtags } from '@/lib/api/hashtag'
 
 export const useRecommendedHashtags = () => {
   return useQuery({
-    queryKey: ['hashtags', 'recommendations'], // ✅
+    queryKey: ['hashtags', 'recommendations'], //
     queryFn: () => getRecommendedHashtags(),
   })
 }

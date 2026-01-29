@@ -19,7 +19,7 @@ export default function WritersVerifyPage() {
 
   const goNext = () => setIndex((prev) => Math.min(prev + 1, images.length - 1))
 
-  // ✅ 작가 문의: Gmail 앱 우선(모바일) → Gmail 웹
+  //   작가 문의: Gmail 앱 우선(모바일) → Gmail 웹
   const handleAuthorInquiry = () => {
     const toRaw = 'storixbiz@gmail.com'
     const subjectRaw = 'STORIX 작가 문의'
@@ -59,7 +59,7 @@ export default function WritersVerifyPage() {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* ✅ Topbar */}
+      {/*   Topbar */}
       <div className="relative flex h-14 w-full items-center bg-white px-4">
         <img
           src="/icons/back.svg"
@@ -75,7 +75,7 @@ export default function WritersVerifyPage() {
         </p>
       </div>
 
-      {/* ✅ 가이드 이미지 (393*606) */}
+      {/*   가이드 이미지 (393*606) */}
       <div className="mx-auto w-[393px]">
         <div className="relative h-[606px] w-[393px] overflow-hidden">
           {images.map((src, i) => (
@@ -93,7 +93,7 @@ export default function WritersVerifyPage() {
         </div>
       </div>
 
-      {/* ✅ 더 자세한 설명 */}
+      {/*   더 자세한 설명 */}
       <div className="mt-6 flex flex-col items-center px-4">
         <a
           href="https://www.notion.so/2d4e81f70948807f821dddb4827d63c4?source=copy_link"
@@ -109,7 +109,7 @@ export default function WritersVerifyPage() {
           더 자세한 설명 보러가기
         </a>
 
-        {/* ✅ 32px 아래: Next 버튼 or 인증 버튼 */}
+        {/*   32px 아래: Next 버튼 or 인증 버튼 */}
         {!isLast ? (
           <button
             type="button"

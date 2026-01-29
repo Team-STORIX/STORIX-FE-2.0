@@ -15,7 +15,7 @@ import type {
 } from '@/lib/api/search/search.schema'
 
 /**
- * ✅ 요구사항 반영
+ *   요구사항 반영
  * - keyword 빈 문자열이면 요청 X (enabled/guard)
  * - 무한스크롤 종료 조건: 서버 응답 기반(last/empty/content length + number)
  * - 디버깅 로그:

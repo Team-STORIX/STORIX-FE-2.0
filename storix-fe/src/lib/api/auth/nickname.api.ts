@@ -3,7 +3,7 @@ import { apiClient } from '@/lib/api/axios-instance'
 import { z } from 'zod'
 
 /**
- * ✅ /api/v1/auth/nickname/valid 응답 스키마
+ *   /api/v1/auth/nickname/valid 응답 스키마
  * - 백엔드가 result를 안 내려줄 수도 있어서 optional 처리
  */
 export const NicknameValidResponseSchema = z.object({
@@ -17,7 +17,7 @@ export const NicknameValidResponseSchema = z.object({
 export type NicknameValidResponse = z.infer<typeof NicknameValidResponseSchema>
 
 /**
- * ✅ 닉네임 중복 체크 (버튼 클릭시에만 호출)
+ *   닉네임 중복 체크 (버튼 클릭시에만 호출)
  * - 명세: GET /api/v1/auth/nickname/valid?nickname=...
  * - 4xx도 "정상 응답처럼" 받아서 UI에서 분기 처리
  */
@@ -33,7 +33,7 @@ export const checkNicknameValid = async (
 }
 
 /**
- * ✅ “사용 가능” 판정: 온보딩(기존) + 프로필(신규) 코드 모두 허용
+ *   “사용 가능” 판정: 온보딩(기존) + 프로필(신규) 코드 모두 허용
  */
 export const extractIsAvailableFromValidResponse = (
   data: NicknameValidResponse,
@@ -46,7 +46,7 @@ export const extractIsAvailableFromValidResponse = (
 }
 
 /**
- * ✅ “이미 사용 중(중복)” 판정: 기존/신규 코드 모두 허용
+ *   “이미 사용 중(중복)” 판정: 기존/신규 코드 모두 허용
  */
 export const extractIsDuplicatedFromValidResponse = (
   data: NicknameValidResponse,
@@ -59,7 +59,7 @@ export const extractIsDuplicatedFromValidResponse = (
 }
 
 /**
- * ✅ “사용 불가(작가 닉네임과 동일)” 판정
+ *   “사용 불가(작가 닉네임과 동일)” 판정
  */
 export const extractIsForbiddenFromValidResponse = (
   data: NicknameValidResponse,

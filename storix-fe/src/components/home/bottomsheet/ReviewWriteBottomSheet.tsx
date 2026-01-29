@@ -3,11 +3,11 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
 import CheckBox from '@/public/common/icons/CheckBox'
-import { getWorksSearch } from '@/lib/api/search/search.api'
-import type { WorksSearchItem } from '@/lib/api/search/search.schema'
+import { usePlusWorksSearch } from '@/hooks/plus/usePlusWorksSearch'
+import { usePlusReviewDuplicateCheck } from '@/hooks/plus/usePlusReviewDuplicateCheck'
+import type { PlusWorksSearchItem } from '@/lib/api/plus/plus.schema'
 
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 
@@ -44,38 +44,67 @@ export default function ReviewWriteBottomSheet({
     setTimeout(onClose, 250)
   }
 
-  const worksQuery = useQuery({
-    queryKey: ['bottomsheet', 'works', debouncedKeyword],
-    enabled: debouncedKeyword.length > 0,
-    retry: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    queryFn: () =>
-      getWorksSearch({ keyword: debouncedKeyword, sort: 'NAME', page: 0 }),
-  })
+  // PLUS 작품 검색
+  const worksQuery = usePlusWorksSearch({ keyword: debouncedKeyword, size: 20 })
 
-  const works: WorksSearchItem[] = worksQuery.data?.result?.content ?? []
+  const works: PlusWorksSearchItem[] =
+    worksQuery.data?.pages.flatMap((p) => p.result.content) ?? []
 
-  const saveSelectedWorkToSession = (w: WorksSearchItem) => {
+  // 선택 작품 리뷰 중복 조회
+  const duplicateQuery = usePlusReviewDuplicateCheck(selected ?? undefined)
+
+  const isDuplicated =
+    duplicateQuery.data?.result?.isDuplicated === true ||
+    (duplicateQuery.data?.isSuccess === false &&
+      duplicateQuery.data?.code === 'PLUS_ERROR_004')
+
+  const saveSelectedWorkToSession = (w: PlusWorksSearchItem) => {
     const payload: StoredWork = {
       id: Number(w.worksId),
-      title: w.worksName,
-      meta: `${w.artistName} · ${w.worksType}`,
+      title: w.worksName ?? '',
+      meta: `${w.artistName ?? ''} · ${w.worksType ?? ''}`.trim(),
       thumb: w.thumbnailUrl ?? '',
     }
     sessionStorage.setItem(STORAGE_KEY_REVIEW, JSON.stringify(payload))
   }
 
-  const goWritePage = () => {
+  const goWritePage = async () => {
     if (!selected) return
+
+    // 이미 선택 시 조회가 끝났으면 캐시 값으로 판단 (refetch로 2번 쏘지 않음)
+    let duplicated = isDuplicated
+
+    if (!duplicateQuery.data && !duplicateQuery.isFetching) {
+      const { data } = await duplicateQuery.refetch()
+      const byFlag = data?.result?.isDuplicated === true
+      const byErrorCode =
+        data?.isSuccess === false && data?.code === 'PLUS_ERROR_004'
+      duplicated = byFlag || byErrorCode
+    }
+
+    if (duplicated) return // 중복이면 막기
 
     const picked = works.find((w) => Number(w.worksId) === selected)
     if (!picked) return
 
     saveSelectedWorkToSession(picked)
     handleClose()
-    router.push(`/feed/review/write/${selected}`) // ✅ id는 그대로 라우트로 넘김
+    router.push(`/feed/review/write/${selected}`)
   }
+
+  const reviewButtonDisabled =
+    !selected ||
+    isDuplicated ||
+    duplicateQuery.isFetching ||
+    duplicateQuery.isError
+
+  const reviewButtonLabel = duplicateQuery.isFetching
+    ? '중복 확인 중...'
+    : duplicateQuery.isError
+      ? '중복 확인에 실패했어요'
+      : isDuplicated
+        ? '이미 리뷰를 작성했어요'
+        : '선택 작품 리뷰 쓰기'
 
   return (
     <div
@@ -159,7 +188,7 @@ export default function ReviewWriteBottomSheet({
                       {w.thumbnailUrl ? (
                         <Image
                           src={w.thumbnailUrl}
-                          alt={w.worksName}
+                          alt={w.worksName ?? ''}
                           className="object-cover"
                           width={87}
                           height={116}
@@ -168,12 +197,12 @@ export default function ReviewWriteBottomSheet({
                     </div>
                     <div className="flex-1 flex flex-col min-w-0 items-start pr-2">
                       <span className="heading-4 w-full truncate text-left">
-                        {w.worksName}
+                        {w.worksName ?? ''}
                       </span>
                       <span className="caption-1 w-full truncate text-left text-gray-500">
-                        {w.artistName}
+                        {w.artistName ?? ''}
                         <span className="text-gray-300">·</span>
-                        {w.worksType}
+                        {w.worksType ?? ''}
                       </span>
                     </div>
                   </div>
@@ -197,9 +226,15 @@ export default function ReviewWriteBottomSheet({
           <div className="pt-4">
             <button
               onClick={goWritePage}
-              className="h-12 w-full mb-4 rounded-xl bg-black text-body-1 text-white transition-opacity cursor-pointer hover:opacity-90"
+              disabled={reviewButtonDisabled}
+              className={[
+                'h-12 w-full mb-4 rounded-xl text-body-1 text-white transition-opacity',
+                reviewButtonDisabled
+                  ? 'bg-gray-300'
+                  : 'bg-black cursor-pointer hover:opacity-90',
+              ].join(' ')}
             >
-              선택 작품 리뷰 쓰기
+              {reviewButtonLabel}
             </button>
           </div>
         )}

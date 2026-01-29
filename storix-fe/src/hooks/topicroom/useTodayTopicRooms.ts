@@ -4,7 +4,7 @@ import { getTodayTopicRooms } from '@/lib/api/topicroom'
 
 export const useTodayTopicRooms = () => {
   return useQuery({
-    queryKey: ['topicroom', 'today'], // ✅
+    queryKey: ['topicroom', 'today'], //
     queryFn: () => getTodayTopicRooms(),
     refetchOnWindowFocus: false,
     staleTime: 30_000,

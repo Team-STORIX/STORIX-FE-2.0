@@ -14,13 +14,13 @@ const WorksDetailSchema = z.object({
   platform: z.string().nullable().optional(),
   ageClassification: z.string().nullable().optional(),
 
-  // ✅ swagger/서버에 따라 string으로 내려올 수도 있어서 안전 변환
+  //   swagger/서버에 따라 string으로 내려올 수도 있어서 안전 변환
   avgRating: z
     .preprocess((v) => (v == null ? v : Number(v)), z.number())
     .nullable()
     .optional(),
 
-  // ✅ swagger 최신 스펙에서 작품 상세에서 사용하는 값
+  //   swagger 최신 스펙에서 작품 상세에서 사용하는 값
   reviewCount: z
     .preprocess((v) => (v == null ? v : Number(v)), z.number())
     .nullable()

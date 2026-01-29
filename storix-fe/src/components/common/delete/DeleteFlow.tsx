@@ -33,7 +33,7 @@ export default function DeleteFlow<T>({
 
   const ui = (
     <>
-      {/* ✅ 삭제 모달 */}
+      {/*   삭제 모달 */}
       {isDeleteOpen && deleteTarget && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
           <button
@@ -62,7 +62,7 @@ export default function DeleteFlow<T>({
               </p>
             </div>
 
-            {/* ✅ 텍스트 ↔ 버튼 간격 28px */}
+            {/*   텍스트 ↔ 버튼 간격 28px */}
             <div className="w-full px-6 flex gap-2" style={{ marginTop: 28 }}>
               <button
                 type="button"
@@ -93,7 +93,7 @@ export default function DeleteFlow<T>({
         </div>
       )}
 
-      {/* ✅ 삭제 완료 토스트 */}
+      {/*   삭제 완료 토스트 */}
       {deleteDoneOpen && (
         <div
           className="fixed left-1/2 -translate-x-1/2 z-[120]"

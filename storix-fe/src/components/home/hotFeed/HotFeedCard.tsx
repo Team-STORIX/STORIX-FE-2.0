@@ -2,30 +2,36 @@
 'use client'
 
 import Image from 'next/image'
-import type { TodayFeedItem } from '@/lib/api/homeFeed' // ✅
+import { useRouter } from 'next/navigation'
+import type { TodayFeedItem } from '@/lib/api/homeFeed'
 
 type HotFeedCardProps = {
   className?: string
-  data?: TodayFeedItem // ✅
+  data?: TodayFeedItem
 }
 
 /**
- * ✅ 스크린샷 스타일:
+ * 스크린샷 스타일:
  * - 상단: 프로필 + 닉네임
  * - 중단: 제목(콘텐츠 앞부분) + 본문 미리보기
  * - 하단: 좋아요/댓글 아이콘(FeedList.tsx와 동일) + 카운트
  */
 export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
+  const router = useRouter()
+
+  const boardId = data?.board.boardId
+  const canClick = Number.isFinite(boardId) && (boardId as number) > 0
+
   const nickName = data?.profile.nickName ?? ''
   const profileUrl =
     data?.profile.profileImageUrl ?? '/profile/profile-default.svg'
 
   const raw = data?.board.content ?? ''
-  const title = raw.slice(0, 18) + (raw.length > 18 ? '...' : '') // ✅ title 슬롯(간단 분리)
+  const title = raw.slice(0, 18) + (raw.length > 18 ? '...' : '')
   const preview =
     raw.length > 18
       ? raw.slice(18, 18 + 70) + (raw.length > 18 + 70 ? '...' : '')
-      : '' // ✅
+      : ''
 
   const likeCount = data?.board.likeCount ?? 0
   const replyCount = data?.board.replyCount ?? 0
@@ -33,12 +39,26 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
 
   return (
     <div
+      role={canClick ? 'button' : undefined}
+      tabIndex={canClick ? 0 : -1}
+      onClick={() => {
+        if (!canClick) return
+        router.push(`/feed/article/${boardId}`)
+      }}
+      onKeyDown={(e) => {
+        if (!canClick) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          router.push(`/feed/article/${boardId}`)
+        }
+      }}
       className={[
-        'flex flex-col w-[353px] h-[164px] rounded-xl shadow-sm flex-shrink-0',
+        'flex flex-col w-[353px] h-[164px] rounded-xl flex-shrink-0',
         'border border-gray-100 bg-white',
         'px-3 py-4 gap-3',
+        canClick ? 'cursor-pointer' : '',
         className ?? '',
-      ].join(' ')} // ✅
+      ].join(' ')}
     >
       {/* 상단: 프로필 */}
       <div className="flex items-center gap-2">
@@ -66,7 +86,7 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
       <div className="mt-auto flex items-center gap-3">
         <div className="flex items-center">
           <Image
-            src={isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'} // ✅ FeedList.tsx 동일
+            src={isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'}
             alt="좋아요"
             width={24}
             height={24}
@@ -78,7 +98,7 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
 
         <div className="flex items-center">
           <Image
-            src="/icons/icon-comment.svg" // ✅ FeedList.tsx 동일
+            src="/icons/icon-comment.svg"
             alt="댓글"
             width={24}
             height={24}

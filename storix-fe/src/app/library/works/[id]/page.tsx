@@ -1,11 +1,12 @@
 // src/app/library/works/[id]/page.tsx
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
+import { useWorksMyReview } from '@/hooks/works/useWorksReviews'
 
 import TopicRoomCreateModal from '@/components/topicroom/TopicRoomCreateModal'
 import WorkTopBar from '@/components/library/works/WorkTopBar'
@@ -14,20 +15,68 @@ import WorkTabContent from '@/components/library/works/WorkTapContent'
 
 type TabKey = 'info' | 'review'
 
+const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
+
 export default function LibraryWorkHomePage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const worksId = Number(params?.id)
+
+  const handleBack = () => {
+    const raw = new URLSearchParams(window.location.search).get('returnTo')
+    if (raw) {
+      const decoded = decodeURIComponent(raw)
+      if (decoded.startsWith('/')) {
+        router.push(decoded)
+        return
+      }
+    }
+
+    if (window.history.length > 1) {
+      router.back()
+      return
+    }
+
+    router.push('/library/list')
+  }
 
   const [tab, setTab] = useState<TabKey>('info')
   const { isFavorite, toggleFavorite } = useFavoriteWork(worksId)
 
   const { data: work, isLoading: loading } = useWorksDetail(worksId)
 
+  // 내 리뷰 존재 여부(이미 작성했는지)
+  const { data: myReview } = useWorksMyReview(worksId)
+
   const [isCheckingRoom, setIsCheckingRoom] = useState(false)
   const [topicModalOpen, setTopicModalOpen] = useState(false)
 
-  //작품 상세 조회는 React Query 훅으로 통일
+  // 토스트 (이미 작성 시)
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const toastTimerRef = useRef<number | null>(null)
+
+  const showToast = (message: string) => {
+    setToastMessage(message)
+    setToastOpen(true)
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current)
+      toastTimerRef.current = null
+    }
+    toastTimerRef.current = window.setTimeout(() => {
+      setToastOpen(false)
+      toastTimerRef.current = null
+    }, 1500)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        window.clearTimeout(toastTimerRef.current)
+        toastTimerRef.current = null
+      }
+    }
+  }, [])
 
   const ui = useMemo(() => {
     if (!work) {
@@ -74,7 +123,30 @@ export default function LibraryWorkHomePage() {
   }, [work, worksId])
 
   const handleReviewWrite = () => {
-    router.push(`/home/write/review?worksId=${ui.id}`)
+    //이미 리뷰가 있으면 작성 대신 토스트
+    if (myReview?.reviewId) {
+      showToast('이미 작성하였습니다')
+      return
+    }
+
+    //review/write 페이지에서 작품 정보 복구용(있으면 활용)
+    try {
+      const meta = [ui.metaAuthor, ui.metaWorks].filter(Boolean).join(' · ')
+      sessionStorage.setItem(
+        STORAGE_KEY_REVIEW,
+        JSON.stringify({
+          id: ui.id,
+          title: ui.title,
+          meta,
+          thumb: ui.thumb,
+        }),
+      )
+    } catch {
+      // ignore
+    }
+
+    //요구 라우팅으로 변경
+    router.push(`/feed/review/write/${ui.id}`)
   }
 
   const handleTopicroomEnter = async () => {
@@ -116,7 +188,7 @@ export default function LibraryWorkHomePage() {
   return (
     <div className="relative min-h-screen bg-white">
       <WorkTopBar
-        onBack={() => router.push('/library/list')}
+        onBack={handleBack}
         isLiked={isFavorite}
         onToggleLike={toggleFavorite}
       />
@@ -132,7 +204,7 @@ export default function LibraryWorkHomePage() {
           worksType: ui.worksType,
         }}
         isCheckingRoom={isCheckingRoom}
-        onReviewWrite={handleReviewWrite}
+        onReviewWrite={handleReviewWrite} //(라우팅 변경/토스트)
         onTopicroomEnter={handleTopicroomEnter}
       />
 
@@ -147,7 +219,7 @@ export default function LibraryWorkHomePage() {
           keywords: ui.keywords,
           platform: ui.platform,
         }}
-        onReviewWrite={handleReviewWrite}
+        onReviewWrite={handleReviewWrite} // (라우팅 변경/토스트)
       />
 
       <TopicRoomCreateModal
@@ -160,6 +232,26 @@ export default function LibraryWorkHomePage() {
           thumb: ui.thumb,
         }}
       />
+
+      {toastOpen && (
+        <div
+          className="fixed left-1/2 -translate-x-1/2 z-[130]"
+          style={{ bottom: 24 }}
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            className="relative flex items-center gap-2 px-4 h-[56px] rounded-[12px] shadow-md"
+            style={{
+              width: 333,
+              backgroundColor: 'var(--color-gray-900)',
+              color: 'var(--color-white)',
+            }}
+          >
+            <span className="body-2">{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

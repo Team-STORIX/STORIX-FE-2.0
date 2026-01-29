@@ -4,28 +4,28 @@ import { joinTopicRoom } from '@/lib/api/topicroom'
 
 type JoinResult =
   | { joined: true; alreadyJoined?: false }
-  | { joined: true; alreadyJoined: true } // ✅ 409를 성공으로 처리
+  | { joined: true; alreadyJoined: true } //   409를 성공으로 처리
 
 export const useJoinTopicRoom = () => {
   const qc = useQueryClient()
 
   return useMutation<JoinResult, unknown, number>({
-    mutationKey: ['topicroom', 'join'], // ✅
+    mutationKey: ['topicroom', 'join'], //
     mutationFn: async (roomId: number) => {
       try {
         await joinTopicRoom(roomId)
         return { joined: true }
       } catch (err) {
         if (axios.isAxiosError(err) && err.response?.status === 409) {
-          return { joined: true, alreadyJoined: true } // ✅
+          return { joined: true, alreadyJoined: true } //
         }
         throw err
       }
     },
     onSettled: async (_data, _error, roomId) => {
-      await qc.invalidateQueries({ queryKey: ['topicroom'] }) // ✅
-      await qc.invalidateQueries({ queryKey: ['topicroom', 'info'] }) // ✅
-      await qc.invalidateQueries({ queryKey: ['topicroom', 'room', roomId] }) // ✅
+      await qc.invalidateQueries({ queryKey: ['topicroom'] }) //
+      await qc.invalidateQueries({ queryKey: ['topicroom', 'info'] }) //
+      await qc.invalidateQueries({ queryKey: ['topicroom', 'room', roomId] }) //
     },
   })
 }

@@ -83,7 +83,7 @@ export default function Preference() {
   )
   const works = useMemo(() => worksPreview.slice(0, WORK_LIMIT), [worksPreview])
 
-  // ✅ 작품은 4개만 “칸”에 보여주고, 부족하면 빈칸으로 채워서 간격 규칙 유지
+  //   작품은 4개만 “칸”에 보여주고, 부족하면 빈칸으로 채워서 간격 규칙 유지
   const worksForGrid = useMemo(() => works.slice(0, 4), [works])
   const emptySlots = useMemo(
     () => Math.max(0, 4 - worksForGrid.length),
@@ -118,7 +118,7 @@ export default function Preference() {
         </div>
 
         {hasWriters ? (
-          // ✅ 좌우 스크롤 제거: 그냥 영역 안에서 보이는 만큼만
+          //   좌우 스크롤 제거: 그냥 영역 안에서 보이는 만큼만
           <div className="flex mt-6 gap-[18px]">
             {writers.slice(0, 5).map((writer) => (
               <div key={writer.id} className="flex flex-col items-center">
@@ -194,7 +194,7 @@ export default function Preference() {
         </div>
 
         {hasWorks ? (
-          // ✅ 좁은 화면이면 가로 스크롤, 넓으면 그냥 4개가 다 보임
+          // 좁은 화면이면 가로 스크롤, 넓으면 그냥 4개가 다 보임
           <div className="mt-6 w-full">
             <div className="overflow-x-auto [-webkit-overflow-scrolling:touch]">
               {/* 스크롤바 숨기고 싶으면 아래 스타일 추가(선택) */}
@@ -204,7 +204,7 @@ export default function Preference() {
                 }
               `}</style>
 
-              {/* ✅ 내부는 '4칸' 기준 최소 너비를 유지 */}
+              {/* 내부는 '4칸' 기준 최소 너비를 유지 */}
               <div className="min-w-[361px]">
                 <div className="flex justify-between w-full">
                   {/* 실제 작품 1~4개 */}
@@ -233,7 +233,7 @@ export default function Preference() {
                     </div>
                   ))}
 
-                  {/* ✅ 빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
+                  {/* 빈칸 슬롯(4칸 유지 → 간격 규칙 유지) */}
                   {Array.from({ length: emptySlots }).map((_, idx) => (
                     <div
                       key={`empty-${idx}`}

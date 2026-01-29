@@ -29,12 +29,12 @@ export const SliceSchema = <T extends z.ZodTypeAny>(item: T) =>
 export const TopicRoomItemSchema = z.object({
   topicRoomId: z.number(),
   topicRoomName: z.string(),
-  worksType: z.string().nullish(), // ✅ (undefined | null 허용)
+  worksType: z.string().nullish(), //   (undefined | null 허용)
   worksName: z.string(),
-  thumbnailUrl: z.string().nullish(), // ✅
-  activeUserNumber: z.number().nullish(), // ✅
-  lastChatTime: z.string().nullish(), // ✅
-  isJoined: z.boolean().nullish(), // ✅
+  thumbnailUrl: z.string().nullish(), //
+  activeUserNumber: z.number().nullish(), //
+  lastChatTime: z.string().nullish(), //
+  isJoined: z.boolean().nullish(), //
 })
 
 export type TopicRoomItem = z.infer<typeof TopicRoomItemSchema>
@@ -59,23 +59,23 @@ export type MyTopicRoomSlice = z.infer<typeof MyTopicRoomSliceSchema>
 /** 토픽룸 참여자 목록 */
 export const TopicRoomMemberSchema = z
   .object({
-    userId: z.preprocess((v) => Number(v), z.number()), // ✅ 숫자/문자열 모두 대응
-    nickName: z.string().optional(), // ✅
-    nickname: z.string().optional(), // ✅ 백엔드 키 변동 대비
-    profileImageUrl: z.string().nullable().optional(), // ✅ null/undefined 허용
-    profileImage: z.string().nullable().optional(), // ✅ 백엔드 키 변동 대비
+    userId: z.preprocess((v) => Number(v), z.number()), //   숫자/문자열 모두 대응
+    nickName: z.string().optional(), //
+    nickname: z.string().optional(), //   백엔드 키 변동 대비
+    profileImageUrl: z.string().nullable().optional(), //   null/undefined 허용
+    profileImage: z.string().nullable().optional(), //   백엔드 키 변동 대비
   })
   .transform((m) => ({
     userId: m.userId,
-    nickName: m.nickName ?? m.nickname ?? '', // ✅ 최종적으로 nickName 보장
-    profileImageUrl: m.profileImageUrl ?? m.profileImage ?? null, // ✅
+    nickName: m.nickName ?? m.nickname ?? '', //   최종적으로 nickName 보장
+    profileImageUrl: m.profileImageUrl ?? m.profileImage ?? null, //
   }))
 
 /** 토픽룸 사용자 신고 (POST /api/v1/topic-rooms/{roomId}/report) */
 export const TopicRoomReportRequestSchema = z.object({
   reportedUserId: z.number(),
-  reason: z.string(), // ✅ 서버 enum이 확정되면 z.enum([...])로 강화
-  otherReason: z.string().nullish(), // ✅ 기타 사유(최대 100자) - UI에서 제한
+  reason: z.string(), //   서버 enum이 확정되면 z.enum([...])로 강화
+  otherReason: z.string().nullish(), //   기타 사유(최대 100자) - UI에서 제한
 })
 
 export type TopicRoomReportRequest = z.infer<

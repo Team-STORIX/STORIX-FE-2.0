@@ -20,7 +20,7 @@ type Props = {
   pick: string
   posts: UIPost[]
 
-  // ✅ FeedPageClient에서 내려줌
+  //   FeedPageClient에서 내려줌
   menu: MenuController<number>
 
   currentUserId?: number

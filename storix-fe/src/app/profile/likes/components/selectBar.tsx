@@ -21,7 +21,7 @@ export default function SelectBar() {
 
   return (
     <div className="flex py-2">
-      {/* ✅ 왼쪽: 관심 작가 */}
+      {/*   왼쪽: 관심 작가 */}
       <Link
         href="/profile/likes?tab=writers"
         className="flex-1 flex flex-col items-center gap-4"
@@ -36,7 +36,7 @@ export default function SelectBar() {
         />
       </Link>
 
-      {/* ✅ 오른쪽: 관심 작품 */}
+      {/*   오른쪽: 관심 작품 */}
       <Link
         href="/profile/likes?tab=works"
         className="flex-1 flex flex-col items-center gap-4"

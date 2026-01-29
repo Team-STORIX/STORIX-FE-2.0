@@ -40,7 +40,7 @@ const deleteReply = async (boardId: number, replyId: number) => {
 }
 
 /**
- * ✅ 댓글 좋아요 토글 API
+ *   댓글 좋아요 토글 API
  * 명세에 맞춰 경로/메서드 바꿔야 할 수 있음.
  * (예시) POST /api/v1/feed/reader/board/{boardId}/reply/{replyId}/like
  */
@@ -54,22 +54,22 @@ const toggleReplyLike = async (boardId: number, replyId: number) => {
 export default function MyComments() {
   const router = useRouter()
 
-  // ✅ 스크롤 root / sentinel
+  //   스크롤 root / sentinel
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ 데이터 상태
+  //   데이터 상태
   const [items, setItems] = useState<ActivityReplyItem[]>([])
   const [page, setPage] = useState(0)
   const [isLast, setIsLast] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [initLoading, setInitLoading] = useState(true)
 
-  // ✅ 케밥 메뉴 상태
+  //   케밥 메뉴 상태
   const [openMenuReplyId, setOpenMenuReplyId] = useState<number | null>(null)
   const openMenuWrapRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ 좋아요 토글 중(연타 방지)
+  //   좋아요 토글 중(연타 방지)
   const [likePending, setLikePending] = useState<Record<number, boolean>>({})
 
   const loadFirst = useCallback(async () => {
@@ -118,7 +118,7 @@ export default function MyComments() {
     rootMargin: '200px',
   })
 
-  // ✅ 메뉴 바깥 클릭 시 닫기
+  //   메뉴 바깥 클릭 시 닫기
   useEffect(() => {
     if (!openMenuReplyId) return
 
@@ -133,7 +133,7 @@ export default function MyComments() {
     return () => document.removeEventListener('pointerdown', onPointerDown)
   }, [openMenuReplyId])
 
-  // ✅ 댓글 좋아요 토글 (낙관적 업데이트 + 실패 롤백)
+  //   댓글 좋아요 토글 (낙관적 업데이트 + 실패 롤백)
   const handleToggleReplyLike = useCallback(
     async (boardId: number, replyId: number) => {
       if (likePending[replyId]) return
@@ -168,7 +168,7 @@ export default function MyComments() {
       try {
         const data = await toggleReplyLike(boardId, replyId)
 
-        // ✅ 백엔드가 200 + isSuccess:false 방어
+        //   백엔드가 200 + isSuccess:false 방어
         if (data?.isSuccess === false) {
           throw new Error(data?.message ?? '좋아요 처리에 실패했어요.')
         }
@@ -206,7 +206,7 @@ export default function MyComments() {
     [items, likePending],
   )
 
-  // ✅ 삭제 플로우
+  //   삭제 플로우
   const {
     isDeleteOpen,
     deleteTarget,
@@ -361,7 +361,7 @@ export default function MyComments() {
                 {item.reply.comment}
               </p>
 
-              {/* ✅ 좋아요 (클릭 가능 + 상세 이동 막기) */}
+              {/*   좋아요 (클릭 가능 + 상세 이동 막기) */}
               <div className="flex items-center">
                 <button
                   type="button"

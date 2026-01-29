@@ -12,7 +12,7 @@ type SearchBarProps = {
   onSearchClick?: (keyword: string) => void
   backHref?: string
 
-  // ✅ 추가
+  //   추가
   defaultKeyword?: string
 }
 
@@ -54,13 +54,13 @@ export default function SearchBar({
   return (
     <div className="flex h-17 w-full justify-between px-4 py-2.5 bg-white">
       <div className="flex w-full items-center gap-[15px]">
-        <Link
-          href={href}
-          aria-label="뒤로 이동"
-          className="flex h-6 w-6 items-center justify-center"
+        <button
+          type="button"
+          onClick={() => router.push(href)}
+          className="h-6 w-6 cursor-pointer"
         >
           <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
-        </Link>
+        </button>
 
         <div className="flex flex-col w-full">
           <div>

@@ -36,7 +36,7 @@ type Props = {
   likeCount: number
   replyCount: number
 
-  // ✅ NEW: 스포일러 여부
+  // NEW: 스포일러 여부
   isSpoiler?: boolean
 
   onClickDetail?: () => void
@@ -171,7 +171,7 @@ export default function PostCard({
   const myUserId = currentUserId ?? me?.userId
   const isMine = myUserId != null && writerUserId === myUserId
 
-  // ✅ 스포일러 해제 상태(카드 단위)
+  // 스포일러 해제 상태(카드 단위)
   const [spoilerRevealed, setSpoilerRevealed] = useState(false)
   const isSpoilerActive = isSpoiler === true
   const isSpoilerHidden = isSpoilerActive && !spoilerRevealed
@@ -327,7 +327,7 @@ export default function PostCard({
               <button
                 type="button"
                 onClick={(e) => {
-                  e.stopPropagation() // ✅ 화살표는 작품 상세(피드 상세 이동 막기)
+                  e.stopPropagation() // 화살표는 작품 상세(피드 상세 이동 막기)
                   onClickWorksArrow?.()
                 }}
                 onPointerDown={(e) => e.stopPropagation()}
@@ -415,7 +415,7 @@ export default function PostCard({
                 lineHeight: '140%',
               }}
               onClick={(e) => {
-                e.stopPropagation() // ✅ 상세 이동 막고
+                e.stopPropagation() // 상세 이동 막고
                 revealSpoiler()
               }}
               onPointerDown={(e) => e.stopPropagation()}
@@ -433,7 +433,7 @@ export default function PostCard({
           type="button"
           className="flex items-center transition-opacity hover:opacity-70 cursor-pointer"
           onClick={(e) => {
-            e.stopPropagation() // ✅ 하트/숫자는 상세 이동 제외
+            e.stopPropagation() // 하트/숫자는 상세 이동 제외
             onToggleLike()
           }}
           onPointerDown={(e) => e.stopPropagation()}

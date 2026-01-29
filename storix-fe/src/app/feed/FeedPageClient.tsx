@@ -16,15 +16,15 @@ import {
 } from '@/api/feed/readerFeed.api'
 import { toggleBoardLike } from '@/api/feed/readerBoard.api'
 
-// ✅ NEW: 관심작품 picker API
+//   NEW: 관심작품 picker API
 import { getFavoriteWorks } from '@/api/feed/readerFavoriteWorks.api'
-// ✅ NEW: worksId 전용 피드 API
+//   NEW: worksId 전용 피드 API
 import {
   getFeedBoardsByWorksId,
   type FeedBoardItem as WorksFeedBoardItem,
 } from '@/api/feed/readerWorksFeed.api'
 
-// ✅ menu + flows + api
+//   menu + flows + api
 import { useOpenMenu } from '@/hooks/useOpenMenu'
 import { useReportFlow } from '@/hooks/useReportFlow'
 import { useDeleteFlow } from '@/hooks/useDeleteFlow'
@@ -139,7 +139,7 @@ const mapToUIPost = (item: AllFeedBoardItem | WorksFeedBoardItem): UIPost => {
   }
 }
 
-// ✅ 게시글 신고 API
+//   게시글 신고 API
 const reportBoard = async (boardId: number, reportedUserId: number) => {
   const res = await apiClient.post(
     `/api/v1/feed/reader/board/${boardId}/report`,
@@ -150,7 +150,7 @@ const reportBoard = async (boardId: number, reportedUserId: number) => {
   return res.data
 }
 
-// ✅ 게시글 삭제 API
+//   게시글 삭제 API
 const deleteBoard = async (boardId: number) => {
   const res = await apiClient.delete(`/api/v1/feed/reader/board/${boardId}`)
   return res.data
@@ -160,6 +160,10 @@ export default function FeedPageClient() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const returnTo = encodeURIComponent(
+    `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+  )
 
   const tab: Tab = searchParams.get('tab') === 'writers' ? 'writers' : 'works'
   const pick = searchParams.get('pick') ?? 'all'
@@ -463,7 +467,7 @@ export default function FeedPageClient() {
   const items = tab === 'works' ? favoriteWorks : writersItems
 
   // =========================================================
-  // ✅ 메뉴/신고/삭제 Flow
+  //   메뉴/신고/삭제 Flow
   // =========================================================
   const me = useProfileStore((s) => s.me)
   const myUserId = me?.userId
@@ -612,7 +616,9 @@ export default function FeedPageClient() {
             }}
             onToggleLike={(post) => handleToggleLike(post)}
             onClickWorksArrow={(post) => {
-              // TODO
+              const worksId = Number.parseInt(post.workId ?? '', 10)
+              if (!Number.isFinite(worksId) || worksId <= 0) return
+              router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
             }}
             // ✅ 추가: 상세 이동을 FeedPageClient가 제어(=snapshot 저장)
             onClickDetail={(post: UIPost) => {

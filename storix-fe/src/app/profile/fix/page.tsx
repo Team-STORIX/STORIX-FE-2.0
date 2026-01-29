@@ -23,7 +23,7 @@ export default function ProfileFixPage() {
 
   const [nickname, setNickname] = useState('')
   const [initialNickname, setInitialNickname] = useState('')
-  const [nicknameVerified, setNicknameVerified] = useState(false) // ✅ 중복확인(검증) 완료 여부
+  const [nicknameVerified, setNicknameVerified] = useState(false) //   중복확인(검증) 완료 여부
 
   const [bioText, setBioText] = useState('')
   const [initialBioText, setInitialBioText] = useState('')
@@ -31,7 +31,7 @@ export default function ProfileFixPage() {
   const me = useProfileStore((s) => s.me)
   const patchMe = useProfileStore((s) => s.patchMe)
 
-  // ✅ 프로필 이미지: "선택 시 미리보기만" 반영하고, 실제 저장은 완료 버튼에서
+  //   프로필 이미지: "선택 시 미리보기만" 반영하고, 실제 저장은 완료 버튼에서
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null)
   const [initialProfileImageUrl, setInitialProfileImageUrl] = useState<
@@ -41,7 +41,7 @@ export default function ProfileFixPage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  // ✅ 입력이 자꾸 지워지는 것 방지: me로 초기값 세팅은 1회만
+  //   입력이 자꾸 지워지는 것 방지: me로 초기값 세팅은 1회만
   const initedRef = useRef(false)
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function ProfileFixPage() {
     setPreviewUrl(undefined)
     setSelectedImageFile(null)
 
-    // ✅ 초기 진입 시에는 “기존 닉네임”도 검증 안 된 상태로 시작
+    //   초기 진입 시에는 “기존 닉네임”도 검증 안 된 상태로 시작
     // (중복확인 눌러야 완료 활성화)
     setNicknameVerified(false)
 
@@ -85,7 +85,7 @@ export default function ProfileFixPage() {
     return () => window.clearInterval(id)
   }, [])
 
-  // ✅ 언마운트 시 objectURL 정리
+  //   언마운트 시 objectURL 정리
   useEffect(() => {
     return () => {
       if (previewUrl?.startsWith('blob:')) {
@@ -98,14 +98,14 @@ export default function ProfileFixPage() {
   const bioChanged = bioText !== initialBioText
   const imageChanged = !!selectedImageFile
 
-  // ✅ 완료 버튼: 기본 비활성화
-  // ✅ 닉네임은 "중복확인(검증) 완료" 되어야만 완료 활성화
-  // ✅ 닉네임이 빈칸/조건 불만족이면 Nickname 컴포넌트가 verified를 true로 올려주지 못함
+  //   완료 버튼: 기본 비활성화
+  //   닉네임은 "중복확인(검증) 완료" 되어야만 완료 활성화
+  //   닉네임이 빈칸/조건 불만족이면 Nickname 컴포넌트가 verified를 true로 올려주지 못함
   const isEnabled = useMemo(() => {
     // 닉네임이 빈칸이면 무조건 비활성화
     if (!nickname.trim()) return false
 
-    // ✅ 닉네임 중복확인(검증)을 눌러서 OK여야 함
+    //   닉네임 중복확인(검증)을 눌러서 OK여야 함
     if (!nicknameVerified) {
       // 단, 닉네임 말고 bio/이미지만 바꾼 경우엔 완료 가능하게 하고 싶다면 주석 해제:
       // if (bioChanged || imageChanged) return true
@@ -268,7 +268,7 @@ export default function ProfileFixPage() {
         </button>
       </div>
 
-      {/* ✅ 프로필 이미지 영역 (100x100 + 테두리) */}
+      {/*   프로필 이미지 영역 (100x100 + 테두리) */}
       <div className="mt-8 flex justify-center">
         <div className="relative h-[100px] w-[100px]">
           <div className="h-[100px] w-[100px] overflow-hidden rounded-full border border-[var(--color-gray-200)] bg-white">
@@ -338,7 +338,7 @@ export default function ProfileFixPage() {
           onChange={(v) => {
             if (isPressed) setIsPressed(false)
             setNickname(v)
-            setNicknameVerified(false) // ✅ 입력 바꾸면 다시 중복확인 필요
+            setNicknameVerified(false) //   입력 바꾸면 다시 중복확인 필요
           }}
           variant="inline"
           currentNickname={initialNickname}

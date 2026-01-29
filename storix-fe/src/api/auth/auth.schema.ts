@@ -21,7 +21,7 @@ export const ApiResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   })
 
 /**
- * ✅ 백엔드 ENUM 값(전송용) - 단일 소스
+ *   백엔드 ENUM 값(전송용) - 단일 소스
  */
 export const GenreKeySchema = z.enum([
   'ROMANCE',
@@ -75,7 +75,7 @@ export const SignupRequestSchema = z.object({
   marketingAgree: z.boolean(),
   nickName: z.string().min(1),
   gender: z.enum(['MALE', 'FEMALE']),
-  // ✅ (개선) 아무 문자열이 아니라, 백엔드 ENUM만 허용
+  //   (개선) 아무 문자열이 아니라, 백엔드 ENUM만 허용
   favoriteGenreList: z.array(GenreKeySchema),
   favoriteWorksIdList: z.array(z.number()),
 })
@@ -90,7 +90,7 @@ export const SignupResponseSchema = ApiResponseSchema(
 )
 
 /**
- * ✅ 닉네임 중복 체크 Response
+ *   닉네임 중복 체크 Response
  * - Swagger 예시에서 result가 {}로만 보일 수 있어서,
  *   일단 다양한 케이스를 optional로 열어둠(백엔드 확정되면 좁히면 됨)
  */
@@ -111,7 +111,7 @@ export const NicknameValidResponseSchema = ApiResponseSchema(
 )
 
 /**
- * ✅ 금칙어 체크 Response
+ *   금칙어 체크 Response
  * - 백엔드 명세가 확정되면 result 구조를 맞춰주면 됨
  */
 export const NicknameForbiddenResultSchema = z
@@ -126,7 +126,7 @@ export const NicknameForbiddenResultSchema = z
 export const NicknameForbiddenResponseSchema = ApiResponseSchema(
   NicknameForbiddenResultSchema.optional().default({}),
 )
-// ✅ 회원 탈퇴 Response
+//   회원 탈퇴 Response
 export const WithdrawResponseSchema = ApiResponseSchema(
   z.object({}).passthrough(), // result: {}
 )

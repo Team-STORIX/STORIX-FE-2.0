@@ -26,7 +26,7 @@ export const checkProfileNicknameValid = async (nickname: string) => {
     '/api/v1/profile/reader/nickname/valid',
     {
       params: { nickname },
-      // ✅ 409/400이어도 throw 안 나게
+      //   409/400이어도 throw 안 나게
       validateStatus: () => true,
     },
   )

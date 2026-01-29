@@ -77,16 +77,30 @@ export const postWorksReviewReport = async (params: {
   return parsed.result
 }
 
+/** POST /api/v1/works/{worksId}/review
+ * 내 리뷰 작성 (swagger 바디 스펙에 맞춰 payload 전달)
+ */
+
+const UpdateMyReviewPayloadSchema = z.object({
+  rating: z.string(), // swagger 기준 string
+  isSpoiler: z.boolean(),
+  content: z.string(),
+})
+export type UpdateMyReviewPayload = z.infer<typeof UpdateMyReviewPayloadSchema>
 /**
  * POST /api/v1/works/review/{reviewId}
  * 내 리뷰 수정 (swagger 바디 스펙에 맞춰 payload 전달)
  */
 export const postUpdateMyReview = async (params: {
   reviewId: number
-  payload: unknown
+  payload: UpdateMyReviewPayload
 }) => {
   const { reviewId, payload } = params
-  const res = await apiClient.post(`/api/v1/works/review/${reviewId}`, payload)
+  const safePayload = UpdateMyReviewPayloadSchema.parse(payload)
+  const res = await apiClient.patch(
+    `/api/v1/works/review/${reviewId}`,
+    safePayload,
+  )
   const parsed = ApiEnvelopeSchema(z.any()).parse(res.data)
   return parsed.result
 }
