@@ -3,11 +3,14 @@
 
 import Image from 'next/image'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
+  useDeleteMyReview,
   useLikeWorksReview,
   useWorksReviewDetail,
 } from '@/hooks/works/useWorksReviews'
+import ReviewDeleteConfirmModal from '@/components/review/ReviewDeleteConfirmModal'
+import ReviewKebabDropdown from '@/components/review/ReviewKebabDropdown'
 
 const FALLBACK_COVER_SRC = '/image/sample/topicroom-1.webp'
 
@@ -117,20 +120,8 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
     }
   }
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!isMenuOpen) return
-    const onClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node
-      if (!menuRef.current) return
-      if (!menuRef.current.contains(target)) setIsMenuOpen(false)
-    }
-    document.addEventListener('mousedown', onClickOutside)
-    return () => document.removeEventListener('mousedown', onClickOutside)
-  }, [isMenuOpen])
+  const deleteMutation = useDeleteMyReview({ worksId: ui.worksId }) // ✅
 
   if (isLoading) {
     return <div className="p-4 body-2 text-gray-400">로딩중...</div>
@@ -149,8 +140,52 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   }
 
   const openDeleteModal = () => {
-    setIsMenuOpen(false)
     setIsDeleteModalOpen(true)
+  }
+
+  const onClickEdit = () => {
+    // 리뷰 작성 화면에서 작품 카드/값을 복구하기 위한 저장 (기존 방식 재사용) // ✅
+    try {
+      sessionStorage.setItem(
+        'storix:selectedWork:review',
+        JSON.stringify({
+          id: ui.worksId,
+          title: ui.worksTitle,
+          meta: ui.worksMeta,
+          thumb: ui.coverSrc,
+        }),
+      )
+      sessionStorage.setItem(
+        'storix:editReview',
+        JSON.stringify({
+          reviewId: resolvedReviewId,
+          worksId: ui.worksId,
+          rating: ui.rating,
+          isSpoiler: !!(data as any)?.isSpoiler,
+          content: ui.content,
+        }),
+      )
+    } catch {
+      // ignore
+    }
+
+    router.push(
+      `/feed/review/write/${ui.worksId}?mode=edit&reviewId=${resolvedReviewId}`,
+    ) // ✅
+  }
+
+  const onConfirmDelete = async () => {
+    if (deleteMutation.isPending) return
+
+    try {
+      await deleteMutation.mutateAsync(resolvedReviewId) // ✅
+      setIsDeleteModalOpen(false) // ✅
+      router.replace(
+        ui.worksId ? `/library/works/${ui.worksId}` : '/library/list',
+      ) // ✅
+    } catch (e) {
+      alert(e instanceof Error ? e.message : '리뷰 삭제 실패') // ✅
+    }
   }
 
   return (
@@ -163,53 +198,20 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
 
         <span className="text-body-1 font-medium">리뷰</span>
 
-        <div className="relative flex items-center gap-2" ref={menuRef}>
+        <div className="relative flex items-center gap-2">
           <button
             type="button"
             className="caption-1 rounded-full border border-gray-200 px-3 py-1 text-gray-500 cursor-pointer"
           >
             기록카드
           </button>
-
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen((p) => !p)}
-            className="cursor-pointer p-1"
-            aria-label="메뉴"
-          >
-            <Image
-              src="/icons/menu-3dots.svg"
-              alt="메뉴"
-              width={24}
-              height={24}
-            />
-          </button>
-
-          {/* 상단 케밥 드롭다운 */}
-          {isMenuOpen && (
-            <div className="absolute right-0 top-10 z-20 w-[120px] overflow-hidden rounded-xl bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
-              <button
-                type="button"
-                className="w-full px-4 py-3 text-left body-2 hover:bg-gray-50 cursor-pointer"
-                onClick={() => {
-                  setIsMenuOpen(false)
-                  alert('리뷰 수정 (추후 구현)')
-                }}
-              >
-                리뷰 수정
-              </button>
-              <button
-                type="button"
-                className="w-full px-4 py-3 text-left body-2 hover:bg-gray-50 cursor-pointer"
-                onClick={openDeleteModal}
-              >
-                리뷰 삭제
-              </button>
-            </div>
-          )}
+          <ReviewKebabDropdown
+            onEdit={onClickEdit}
+            onDelete={openDeleteModal}
+          />{' '}
+          {/* ✅ */}
         </div>
       </div>
-
       <div className="flex-1 overflow-y-auto px-4 pb-20">
         {/* 유저 라인 */}
         <div className="flex items-start gap-3 py-3">
@@ -304,44 +306,13 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
           </button>
         </div>
       </div>
-
-      {/* 삭제 확인 모달 (UI만, 액션 추후 연동) */}
-      {isDeleteModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
-          onClick={() => setIsDeleteModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-[340px] rounded-2xl bg-white px-5 py-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="heading-2 text-center">리뷰 삭제</p>
-            <p className="body-2 mt-2 text-center text-gray-400">
-              정말 리뷰를 삭제하시겠습니까?
-            </p>
-
-            <div className="mt-6 flex gap-3">
-              <button
-                type="button"
-                className="flex-1 rounded-xl border border-gray-200 py-3 body-1 text-gray-500 cursor-pointer"
-                onClick={() => setIsDeleteModalOpen(false)}
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                className="flex-1 rounded-xl bg-black py-3 body-1 text-white cursor-pointer"
-                onClick={() => {
-                  setIsDeleteModalOpen(false)
-                  alert('삭제 (추후 구현)')
-                }}
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ReviewDeleteConfirmModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={onConfirmDelete}
+        confirmDisabled={deleteMutation.isPending}
+      />{' '}
+      {/* ✅ */}
     </main>
   )
 }

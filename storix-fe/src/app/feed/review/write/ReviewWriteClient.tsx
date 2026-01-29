@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { useMemo, useState, useEffect } from 'react'
 import RatingInput from '@/components/common/RatingInput'
 import { createReaderReview } from '@/lib/api/plus/plusWrite'
+import { useUpdateMyReview } from '@/hooks/works/useWorksReviews' // ✅
 
 type Work = { id: number; title: string; meta: string; thumb: string }
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
 }
 
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
+const STORAGE_KEY_EDIT_REVIEW = 'storix:editReview' // ✅
 const MAX_CONTENT_LENGTH = 500
 
 export default function ReviewWriteClient({ worksId }: Props) {
@@ -26,6 +28,11 @@ export default function ReviewWriteClient({ worksId }: Props) {
   const [rating, setRating] = useState(0)
   const [submitting, setSubmitting] = useState(false)
 
+  const [isEditMode, setIsEditMode] = useState(false) // ✅
+  const [editReviewId, setEditReviewId] = useState<number | null>(null) // ✅
+
+  const updateMutation = useUpdateMyReview({ worksId }) // ✅
+
   //   work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
   useEffect(() => {
     const raw = sessionStorage.getItem(STORAGE_KEY_REVIEW)
@@ -38,6 +45,39 @@ export default function ReviewWriteClient({ worksId }: Props) {
       // ignore
     }
   }, [worksId])
+
+  // edit mode 감지 + 초기값 복구 (세션 저장 기반)
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search) // ✅
+    const mode = sp.get('mode') // ✅
+    const rid = Number(sp.get('reviewId') ?? '') // ✅
+
+    if (mode !== 'edit' || !Number.isFinite(rid) || rid <= 0) return // ✅
+
+    setIsEditMode(true) // ✅
+    setEditReviewId(rid) // ✅
+
+    const raw = sessionStorage.getItem(STORAGE_KEY_EDIT_REVIEW) // ✅
+    if (!raw) return // ✅
+
+    try {
+      const parsed = JSON.parse(raw) as {
+        reviewId: number
+        worksId: number
+        rating?: number | null
+        isSpoiler?: boolean
+        content?: string
+      }
+
+      if (parsed?.reviewId !== rid) return // ✅
+
+      if (typeof parsed.rating === 'number') setRating(parsed.rating) // ✅
+      if (typeof parsed.content === 'string') setText(parsed.content) // ✅
+      if (typeof parsed.isSpoiler === 'boolean') setSpoiler(parsed.isSpoiler) // ✅
+    } catch {
+      // ignore
+    }
+  }, [])
 
   const content = text.trim()
   const contentLength = text.length
@@ -69,6 +109,22 @@ export default function ReviewWriteClient({ worksId }: Props) {
     try {
       setSubmitting(true)
 
+      // 수정 모드면 업데이트 API 호출
+      if (isEditMode && editReviewId) {
+        await updateMutation.mutateAsync({
+          reviewId: editReviewId,
+          payload: {
+            rating: rating.toFixed(1), // ✅ (string)
+            isSpoiler: spoiler, // ✅
+            content, // ✅ (string)
+          },
+        }) // ✅
+
+        sessionStorage.removeItem(STORAGE_KEY_EDIT_REVIEW) // ✅
+        router.replace(`/library/works/review/${editReviewId}`) // ✅
+        return
+      }
+
       const res = await createReaderReview({
         worksId: resolvedWork.id,
         rating: rating.toFixed(1),
@@ -88,7 +144,13 @@ export default function ReviewWriteClient({ worksId }: Props) {
       // 혹시 reviewId가 응답에 없다면 최소한 작품 상세로
       router.replace(`/library/works/${resolvedWork.id}`)
     } catch (e) {
-      alert(e instanceof Error ? e.message : '리뷰 등록 실패')
+      alert(
+        e instanceof Error
+          ? e.message
+          : isEditMode
+            ? '리뷰 수정 실패'
+            : '리뷰 등록 실패',
+      ) // ✅
     } finally {
       setSubmitting(false)
     }
@@ -148,7 +210,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
               onClick={() => setSpoiler((prev) => !prev)}
               aria-pressed={spoiler}
               aria-label="스포일러 방지 토글"
-              className="ml-auto cursor-pointer hover:opacity-80"
+              className="ml-auto cursor-pointer"
             >
               <img
                 src={
