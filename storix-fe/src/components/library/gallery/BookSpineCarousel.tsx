@@ -4,6 +4,8 @@
 import Image from 'next/image'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import RightGradient from '@/public/icons/library/RightGradient'
+import LeftGradient from '@/public/icons/library/LeftGradient'
 
 export type Work = {
   id: number
@@ -198,7 +200,7 @@ export default function BookSpineCarousel({
                 className={[
                   'relative shrink-0 snap-center bg-[var(--color-magenta-300)]',
                   'transition-all duration-250 ease-out',
-                  'hover:opacity-90 cursor-pointer overflow-hidden',
+                  'hover:opacity-90 cursor-pointer',
                   isActive ? 'rounded-sm' : '',
                   !isActive && i > activeIdx ? 'rounded-r-sm' : '',
                   !isActive && i < activeIdx ? 'rounded-l-sm' : '',
@@ -245,22 +247,14 @@ export default function BookSpineCarousel({
                 )}
 
                 {!isActive && i > activeIdx && (
-                  <Image
-                    src="/icons/library/rightGradient.svg"
-                    alt=""
-                    width={22}
-                    height={200}
-                    className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 "
-                  />
+                  <div className="pointer-events-none absolute -left-5.5 top-0 h-full w-5.5 ">
+                    <RightGradient />
+                  </div>
                 )}
                 {!isActive && i < activeIdx && (
-                  <Image
-                    src="/icons/library/leftGradient.svg"
-                    alt=""
-                    width={22}
-                    height={200}
-                    className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5"
-                  />
+                  <div className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5 ">
+                    <LeftGradient />
+                  </div>
                 )}
               </button>
             )
