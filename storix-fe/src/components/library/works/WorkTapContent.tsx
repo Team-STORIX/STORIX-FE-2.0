@@ -82,7 +82,7 @@ export default function WorkTabContent({
     <>
       {/* Tabs */}
       <div className="px-4">
-        <div className="flex border-b border-gray-200 -mx-4 px-4">
+        <div className="flex border-b border-gray-200 -mx-4">
           <button
             type="button"
             onClick={() => onChangeTab('info')}

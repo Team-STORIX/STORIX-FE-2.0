@@ -97,7 +97,7 @@ export default function TopicRoom() {
 
   return (
     <div>
-      <SearchBar onSearchClick={goSearch} />
+      <SearchBar placeholder="토픽룸을 검색하세요" onSearchClick={goSearch} />
       <div className="flex flex-col">
         <div className="px-5 py-4">
           <p className="heading-1">{nickname}님이 참여 중인 토픽룸</p>
@@ -105,10 +105,10 @@ export default function TopicRoom() {
         <div className="flex flex-col gap-4">
           <ParticipationChat list={participationList} />
         </div>
-        {/* <div className="px-5 py-4">
+        <div className="px-5 py-4">
           <p className="heading-1">지금 HOT한 토픽룸</p>
         </div>
-        <CardTopicroomInsideCoverSlider rooms={hotRooms} />{' '} */}
+        <CardTopicroomInsideCoverSlider rooms={hotRooms} />{' '}
       </div>
     </div>
   )
