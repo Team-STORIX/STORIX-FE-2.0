@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'd3rtpnzvkc675z.cloudfront.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'page-images.kakaoentcdn.com',
         pathname: '/**',
       },
