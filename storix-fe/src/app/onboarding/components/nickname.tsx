@@ -1,3 +1,4 @@
+//src/app/onboarding/components/nickname
 'use client'
 
 import Image from 'next/image'

@@ -473,7 +473,7 @@ function EmptyState({ tab, onClickCta }: { tab: Tab; onClickCta: () => void }) {
         onClick={onClickCta}
         aria-label="검색으로 이동"
       >
-        <Image src={ctaImg} alt="찾기" width={106} height={29} />
+        <Image src={ctaImg} alt="찾기" width={131} height={36} />
       </button>
     </div>
   )
