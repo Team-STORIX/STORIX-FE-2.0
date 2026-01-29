@@ -82,7 +82,7 @@ export const postWorksReviewReport = async (params: {
  */
 
 const UpdateMyReviewPayloadSchema = z.object({
-  rating: z.string(), // ✅ swagger 기준 string
+  rating: z.string(), // swagger 기준 string
   isSpoiler: z.boolean(),
   content: z.string(),
 })
@@ -93,10 +93,10 @@ export type UpdateMyReviewPayload = z.infer<typeof UpdateMyReviewPayloadSchema>
  */
 export const postUpdateMyReview = async (params: {
   reviewId: number
-  payload: UpdateMyReviewPayload // ✅
+  payload: UpdateMyReviewPayload
 }) => {
   const { reviewId, payload } = params
-  const safePayload = UpdateMyReviewPayloadSchema.parse(payload) // ✅
+  const safePayload = UpdateMyReviewPayloadSchema.parse(payload)
   const res = await apiClient.patch(
     `/api/v1/works/review/${reviewId}`,
     safePayload,

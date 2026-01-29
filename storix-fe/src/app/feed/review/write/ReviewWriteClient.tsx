@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { useMemo, useState, useEffect } from 'react'
 import RatingInput from '@/components/common/RatingInput'
 import { createReaderReview } from '@/lib/api/plus/plusWrite'
-import { useUpdateMyReview } from '@/hooks/works/useWorksReviews' // ✅
+import { useUpdateMyReview } from '@/hooks/works/useWorksReviews'
 
 type Work = { id: number; title: string; meta: string; thumb: string }
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 }
 
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
-const STORAGE_KEY_EDIT_REVIEW = 'storix:editReview' // ✅
+const STORAGE_KEY_EDIT_REVIEW = 'storix:editReview'
 const MAX_CONTENT_LENGTH = 500
 
 export default function ReviewWriteClient({ worksId }: Props) {
@@ -28,10 +28,10 @@ export default function ReviewWriteClient({ worksId }: Props) {
   const [rating, setRating] = useState(0)
   const [submitting, setSubmitting] = useState(false)
 
-  const [isEditMode, setIsEditMode] = useState(false) // ✅
-  const [editReviewId, setEditReviewId] = useState<number | null>(null) // ✅
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editReviewId, setEditReviewId] = useState<number | null>(null)
 
-  const updateMutation = useUpdateMyReview({ worksId }) // ✅
+  const updateMutation = useUpdateMyReview({ worksId })
 
   //   work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
   useEffect(() => {
@@ -48,17 +48,17 @@ export default function ReviewWriteClient({ worksId }: Props) {
 
   // edit mode 감지 + 초기값 복구 (세션 저장 기반)
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search) // ✅
-    const mode = sp.get('mode') // ✅
-    const rid = Number(sp.get('reviewId') ?? '') // ✅
+    const sp = new URLSearchParams(window.location.search)
+    const mode = sp.get('mode')
+    const rid = Number(sp.get('reviewId') ?? '')
 
-    if (mode !== 'edit' || !Number.isFinite(rid) || rid <= 0) return // ✅
+    if (mode !== 'edit' || !Number.isFinite(rid) || rid <= 0) return
 
-    setIsEditMode(true) // ✅
-    setEditReviewId(rid) // ✅
+    setIsEditMode(true)
+    setEditReviewId(rid)
 
-    const raw = sessionStorage.getItem(STORAGE_KEY_EDIT_REVIEW) // ✅
-    if (!raw) return // ✅
+    const raw = sessionStorage.getItem(STORAGE_KEY_EDIT_REVIEW)
+    if (!raw) return
 
     try {
       const parsed = JSON.parse(raw) as {
@@ -69,11 +69,11 @@ export default function ReviewWriteClient({ worksId }: Props) {
         content?: string
       }
 
-      if (parsed?.reviewId !== rid) return // ✅
+      if (parsed?.reviewId !== rid) return
 
-      if (typeof parsed.rating === 'number') setRating(parsed.rating) // ✅
-      if (typeof parsed.content === 'string') setText(parsed.content) // ✅
-      if (typeof parsed.isSpoiler === 'boolean') setSpoiler(parsed.isSpoiler) // ✅
+      if (typeof parsed.rating === 'number') setRating(parsed.rating)
+      if (typeof parsed.content === 'string') setText(parsed.content)
+      if (typeof parsed.isSpoiler === 'boolean') setSpoiler(parsed.isSpoiler)
     } catch {
       // ignore
     }
@@ -114,14 +114,14 @@ export default function ReviewWriteClient({ worksId }: Props) {
         await updateMutation.mutateAsync({
           reviewId: editReviewId,
           payload: {
-            rating: rating.toFixed(1), // ✅ (string)
-            isSpoiler: spoiler, // ✅
-            content, // ✅ (string)
+            rating: rating.toFixed(1), // (string)
+            isSpoiler: spoiler,
+            content, // (string)
           },
-        }) // ✅
+        })
 
-        sessionStorage.removeItem(STORAGE_KEY_EDIT_REVIEW) // ✅
-        router.replace(`/library/works/review/${editReviewId}`) // ✅
+        sessionStorage.removeItem(STORAGE_KEY_EDIT_REVIEW)
+        router.replace(`/library/works/review/${editReviewId}`)
         return
       }
 
@@ -150,7 +150,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
           : isEditMode
             ? '리뷰 수정 실패'
             : '리뷰 등록 실패',
-      ) // ✅
+      )
     } finally {
       setSubmitting(false)
     }

@@ -121,7 +121,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   }
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const deleteMutation = useDeleteMyReview({ worksId: ui.worksId }) // ✅
+  const deleteMutation = useDeleteMyReview({ worksId: ui.worksId })
 
   if (isLoading) {
     return <div className="p-4 body-2 text-gray-400">로딩중...</div>
@@ -144,7 +144,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   }
 
   const onClickEdit = () => {
-    // 리뷰 작성 화면에서 작품 카드/값을 복구하기 위한 저장 (기존 방식 재사용) // ✅
+    // 리뷰 작성 화면에서 작품 카드/값을 복구하기 위한 저장 (기존 방식 재사용)
     try {
       sessionStorage.setItem(
         'storix:selectedWork:review',
@@ -171,20 +171,20 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
 
     router.push(
       `/feed/review/write/${ui.worksId}?mode=edit&reviewId=${resolvedReviewId}`,
-    ) // ✅
+    )
   }
 
   const onConfirmDelete = async () => {
     if (deleteMutation.isPending) return
 
     try {
-      await deleteMutation.mutateAsync(resolvedReviewId) // ✅
-      setIsDeleteModalOpen(false) // ✅
+      await deleteMutation.mutateAsync(resolvedReviewId)
+      setIsDeleteModalOpen(false)
       router.replace(
         ui.worksId ? `/library/works/${ui.worksId}` : '/library/list',
-      ) // ✅
+      )
     } catch (e) {
-      alert(e instanceof Error ? e.message : '리뷰 삭제 실패') // ✅
+      alert(e instanceof Error ? e.message : '리뷰 삭제 실패')
     }
   }
 
