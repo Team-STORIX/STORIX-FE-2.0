@@ -317,7 +317,7 @@ export default function LikesClient() {
                       </p>
 
                       {/* ✅ 제목 ↔ 작가 줄: 4px (mt-1) / ✅ 작가 줄: 14px 확정 (caption-1 제거) */}
-                      <p className="mt-1 body-1 text-[var(--color-gray-500)]">
+                      <p className="mt-1 body-2 text-[var(--color-gray-500)]">
                         {w.artistName} · {w.worksType}
                       </p>
 
