@@ -32,10 +32,10 @@ export default function Final() {
       {/* 이미지 - 텍스트 125px 아래 */}
       <div className="mt-[125px]">
         <img
-          src="/onboarding/star-pink.svg"
+          src="/icons/big-star-pink.png"
           alt="완료"
-          width={150}
-          height={150}
+          width={180}
+          height={180}
         />
       </div>
     </div>
