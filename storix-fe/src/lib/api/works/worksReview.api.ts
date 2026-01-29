@@ -97,7 +97,7 @@ export const postUpdateMyReview = async (params: {
 }) => {
   const { reviewId, payload } = params
   const safePayload = UpdateMyReviewPayloadSchema.parse(payload) // ✅
-  const res = await apiClient.post(
+  const res = await apiClient.patch(
     `/api/v1/works/review/${reviewId}`,
     safePayload,
   )
