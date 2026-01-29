@@ -1,7 +1,9 @@
 // src/app/profile/myActivity/components/selectBar.tsx
+type Tab = 'posts' | 'comments' | 'likes'
+
 interface SelectBarProps {
-  activeTab: 'posts' | 'comments' | 'likes'
-  onChange: (tab: 'posts' | 'comments' | 'likes') => void
+  activeTab: Tab
+  onChange: (tab: Tab) => void
 }
 
 export default function SelectBar({ activeTab, onChange }: SelectBarProps) {
