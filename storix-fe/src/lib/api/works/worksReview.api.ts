@@ -86,8 +86,7 @@ const UpdateMyReviewPayloadSchema = z.object({
   isSpoiler: z.boolean(),
   content: z.string(),
 })
-type UpdateMyReviewPayload = z.infer<typeof UpdateMyReviewPayloadSchema>
-
+export type UpdateMyReviewPayload = z.infer<typeof UpdateMyReviewPayloadSchema>
 /**
  * POST /api/v1/works/review/{reviewId}
  * 내 리뷰 수정 (swagger 바디 스펙에 맞춰 payload 전달)
