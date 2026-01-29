@@ -196,10 +196,12 @@ export default function BookSpineCarousel({
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => handleBookClick(i)}
                 className={[
-                  'relative shrink-0 snap-center rounded-r-sm bg-[var(--color-magenta-300)]',
+                  'relative shrink-0 snap-center bg-[var(--color-magenta-300)]',
                   'transition-all duration-250 ease-out',
-                  'hover:opacity-90 cursor-pointer',
+                  'hover:opacity-90 cursor-pointer overflow-hidden',
                   isActive ? 'rounded-sm' : '',
+                  !isActive && i > activeIdx ? 'rounded-r-sm' : '',
+                  !isActive && i < activeIdx ? 'rounded-l-sm' : '',
                 ].join(' ')}
                 style={{
                   width: isActive ? 150 : 30,
@@ -219,17 +221,25 @@ export default function BookSpineCarousel({
                 )}
 
                 {!isActive && (
-                  <div className="absolute inset-0 flex items-center justify-center px-1">
+                  <div className="absolute inset-0 px-2 pt-2 flex justify-start items-start">
+                    {/* 회전 담당(박스가 얇아지지 않도록 display만 보장) */}
                     <span
-                      title={w.title}
-                      className="caption-1 text-white overflow-hidden text-ellipsis whitespace-nowrap text-center "
+                      className="absolute top-2 left-5.5"
                       style={{
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'mixed',
-                        maxHeight: 176,
+                        transform: 'rotate(90deg)',
+                        transformOrigin: 'top left',
                       }}
                     >
-                      {w.title}
+                      {/* ellipsis 담당(폭 제한 + overflow-hidden 필수) */}
+                      <span
+                        title={w.title}
+                        className="caption-1 text-white block overflow-hidden text-ellipsis whitespace-nowrap text-left"
+                        style={{
+                          width: 176,
+                        }}
+                      >
+                        {w.title}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -244,15 +254,13 @@ export default function BookSpineCarousel({
                   />
                 )}
                 {!isActive && i < activeIdx && (
-                  <div className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5">
-                    <Image
-                      src="/icons/library/leftGradient.svg"
-                      alt=""
-                      width={22}
-                      height={200}
-                      className=" "
-                    />
-                  </div>
+                  <Image
+                    src="/icons/library/leftGradient.svg"
+                    alt=""
+                    width={22}
+                    height={200}
+                    className="pointer-events-none absolute -right-5.5 top-0 h-full w-5.5"
+                  />
                 )}
               </button>
             )
