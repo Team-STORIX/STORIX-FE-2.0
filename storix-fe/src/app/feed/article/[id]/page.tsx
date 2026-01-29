@@ -1,4 +1,4 @@
-// /src/app/feed/article/[id]/page.tsx
+// src/app/feed/article/[id]/page.tsx
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -55,6 +55,9 @@ type DeleteTargetReply = {
 
 const FALLBACK_PROFILE = '/profile/profile-default.svg'
 const MAX_COMMENT_LEN = 300
+
+// ✅ Feed 스크롤 복원용 snapshot key
+const FEED_SNAPSHOT_KEY = 'storix_feed_snapshot_v1'
 
 // ✅ 내 글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
 const deleteBoard = async (boardId: number) => {
@@ -129,10 +132,38 @@ export default function FeedArticlePage() {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
-  const handleBack = () => router.back()
+  // ✅ (핵심) 뒤로가기: feed snapshot이 있으면 그 URL로 replace
+  const handleBack = () => {
+    if (typeof window === 'undefined') {
+      router.back()
+      return
+    }
+
+    try {
+      const raw = sessionStorage.getItem(FEED_SNAPSHOT_KEY)
+      if (raw) {
+        const snap = JSON.parse(raw) as { url?: string }
+        if (snap?.url) {
+          router.replace(snap.url, { scroll: false })
+          return
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    router.back()
+  }
 
   // ✅ 하단 댓글 입력창(68px) 위로 토스트/완료 올리기
   const TOAST_BOTTOM = 84
+
+  // ✅ 댓글 추가 후 맨 아래로 스크롤 (overflow-y-auto 컨테이너 기준)
+  const scrollToBottom = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [])
 
   // ----------------------------
   // ✅ 상세 데이터
@@ -378,12 +409,19 @@ export default function FeedArticlePage() {
       },
     }
 
-    setReplies((prev) => [newReply, ...prev])
+    // ✅ 오래된순(ASC) 정렬에 맞게: 새 댓글은 맨 아래로 붙이기
+    setReplies((prev) => [...prev, newReply])
+
     setPost((prev) =>
       prev ? { ...prev, replyCount: prev.replyCount + 1 } : prev,
     )
     setCommentText('')
-    requestAnimationFrame(() => textareaRef.current?.focus())
+
+    // ✅ 렌더 반영 후 맨 아래로 스크롤 + 포커스
+    requestAnimationFrame(() => {
+      scrollToBottom()
+      textareaRef.current?.focus()
+    })
   }
 
   // ----------------------------
