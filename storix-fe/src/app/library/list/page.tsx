@@ -2,7 +2,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useInView } from 'react-intersection-observer'
 
@@ -11,6 +11,7 @@ import Warning from '@/components/common/Warining'
 import LibraryHeader from '@/components/library/LibraryHeader'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
 import LibraryWorksListContent from '@/components/library/LibraryWorksListContent'
+import ArrowDownIcon from '@/public/icons/ArrowDownIcon'
 
 import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
 import type { LibraryReviewSort } from '@/lib/api/library/library.api'
@@ -30,6 +31,27 @@ export default function LibraryListPage() {
   const router = useRouter()
 
   const [sort, setSort] = useState<SortKey>('DEFAULT')
+
+  const [sortOpen, setSortOpen] = useState(false)
+  const sortWrapRef = useRef<HTMLDivElement | null>(null)
+
+  const sortLabel: Record<SortKey, string> = {
+    DEFAULT: '전체 작품',
+    RATING: '별점 높은 순',
+    RATING_ASC: '별점 낮은 순',
+  }
+
+  useEffect(() => {
+    if (!sortOpen) return
+    const onDown = (e: MouseEvent) => {
+      const el = sortWrapRef.current
+      if (!el) return
+      if (el.contains(e.target as Node)) return
+      setSortOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [sortOpen])
 
   const [showReviewSheet, setShowReviewSheet] = useState(false)
 
@@ -99,28 +121,70 @@ export default function LibraryListPage() {
       {/* 상단 컨트롤(드롭다운/카운트/뷰 전환) */}
       <div className="flex items-center justify-between px-4 py-4.5 border-b border-gray-200">
         {/* 드롭다운 */}
-        <div className="relative">
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            className="body-2 text-gray-500 pr-3 appearance-none bg-transparent outline-none cursor-pointer"
+        <div className="relative" ref={sortWrapRef}>
+          {' '}
+          <button
+            type="button"
+            onClick={() => setSortOpen((v) => !v)}
+            className="py-1 body-2 text-gray-500 cursor-pointer flex items-center"
+            onPointerDown={(e) => e.stopPropagation()}
             aria-label="정렬"
           >
-            <option value="DEFAULT">전체 작품</option>
-            <option value="RATING">별점 높은 순</option>
-            <option value="RATING_ASC">별점 낮은 순</option>
-          </select>
+            {sortLabel[sort]}
+            <ArrowDownIcon />
+          </button>
+          {sortOpen && (
+            <div className="absolute left-0 top-8 z-50 w-24 rounded-sm border border-gray-100 bg-white shadow-md">
+              <button
+                type="button"
+                className={[
+                  'w-full px-2 pt-2 pb-1.5 text-left body-2 text-gray-900 rounded-t-sm cursor-pointer transition-bg hover:bg-gray-50',
+                  sort === 'DEFAULT' ? 'font-semibold' : '',
+                ].join(' ')}
+                onClick={() => {
+                  setSort('DEFAULT')
+                  setSortOpen(false)
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                전체 작품
+              </button>
 
-          {/* caret */}
-          <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400">
-            <Image
-              src={'/icons/arrow-down.svg'}
-              alt={'정렬 옵션 열기'}
-              width={24}
-              height={24}
-              className="inline-block"
-            />
-          </span>
+              <div className="h-[1px] w-full bg-gray-100" />
+
+              <button
+                type="button"
+                className={[
+                  'w-full px-2 pt-2 pb-1.5 text-left body-2 text-gray-900 cursor-pointer transition-bg hover:bg-gray-50',
+                  sort === 'RATING' ? 'font-semibold' : '',
+                ].join(' ')}
+                onClick={() => {
+                  setSort('RATING')
+                  setSortOpen(false)
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                별점 높은 순
+              </button>
+
+              <div className="h-[1px] w-full bg-gray-100" />
+
+              <button
+                type="button"
+                className={[
+                  'w-full px-2 pt-2 pb-1.5 text-left body-2 text-gray-900 rounded-b-sm cursor-pointer transition-bg hover:bg-gray-50',
+                  sort === 'RATING_ASC' ? 'font-semibold' : '',
+                ].join(' ')}
+                onClick={() => {
+                  setSort('RATING_ASC')
+                  setSortOpen(false)
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                별점 낮은 순
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-4">

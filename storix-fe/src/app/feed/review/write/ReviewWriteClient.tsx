@@ -191,7 +191,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
           )}
 
           <div className="flex flex-col">
-            <span className="heading-4">
+            <span className="heading-4 mb-1">
               {resolvedWork?.title ?? '작품 제목'}
             </span>
             <span className="caption-1 text-gray-500 mb-4">

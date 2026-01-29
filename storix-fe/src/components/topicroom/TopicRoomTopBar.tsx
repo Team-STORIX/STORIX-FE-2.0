@@ -1,3 +1,4 @@
+// src/components/topicroom/TopicRoomTopBar.tsx
 'use client'
 
 import Image from 'next/image'

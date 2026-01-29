@@ -262,12 +262,14 @@ export default function BookSpineCarousel({
 
       {active && (
         <div className="flex flex-col items-center px-4">
-          <p className="heading-3 text-black text-center">{active.title}</p>
-          <p className="body-1 text-gray-400 text-center">{active.meta}</p>
+          <p className="heading-3 text-black text-center mb-2">
+            {active.title}
+          </p>
+          <p className="body-1 text-gray-400 text-center mb-3">{active.meta}</p>
 
           {typeof active.rating === 'number' && (
             <span
-              className={`caption-1 mt-3 w-14 h-6 inline-flex items-center gap-1 
+              className={`caption-1 w-14 h-6 inline-flex items-center gap-1 
             rounded-3xl border border-gray-200 
             px-2.5 py-1 text-[var(--color-magenta-300)] text-center`}
             >
