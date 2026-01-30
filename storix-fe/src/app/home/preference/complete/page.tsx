@@ -19,7 +19,7 @@ export default function PreferenceCompletePage() {
       </div>
 
       <div className="px-4 pb-6">
-        <NextButton href="/home/preference/swipe" />
+        <NextButton href="/home/preference/list" />
       </div>
     </main>
   )

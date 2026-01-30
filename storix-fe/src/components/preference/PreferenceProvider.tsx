@@ -19,6 +19,7 @@ import type {
   PreferenceResultWork,
 } from '@/lib/api/preference'
 import { ZodError } from 'zod'
+import axios from 'axios'
 
 export type PreferenceWork = {
   id: number
@@ -103,7 +104,10 @@ export default function PreferenceProvider({
   const limitedToastShownRef = useRef(false)
 
   const showToast = (msg: string) => {
-    setToastMessage(msg)
+    const cleaned = msg.replace(/정상적인 요청입니다.\.?\s*/g, '').trim()
+
+    if (!cleaned) return
+    setToastMessage(cleaned || msg.trim())
     setToastOpen(true)
     if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current)
     toastTimerRef.current = window.setTimeout(() => {
@@ -232,13 +236,18 @@ export default function PreferenceProvider({
         isLiked: choice === 'like',
       })
     } catch (e) {
-      // 200 OK인데 프론트 파싱 실패(ZodError)면 롤백하면 "첫 작품으로 복귀" 현상 발생
-      if (e instanceof ZodError) {
-        showToast('일시적인 응답 처리 오류가 발생했어요. 계속 진행할게요.')
-        return
+      // "이미 분석됨/하루 제한" 등 4xx는 롤백하지 않고 다음으로 진행(첫 작품 복귀 방지)
+      if (axios.isAxiosError(e)) {
+        const status = e.response?.status
+
+        // 보통 이미 분석/제한 케이스가 여기로 옴 (409/400/429 등)
+        if (status && status >= 400 && status < 500) {
+          showToast('이미 분석된 작품이에요. 다음 작품으로 넘어갈게요.')
+          return
+        }
       }
 
-      // 진짜 요청 실패(네트워크/서버)만 롤백
+      // 진짜 요청 실패(서버/네트워크)만 롤백
       setState((prev) => ({ ...prev, [worksId]: null }))
       showToast('요청에 실패했어요. 잠시 후 다시 시도해 주세요.')
     }
