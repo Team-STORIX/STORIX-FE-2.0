@@ -228,6 +228,8 @@ export default function PreferenceProvider({
     if (analyzeMutation.isPending) return
 
     const worksId = currentWork.id
+
+    // 진행은 로컬 state 기준으로 즉시 확정 (서버 실패해도 첫 작품으로 되돌리지 않음)
     setState((prev) => ({ ...prev, [worksId]: choice }))
 
     try {
@@ -236,20 +238,11 @@ export default function PreferenceProvider({
         isLiked: choice === 'like',
       })
     } catch (e) {
-      // "이미 분석됨/하루 제한" 등 4xx는 롤백하지 않고 다음으로 진행(첫 작품 복귀 방지)
-      if (axios.isAxiosError(e)) {
-        const status = e.response?.status
-
-        // 보통 이미 분석/제한 케이스가 여기로 옴 (409/400/429 등)
-        if (status && status >= 400 && status < 500) {
-          showToast('이미 분석된 작품이에요. 다음 작품으로 넘어갈게요.')
-          return
-        }
-      }
-
-      // 진짜 요청 실패(서버/네트워크)만 롤백
-      setState((prev) => ({ ...prev, [worksId]: null }))
-      showToast('요청에 실패했어요. 잠시 후 다시 시도해 주세요.')
+      // 서버 동기화 실패 시에도 진행은 유지하고 토스트만 표시
+      const serverMsg =
+        (e as any)?.response?.data?.message ??
+        (e as any)?.message ??
+        '요청 처리 중 오류가 발생했어요.'
     }
   }
 
