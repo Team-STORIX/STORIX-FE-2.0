@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import { GenreKeySchema } from '@/lib/api/auth/auth.schema'
 
-// ✅ 공통 응답 래퍼(필요 필드만 정확히)
+// 공통 응답 래퍼(필요 필드만 정확히)
 const ApiEnvelopeSchema = <T extends z.ZodTypeAny>(resultSchema: T) =>
   z.object({
     isSuccess: z.boolean(),

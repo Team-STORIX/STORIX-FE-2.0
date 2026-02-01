@@ -15,7 +15,7 @@ import {
   usePreferenceResults,
 } from '@/hooks/preference/usePreference'
 import type {
-  PreferenceExplorationWork,
+  PreferenceExplorationWorkSchema,
   PreferenceResultWork,
 } from '@/lib/api/preference'
 import { ZodError } from 'zod'
@@ -64,10 +64,10 @@ const fallbackImage = (worksId: number) => {
 }
 
 const mapExplorationToWork = (
-  w: PreferenceExplorationWork,
+  w: z.infer<typeof PreferenceExplorationWorkSchema>,
 ): PreferenceWork => ({
   id: w.worksId,
-  title: w.worksName,
+  title: w.worksName ?? '',
   imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
   genre: w.genre ?? '',
   description: w.description ?? '',
