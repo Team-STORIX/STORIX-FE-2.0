@@ -46,7 +46,7 @@ export default function Gender({ value, onChange }: GenderProps) {
             <p className="w-25 body-1 text-center mt-3 ">남성</p>
           </button>
         </div>
-        {/* <button
+        <button
           className={`w-full py-3 px-4 rounded-xl border cursor-pointer ${
             value === 'NONE'
               ? 'text-[var(--color-magenta-300)] border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
@@ -57,7 +57,7 @@ export default function Gender({ value, onChange }: GenderProps) {
           <p className="body-1" onClick={() => onChange('NONE')}>
             선택 안 함
           </p>
-        </button> */}
+        </button>
       </div>
     </div>
   )
