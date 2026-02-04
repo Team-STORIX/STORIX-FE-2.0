@@ -17,7 +17,7 @@ export default function Gender({ value, onChange }: GenderProps) {
       </h1>
 
       <p className="text-gray-500 mt-[5px] text-[16px] font-medium leading-[140%]">
-        취향에 맞는 추천을 드리기 위해 필요한 정보예요.
+        선택 정보에 기반해 더 나은 서비스 경험을 제공해 드려요
       </p>
 
       {/* 성별 선택 버튼 */}
@@ -46,7 +46,7 @@ export default function Gender({ value, onChange }: GenderProps) {
             <p className="w-25 body-1 text-center mt-3 ">남성</p>
           </button>
         </div>
-        {/* <button
+        <button
           className={`w-full py-3 px-4 rounded-xl border cursor-pointer ${
             value === 'NONE'
               ? 'text-[var(--color-magenta-300)] border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
@@ -57,7 +57,7 @@ export default function Gender({ value, onChange }: GenderProps) {
           <p className="body-1" onClick={() => onChange('NONE')}>
             선택 안 함
           </p>
-        </button> */}
+        </button>
       </div>
     </div>
   )

@@ -1,8 +1,8 @@
-//src/app/onboarding/components/nickname
+// src/app/onboarding/components/nickname
 'use client'
 
 import Image from 'next/image'
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import {
   checkNicknameValid,
   extractIsAvailableFromValidResponse,
@@ -53,9 +53,17 @@ export default function Nickname({
   const lastChecked = useRef('')
   const maxToastTimer = useRef<number | null>(null)
 
-  //   페이지 진입 시 "기존 닉네임" 스냅샷
+  // 페이지 진입 시 "기존 닉네임" 스냅샷
   const initialNicknameRef = useRef<string>('')
 
+  // ✅ iOS IME 보호: composing 상태 ref
+  const composingRef = useRef(false)
+
+  // ✅ 외부 value를 그대로 쓰면 부모 렌더가 조합을 깨는 케이스가 있어 draft로 받음
+  const [draft, setDraft] = useState(value)
+
+  // NOTE: 요청하신 제한 범위(아래아 포함 X) 그대로 유지
+  // ✅ 다만 "입력 중"에는 검사하지 않고, "중복확인" 시점에만 검사한다.
   const allowedRegex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9_ ]+$/
 
   const normalize = (s?: string) => (s ?? '').trim()
@@ -100,7 +108,7 @@ export default function Nickname({
 
   useEffect(() => () => clearMaxToast(), [])
 
-  //   기존 닉네임 스냅샷 고정 (currentNickname 우선, 없으면 value 최초값)
+  // 기존 닉네임 스냅샷 고정 (currentNickname 우선, 없으면 value 최초값)
   useEffect(() => {
     if (initialNicknameRef.current) return
 
@@ -114,146 +122,167 @@ export default function Nickname({
     if (v) initialNicknameRef.current = v
   }, [currentNickname, value])
 
-  const sanitize = (raw: string) => {
-    let next = raw.slice(0, MAX)
-    if (!allowedRegex.test(next)) {
-      next = next.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9_ ]/g, '').slice(0, MAX)
-    }
-    return next
-  }
+  // ✅ draft ↔ value 동기화 (단, 조합 중엔 동기화 금지)
+  useEffect(() => {
+    if (composingRef.current) return
+    setDraft(value)
+  }, [value])
 
-  //   "지금 입력값이 기존 닉네임과 동일한가?"
+  // "지금 입력값이 기존 닉네임과 동일한가?"
   const isSameNow = useMemo(() => {
     const initial = initialNicknameRef.current
     if (!initial) return false
-    return normalize(value) === initial
-  }, [value])
+    return normalize(draft) === initial
+  }, [draft])
 
-  //   동일하면: 중복확인 안 해도 바로 완료 가능 + 메시지 없음 + 밑줄 검정
+  // 동일하면: 중복확인 안 해도 바로 완료 가능 + 메시지 없음 + 밑줄 검정
   useEffect(() => {
     if (!initialNicknameRef.current) return
 
     if (isSameNow) {
+      clearMaxToast()
       setStatus('same')
       setMsg('')
       setAvailable(true)
-      lastChecked.current = value
+      lastChecked.current = draft
       return
     }
 
-    // 동일이었다가 변경되면 완료 불가로 돌리기(단, 사용자가 직접 입력 중일 때 자연스럽게)
+    // 동일이었다가 변경되면 완료 불가로 돌리기
     if (status === 'same') {
-      setStatus(value ? 'unchecked' : 'idle')
+      setStatus(draft ? 'unchecked' : 'idle')
       setMsg('')
       setAvailable(false)
       lastChecked.current = ''
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSameNow, value])
+  }, [isSameNow, draft])
 
-  const handleChange = (raw: string) => {
-    const overMax = raw.length > MAX
-    const next = sanitize(raw)
+  // ✅ 입력 중에는 "글자수(MAX)"만 처리
+  // - composing 중: 절대 자르지 않음 (IME 보호)
+  // - composing 아닐 때: MAX 초과하면 자르고 저장
+  const applyLengthOnly = useCallback(
+    (raw: string) => {
+      const overMax = raw.length > MAX
 
-    if (next !== value) resetCheck()
+      if (composingRef.current) {
+        // 조합 중: raw 그대로
+        setDraft(raw)
+        onChange(raw)
 
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('signup_nickname', next)
-    }
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('signup_nickname', raw)
+        }
 
-    onChange(next)
+        // 입력 중엔 타입검사 안 함: 단, 변경되면 검증 해제는 해준다
+        if (raw !== value) resetCheck()
+        setStatus(raw ? 'unchecked' : 'idle')
+        setMsg('')
+        return
+      }
 
-    if (overMax) {
-      showMaxToast()
+      // 조합이 아니면: 길이만 자르기
+      const next = overMax ? raw.slice(0, MAX) : raw
+
+      setDraft(next)
+      onChange(next)
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('signup_nickname', next)
+      }
+
+      if (next !== value) resetCheck()
+
+      // 길이 초과 토스트는 입력 중에도 가능(조합 아닐 때만)
+      if (overMax) showMaxToast()
+      else clearMaxToast()
+
+      // 입력 중에는 타입검사/메시지 띄우지 않음(단, empty 상태만 구분)
+      setStatus(next ? 'unchecked' : 'idle')
+      setMsg('')
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [value],
+  )
+
+  // ✅ 중복확인 시점에만 검사
+  const validateOnCheck = useCallback(
+    (v: string): { st: Status; message: string } => {
+      const nv = normalize(v)
+      if (!nv) return { st: 'idle', message: '' }
+
+      if (initialNicknameRef.current && nv === initialNicknameRef.current) {
+        return { st: 'same', message: '' }
+      }
+
+      if (nv.length < MIN || nv.length > MAX)
+        return { st: 'length', message: MSG_LEN }
+      if (isAllSpaces(v)) return { st: 'spaces_only', message: MSG_SPACES }
+      if (isJamoOnly(nv)) return { st: 'jamo_only', message: MSG_JAMO_ONLY }
+
+      // ✅ 타입검사는 여기서만
+      if (!allowedRegex.test(nv))
+        return { st: 'invalid_chars', message: MSG_CHARS }
+
+      return { st: 'unchecked', message: '' }
+    },
+    [],
+  )
+
+  // 동일(isSameNow)이면 무조건 중복확인 버튼 활성화
+  // ✅ 입력 중엔 타입검사 안 하므로, 버튼 조건은 "값 존재"만으로 단순화
+  const canCheck = useMemo(() => {
+    if (status === 'checking') return false
+    if (isSameNow) return true
+    return normalize(draft).length > 0
+  }, [draft, status, isSameNow])
+
+  const checkDuplicate = async () => {
+    if (!canCheck) return
+
+    // ✅ 중복확인 시점에만 검사 실행
+    clearMaxToast()
+    const { st, message } = validateOnCheck(draft)
+
+    // same이면 바로 완료
+    if (st === 'same' || isSameNow) {
+      setStatus('same')
+      setMsg('')
+      setAvailable(true)
+      lastChecked.current = draft
       return
     }
 
-    // 동일이면 effect가 처리하므로 여기서는 종료해도 됨
-    if (
-      initialNicknameRef.current &&
-      normalize(next) === initialNicknameRef.current
-    ) {
-      return
-    }
-
-    if (!next) {
+    // invalid면 서버 호출 X
+    if (st === 'idle') {
       setStatus('idle')
       setMsg('')
       setAvailable(false)
       return
     }
 
-    if (isAllSpaces(next)) {
-      setStatus('spaces_only')
-      setMsg(MSG_SPACES)
+    if (
+      st === 'length' ||
+      st === 'spaces_only' ||
+      st === 'jamo_only' ||
+      st === 'invalid_chars'
+    ) {
+      setStatus(st)
+      setMsg(message)
       setAvailable(false)
       return
     }
 
-    if (!allowedRegex.test(next)) {
-      setStatus('invalid_chars')
-      setMsg(MSG_CHARS)
-      setAvailable(false)
-      return
-    }
-
-    if (next.length < MIN) {
-      setStatus('length')
-      setMsg(MSG_LEN)
-      setAvailable(false)
-      return
-    }
-
-    setStatus('unchecked')
-    setMsg('')
-    setAvailable(false)
-  }
-
-  //   동일(isSameNow)이면 무조건 중복확인 버튼 활성화
-  const canCheck = useMemo(() => {
-    if (status === 'checking') return false
-    if (isSameNow) return true //   동일이면 중복확인도 누를 수 있게
-
-    if (!value) return false
-    if (value.length < MIN || value.length > MAX) return false
-    if (isAllSpaces(value)) return false
-    if (!allowedRegex.test(value)) return false
-
-    return true
-  }, [value, status, isSameNow])
-
-  const checkDuplicate = async () => {
-    if (!canCheck) return
-
-    //   동일: API 호출해도 되고 안 해도 되는데, 요청사항상 "눌릴 수만 있으면" 되니까
-    // API 호출 X로 처리 (빠르고 안정적)
-    if (isSameNow) {
-      clearMaxToast()
-      setStatus('same')
-      setMsg('')
-      setAvailable(true)
-      lastChecked.current = value
-      return
-    }
-
-    if (isJamoOnly(value)) {
-      clearMaxToast()
-      setStatus('jamo_only')
-      setMsg(MSG_JAMO_ONLY)
-      setAvailable(false)
-      return
-    }
-
-    clearMaxToast()
+    // ✅ 이제 서버 중복확인
     setStatus('checking')
     setMsg('')
 
     try {
-      const data = await checkNicknameValid(value)
+      const data = await checkNicknameValid(normalize(draft))
       const available = extractIsAvailableFromValidResponse(data)
 
       if (available) {
-        lastChecked.current = value
+        lastChecked.current = draft
         setStatus('ok')
         setMsg(MSG_OK)
         setAvailable(true)
@@ -290,12 +319,12 @@ export default function Nickname({
           : 'border-b-2 border-[var(--color-gray-300)]'
 
   const inputTextColor =
-    focused || value
+    focused || draft
       ? 'text-[var(--color-black)]'
       : 'text-[var(--color-gray-300)]'
 
   const iconSrc =
-    value && !isWarning
+    normalize(draft) && !isWarning
       ? '/onboarding/id-check-pink.svg'
       : '/onboarding/id-check-gray.svg'
 
@@ -324,8 +353,19 @@ export default function Nickname({
       >
         <div className="h-[42px] flex items-center justify-between">
           <input
-            value={value}
-            onChange={(e) => handleChange(e.target.value)}
+            value={draft}
+            onChange={(e) => applyLengthOnly(e.target.value)}
+            onCompositionStart={() => {
+              composingRef.current = true
+            }}
+            onCompositionUpdate={() => {
+              composingRef.current = true
+            }}
+            onCompositionEnd={(e) => {
+              composingRef.current = false
+              // ✅ 조합이 끝난 최종 문자열에만 "글자수 제한" 적용
+              applyLengthOnly(e.currentTarget.value)
+            }}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             onKeyDown={(e) => {
@@ -335,8 +375,12 @@ export default function Nickname({
                 checkDuplicate()
               }
             }}
-            maxLength={MAX}
             placeholder="닉네임을 입력해 주세요"
+            // ✅ iOS 자동 기능 완화
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            autoComplete="off"
             className={[
               'w-[254px]',
               'px-[8px] py-[10px]',

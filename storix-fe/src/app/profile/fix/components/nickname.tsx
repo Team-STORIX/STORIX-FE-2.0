@@ -1,7 +1,9 @@
 // src/app/profile/fix/components/nickname.tsx
 'use client'
+// 1월 30일 19시
 
-// 1월27일 15:7 최신코드 냠냠 (IME 한글 입력 이슈 수정: maxLength 제거 + composing ref 적용)
+// ✅ 입력 중에는 "글자수(MAX)"만 처리하고, 타입(정규식) 검사는 "중복확인 버튼"을 눌렀을 때만 수행
+// ✅ iOS/천지인 IME 깨짐 방지: composing 중에는 절대 trim/slice/validate/sanitize 하지 않음
 
 import Image from 'next/image'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
@@ -50,16 +52,21 @@ export default function Nickname({
   const [status, setStatus] = useState<Status>('idle')
   const [msg, setMsg] = useState('')
 
-  // iOS(사파리/웹뷰) IME 이슈 방지: state 대신 ref로 조합 상태 관리
+  // ✅ iOS(사파리/웹뷰) IME 이슈 방지: 조합 상태는 ref로
   const composingRef = useRef(false)
+
+  // ✅ 외부 value 변화(초기 로드/부모 동기화) 반영용 local draft
+  //    (조합 중일 때 부모 value가 바뀌면 IME 깨질 수 있어 local draft가 안전)
+  const [draft, setDraft] = useState(value)
 
   // 초기 1회 + currentNickname 변경 시 동기화용
   const didInitRef = useRef(false)
 
-  const normalize = (s?: string) => (s ?? '').trim()
+  // NOTE: 요청하신 새 제한 범위(아래아 포함 X) 그대로 둠
+  // ✅ 하지만 "입력 중"에는 이 regex로 검사/필터링하지 않음. (중복확인 시점에만 검사)
+  const allowedRegex = /^[가-힣a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ ]+$/
 
-  // NOTE: 기존 코드 유지 (허용문자에 공백 포함)
-  const allowedRegex = /^[가-힣a-zA-Z0-9_ ]+$/
+  const normalize = (s?: string) => (s ?? '').trim()
 
   const isAllSpaces = (v: string) => v.length > 0 && v.trim().length === 0
   const isJamoOnly = (v: string) => {
@@ -68,50 +75,51 @@ export default function Nickname({
     return /^[ㄱ-ㅎㅏ-ㅣ]+$/.test(t)
   }
 
+  // ✅ 외부 value가 바뀌면 draft를 동기화
+  // (다만 조합 중엔 동기화하면 IME가 깨질 수 있어 composing 중에는 건드리지 않음)
+  useEffect(() => {
+    if (composingRef.current) return
+    setDraft(value)
+  }, [value])
+
   const isSameNow = useMemo(() => {
     const cur = normalize(currentNickname)
     if (!cur) return false
-    return normalize(value) === cur
-  }, [value, currentNickname])
+    return normalize(draft) === cur
+  }, [draft, currentNickname])
 
-  const sanitize = (raw: string) => {
-    // maxLength 속성은 IME랑 충돌할 수 있어서 제거했음.
-    // 길이 제한은 sanitize에서만 처리.
-    let next = raw.slice(0, MAX)
-    if (!allowedRegex.test(next)) {
-      next = next.replace(/[^가-힣a-zA-Z0-9_ ]/g, '').slice(0, MAX)
-    }
-    return next
-  }
-
-  const validate = useCallback(
+  // ✅ "중복확인 버튼" 눌렀을 때만 검사하는 validate
+  const validateOnCheck = useCallback(
     (v: string): { st: Status; message: string } => {
-      if (!v) return { st: 'idle', message: '' }
+      const nv = normalize(v)
+      if (!nv) return { st: 'idle', message: '' }
 
-      // 현재 닉네임이면 “검증 완료” 상태로 취급
-      if (
-        normalize(currentNickname) &&
-        normalize(v) === normalize(currentNickname)
-      ) {
+      if (normalize(currentNickname) && nv === normalize(currentNickname)) {
         return { st: 'same', message: MSG_SAME }
       }
 
+      // 길이 검사 (확인 시점)
+      if (nv.length < MIN || nv.length > MAX) {
+        return { st: 'length', message: MSG_LEN }
+      }
+
       if (isAllSpaces(v)) return { st: 'spaces_only', message: MSG_SPACES }
-      if (!allowedRegex.test(v))
+
+      // ✅ 타입 검사도 확인 시점에만
+      if (!allowedRegex.test(nv))
         return { st: 'invalid_chars', message: MSG_CHARS }
-      if (isJamoOnly(v)) return { st: 'jamo_only', message: MSG_JAMO_ONLY }
-      if (v.length < MIN) return { st: 'length', message: MSG_LEN }
+
+      if (isJamoOnly(nv)) return { st: 'jamo_only', message: MSG_JAMO_ONLY }
 
       return { st: 'ready', message: '' }
     },
     [currentNickname],
   )
 
-  // (핵심) 초기 1회 + currentNickname이 들어오는 순간(프로필 로드 완료 등)에만 동기화
-  // value(타이핑)는 handleChange에서만 처리해서 조합/입력 꼬임을 줄임
+  // ✅ 초기 1회 + currentNickname 변경 시: "same" 여부만 자연스럽게 반영
   useEffect(() => {
     if (!didInitRef.current) {
-      const { st, message } = validate(value)
+      const { st, message } = validateOnCheck(draft)
       setStatus(st)
       setMsg(message)
       onVerifiedChange?.(st === 'ok' || st === 'same')
@@ -119,39 +127,37 @@ export default function Nickname({
       return
     }
 
-    const { st, message } = validate(value)
+    const { st, message } = validateOnCheck(draft)
     setStatus(st)
     setMsg(message)
     onVerifiedChange?.(st === 'ok' || st === 'same')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentNickname, validate])
+  }, [currentNickname, validateOnCheck])
 
-  const handleChange = (raw: string) => {
-    // 한글 조합 중에는 절대 sanitize/validate로 건드리면 안 됨 (iOS에서 첫 한글 입력 씹힘)
+  // ✅ 입력 중에는 "글자수만" 처리
+  // - composing 중: 절대 자르지 않음 (IME 보호)
+  // - composing 아닐 때: MAX 초과하면 잘라서 적용
+  const applyLengthOnly = (raw: string) => {
     if (composingRef.current) {
-      onChange(raw)
+      setDraft(raw)
+      onChange(raw) // 부모도 raw 그대로(타입검사 없음). iOS에서 부모가 가공하지 않는다는 전제
       return
     }
 
-    const next = sanitize(raw)
+    const next = raw.length > MAX ? raw.slice(0, MAX) : raw
+    setDraft(next)
     onChange(next)
 
-    // 입력이 바뀌면 “중복확인 완료” 해제 (단, same면 다시 true 처리)
+    // 입력이 바뀌면 검증 해제
+    setStatus('idle')
+    setMsg('')
     onVerifiedChange?.(false)
-
-    const { st, message } = validate(next)
-    setStatus(st)
-    setMsg(message)
-
-    if (st === 'same') onVerifiedChange?.(true)
   }
 
   const canCheck = useMemo(() => {
     if (status === 'checking') return false
-    const { st } = validate(value)
-    // 중복확인 버튼은 ready/same일 때만
-    return st === 'ready' || st === 'same'
-  }, [value, status, validate])
+    return normalize(draft).length > 0
+  }, [draft, status])
 
   const looksTaken = (message: string, code?: string) => {
     const c = (code ?? '').toLowerCase()
@@ -164,10 +170,20 @@ export default function Nickname({
   const checkDuplicate = async () => {
     if (!canCheck) return
 
-    // 현재 닉네임이면 서버 호출 없이 “검증 완료”
-    if (isSameNow) {
+    // ✅ 여기서만 타입/길이/자모 검사
+    const { st, message } = validateOnCheck(draft)
+    setStatus(st)
+    setMsg(message)
+
+    if (st !== 'ready' && st !== 'same') {
+      onVerifiedChange?.(false)
+      return
+    }
+
+    // 현재 닉네임이면 서버 호출 없이 통과
+    if (st === 'same' || isSameNow) {
       setStatus('same')
-      setMsg(MSG_SAME) // 메시지 싫으면 ''로 바꿔도 됨
+      setMsg(MSG_SAME)
       onVerifiedChange?.(true)
       return
     }
@@ -177,13 +193,12 @@ export default function Nickname({
 
     try {
       const { httpStatus, raw, available } = await checkProfileNicknameValid(
-        normalize(value),
+        normalize(draft),
       )
 
       const message = (raw?.message ?? '').toString()
       const code = (raw?.code ?? '').toString()
 
-      // 409/400 등: 중복이면 taken으로
       if (httpStatus >= 400) {
         if (httpStatus === 409 || looksTaken(message, code)) {
           setStatus('taken')
@@ -192,14 +207,12 @@ export default function Nickname({
           return
         }
 
-        // 진짜 서버 오류
         setStatus('error')
         setMsg('닉네임 확인 중 오류가 발생했어요. 다시 시도해주세요.')
         onVerifiedChange?.(false)
         return
       }
 
-      // 200인데도 isSuccess=false로 중복을 표현하는 서버도 많음
       if (raw?.isSuccess === false) {
         setStatus('taken')
         setMsg(MSG_TAKEN)
@@ -207,7 +220,6 @@ export default function Nickname({
         return
       }
 
-      // result 파싱 가능하면 그걸 우선
       if (available === true) {
         setStatus('ok')
         setMsg(MSG_OK)
@@ -221,7 +233,6 @@ export default function Nickname({
         return
       }
 
-      // 파싱 실패(null)이면 message/code로 판단
       if (looksTaken(message, code)) {
         setStatus('taken')
         setMsg(MSG_TAKEN)
@@ -229,7 +240,6 @@ export default function Nickname({
         return
       }
 
-      // 판단 불가지만 200+isSuccess=true면 일단 통과
       setStatus('ok')
       setMsg(MSG_OK)
       onVerifiedChange?.(true)
@@ -248,7 +258,7 @@ export default function Nickname({
     status === 'taken' ||
     status === 'error'
 
-  const isSuccess = status === 'ok' || status === 'same' // same도 성공으로 표시
+  const isSuccess = status === 'ok' || status === 'same'
 
   const underlineClass = isSuccess
     ? 'border-b-2 border-[var(--color-success)]'
@@ -259,7 +269,7 @@ export default function Nickname({
         : 'border-b-2 border-[var(--color-gray-300)]'
 
   const inputTextColor =
-    focused || value
+    focused || draft
       ? 'text-[var(--color-black)]'
       : 'text-[var(--color-gray-300)]'
 
@@ -292,20 +302,18 @@ export default function Nickname({
       >
         <div className="h-[42px] flex items-center justify-between">
           <input
-            value={value}
-            onChange={(e) => handleChange(e.target.value)}
+            value={draft}
+            onChange={(e) => applyLengthOnly(e.target.value)}
             onCompositionStart={() => {
               composingRef.current = true
             }}
             onCompositionUpdate={() => {
-              // 일부 환경에서 start가 씹히는 경우 방지
               composingRef.current = true
             }}
             onCompositionEnd={(e) => {
               composingRef.current = false
-              // 조합이 끝난 최종 문자열만 sanitize/validate 처리
-              const finalRaw = e.currentTarget.value
-              handleChange(finalRaw)
+              // ✅ 조합이 끝난 최종 문자열에만 "글자수 MAX" 적용
+              applyLengthOnly(e.currentTarget.value)
             }}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
@@ -316,9 +324,12 @@ export default function Nickname({
                 checkDuplicate()
               }
             }}
-            // iOS IME 이슈 때문에 maxLength 제거 (길이 제한은 sanitize에서만)
-            // maxLength={MAX}
             placeholder="닉네임을 입력하세요"
+            // ✅ iOS 자동 기능이 조합을 건드리는 경우 완화
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            autoComplete="off"
             className={[
               'w-[254px]',
               'px-[8px] py-[10px]',
