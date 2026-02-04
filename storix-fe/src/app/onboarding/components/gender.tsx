@@ -17,7 +17,7 @@ export default function Gender({ value, onChange }: GenderProps) {
       </h1>
 
       <p className="text-gray-500 mt-[5px] text-[16px] font-medium leading-[140%]">
-        취향에 맞는 추천을 드리기 위해 필요한 정보예요.
+        선택 정보에 기반해 더 나은 서비스 경험을 제공해 드려요
       </p>
 
       {/* 성별 선택 버튼 */}
