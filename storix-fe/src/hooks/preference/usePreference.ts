@@ -8,10 +8,11 @@ import {
 } from '@/lib/api/preference'
 import type { PreferenceAnalyzeRequest } from '@/lib/api/preference'
 
-export const usePreferenceExploration = () => {
+export const usePreferenceExploration = (enabled = true) => {
   return useQuery({
     queryKey: ['preference', 'exploration'],
     queryFn: getPreferenceExploration,
+    enabled,
     staleTime: 0,
     refetchOnWindowFocus: false,
   })
@@ -42,7 +43,6 @@ export const usePreferenceAnalyze = () => {
   return useMutation({
     mutationFn: (p: PreferenceAnalyzeRequest) => postPreferenceAnalyze(p),
     onSettled: async () => {
-      // ✅ onSuccess 금지 룰 준수: onSettled에서 invalidate만
       await qc.invalidateQueries({ queryKey: ['preference', 'results'] })
       await qc.invalidateQueries({ queryKey: ['preference', 'stats'] })
     },

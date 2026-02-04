@@ -52,10 +52,10 @@ export default function Home() {
     if (checkingExploration) return
     try {
       const r = await refetchExploration()
-      const list = r.data ?? []
+      const items = r.data?.result ?? []
 
       // 이미 오늘 참여한 경우: 빈 리스트
-      if (list.length === 0) {
+      if (items.length === 0) {
         showToast('하루 한번 만 가능합니다.')
         return
       }
