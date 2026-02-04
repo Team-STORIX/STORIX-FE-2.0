@@ -1,7 +1,9 @@
+// src/components/library/works/OtherReviewsSection.tsx
 'use client'
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
 
 type OtherReviewItem = {
@@ -25,7 +27,9 @@ export default function OtherReviewsSection({
   const goReviewDetail = (reviewId: number) => {
     router.push(`/library/works/review/${reviewId}`)
   }
-
+  const [revealedSpoilerIds, setRevealedSpoilerIds] = useState<Set<number>>(
+    new Set(),
+  )
   return (
     <section className="flex flex-col items-stretch w-full">
       <p className="heading-2 -mx-4 px-5 pt-5 pb-3 text-black">
@@ -36,6 +40,20 @@ export default function OtherReviewsSection({
         <p className="body-2 text-gray-400">아직 다른 유저 리뷰가 없어요</p>
       ) : (
         otherReviews.map((r) => {
+          const isSpoiler = Boolean((r as any).isSpoiler)
+          const isHidden = isSpoiler && !revealedSpoilerIds.has(r.reviewId)
+
+          const onClick = () => {
+            if (isHidden) {
+              setRevealedSpoilerIds((prev) => {
+                const next = new Set(prev)
+                next.add(r.reviewId)
+                return next
+              })
+              return
+            }
+            goReviewDetail(r.reviewId)
+          }
           return (
             <div
               key={r.reviewId}
@@ -72,11 +90,26 @@ export default function OtherReviewsSection({
                 className="flex w-full py-5 justify-between items-center text-left cursor-pointer "
                 key={r.reviewId}
                 type="button"
-                onClick={() => goReviewDetail(r.reviewId)}
+                onClick={onClick}
               >
-                <p className="body-2 text-gray-500 whitespace-pre-wrap break-words line-clamp-3">
-                  {r.content ?? ''}
-                </p>
+                <div className="relative flex-1">
+                  <p
+                    className={[
+                      'body-2 text-gray-700 whitespace-pre-wrap break-words line-clamp-3 pr-6',
+                      isHidden ? 'blur-sm select-none' : '',
+                    ].join(' ')}
+                  >
+                    {r.content ?? ''}
+                  </p>
+                  {isHidden && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="px-3 py-1.5 text-[var(--color-magenta-300)] caption-1">
+                        스포일러가 포함된 리뷰입니다 · 탭해서 보기
+                      </span>
+                    </span>
+                  )}
+                </div>
+
                 <ForwardArrowIcon />
               </button>
             </div>

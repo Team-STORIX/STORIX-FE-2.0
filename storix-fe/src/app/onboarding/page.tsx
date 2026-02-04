@@ -20,7 +20,7 @@ export default function OnboardingPage() {
 
   const [step, setStep] = useState(1)
   const [nickname, setNickname] = useState('')
-  const [gender, setGender] = useState<'MALE' | 'FEMALE' | ''>('')
+  const [gender, setGender] = useState<'MALE' | 'FEMALE' | 'NONE' | ''>('')
   const [genres, setGenres] = useState<GenreKey[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 

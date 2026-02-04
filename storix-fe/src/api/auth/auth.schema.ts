@@ -74,7 +74,7 @@ export const KakaoLoginResponseSchema = ApiResponseSchema(
 export const SignupRequestSchema = z.object({
   marketingAgree: z.boolean(),
   nickName: z.string().min(1),
-  gender: z.enum(['MALE', 'FEMALE']),
+  gender: z.enum(['MALE', 'FEMALE', 'NONE']),
   //   (개선) 아무 문자열이 아니라, 백엔드 ENUM만 허용
   favoriteGenreList: z.array(GenreKeySchema),
   favoriteWorksIdList: z.array(z.number()),

@@ -17,6 +17,51 @@ const withSerwist = withSerwistInit({
 })
 
 const nextConfig: NextConfig = {
+  //  PWA/정적 자산 캐시 헤더 추가
+  async headers() {
+    return [
+      //  manifest: 매번 재검증(max-age=0) 방지 → Edge Requests 급감
+      {
+        source: '/manifest.webmanifest',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600',
+          },
+        ],
+      },
+
+      //  아이콘/SVG/PNG: 재요청 자체를 줄이기 위해 1년 캐시 + immutable
+      {
+        source: '/icons/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/profile/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/common/icons/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ]
+  },
+
   images: {
     // dev에서는 S3 upstream timeout 때문에 next/image 최적화 끄기
     unoptimized: true,

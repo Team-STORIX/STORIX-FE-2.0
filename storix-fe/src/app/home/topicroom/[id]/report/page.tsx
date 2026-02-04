@@ -20,7 +20,7 @@ export default function TopicRoomReportPage() {
 
   const members = membersQuery.data
 
-  const [dropdownOpen, setDropdownOpen] = useState(false) //   UI 변경
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [reportedUserId, setReportedUserId] = useState<number | null>(null)
   const [reason, setReason] = useState<ReasonKey>('ABUSE')
   const [otherReason, setOtherReason] = useState('')
@@ -73,12 +73,12 @@ export default function TopicRoomReportPage() {
 
         <button
           type="button"
-          onClick={onSubmit} //
-          disabled={!canSubmit} //   UI 변경
+          onClick={onSubmit}
+          disabled={!canSubmit}
           className={[
             'body-2 cursor-pointer',
             canSubmit ? 'text-[var(--color-magenta-300)]' : 'text-gray-300',
-          ].join(' ')} //   UI 변경
+          ].join(' ')}
         >
           완료
         </button>
@@ -97,22 +97,22 @@ export default function TopicRoomReportPage() {
 
         {/* 신고 대상 */}
         <ReportTargetSelect
-          members={membersQuery.data} //
-          isLoading={membersQuery.isLoading} //
-          isError={membersQuery.isError} //
-          dropdownOpen={dropdownOpen} //
-          setDropdownOpen={setDropdownOpen} //
-          reportedUserId={reportedUserId} //
-          setReportedUserId={setReportedUserId} //
+          members={membersQuery.data}
+          isLoading={membersQuery.isLoading}
+          isError={membersQuery.isError}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          reportedUserId={reportedUserId}
+          setReportedUserId={setReportedUserId}
         />
 
         {/* 신고 사유 */}
         <ReportReasonSelect
-          reason={reason} //
-          setReason={setReason} //
-          otherReason={otherReason} //
-          setOtherReason={setOtherReason} //
-          showError={reportMut.isError} //
+          reason={reason}
+          setReason={setReason}
+          otherReason={otherReason}
+          setOtherReason={setOtherReason}
+          showError={reportMut.isError}
         />
       </div>
     </div>
