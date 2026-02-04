@@ -1,5 +1,8 @@
 // src/app/onboarding/components/gender.tsx
-type GenderValue = 'MALE' | 'FEMALE' | ''
+import MenIcon from '@/public/onboarding/MenIcon'
+import WomenIcon from '@/public/onboarding/WomenIcon'
+
+type GenderValue = 'MALE' | 'FEMALE' | 'NONE' | ''
 
 interface GenderProps {
   value: GenderValue
@@ -18,32 +21,43 @@ export default function Gender({ value, onChange }: GenderProps) {
       </p>
 
       {/* 성별 선택 버튼 */}
-      <div className="mt-20 flex gap-4 justify-center">
-        <img
-          src={
-            value === 'MALE'
-              ? '/onboarding/men-pink.svg'
-              : '/onboarding/men-gray.svg'
-          }
-          alt="남성"
-          width={174}
-          height={28}
-          className="cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => onChange('MALE')}
-        />
-
-        <img
-          src={
-            value === 'FEMALE'
-              ? '/onboarding/women-pink.svg'
-              : '/onboarding/women-gray.svg'
-          }
-          alt="여성"
-          width={174}
-          height={28}
-          className="cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => onChange('FEMALE')}
-        />
+      <div className="mt-20 flex flex-col gap-3 justify-center">
+        <div className={`flex justify-between `}>
+          <button
+            className={`flex flex-col items-center justify-center py-6.5 px-9.5 rounded-xl border cursor-pointer ${
+              value === 'FEMALE'
+                ? 'text-[var(--color-magenta-300)] border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
+                : 'text-[var(--color-gray-400)] border-[var(--color-gray-200)] bg-gray-50'
+            }`}
+            onClick={() => onChange('FEMALE')}
+          >
+            <WomenIcon />
+            <p className="w-25 body-1 text-center mt-3">여성</p>
+          </button>
+          <button
+            className={`flex flex-col items-center justify-center py-6.5 px-9.5 rounded-xl border cursor-pointer ${
+              value === 'MALE'
+                ? 'text-[var(--color-magenta-300)] border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
+                : 'text-[var(--color-gray-400)] border-[var(--color-gray-200)] bg-gray-50'
+            }`}
+            onClick={() => onChange('MALE')}
+          >
+            <MenIcon />
+            <p className="w-25 body-1 text-center mt-3 ">남성</p>
+          </button>
+        </div>
+        {/* <button
+          className={`w-full py-3 px-4 rounded-xl border cursor-pointer ${
+            value === 'NONE'
+              ? 'text-[var(--color-magenta-300)] border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
+              : 'text-[var(--color-gray-400)] border-[var(--color-gray-200)] bg-gray-50'
+          }`}
+          onClick={() => onChange('NONE')}
+        >
+          <p className="body-1" onClick={() => onChange('NONE')}>
+            선택 안 함
+          </p>
+        </button> */}
       </div>
     </div>
   )
