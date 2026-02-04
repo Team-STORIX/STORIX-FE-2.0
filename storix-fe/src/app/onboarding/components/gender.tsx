@@ -10,11 +10,11 @@ export default function Gender({ value, onChange }: GenderProps) {
   return (
     <div>
       <h1 className="text-black text-2xl font-bold leading-[140%]">
-        성별을 선택하세요
+        성별을 선택해 주세요
       </h1>
 
       <p className="text-gray-500 mt-[5px] text-[16px] font-medium leading-[140%]">
-        해당 정보는 추천에 활용되며, 언제든 변경할 수 있어요
+        취향에 맞는 추천을 드리기 위해 필요한 정보예요.
       </p>
 
       {/* 성별 선택 버튼 */}

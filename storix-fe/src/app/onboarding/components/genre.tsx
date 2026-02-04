@@ -58,7 +58,7 @@ export default function Genre({ value, onChange }: GenreProps) {
           lineHeight: '140%',
         }}
       >
-        평소 즐겨보는 장르를 선택하세요
+        즐겨보는 장르를 선택해 주세요
       </h1>
 
       {/*   기본 문구 / 선택시 문구 + (n/3) */}
@@ -73,7 +73,7 @@ export default function Genre({ value, onChange }: GenreProps) {
           }}
         >
           {value.length === 0
-            ? '선택 장르를 기반으로 웹툰/웹소설을 추천해드려요'
+            ? '선택 장르를 기반으로 작품과 키워드를 추천드려요!'
             : '최소 1개~최대 3개 선택가능'}
         </p>
 

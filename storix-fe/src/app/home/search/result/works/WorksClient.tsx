@@ -189,7 +189,7 @@ export default function SearchWorksPage() {
               )
             }
           >
-            <p className="underline">찾는 작품이 없다면?</p>
+            <p className="underline">이 작품이 없다고?</p>
           </button>
         </div>
       </div>
