@@ -117,6 +117,10 @@ export default function ResultClient() {
       pushToRoom(roomId, worksName)
       return
     }
+    if (!found.isJoined) {
+      pushToRoom(roomId, worksName)
+      return
+    }
 
     //   join 진행 중이면 중복 클릭 방지
     if (joinMut.isPending) return

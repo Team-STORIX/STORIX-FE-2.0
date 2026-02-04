@@ -23,11 +23,11 @@ export default function NextButton({
       onClick={() => router.push(href)}
       className={[
         'w-full h-[56px] rounded-full bg-black text-white',
-        'flex items-center justify-center gap-2',
+        'flex items-center justify-center gap-2 cursor-pointer',
         className,
       ].join(' ')}
     >
-      <span className="body-2 font-semibold">{label}</span>
+      <span className="body-3 font-semibold">{label}</span>
       <Image src="/onboarding/next.svg" alt="next" width={20} height={20} />
     </button>
   )

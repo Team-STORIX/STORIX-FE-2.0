@@ -31,7 +31,7 @@ export default function ParticipationChatItem({ item }: Props) {
       className="flex w-full items-center px-4 gap-3 text-left cursor-pointer"
     >
       {/* 왼쪽 원형 썸네일 */}
-      <div className="flex-none h-[60px] w-[60px] overflow-hidden rounded-full">
+      <div className="flex-none h-15 w-15 overflow-hidden rounded-full">
         <Image
           src={thumbnail}
           alt={title}

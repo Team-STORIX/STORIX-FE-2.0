@@ -69,7 +69,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
   return (
     <div>
       <h1 className="heading-1" style={{ color: 'var(--color-black)' }}>
-        좋아하는 작품을 선택하세요
+        좋아하는 작품을 선택해 주세요
       </h1>
 
       {/*   0개일 땐 두 줄만 / 1개 이상이면 문구+카운트로 변경 */}
@@ -78,7 +78,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
           className="body-1 mt-[5px]"
           style={{ color: 'var(--color-gray-500)' }}
         >
-          좋아하는 작품을 기반으로 피드를 구성해드려요 !
+          선택 작품을 기반으로 피드를 구성해드려요!
         </p>
       ) : (
         <div className="mt-[5px] flex items-center">

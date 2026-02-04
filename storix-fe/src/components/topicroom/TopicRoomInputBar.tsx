@@ -10,7 +10,6 @@ type BaseProps = {
   inputRef?: React.RefObject<HTMLTextAreaElement | null>
 }
 
-// 기존 코드(text/setText) + 혹시 다른 곳에서 쓰던(value/onChange) 둘 다 지원
 type Props =
   | (BaseProps & {
       text: string
@@ -27,6 +26,27 @@ const MAX_LINES = 6
 const FALLBACK_LINE_HEIGHT = 22
 
 export default function TopicRoomInputBar(props: Props) {
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = rootRef.current
+    if (!el) return
+
+    const prevent = (e: Event) => {
+      e.preventDefault()
+    }
+
+    // wheel은 React에서도 막히지만, 확실하게 native도 같이 막음
+    el.addEventListener('wheel', prevent, { passive: false })
+    // 모바일 스크롤 완전 차단 핵심
+    el.addEventListener('touchmove', prevent, { passive: false })
+
+    return () => {
+      el.removeEventListener('wheel', prevent)
+      el.removeEventListener('touchmove', prevent)
+    }
+  }, [])
+
   const internalRef = useRef<HTMLTextAreaElement | null>(null)
   const ref =
     'inputRef' in props && props.inputRef ? props.inputRef : internalRef
@@ -116,7 +136,9 @@ export default function TopicRoomInputBar(props: Props) {
 
   return (
     <div
-      ref={barRef}
+      ref={rootRef}
+      onWheelCapture={(e) => e.preventDefault()}
+      onTouchMoveCapture={(e) => e.preventDefault()}
       className="fixed left-0 right-0 z-[60] bg-white border-t border-gray-100 transform-gpu"
       style={{
         bottom: `calc(env(safe-area-inset-bottom) + ${keyboardBottomPx}px)`,
