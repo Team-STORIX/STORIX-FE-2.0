@@ -18,7 +18,7 @@ import type {
   PreferenceExplorationWorkSchema,
   PreferenceResultWork,
 } from '@/lib/api/preference'
-import { ZodError } from 'zod'
+import { z } from 'zod'
 import axios from 'axios'
 
 export type PreferenceWork = {
