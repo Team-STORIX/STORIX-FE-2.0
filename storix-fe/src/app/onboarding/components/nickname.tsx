@@ -309,9 +309,9 @@ export default function Nickname({
     <div>
       {variant === 'onboarding' && (
         <>
-          <h1 className="heading-1 text-black">닉네임을 입력하세요</h1>
+          <h1 className="heading-1 text-black">닉네임을 입력해 주세요</h1>
           <p className="body-1 text-[var(--color-gray-500)] mt-[5px]">
-            10자 이내의 닉네임을 입력해주세요
+            한글, 영문, 숫자 2~10자까지 입력 가능해요
           </p>
         </>
       )}
@@ -336,7 +336,7 @@ export default function Nickname({
               }
             }}
             maxLength={MAX}
-            placeholder="닉네임을 입력하세요"
+            placeholder="닉네임을 입력해 주세요"
             className={[
               'w-[254px]',
               'px-[8px] py-[10px]',
