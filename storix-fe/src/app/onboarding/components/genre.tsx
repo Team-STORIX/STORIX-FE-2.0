@@ -17,7 +17,6 @@ export type GenreKey =
   | 'DAILY'
 
 interface GenreProps {
-  // value는 백엔드로 보낼 ENUM 키 배열
   value: GenreKey[]
   onChange: (value: GenreKey[]) => void
 }
@@ -84,20 +83,17 @@ const GENRE_OPTIONS: GenreOption[] = [
     desc: '주변의 소소하고 평범한 일상을 통해 따뜻한 힐링을 주는 이야기',
     icon: '/onboarding/daily.svg',
   },
-  // HISTORICAL은 아직 UI 옵션에 없으면 그대로 두거나 추가해도 됨
 ]
 
 const MAX_GENRE_SELECTION = 3
 
+const cx = (...v: Array<string | false | null | undefined>) =>
+  v.filter(Boolean).join(' ')
+
 export default function Genre({ value, onChange }: GenreProps) {
-  const handleGenreClick = (genreKey: GenreKey) => {
-    if (value.includes(genreKey)) {
-      onChange(value.filter((g) => g !== genreKey))
-      return
-    }
-    if (value.length < MAX_GENRE_SELECTION) {
-      onChange([...value, genreKey])
-    }
+  const toggle = (k: GenreKey) => {
+    if (value.includes(k)) return onChange(value.filter((g) => g !== k))
+    if (value.length < MAX_GENRE_SELECTION) onChange([...value, k])
   }
 
   return (
@@ -118,101 +114,71 @@ export default function Genre({ value, onChange }: GenreProps) {
         )}
       </div>
 
-      {/* 카드 리스트 */}
       <div className="mt-16 flex flex-col gap-4">
         {GENRE_OPTIONS.map(({ key, label, desc, icon }) => {
-          const isSelected = value.includes(key)
-          const isDisabled = !isSelected && value.length >= MAX_GENRE_SELECTION
-
-          const borderBgClass = isSelected
-            ? 'border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
-            : 'border-[var(--color-gray-100)] bg-[var(--color-gray-50)]'
-
-          const textClass = isSelected
-            ? 'text-[var(--color-magenta-300)]'
-            : 'text-[var(--color-gray-500)]'
-
-          // 아이콘은 mask로 단색 처리 (선택 시 magenta300 / 기본 gray900)
-          const iconColor = isSelected
-            ? 'var(--color-magenta-300)'
-            : 'var(--color-gray-900)'
-
-          const checkIconSrc = isSelected
-            ? '/icons/check-pink.svg'
-            : '/icons/check-gray.svg'
+          const selected = value.includes(key)
+          const disabled = !selected && value.length >= MAX_GENRE_SELECTION
 
           return (
             <button
               key={key}
               type="button"
-              disabled={isDisabled}
-              onClick={() => handleGenreClick(key)}
-              className={[
-                // layout
-                'w-[361px] h-[115px] rounded-[12px] border',
-                'px-[20px] py-[17px]',
-                'flex items-center justify-between',
-                'text-left',
-                'transition-opacity',
-                // state
-                borderBgClass,
-                isDisabled
+              disabled={disabled}
+              onClick={() => toggle(key)}
+              aria-pressed={selected}
+              className={cx(
+                'w-[361px] h-[115px] rounded-[12px] border px-[20px] py-[17px]',
+                'flex items-center justify-between text-left transition-opacity',
+                selected
+                  ? 'border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
+                  : 'border-[var(--color-gray-100)] bg-[var(--color-gray-50)]',
+                disabled
                   ? 'cursor-not-allowed opacity-30'
                   : 'cursor-pointer hover:opacity-80',
-              ].join(' ')}
-              aria-pressed={isSelected}
+              )}
             >
-              {/* 왼쪽: 아이콘 + 텍스트 */}
               <div className="flex items-center gap-3">
-                {/* 80x80 아이콘 */}
                 <div
                   className="w-[80px] h-[80px] flex-shrink-0"
                   style={{
-                    backgroundColor: iconColor,
-                    WebkitMaskImage: `url(${icon})`,
-                    WebkitMaskRepeat: 'no-repeat',
-                    WebkitMaskPosition: 'center',
-                    WebkitMaskSize: 'contain',
-                    maskImage: `url(${icon})`,
-                    maskRepeat: 'no-repeat',
-                    maskPosition: 'center',
-                    maskSize: 'contain',
+                    backgroundColor: selected
+                      ? 'var(--color-magenta-300)'
+                      : 'var(--color-gray-500)',
+                    WebkitMask: `url(${icon}) center / contain no-repeat`,
+                    mask: `url(${icon}) center / contain no-repeat`,
                   }}
                   aria-hidden
                 />
 
-                {/* 텍스트 영역 */}
                 <div className="flex flex-col">
-                  {/* 장르명: Heading3(요구사항: 18/600/140) */}
                   <p
-                    className={['heading-3', textClass].join(' ')}
-                    style={{ fontWeight: 600 }}
+                    className={cx(
+                      'text-[18px] font-semibold leading-[140%]',
+                      selected
+                        ? 'text-[var(--color-magenta-300)]'
+                        : 'text-[var(--color-gray-500)]',
+                    )}
                   >
                     {label}
                   </p>
 
-                  {/* 설명: Body2 + 8px 아래 + 175px 박스 + 2줄 */}
                   <p
-                    className={['mt-2 body-2', textClass].join(' ')}
-                    style={{
-                      fontFamily: 'Pretendard',
-                      fontWeight: 500,
-                      width: 175,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      whiteSpace: 'normal',
-                    }}
+                    className={cx(
+                      'mt-2 body-2 w-[185px] line-clamp-2 break-keep whitespace-normal',
+                      selected
+                        ? 'text-[var(--color-magenta-300)]'
+                        : 'text-[var(--color-gray-500)]',
+                    )}
                   >
                     {desc}
                   </p>
                 </div>
               </div>
 
-              {/* 오른쪽: 체크 아이콘(24x24, 세로 가운데) */}
               <Image
-                src={checkIconSrc}
+                src={
+                  selected ? '/icons/check-pink.svg' : '/icons/check-gray.svg'
+                }
                 alt=""
                 width={24}
                 height={24}
