@@ -219,7 +219,9 @@ export default function LibraryWorkHomePage() {
           keywords: ui.keywords,
           platform: ui.platform,
         }}
-        onReviewWrite={handleReviewWrite} // (라우팅 변경/토스트)
+        isCheckingRoom={isCheckingRoom}
+        onReviewWrite={handleReviewWrite} //(라우팅 변경/토스트)
+        onTopicroomEnter={handleTopicroomEnter}
       />
 
       <TopicRoomCreateModal
