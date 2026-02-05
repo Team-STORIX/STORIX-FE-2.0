@@ -4,9 +4,14 @@
 import Image from 'next/image'
 import type { PreferenceWork } from './PreferenceProvider'
 import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
+import { usePreference } from './PreferenceProvider'
 
 function PreferenceListRow({ w }: { w: PreferenceWork }) {
-  const { isFavorite, isMutating, toggleFavorite } = useFavoriteWork(w.id)
+  const { onFavoriteAdded, onFavoriteRemoved } = usePreference()
+  const { isFavorite, isMutating, toggleFavorite } = useFavoriteWork(w.id, {
+    onAdded: onFavoriteAdded, // addMutation 성공만 카운트
+    onRemoved: onFavoriteRemoved, // 취소하면 카운트에서 제외
+  })
 
   return (
     <div className="flex items-start gap-3 py-4">

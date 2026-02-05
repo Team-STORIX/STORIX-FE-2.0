@@ -89,7 +89,11 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col w-full">
-            <CardNav header="이 작품, 내 취향일까?" roomName="#" />
+            <CardNav
+              header="이 작품, 내 취향일까?"
+              roomName="#"
+              onNavigate={handleMyTasteClick}
+            />
             <div
               role="button"
               tabIndex={0}

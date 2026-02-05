@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   usePreferenceAnalyze,
   usePreferenceExploration,
@@ -19,7 +20,6 @@ import type {
   PreferenceResultWork,
 } from '@/lib/api/preference'
 import { z } from 'zod'
-import axios from 'axios'
 
 export type PreferenceWork = {
   id: number
@@ -45,6 +45,9 @@ type PreferenceContextValue = {
   reset: () => void
   likedWorks: PreferenceWork[]
   dislikedWorks: PreferenceWork[]
+  likedSuccessCount: number
+  onFavoriteAdded: (worksId: number) => void
+  onFavoriteRemoved: (worksId: number) => void
   isDone: boolean
 }
 
@@ -93,6 +96,7 @@ export default function PreferenceProvider({
 }: {
   children: React.ReactNode
 }) {
+  const queryClient = useQueryClient()
   const explorationQuery = usePreferenceExploration()
   const resultsQuery = usePreferenceResults(true)
   const analyzeMutation = usePreferenceAnalyze()
@@ -150,8 +154,8 @@ export default function PreferenceProvider({
 
   const didInitRef = useRef(false)
 
+  // 최초 1회 저장값 읽기(리마운트/리로드 대비)
   useEffect(() => {
-    // 최초 1회 저장값 읽기(리마운트/리로드 대비)
     if (savedStateRef.current) return
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY)
@@ -162,8 +166,8 @@ export default function PreferenceProvider({
     }
   }, [])
 
+  // works가 처음 채워질 때만 초기화 + 저장된 진행상태 merge
   useEffect(() => {
-    // works가 처음 채워질 때만 초기화 + 저장된 진행상태 merge
     if (didInitRef.current) return
     if (!works || works.length === 0) return
 
@@ -181,8 +185,8 @@ export default function PreferenceProvider({
     didInitRef.current = true
   }, [works])
 
+  //: 진행상태 persist (리마운트돼도 복구 가능)
   useEffect(() => {
-    //: 진행상태 persist (리마운트돼도 복구 가능)
     if (!didInitRef.current) return
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -199,18 +203,6 @@ export default function PreferenceProvider({
   const isDone = currentWork == null
 
   // 결과 API 있으면 결과 기준으로 리스트 구성(제한 걸린 날에도 리스트 보여줄 수 있음)
-  const likedWorksFromResult = useMemo(() => {
-    const r = resultsQuery.data?.result
-    if (!r) return null
-    return r.likedWorks.map(mapResultToWork)
-  }, [resultsQuery.data])
-
-  const dislikedWorksFromResult = useMemo(() => {
-    const r = resultsQuery.data?.result
-    if (!r) return null
-    return r.dislikedWorks.map(mapResultToWork)
-  }, [resultsQuery.data])
-
   const likedWorksLocal = useMemo(
     () => works.filter((w) => state[w.id] === 'like'),
     [works, state],
@@ -220,8 +212,90 @@ export default function PreferenceProvider({
     [works, state],
   )
 
-  const likedWorks = likedWorksFromResult ?? likedWorksLocal
-  const dislikedWorks = dislikedWorksFromResult ?? dislikedWorksLocal
+  // results가 "존재"만 한다고 바로 쓰면(빈 배열이어도) 로컬 결과를 덮어써서 리스트가 비어 보일 수 있음
+  const result = resultsQuery.data?.result
+
+  // results가 실제로 의미 있는 결과를 가진 경우에만 results를 사용
+  const hasResultLists =
+    !!result && result.likedWorks.length + result.dislikedWorks.length > 0
+
+  // "하루 1회 제한"으로 exploration이 빈 리스트인 날엔 results를 우선 사용(과거 결과 보여주기)
+  const explorationList = explorationQuery.data?.result ?? []
+  const isLimitedDay =
+    explorationQuery.isSuccess &&
+    Array.isArray(explorationList) &&
+    explorationList.length === 0
+
+  const useServerResults = hasResultLists || isLimitedDay
+
+  // DEBUG: "2개 눌렀는데 12로 뜨는" 원인 추적 로그
+  useEffect(() => {
+    // 필요하면 false로 꺼도 됨
+    const DEBUG = true
+    if (!DEBUG) return
+
+    const resultLikedLen = result?.likedWorks?.length ?? 0
+    const resultDislikedLen = result?.dislikedWorks?.length ?? 0
+
+    console.group('[Preference DEBUG] source check')
+    console.log('explorationQuery.isSuccess:', explorationQuery.isSuccess)
+    console.log('exploration works length:', works.length)
+    console.log('likedWorksLocal length:', likedWorksLocal.length)
+    console.log('dislikedWorksLocal length:', dislikedWorksLocal.length)
+
+    console.log('resultsQuery.status:', resultsQuery.status)
+    console.log('result exists:', !!result)
+    console.log('result.likedWorks length:', resultLikedLen)
+    console.log('result.dislikedWorks length:', resultDislikedLen)
+
+    console.log('hasResultLists:', hasResultLists)
+    console.log('isLimitedDay:', isLimitedDay)
+    console.log('useServerResults:', useServerResults)
+    console.groupEnd()
+  }, [
+    explorationQuery.isSuccess,
+    works.length,
+    likedWorksLocal.length,
+    dislikedWorksLocal.length,
+    resultsQuery.status,
+    result,
+    hasResultLists,
+    isLimitedDay,
+    useServerResults,
+  ])
+
+  const [likedSuccessIds, setLikedSuccessIds] = useState<Set<number>>(
+    () => new Set(),
+  )
+
+  const onFavoriteAdded = (worksId: number) => {
+    setLikedSuccessIds((prev) => {
+      const next = new Set(prev)
+      next.add(worksId)
+      return next
+    })
+  }
+
+  const onFavoriteRemoved = (worksId: number) => {
+    setLikedSuccessIds((prev) => {
+      if (!prev.has(worksId)) return prev
+      const next = new Set(prev)
+      next.delete(worksId)
+      return next
+    })
+  }
+
+  const likedWorks = useMemo(() => {
+    if (useServerResults && result)
+      return result.likedWorks.map(mapResultToWork)
+    return likedWorksLocal
+  }, [useServerResults, result, likedWorksLocal])
+
+  const dislikedWorks = useMemo(() => {
+    if (useServerResults && result)
+      return result.dislikedWorks.map(mapResultToWork)
+    return dislikedWorksLocal
+  }, [useServerResults, result, dislikedWorksLocal])
 
   const submitChoice = async (choice: Choice) => {
     if (!currentWork) return
@@ -237,12 +311,25 @@ export default function PreferenceProvider({
         worksId,
         isLiked: choice === 'like',
       })
+
+      // "관심작품 등록(POST) 성공"한 like만 카운트
+      if (choice === 'like') {
+        setLikedSuccessIds((prev) => {
+          const next = new Set(prev)
+          next.add(worksId)
+          return next
+        })
+      }
     } catch (e) {
-      // 서버 동기화 실패 시에도 진행은 유지하고 토스트만 표시
-      const serverMsg =
-        (e as any)?.response?.data?.message ??
-        (e as any)?.message ??
-        '요청 처리 중 오류가 발생했어요.'
+      // 실패 시: 진행은 유지하되(정책 유지), 성공 카운트에는 포함되면 안 됨
+      if (choice === 'like') {
+        setLikedSuccessIds((prev) => {
+          if (!prev.has(worksId)) return prev
+          const next = new Set(prev)
+          next.delete(worksId)
+          return next
+        })
+      }
     }
   }
 
@@ -251,6 +338,7 @@ export default function PreferenceProvider({
 
   const reset = () => {
     setState(buildInitialState(works))
+    setLikedSuccessIds(new Set())
   }
 
   const value: PreferenceContextValue = {
@@ -263,6 +351,9 @@ export default function PreferenceProvider({
     reset,
     likedWorks,
     dislikedWorks,
+    likedSuccessCount: likedSuccessIds.size,
+    onFavoriteAdded,
+    onFavoriteRemoved,
     isDone,
   }
 

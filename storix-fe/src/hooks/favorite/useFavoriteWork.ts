@@ -9,7 +9,15 @@ import {
   unfavoriteWork,
 } from '@/lib/api/favorite'
 
-export function useFavoriteWork(worksId?: number) {
+type UseFavoriteWorkOptions = {
+  onAdded?: (worksId: number) => void
+  onRemoved?: (worksId: number) => void
+}
+
+export function useFavoriteWork(
+  worksId?: number,
+  options?: UseFavoriteWorkOptions,
+) {
   const queryClient = useQueryClient()
 
   const enabled =
@@ -22,26 +30,38 @@ export function useFavoriteWork(worksId?: number) {
 
   const statusQuery = useQuery({
     queryKey,
-    queryFn: () => getFavoriteWorkStatus(worksId!), //   enabled로 가드
+    queryFn: () => getFavoriteWorkStatus(worksId!), // enabled로 가드
     enabled: !!enabled,
   })
 
   const addMutation = useMutation({
-    mutationFn: () => favoriteWork(worksId!), //   enabled로 가드
+    mutationFn: () => favoriteWork(worksId!), // enabled로 가드
   })
 
   const removeMutation = useMutation({
-    mutationFn: () => unfavoriteWork(worksId!), //   enabled로 가드
+    mutationFn: () => unfavoriteWork(worksId!), // enabled로 가드
   })
 
-  //   mutation 성공 시 invalidateQueries (onSuccess 금지 규칙 준수)
+  // mutation 성공 감지 (onSuccess 금지 규칙 준수: useEffect로 처리)
   useEffect(() => {
+    if (!enabled) return
+
+    if (addMutation.isSuccess) {
+      options?.onAdded?.(worksId!)
+    }
+    if (removeMutation.isSuccess) {
+      options?.onRemoved?.(worksId!)
+    }
+
     if (addMutation.isSuccess || removeMutation.isSuccess) {
-      queryClient.invalidateQueries({ queryKey }) //
-      addMutation.reset() //
-      removeMutation.reset() //
+      queryClient.invalidateQueries({ queryKey })
+      addMutation.reset()
+      removeMutation.reset()
     }
   }, [
+    enabled,
+    worksId,
+    options,
     addMutation.isSuccess,
     removeMutation.isSuccess,
     queryClient,

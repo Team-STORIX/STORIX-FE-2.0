@@ -5,7 +5,9 @@ import { usePreference } from '@/components/preference/PreferenceProvider'
 
 export default function PreferenceFinishPage() {
   const router = useRouter()
-  const { likedWorks } = usePreference()
+  const { likedSuccessCount } = usePreference()
+
+  console.log('likedSuccessCount:', likedSuccessCount)
 
   return (
     <main className="min-h-dvh bg-white flex flex-col">
@@ -13,7 +15,7 @@ export default function PreferenceFinishPage() {
         <div className="text-center mt-24">
           <div className="heading-1 text-black">축하해요!</div>
           <div className="mt-1 body-1 text-gray-500">
-            {likedWorks.length}개의 새로운 관심 작품이 등록됐어요! <br />
+            {likedSuccessCount}개의 새로운 관심 작품이 등록됐어요! <br />
             피드에서 작품의 소식을 확인해봐요!
           </div>
         </div>
