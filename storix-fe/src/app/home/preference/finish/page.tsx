@@ -7,8 +7,6 @@ export default function PreferenceFinishPage() {
   const router = useRouter()
   const { likedSuccessCount } = usePreference()
 
-  console.log('likedSuccessCount:', likedSuccessCount)
-
   return (
     <main className="min-h-dvh bg-white flex flex-col">
       <div className="flex-1 flex justify-center px-6">
