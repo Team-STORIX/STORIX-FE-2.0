@@ -1,5 +1,6 @@
 // next.config.ts
 import crypto from 'node:crypto'
+import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import type { NextConfig } from 'next'
 import withSerwistInit from '@serwist/next'
@@ -17,6 +18,7 @@ const withSerwist = withSerwistInit({
 })
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: path.resolve(__dirname),
   //  PWA/정적 자산 캐시 헤더 추가
   async headers() {
     return [
