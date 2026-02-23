@@ -79,41 +79,6 @@ export default function WorkHeaderCover({
             </span>
             <Star value={ui.rating} />
           </div>
-
-          <div className="mt-8 flex w-full gap-3">
-            <button
-              type="button"
-              onClick={onReviewWrite}
-              className="flex h-11.5 w-43.5 flex-1 items-center justify-center gap-1 rounded-xl bg-[var(--color-magenta-50)] text-[var(--color-magenta-400)] body-2 cursor-pointer"
-            >
-              <Image
-                src="/common/icons/middleStar.svg"
-                alt="star"
-                width={24}
-                height={24}
-                className="inline-block mb-0.5"
-                priority
-              />
-              리뷰쓰기
-            </button>
-
-            <button
-              type="button"
-              onClick={onTopicroomEnter}
-              disabled={isCheckingRoom}
-              className="flex h-11.5 w-43.5 flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white body-2 disabled:opacity-50 cursor-pointer"
-            >
-              <Image
-                src="/common/icons/fire.svg"
-                alt="fire"
-                width={24}
-                height={24}
-                className="inline-block mb-0.5"
-                priority
-              />
-              {isCheckingRoom ? '확인 중...' : '토픽룸 입장'}
-            </button>
-          </div>
         </div>
       </div>
     </div>

@@ -39,7 +39,9 @@ type Props = {
   tab: TabKey
   onChangeTab: (tab: TabKey) => void
   ui: UIData
+  isCheckingRoom: boolean
   onReviewWrite: () => void
+  onTopicroomEnter: () => void
 }
 
 export default function WorkTabContent({
@@ -47,7 +49,9 @@ export default function WorkTabContent({
   tab,
   onChangeTab,
   ui,
+  isCheckingRoom,
   onReviewWrite,
+  onTopicroomEnter,
 }: Props) {
   const router = useRouter()
   const { data: myReview } = useWorksMyReview(worksId)
@@ -116,7 +120,7 @@ export default function WorkTabContent({
       </div>
 
       {/* Tab Content */}
-      <div className="px-4 pb-10">
+      <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+88px)]">
         {tab === 'info' ? (
           <div>
             <section className="pt-6">
@@ -207,6 +211,41 @@ export default function WorkTabContent({
             />
           </div>
         )}
+      </div>
+      <div className="flex w-[393px] fixed bottom-0 z-50 bg-white pt-3 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+        <div className="flex gap-3 w-full max-w-[393px]">
+          <button
+            type="button"
+            // onClick={onReviewWrite}
+            className="flex py-1.5 px-1.5 items-center justify-center gap-1 rounded-xl bg-[var(--color-magenta-50)] cursor-pointer"
+          >
+            <Image
+              src="/icons/icon-share.svg"
+              alt="share"
+              width={32}
+              height={32}
+              className="inline-block"
+              priority
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={onTopicroomEnter}
+            disabled={isCheckingRoom}
+            className="flex flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white body-2 disabled:opacity-50 cursor-pointer"
+          >
+            <Image
+              src="/common/icons/fire.svg"
+              alt="fire"
+              width={24}
+              height={24}
+              className="inline-block mb-0.5"
+              priority
+            />
+            {isCheckingRoom ? '확인 중...' : '토픽룸 입장'}
+          </button>
+        </div>
       </div>
     </>
   )

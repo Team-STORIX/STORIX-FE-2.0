@@ -10,6 +10,7 @@ import TopicRoomSearchList from '@/components/topicroom/TopicRoomSearchList'
 import { useTopicRoomSearchInfinite } from '@/hooks/topicroom/useTopicRoomSearchInfinite'
 import { useJoinTopicRoom } from '@/hooks/topicroom/useJoinTopicRoom'
 import { formatTopicRoomSubtitle } from '@/lib/api/topicroom/formatTopicRoomSubtitle'
+import { formatTimeAgo } from '@/lib/utils/formatTimeAgo'
 
 export default function ResultClient() {
   const router = useRouter()
@@ -25,26 +26,13 @@ export default function ResultClient() {
     isFetchingNextPage,
   } = useTopicRoomSearchInfinite(keyword, 20)
 
-  const formatTimeAgo = (iso?: string | null) => {
-    if (!iso) return ''
-    const t = new Date(iso).getTime()
-    if (Number.isNaN(t)) return ''
-    const diff = Date.now() - t
-    if (diff < 60_000) return '방금 전'
-    const min = Math.floor(diff / 60_000)
-    if (min < 60) return `${min}분 전`
-    const hour = Math.floor(min / 60)
-    if (hour < 24) return `${hour}시간 전`
-    const day = Math.floor(hour / 24)
-    return `${day}일 전`
-  }
-
   // isJoined 체크 + join 후 이동
   const joinMut = useJoinTopicRoom() //
   const pendingJoinRef = useRef<{
     roomId: number
     worksName: string
   } | null>(null) //
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   const items = useMemo(() => {
     const pages = data?.pages ?? [] //
@@ -117,10 +105,6 @@ export default function ResultClient() {
       pushToRoom(roomId, worksName)
       return
     }
-    if (!found.isJoined) {
-      pushToRoom(roomId, worksName)
-      return
-    }
 
     //   join 진행 중이면 중복 클릭 방지
     if (joinMut.isPending) return
@@ -129,9 +113,6 @@ export default function ResultClient() {
     pendingJoinRef.current = { roomId, worksName } //
     joinMut.mutate(roomId) //
   }
-
-  // 무한스크롤 트리거
-  const sentinelRef = useRef<HTMLDivElement | null>(null) //
 
   return (
     <main className="min-h-screen bg-white">

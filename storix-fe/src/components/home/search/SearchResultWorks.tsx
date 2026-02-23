@@ -44,6 +44,7 @@ export default function SearchResultWorks({
                     src={w.thumbnailUrl}
                     alt={w.worksName}
                     fill
+                    sizes="87px"
                     className="object-cover"
                   />
                 ) : null}
@@ -67,7 +68,6 @@ export default function SearchResultWorks({
                       width={9}
                       height={10}
                       className="inline-block mr-1 mb-0.5"
-                      priority
                     />
                     {Number(w.avgRating).toFixed(1)}
                   </span>

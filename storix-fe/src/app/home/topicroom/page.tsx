@@ -8,6 +8,7 @@ import ParticipationChat, {
   ParticipationChatItem,
 } from '@/components/topicroom/ParticipationChat'
 import { formatTopicRoomSubtitle } from '@/lib/api/topicroom/formatTopicRoomSubtitle'
+import { formatTimeAgo } from '@/lib/utils/formatTimeAgo'
 import { CardTopicroomInsideCoverSlider } from '@/components/topicroom/CardTopicroomInsideCoverSlider'
 import { TopicRoomData } from '@/components/home/todayTopicRoom/TopicroomCoverCard'
 import { useMyTopicRoomsAll } from '@/hooks/topicroom/useMyTopicRoomsAll' //
@@ -16,20 +17,6 @@ import { useProfileStore } from '@/store/profile.store'
 import { getMyProfile } from '@/lib/api/profile/profile.api'
 
 export default function TopicRoom() {
-  const formatTimeAgo = (iso?: string | null) => {
-    if (!iso) return ''
-    const t = new Date(iso).getTime()
-    if (Number.isNaN(t)) return ''
-    const diff = Date.now() - t
-    if (diff < 60_000) return '방금 전'
-    const min = Math.floor(diff / 60_000)
-    if (min < 60) return `${min}분 전`
-    const hour = Math.floor(min / 60)
-    if (hour < 24) return `${hour}시간 전`
-    const day = Math.floor(hour / 24)
-    return `${day}일 전`
-  }
-
   const router = useRouter() //
 
   const goSearch = (raw: string) => {

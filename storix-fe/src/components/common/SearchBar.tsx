@@ -59,7 +59,7 @@ export default function SearchBar({
           onClick={() => router.push(href)}
           className="h-6 w-6 cursor-pointer"
         >
-          <img src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
 
         <div className="flex flex-col w-full">
