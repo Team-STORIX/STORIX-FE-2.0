@@ -5,7 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import Topbar from './components/topbar'
-import HorizontalPicker, { PickerItem } from './components/horizontalPicker'
+import HorizontalPicker, {
+  type PickerItem,
+} from './components/horizontalPicker'
 import FeedList from './components/feedList'
 import NavBar from '@/components/common/NavBar'
 
@@ -16,15 +18,15 @@ import {
 } from '@/api/feed/readerFeed.api'
 import { toggleBoardLike } from '@/api/feed/readerBoard.api'
 
-//   NEW: 관심작품 picker API
+// NEW: 관심작품 picker API
 import { getFavoriteWorks } from '@/api/feed/readerFavoriteWorks.api'
-//   NEW: worksId 전용 피드 API
+// NEW: worksId 전용 피드 API
 import {
   getFeedBoardsByWorksId,
   type FeedBoardItem as WorksFeedBoardItem,
 } from '@/api/feed/readerWorksFeed.api'
 
-//   menu + flows + api
+// menu + flows + api
 import { useOpenMenu } from '@/hooks/useOpenMenu'
 import { useReportFlow } from '@/hooks/useReportFlow'
 import { useDeleteFlow } from '@/hooks/useDeleteFlow'
@@ -139,18 +141,16 @@ const mapToUIPost = (item: AllFeedBoardItem | WorksFeedBoardItem): UIPost => {
   }
 }
 
-//   게시글 신고 API
+// 게시글 신고 API
 const reportBoard = async (boardId: number, reportedUserId: number) => {
   const res = await apiClient.post(
     `/api/v1/feed/reader/board/${boardId}/report`,
-    {
-      reportedUserId,
-    },
+    { reportedUserId },
   )
   return res.data
 }
 
-//   게시글 삭제 API
+// 게시글 삭제 API
 const deleteBoard = async (boardId: number) => {
   const res = await apiClient.delete(`/api/v1/feed/reader/board/${boardId}`)
   return res.data
@@ -231,58 +231,64 @@ export default function FeedPageClient() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  const [likePending, setLikePending] = useState<Record<number, boolean>>({})
+  // ✅ fetch 중복 방지 (state 타이밍 흔들림 제거)
+  const fetchingRef = useRef(false)
+  // ✅ 다음 페이지 계산을 state가 아닌 ref로 관리(꼬임 방지)
+  const nextPageRef = useRef(0)
 
-  const handleToggleLike = useCallback(
-    async (post: UIPost) => {
-      const boardId = post.id
-      if (likePending[boardId]) return
+  // -------------------------
+  // 좋아요: pending을 ref로 관리해서 불필요한 deps/리렌더 감소
+  // -------------------------
+  const likePendingRef = useRef<Record<number, boolean>>({})
 
-      const prevLiked = post.isLiked
-      const prevCount = post.likeCount
+  const handleToggleLike = useCallback(async (post: UIPost) => {
+    const boardId = post.id
+    if (likePendingRef.current[boardId]) return
 
-      setLikePending((m) => ({ ...m, [boardId]: true }))
-      setPosts((prev) =>
-        prev.map((p) => {
-          if (p.id !== boardId) return p
-          const nextLiked = !p.isLiked
-          const nextCount = Math.max(0, p.likeCount + (nextLiked ? 1 : -1))
-          return { ...p, isLiked: nextLiked, likeCount: nextCount }
-        }),
-      )
+    const prevLiked = post.isLiked
+    const prevCount = post.likeCount
 
-      try {
-        const data = await toggleBoardLike(boardId)
-        if (
-          data &&
-          typeof data.isLiked === 'boolean' &&
-          typeof data.likeCount === 'number'
-        ) {
-          setPosts((prev) =>
-            prev.map((p) =>
-              p.id === boardId
-                ? { ...p, isLiked: data.isLiked, likeCount: data.likeCount }
-                : p,
-            ),
-          )
-        }
-      } catch {
+    likePendingRef.current = { ...likePendingRef.current, [boardId]: true }
+
+    // optimistic update
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== boardId) return p
+        const nextLiked = !p.isLiked
+        const nextCount = Math.max(0, p.likeCount + (nextLiked ? 1 : -1))
+        return { ...p, isLiked: nextLiked, likeCount: nextCount }
+      }),
+    )
+
+    try {
+      const data = await toggleBoardLike(boardId)
+      if (
+        data &&
+        typeof data.isLiked === 'boolean' &&
+        typeof data.likeCount === 'number'
+      ) {
         setPosts((prev) =>
           prev.map((p) =>
             p.id === boardId
-              ? { ...p, isLiked: prevLiked, likeCount: prevCount }
+              ? { ...p, isLiked: data.isLiked, likeCount: data.likeCount }
               : p,
           ),
         )
-      } finally {
-        setLikePending((m) => {
-          const { [boardId]: _, ...rest } = m
-          return rest
-        })
       }
-    },
-    [likePending],
-  )
+    } catch {
+      // rollback
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === boardId
+            ? { ...p, isLiked: prevLiked, likeCount: prevCount }
+            : p,
+        ),
+      )
+    } finally {
+      const { [boardId]: _, ...rest } = likePendingRef.current
+      likePendingRef.current = rest
+    }
+  }, [])
 
   const mode = useMemo(() => {
     if (tab === 'works' && pick !== 'all') return 'WORKS' as const
@@ -300,17 +306,21 @@ export default function FeedPageClient() {
     setFeedPage(0)
     setFeedLast(false)
     setErrorMsg(null)
+    nextPageRef.current = 0
   }, [])
 
+  // ✅ loading state 대신 fetchingRef로 안정화
   const fetchFeedPage = useCallback(
     async (page: number) => {
-      if (loading) return
+      if (fetchingRef.current) return
+
       if (mode === 'WORKS' && worksIdNumber == null) {
         setErrorMsg('작품 선택 값이 올바르지 않습니다.')
         setFeedLast(true)
         return
       }
 
+      fetchingRef.current = true
       setLoading(true)
       setErrorMsg(null)
 
@@ -322,7 +332,9 @@ export default function FeedPageClient() {
 
           setPosts((prev) => (page === 0 ? mapped : [...prev, ...mapped]))
           setFeedLast(res.result.last)
+
           setFeedPage(page)
+          nextPageRef.current = page + 1
           return
         }
 
@@ -336,16 +348,19 @@ export default function FeedPageClient() {
 
         setPosts((prev) => (page === 0 ? mapped : [...prev, ...mapped]))
         setFeedLast(res.result.last)
+
         setFeedPage(page)
+        nextPageRef.current = page + 1
       } catch {
         setErrorMsg(
           '피드 불러오기에 실패했습니다. 네트워크/인증을 확인해주세요.',
         )
       } finally {
+        fetchingRef.current = false
         setLoading(false)
       }
     },
-    [loading, mode, worksIdNumber],
+    [mode, worksIdNumber],
   )
 
   // -------------------------
@@ -376,17 +391,20 @@ export default function FeedPageClient() {
       // URL이 같거나, 최소 tab/pick이 같으면 복원(둘 중 하나만 맞아도 되게)
       const okByUrl = snap.url === currentUrl
       const okByTabPick = snap.tab === tab && snap.pick === pick
-
       if (!okByUrl && !okByTabPick) return false
 
-      // posts 복원 (너무 크면 컷)
       const safePosts = Array.isArray(snap.posts)
         ? snap.posts.slice(0, SNAPSHOT_MAX_POSTS)
         : []
+
       setPosts(safePosts)
-      setFeedPage(typeof snap.feedPage === 'number' ? snap.feedPage : 0)
+      const p = typeof snap.feedPage === 'number' ? snap.feedPage : 0
+      setFeedPage(p)
       setFeedLast(Boolean(snap.feedLast))
       setErrorMsg(null)
+
+      // ✅ 다음 페이지 ref도 복원
+      nextPageRef.current = p + 1
 
       restoreScrollYRef.current =
         typeof snap.scrollY === 'number' ? snap.scrollY : 0
@@ -398,7 +416,7 @@ export default function FeedPageClient() {
     }
   }, [currentUrl, pick, tab])
 
-  // ✅ tab/pick(=mode/worksIdNumber) 변경 시: 첫 진입은 복원 시도 → 성공하면 fetch 생략
+  // ✅ tab/pick 변경 시: 첫 진입은 복원 시도 → 성공하면 fetch 생략
   useEffect(() => {
     if (!restoredOnceRef.current) {
       restoredOnceRef.current = true
@@ -408,8 +426,7 @@ export default function FeedPageClient() {
 
     resetFeed()
     fetchFeedPage(0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, worksIdNumber])
+  }, [mode, worksIdNumber, tryRestoreSnapshot, resetFeed, fetchFeedPage])
 
   // ✅ posts가 그려진 뒤 스크롤 복원
   useEffect(() => {
@@ -424,7 +441,7 @@ export default function FeedPageClient() {
       requestAnimationFrame(() => {
         window.scrollTo({ top: y, left: 0, behavior: 'auto' })
 
-        // ✅ 복원 완료: snapshot 삭제(다음에도 계속 강제복원되는 것 방지)
+        // ✅ 복원 완료: snapshot 삭제
         try {
           sessionStorage.removeItem(FEED_SNAPSHOT_KEY)
         } catch {}
@@ -433,18 +450,22 @@ export default function FeedPageClient() {
         restoreScrollYRef.current = null
       })
     })
-  }, [posts.length, loading, posts])
+  }, [posts.length, loading])
 
   // -------------------------
   // Infinite Scroll Hook
   // -------------------------
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
+  const loadMore = useCallback(() => {
+    return fetchFeedPage(nextPageRef.current)
+  }, [fetchFeedPage])
+
   useInfiniteScroll({
     target: sentinelRef,
     hasNextPage: !feedLast,
-    isLoading: loading,
-    onLoadMore: () => fetchFeedPage(feedPage + 1),
+    isFetchingNextPage: loading, // 훅이 isLoading이면 여기만 isLoading으로 변경
+    onLoadMore: loadMore,
     rootMargin: '300px',
     throttleMs: 500,
   })
@@ -467,7 +488,7 @@ export default function FeedPageClient() {
   const items = tab === 'works' ? favoriteWorks : writersItems
 
   // =========================================================
-  //   메뉴/신고/삭제 Flow
+  // 메뉴/신고/삭제 Flow
   // =========================================================
   const me = useProfileStore((s) => s.me)
   const myUserId = me?.userId
@@ -529,7 +550,7 @@ export default function FeedPageClient() {
   })
 
   // -------------------------
-  // ✅ (핵심) 상세 이동 시 snapshot 저장 + push
+  // ✅ 상세 이동 시 snapshot 저장 + push
   // -------------------------
   const goDetailFromFeed = useCallback(
     (post: UIPost) => {
@@ -620,7 +641,6 @@ export default function FeedPageClient() {
               if (!Number.isFinite(worksId) || worksId <= 0) return
               router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
             }}
-            // ✅ 추가: 상세 이동을 FeedPageClient가 제어(=snapshot 저장)
             onClickDetail={(post: UIPost) => {
               goDetailFromFeed(post)
             }}
