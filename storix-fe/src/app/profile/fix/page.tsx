@@ -73,18 +73,6 @@ export default function ProfileFixPage() {
     }
   }, [me])
 
-  // 기존 Bio 컴포넌트가 sessionStorage를 읽는 구조라면 유지
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const id = window.setInterval(() => {
-      const nextBio = sessionStorage.getItem('profile_bio') || ''
-      setBioText(nextBio)
-    }, 200)
-
-    return () => window.clearInterval(id)
-  }, [])
-
   //   언마운트 시 objectURL 정리
   useEffect(() => {
     return () => {
@@ -346,7 +334,7 @@ export default function ProfileFixPage() {
         />
 
         <div className="mt-10">
-          <Bio />
+          <Bio onChange={(v) => setBioText(v)} />
         </div>
       </div>
     </div>
