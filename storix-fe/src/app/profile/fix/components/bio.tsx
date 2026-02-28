@@ -3,7 +3,11 @@
 
 import { useMemo, useRef, useState, useEffect } from 'react'
 
-export default function Bio() {
+interface BioProps {
+  onChange?: (val: string) => void
+}
+
+export default function Bio({ onChange }: BioProps) {
   const placeholder = '한줄소개를 입력해보세요 !'
   const STORAGE_KEY = 'profile_bio'
 
@@ -42,6 +46,7 @@ export default function Bio() {
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem(STORAGE_KEY)
       }
+      onChange?.('')
     }
   }
 
@@ -51,6 +56,7 @@ export default function Bio() {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem(STORAGE_KEY, next)
     }
+    onChange?.(next)
   }
 
   const borderColor = isFocused

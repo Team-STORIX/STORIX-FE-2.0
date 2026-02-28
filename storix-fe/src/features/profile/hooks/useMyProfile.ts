@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import { fetchMyProfile } from '@/features/profile/api/profile.api'
+import { useAuthStore } from '@/store/auth.store'
 
 type MyProfile = {
   nickname?: string
@@ -24,15 +25,12 @@ export function useMyProfile() {
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
     const getAccessTokenWithRetry = async () => {
-      //   리다이렉트 직후/rehydrate 직후 토큰이 늦게 들어올 수 있어 재시도
+      // 리다이렉트 직후/rehydrate 직후 토큰이 늦게 들어올 수 있어 재시도
       const MAX_TRIES = 15 // 1.2초
       const INTERVAL_MS = 80
 
       for (let i = 0; i < MAX_TRIES; i++) {
-        const token =
-          typeof window !== 'undefined'
-            ? sessionStorage.getItem('accessToken')
-            : null
+        const token = useAuthStore.getState().accessToken
         if (token && token.trim().length > 0) return token.trim()
         await sleep(INTERVAL_MS)
       }

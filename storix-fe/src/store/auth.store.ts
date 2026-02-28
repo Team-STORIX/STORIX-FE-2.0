@@ -2,6 +2,8 @@
 
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
+import { useLikesStore } from './likes.store'
+import { useProfileStore } from './profile.store'
 
 interface AuthState {
   accessToken: string | null
@@ -28,12 +30,6 @@ export const useAuthStore = create<AuthState>()(
         marketingAgree: false,
 
         setAccessToken: (token) => {
-          //   (중요) 기존 코드/훅들이 sessionStorage.getItem('accessToken')로 읽는 경우를 위해
-          //     accessToken 키도 같이 저장해준다.
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('accessToken', token)
-          }
-
           set({
             accessToken: token,
             isAuthenticated: true,
@@ -42,11 +38,6 @@ export const useAuthStore = create<AuthState>()(
         },
 
         setOnboardingToken: (token) => {
-          // 온보딩 토큰으로 전환 시 accessToken 키 제거(혼동 방지)
-          if (typeof window !== 'undefined') {
-            sessionStorage.removeItem('accessToken')
-          }
-
           set({
             onboardingToken: token,
             isAuthenticated: false,
@@ -57,10 +48,8 @@ export const useAuthStore = create<AuthState>()(
         setMarketingAgree: (agree) => set({ marketingAgree: agree }),
 
         clearAuth: () => {
-          //   accessToken 키도 제거
-          if (typeof window !== 'undefined') {
-            sessionStorage.removeItem('accessToken')
-          }
+          useLikesStore.getState().clearLikes()
+          useProfileStore.getState().clearMe()
 
           set({
             accessToken: null,
@@ -74,11 +63,8 @@ export const useAuthStore = create<AuthState>()(
       }),
       {
         name: 'auth-storage',
-        //   SSR 안전 가드: window 없을 때 sessionStorage 접근 방지
         storage: createJSONStorage(() => {
           if (typeof window === 'undefined') {
-            // SSR에서는 storage 사용 불가 -> 더미로 처리
-            // (persist는 클라이언트에서만 실제로 동작)
             return {
               getItem: () => null,
               setItem: () => {},
@@ -92,7 +78,6 @@ export const useAuthStore = create<AuthState>()(
           onboardingToken: state.onboardingToken,
           marketingAgree: state.marketingAgree,
         }),
-        //   rehydrate 후 isAuthenticated를 accessToken 유무로 맞춰줌
         onRehydrateStorage: () => (state) => {
           if (!state) return
           state.isAuthenticated = !!state.accessToken

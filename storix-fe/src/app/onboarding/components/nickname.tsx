@@ -32,8 +32,8 @@ type Status =
 const MIN = 2
 const MAX = 10
 
-const MSG_LEN = '한글,영문,숫자 2~10자까지 입력 가능해요'
-const MSG_CHARS = '닉네임은 한글/영문/숫자만 가능해요!'
+const MSG_LEN = '한글, 영문, 숫자, 밑줄(_) 2~10자까지 입력 가능해요'
+const MSG_CHARS = '닉네임은 한글/영문/숫자/밑줄(_)만 가능해요!'
 const MSG_SPACES = '공백만으론 닉네임을 설정할 수 없어요!'
 const MSG_JAMO_ONLY = '자/모음 만으로는 닉네임을 설정할 수 없어요!'
 const MSG_OK = '사용 가능한 닉네임이에요'
@@ -340,7 +340,7 @@ export default function Nickname({
         <>
           <h1 className="heading-1 text-black">닉네임을 입력해 주세요</h1>
           <p className="body-1 text-[var(--color-gray-500)] mt-[5px]">
-            한글, 영문, 숫자 2~10자까지 입력 가능해요
+            한글, 영문, 숫자, 밑줄(_) 2~10자까지 입력 가능해요
           </p>
         </>
       )}

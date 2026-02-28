@@ -18,6 +18,8 @@ type LikesStore = {
 
   initComment: (commentId: number, initial: LikeState) => void
   toggleCommentLike: (commentId: number) => void
+
+  clearLikes: () => void
 }
 
 export const useLikesStore = create<LikesStore>()(
@@ -69,6 +71,8 @@ export const useLikesStore = create<LikesStore>()(
           },
         })
       },
+
+      clearLikes: () => set({ postLikes: {}, commentLikes: {} }),
     }),
     {
       name: 'likes-store',
