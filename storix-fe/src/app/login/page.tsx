@@ -102,7 +102,7 @@ export default function LoginPage() {
 
         <div className="mt-2">
           <Image
-            src="/login/login-naver.svg"
+            src="/login/naver.svg"
             alt="네이버 로그인"
             width={360}
             height={48}
