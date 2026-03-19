@@ -25,7 +25,7 @@ export default function TopicRoomCreateSuccessPage() {
   const ui = useMemo(() => {
     return {
       title: work?.worksName ?? '',
-      thumb: work?.thumbnailUrl ?? '/image/sample/topicroom-1.webp',
+      thumb: work?.thumbnailUrl ?? '/home/topicroom/sample/topicroom-1.webp',
       worksName: work?.worksName ?? '',
       id: work?.worksId ?? '',
     }
@@ -56,7 +56,7 @@ export default function TopicRoomCreateSuccessPage() {
           aria-label="뒤로가기"
           className="flex h-8 w-8 items-center justify-center cursor-pointer"
         >
-          <Image src="/icons/back.svg" alt="back" width={24} height={24} />
+          <Image src="/common/icons/back.svg" alt="back" width={24} height={24} />
         </button>
       </div>
 
@@ -88,7 +88,7 @@ export default function TopicRoomCreateSuccessPage() {
                 </span>
                 <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-3 text-[var(--color-magenta-300)]">
                   <Image
-                    src={'/icons/icon-topicroom-people.svg'}
+                    src={'/common/icons/icon-topicroom-people.svg'}
                     alt={'참여 인원'}
                     width={12}
                     height={12}

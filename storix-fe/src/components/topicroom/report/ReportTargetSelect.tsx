@@ -68,7 +68,7 @@ export default function ReportTargetSelect({
             </span>
           </div>
           <Image
-            src="/icons/arrow-down.svg"
+            src="/common/icons/arrow-down.svg"
             alt="드롭다운 열기"
             width={24}
             height={24}

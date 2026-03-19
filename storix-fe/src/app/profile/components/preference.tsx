@@ -109,7 +109,7 @@ export default function Preference() {
             className="transition-opacity hover:opacity-70 cursor-pointer"
           >
             <Image
-              src="/icons/arrow-next.svg"
+              src="/common/icons/arrow-next.svg"
               alt="더보기"
               width={24}
               height={24}
@@ -185,7 +185,7 @@ export default function Preference() {
             className="transition-opacity hover:opacity-70 cursor-pointer"
           >
             <Image
-              src="/icons/arrow-next.svg"
+              src="/common/icons/arrow-next.svg"
               alt="더보기"
               width={24}
               height={24}

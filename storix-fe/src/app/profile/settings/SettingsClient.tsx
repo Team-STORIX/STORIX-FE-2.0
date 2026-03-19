@@ -82,7 +82,7 @@ export default function SettingsClient() {
             className="absolute left-0 transition-opacity hover:opacity-70"
           >
             <Image
-              src="/icons/back.svg"
+              src="/common/icons/back.svg"
               alt="뒤로가기"
               width={24}
               height={24}

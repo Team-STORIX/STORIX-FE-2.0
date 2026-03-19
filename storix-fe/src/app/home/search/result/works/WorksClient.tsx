@@ -8,7 +8,7 @@ import SearchResultWorks from '@/components/home/search/SearchResultWorks'
 import SearchResultBottomNav from '@/components/home/search/SearchResultBottomNav'
 import { useWorksSearchInfinite } from '@/hooks/search/useSearch'
 import type { WorksSort } from '@/lib/api/search/search.schema'
-import ArrowDownIcon from '@/public/icons/ArrowDownIcon'
+import ArrowDownIcon from '@/public/common/icons/ArrowDownIcon'
 
 export default function SearchWorksPage() {
   const router = useRouter()

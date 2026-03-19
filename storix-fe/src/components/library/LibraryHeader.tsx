@@ -22,7 +22,7 @@ export default function LibraryHeader() {
           className="flex h-6 w-6 items-center justify-center"
         >
           <Image
-            src={'/common/icons/search.svg'}
+            src={'/common/common/icons/search.svg'}
             alt={'검색'}
             width={24}
             height={24}

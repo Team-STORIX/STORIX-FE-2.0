@@ -1,4 +1,4 @@
-// src/app/onboarding/components/nickname
+// src/app/common/onboarding/components/nickname
 'use client'
 
 import Image from 'next/image'
@@ -325,8 +325,8 @@ export default function Nickname({
 
   const iconSrc =
     normalize(draft) && !isWarning
-      ? '/onboarding/id-check-pink.svg'
-      : '/onboarding/id-check-gray.svg'
+      ? '/common/onboarding/id-check-pink.svg'
+      : '/common/onboarding/id-check-gray.svg'
 
   const msgColorClass = isSuccess
     ? 'text-[var(--color-success)]'

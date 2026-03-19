@@ -69,7 +69,7 @@ export default function WriterSignupPage() {
       {/*   Topbar */}
       <div className="w-full h-14 px-4 flex items-center bg-white">
         <img
-          src="/icons/back.svg"
+          src="/common/icons/back.svg"
           alt="뒤로가기"
           width={24}
           height={24}
@@ -124,7 +124,7 @@ export default function WriterSignupPage() {
           >
             <Image
               src={
-                showPw ? '/login/saw-password.svg' : '/login/see-password.svg'
+                showPw ? '/common/login/saw-password.svg' : '/common/login/see-password.svg'
               }
               alt="비밀번호 보기"
               width={24}
@@ -182,7 +182,7 @@ export default function WriterSignupPage() {
 
           <div className="relative w-[306px] h-[240px]">
             <Image
-              src="/login/login-warning.svg"
+              src="/common/login/login-warning.svg"
               alt="로그인 경고"
               fill
               className="object-contain"

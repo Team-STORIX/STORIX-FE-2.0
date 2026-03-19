@@ -345,7 +345,7 @@ export default function LikesClient() {
                           </span>
                           <span className="ml-1.5">
                             <Image
-                              src="/icons/star.svg"
+                              src="/common/icons/star.svg"
                               alt="별점"
                               width={9}
                               height={10}

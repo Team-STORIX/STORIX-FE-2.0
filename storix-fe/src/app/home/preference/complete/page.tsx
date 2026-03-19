@@ -12,7 +12,7 @@ export default function PreferenceCompletePage() {
           </div>
         </div>
         <img
-          src="/image/preferenceGuide-2.webp"
+          src="/home/preference/preferenceGuide-2.webp"
           alt="guide illustration"
           className="w-full h-full object-contain"
         />

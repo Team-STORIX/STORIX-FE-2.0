@@ -107,7 +107,7 @@ export default function WriteClient() {
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       <div className="flex h-[54px] items-center justify-between px-4">
         <button onClick={() => router.back()} className="cursor-pointer">
-          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image src="/common/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
         <span className="text-body-1 font-medium">피드</span>
         <button
@@ -141,8 +141,8 @@ export default function WriteClient() {
               <img
                 src={
                   isWorksNotNeeded
-                    ? '/common/icons/active.svg'
-                    : '/common/icons/deactive.svg'
+                    ? '/common/common/common/icons/active.svg'
+                    : '/common/common/common/icons/deactive.svg'
                 }
                 alt={isWorksNotNeeded ? '활성' : '비활성'}
                 className="h-4.5 w-8"
@@ -163,7 +163,7 @@ export default function WriteClient() {
                 함께 이야기하고 싶은 작품을 검색하세요
               </span>
               <Image
-                src="/common/icons/search.svg"
+                src="/common/common/common/icons/search.svg"
                 alt="검색"
                 width={20}
                 height={20}
@@ -213,8 +213,8 @@ export default function WriteClient() {
               <img
                 src={
                   spoiler
-                    ? '/common/icons/active.svg'
-                    : '/common/icons/deactive.svg'
+                    ? '/common/common/common/icons/active.svg'
+                    : '/common/common/common/icons/deactive.svg'
                 }
                 alt={spoiler ? '활성' : '비활성'}
                 className="h-4.5 w-8"

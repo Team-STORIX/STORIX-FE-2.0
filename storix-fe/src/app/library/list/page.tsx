@@ -11,7 +11,7 @@ import Warning from '@/components/common/Warining'
 import LibraryHeader from '@/components/library/LibraryHeader'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
 import LibraryWorksListContent from '@/components/library/LibraryWorksListContent'
-import ArrowDownIcon from '@/public/icons/ArrowDownIcon'
+import ArrowDownIcon from '@/public/common/icons/ArrowDownIcon'
 
 import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
 import type { LibraryReviewSort } from '@/lib/api/library/library.api'
@@ -198,7 +198,7 @@ export default function LibraryListPage() {
             className="hover:opacity-70 cursor-pointer"
           >
             <Image
-              src={'/icons/library/icon-gallery.svg'}
+              src={'/library/common/icons/icon-gallery.svg'}
               alt={'갤러리형 보기'}
               width={24}
               height={24}

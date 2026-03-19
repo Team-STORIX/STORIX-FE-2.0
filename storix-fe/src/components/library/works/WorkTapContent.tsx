@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
+import ForwardArrowIcon from '@/public/common/layout/FowardArrowIcon'
 import OtherReviewsSection from '@/components/library/works/OtherReviewsSection'
 
 import {
@@ -26,10 +26,10 @@ type UIData = {
 const getPlatformIconSrc = (platform: string) => {
   const p = platform.trim()
 
-  if (p.includes('네이버 웹툰')) return '/icons/platform/naverWebtoon.png'
-  if (p.includes('리디북스')) return '/icons/platform/ridibooks.png'
-  if (p.includes('카카오웹툰')) return '/icons/platform/kakaoWebtoon.png'
-  if (p.includes('카카오페이지')) return '/icons/platform/kakaoPage.png'
+  if (p.includes('네이버 웹툰')) return '/common/platform/naverWebtoon.png'
+  if (p.includes('리디북스')) return '/common/platform/ridibooks.png'
+  if (p.includes('카카오웹툰')) return '/common/platform/kakaoWebtoon.png'
+  if (p.includes('카카오페이지')) return '/common/platform/kakaoPage.png'
 
   return null
 }
@@ -220,7 +220,7 @@ export default function WorkTabContent({
             className="flex py-1.5 px-1.5 items-center justify-center gap-1 rounded-xl bg-[var(--color-magenta-50)] cursor-pointer"
           >
             <Image
-              src="/icons/icon-share.svg"
+              src="/common/icons/icon-share.svg"
               alt="share"
               width={32}
               height={32}
@@ -236,7 +236,7 @@ export default function WorkTabContent({
             className="flex flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white body-2 disabled:opacity-50 cursor-pointer"
           >
             <Image
-              src="/common/icons/fire.svg"
+              src="/common/common/icons/fire.svg"
               alt="fire"
               width={24}
               height={24}

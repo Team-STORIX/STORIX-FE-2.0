@@ -225,7 +225,7 @@ export default function ProfileFixPage() {
     <div>
       <div className="flex items-center justify-between p-4">
         <Link href="/profile" className="transition-opacity hover:opacity-70">
-          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </Link>
 
         <h1

@@ -1,4 +1,4 @@
-// src/app/onboarding/page.tsx
+// src/app/common/onboarding/page.tsx
 'use client'
 
 import { useState } from 'react'
@@ -97,7 +97,7 @@ export default function OnboardingPage() {
       {step <= 4 && (
         <div className="px-4 pt-4">
           <img
-            src={`/onboarding/progress-indicater-${step}.svg`}
+            src={`/common/onboarding/progress-indicater-${step}.svg`}
             alt={`진행도 ${step}/4`}
             className="h-[8px]"
             style={{ display: 'block' }}
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
       <div className="fixed bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-50">
         <img
           src={
-            canProceed ? '/onboarding/next.svg' : '/onboarding/next-gray.svg'
+            canProceed ? '/common/onboarding/next.svg' : '/common/onboarding/next-gray.svg'
           }
           alt="다음"
           className={`w-full h-[50px] ${

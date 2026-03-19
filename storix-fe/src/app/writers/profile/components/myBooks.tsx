@@ -50,7 +50,7 @@ export default function MyBooks() {
           disabled
         >
           <Image
-            src="/icons/arrow-next.svg"
+            src="/common/icons/arrow-next.svg"
             alt="더보기"
             width={24}
             height={24}

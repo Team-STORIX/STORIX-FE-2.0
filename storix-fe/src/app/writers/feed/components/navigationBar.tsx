@@ -7,8 +7,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
 import WriteBottomSheet from '@/components/home/bottomsheet/WriteBottomSheet'
-import IconFeed from '@/public/common/icons/navbar/Icon-Feed'
-import IconProfile from '@/public/common/icons/navbar/Icon-Profile'
+import IconFeed from '@/public/common/navbar/Icon-Feed'
+import IconProfile from '@/public/common/navbar/Icon-Profile'
 
 type NavKey = 'feed' | 'profile'
 
@@ -86,7 +86,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
           {/*   배경은 nav 아래에 깔리도록 z-0 */}
           <div className="absolute inset-x-0 bottom-0 z-0 h-[80px]">
             <Image
-              src="/common/icons/navbar/navigationbar-background.svg"
+              src="/common/navbar/navigationbar-background.svg"
               alt="네비게이션 바 배경"
               width={393}
               height={80}
@@ -115,7 +115,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                 >
                   <span className="body-1 text-gray-800">리뷰 작성</span>
                   <Image
-                    src="/common/icons/navbar/review.svg"
+                    src="/common/navbar/review.svg"
                     alt="리뷰 작성"
                     width={28}
                     height={28}
@@ -132,7 +132,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
                 >
                   <span className="body-1 text-gray-800">피드 작성</span>
                   <Image
-                    src="/common/icons/navbar/feed.svg"
+                    src="/common/navbar/feed.svg"
                     alt="피드 작성"
                     width={28}
                     height={28}
@@ -158,7 +158,7 @@ export default function NavBar({ active, onChange }: NavBarProps) {
             aria-expanded={isPlusOpen}
           >
             <Image
-              src="/common/icons/navbar/plus.svg"
+              src="/common/navbar/plus.svg"
               alt="플러스"
               width={56}
               height={56}

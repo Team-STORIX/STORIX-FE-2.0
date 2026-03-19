@@ -66,7 +66,7 @@ export default function TopicRoomReportPage() {
           onClick={() => router.back()}
           className="h-8 w-8 cursor-pointer"
         >
-          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
 
         <p className="body-1 text-black">신고하기</p>

@@ -280,7 +280,7 @@ export default function BoardCard({
               aria-label="메뉴"
             >
               <Image
-                src="/icons/menu-3dots.svg"
+                src="/common/icons/menu-3dots.svg"
                 alt="메뉴"
                 width={24}
                 height={24}
@@ -322,8 +322,8 @@ export default function BoardCard({
                   <img
                     src={
                       isMine
-                        ? '/icons/delete-dropdown.svg'
-                        : '/icons/comment-dropdown.svg'
+                        ? '/common/icons/delete-dropdown.svg'
+                        : '/common/icons/comment-dropdown.svg'
                     }
                     alt={isMine ? '삭제하기' : '신고하기'}
                     width={96}
@@ -393,7 +393,7 @@ export default function BoardCard({
                   aria-label="작품 상세 보기"
                 >
                   <Image
-                    src="/icons/icon-arrow-forward-small.svg"
+                    src="/common/icons/icon-arrow-forward-small.svg"
                     alt="작품 상세"
                     width={24}
                     height={24}
@@ -496,8 +496,8 @@ export default function BoardCard({
               <Image
                 src={
                   data.board.isLiked
-                    ? '/icons/icon-like-pink.svg'
-                    : '/icons/icon-like.svg'
+                    ? '/common/icons/icon-like-pink.svg'
+                    : '/common/icons/icon-like.svg'
                 }
                 alt="좋아요"
                 width={24}
@@ -517,7 +517,7 @@ export default function BoardCard({
 
           <div className="flex items-center ml-4">
             <Image
-              src="/icons/icon-comment.svg"
+              src="/common/icons/icon-comment.svg"
               alt="댓글"
               width={24}
               height={24}

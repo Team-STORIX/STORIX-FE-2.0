@@ -10,7 +10,7 @@ export default function WritersVerifyPage() {
 
   const images = useMemo(
     () =>
-      Array.from({ length: 3 }, (_, i) => `/manual/verify-guide-${i + 1}.png`),
+      Array.from({ length: 3 }, (_, i) => `/common/manual/verify-guide-${i + 1}.png`),
     [],
   )
 
@@ -62,7 +62,7 @@ export default function WritersVerifyPage() {
       {/*   Topbar */}
       <div className="relative flex h-14 w-full items-center bg-white px-4">
         <img
-          src="/icons/back.svg"
+          src="/common/icons/back.svg"
           alt="뒤로가기"
           width={24}
           height={24}
@@ -118,7 +118,7 @@ export default function WritersVerifyPage() {
             aria-label="다음"
           >
             <img
-              src="/onboarding/next.svg"
+              src="/common/onboarding/next.svg"
               alt="다음"
               width={361}
               height={50}

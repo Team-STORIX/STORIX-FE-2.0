@@ -320,7 +320,7 @@ export default function MyComments() {
                     }}
                   >
                     <Image
-                      src="/icons/menu-3dots.svg"
+                      src="/common/icons/menu-3dots.svg"
                       alt="댓글 메뉴"
                       width={24}
                       height={24}
@@ -341,7 +341,7 @@ export default function MyComments() {
                       aria-label="삭제하기"
                     >
                       <img
-                        src="/icons/delete-dropdown.svg"
+                        src="/common/icons/delete-dropdown.svg"
                         alt="삭제하기"
                         width={96}
                         height={36}
@@ -380,8 +380,8 @@ export default function MyComments() {
                   <Image
                     src={
                       item.reply.isLiked
-                        ? '/icons/icon-like-pink.svg'
-                        : '/icons/icon-like.svg'
+                        ? '/common/icons/icon-like-pink.svg'
+                        : '/common/icons/icon-like.svg'
                     }
                     alt="좋아요"
                     width={24}

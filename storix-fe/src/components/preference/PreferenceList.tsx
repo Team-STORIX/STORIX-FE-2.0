@@ -45,8 +45,8 @@ function PreferenceListRow({ w }: { w: PreferenceWork }) {
           <img
             src={
               isFavorite
-                ? '/icons/icon-add-active.svg'
-                : '/icons/icon-add-deactive.svg'
+                ? '/common/icons/icon-add-active.svg'
+                : '/common/icons/icon-add-deactive.svg'
             }
             alt="추가"
             width={24}

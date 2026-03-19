@@ -1,4 +1,4 @@
-// src/app/onboarding/components/topbar.tsx
+// src/app/common/onboarding/components/topbar.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -14,7 +14,7 @@ export default function Topbar({ onBack }: TopbarProps) {
     <div className="w-full h-14 p-4 flex justify-between items-center bg-white">
       {/* 뒤로가기 */}
       <img
-        src="/icons/back.svg"
+        src="/common/icons/back.svg"
         alt="뒤로가기"
         width={24}
         height={24}

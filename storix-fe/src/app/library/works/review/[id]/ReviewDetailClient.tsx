@@ -12,7 +12,7 @@ import {
 import ReviewDeleteConfirmModal from '@/components/review/ReviewDeleteConfirmModal'
 import ReviewKebabDropdown from '@/components/review/ReviewKebabDropdown'
 
-const FALLBACK_COVER_SRC = '/image/sample/topicroom-1.webp'
+const FALLBACK_COVER_SRC = '/home/topicroom/sample/topicroom-1.webp'
 
 const formatKoreanDate = (iso?: string) => {
   if (!iso) return ''
@@ -193,7 +193,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
       {/* TopBar */}
       <div className="flex h-[54px] items-center justify-between px-4">
         <button onClick={handleBack} className="cursor-pointer">
-          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
 
         <span className="text-body-1 font-medium">리뷰</span>
@@ -226,7 +226,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
               />
             ) : (
               <Image
-                src={'/common/icons/reviewProfile.svg'}
+                src={'/common/common/icons/reviewProfile.svg'}
                 alt={ui.userName || 'profile'}
                 width={40}
                 height={40}
@@ -264,7 +264,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
                 px-2.5 py-1 text-[var(--color-magenta-300)] text-center`}
               >
                 <Image
-                  src="/search/littleStar.svg"
+                  src="/common/icons/littleStar.svg"
                   alt="star icon"
                   width={14}
                   height={14}
@@ -297,7 +297,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
             aria-label="리뷰 좋아요"
           >
             <Image
-              src={liked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'}
+              src={liked ? '/common/icons/icon-like-pink.svg' : '/common/icons/icon-like.svg'}
               alt="좋아요"
               width={20}
               height={20}

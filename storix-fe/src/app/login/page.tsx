@@ -1,4 +1,4 @@
-// src/app/login/page.tsx
+// src/app/common/login/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -81,7 +81,7 @@ export default function LoginPage() {
       <div className="flex flex-col items-center mt-[326px]">
         <div className="mt-1">
           <Image
-            src="/icons/logo-word.svg"
+            src="/common/icons/logo-word.svg"
             alt="STORIX"
             width={120}
             height={40}
@@ -91,7 +91,7 @@ export default function LoginPage() {
         {/* 독자 소셜 로그인 */}
         <div className="mt-16">
           <Image
-            src="/login/login-kakao.svg"
+            src="/common/login/login-kakao.svg"
             alt="카카오 로그인"
             width={360}
             height={48}
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
         <div className="mt-2">
           <Image
-            src="/login/naver.svg"
+            src="/common/common/login/login-naver.svg"
             alt="네이버 로그인"
             width={360}
             height={48}
@@ -115,7 +115,7 @@ export default function LoginPage() {
         <div className="mt-2">
           <Link href="/writers/signup">
             <Image
-              src="/login/writer-login.svg"
+              src="/common/login/writer-login.svg"
               alt="작가 로그인"
               width={360}
               height={48}

@@ -11,7 +11,7 @@ export default function HomeHeader() {
       {/* 왼쪽 로고 버튼 */}
       <div className="flex h-10 w-10 items-center justify-center">
         <Image
-          src="/icons/logo-black.svg"
+          src="/common/icons/logo-black.svg"
           alt="STORIX"
           width={40}
           height={40}
@@ -28,7 +28,7 @@ export default function HomeHeader() {
           className="flex h-6 w-6 items-center justify-center"
         >
           <Image
-            src="/common/icons/search.svg"
+            src="/common/common/icons/search.svg"
             alt="STORIX"
             width={24}
             height={24}
@@ -43,7 +43,7 @@ export default function HomeHeader() {
           className="flex h-6 w-6 items-center justify-center"
         >
           <Image
-            src="/common/icons/notification.svg"
+            src="/common/common/icons/notification.svg"
             alt="STORIX"
             width={24}
             height={24}
