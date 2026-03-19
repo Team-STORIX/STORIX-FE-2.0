@@ -8,12 +8,12 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import {
   getFeedBoards,
   type FeedBoardItem as AllFeedBoardItem,
-} from '@/api/feed/readerFeed.api'
+} from '@/lib/api/feed/readerFeed.api'
 import {
   getFeedBoardsByWorksId,
   type FeedBoardItem as WorksFeedBoardItem,
-} from '@/api/feed/readerWorksFeed.api'
-import { toggleBoardLike } from '@/api/feed/readerBoard.api'
+} from '@/lib/api/feed/readerWorksFeed.api'
+import { toggleBoardLike } from '@/lib/api/feed/readerBoard.api'
 
 type Tab = 'works' | 'writers'
 

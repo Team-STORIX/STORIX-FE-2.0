@@ -21,9 +21,9 @@ import {
   createReply,
   toggleReplyLike,
   type ReplyItem,
-} from '@/api/feed/readerBoardDetail.api'
-import { toggleBoardLike, reportBoard } from '@/api/feed/readerBoard.api'
-import { apiClient } from '@/api/axios-instance'
+} from '@/lib/api/feed/readerBoardDetail.api'
+import { toggleBoardLike, reportBoard } from '@/lib/api/feed/readerBoard.api'
+import { apiClient } from '@/lib/api/axios-instance'
 import { useProfileStore } from '@/store/profile.store'
 
 type ReportTargetBoard = {

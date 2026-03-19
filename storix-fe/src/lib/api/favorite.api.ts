@@ -1,4 +1,4 @@
-// src/lib/api/favorite.api.ts
+// src/api/favorite.api.ts
 import { apiClient } from '@/lib/api/axios-instance'
 
 type ApiResponse<T> = {

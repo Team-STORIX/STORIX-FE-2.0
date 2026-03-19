@@ -9,8 +9,8 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import { useDeleteFlow } from '@/hooks/useDeleteFlow'
 import DeleteFlow from '@/components/common/delete/DeleteFlow'
 
-import { getMyActivityReplies } from '@/api/profile/readerActivity.api'
-import { apiClient } from '@/api/axios-instance'
+import { getMyActivityReplies } from '@/lib/api/profile/readerActivity.api'
+import { apiClient } from '@/lib/api/axios-instance'
 
 type ActivityReplyItem = {
   profile: {

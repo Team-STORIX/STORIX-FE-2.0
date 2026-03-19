@@ -1,5 +1,5 @@
 // src/api/common/common/onboarding/onboardingWorks.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 export type OnboardingWork = {
   worksId: number

@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { getPreferredHashtags } from '@/api/profile/readerHashtags.api'
+import { getPreferredHashtags } from '@/lib/api/profile/readerHashtags.api'
 
 export default function Hashtag() {
   const router = useRouter()

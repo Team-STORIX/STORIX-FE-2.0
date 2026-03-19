@@ -7,7 +7,7 @@
 
 import Image from 'next/image'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
-import { checkProfileNicknameValid } from '@/api/profile/readerNickname.api'
+import { checkProfileNicknameValid } from '@/lib/api/profile/readerNickname.api'
 
 interface NicknameProps {
   value: string

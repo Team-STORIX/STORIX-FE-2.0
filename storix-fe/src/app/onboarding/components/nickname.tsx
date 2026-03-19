@@ -6,7 +6,7 @@ import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import {
   checkNicknameValid,
   extractIsAvailableFromValidResponse,
-} from '@/api/auth/nickname.api'
+} from '@/lib/api/auth/nickname.api'
 
 interface NicknameProps {
   value: string

@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   getReaderRatings,
   type RatingCountsMap,
-} from '@/api/profile/readerRatings.api'
+} from '@/lib/api/profile/readerRatings.api'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
 
 const RATING_STEPS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] as const

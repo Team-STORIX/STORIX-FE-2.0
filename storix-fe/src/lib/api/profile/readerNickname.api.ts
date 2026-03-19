@@ -1,5 +1,5 @@
 // src/api/profile/readerNickname.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 export type ApiResponse<T> = {
   isSuccess: boolean

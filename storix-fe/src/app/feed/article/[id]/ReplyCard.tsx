@@ -2,7 +2,7 @@
 'use client'
 
 import Image from 'next/image'
-import type { ReplyItem } from '@/api/feed/readerBoardDetail.api'
+import type { ReplyItem } from '@/lib/api/feed/readerBoardDetail.api'
 
 const FALLBACK_PROFILE = '/profile/profile-default.svg'
 

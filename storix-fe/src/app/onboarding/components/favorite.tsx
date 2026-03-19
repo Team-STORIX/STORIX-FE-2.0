@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   getOnboardingWorks,
   type OnboardingWork,
-} from '@/api/onboarding/onboardingWorks.api'
+} from '@/lib/api/onboarding/onboardingWorks.api'
 
 interface FavoriteProps {
   value: number[]

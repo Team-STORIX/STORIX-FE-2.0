@@ -15,14 +15,14 @@ import {
   getReaderFavoriteWorks,
   type FavoriteArtist,
   type FavoriteWork,
-} from '@/api/profile/readerFavorites.api'
+} from '@/lib/api/profile/readerFavorites.api'
 
 import {
   postFavoriteArtist,
   postFavoriteWork,
   deleteFavoriteArtist,
   deleteFavoriteWork,
-} from '@/api/favorite/toggleFavorite.api'
+} from '@/lib/api/favorite/toggleFavorite.api'
 
 type Tab = 'works' | 'writers'
 

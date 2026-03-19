@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   getReaderFavoriteArtists,
   getReaderFavoriteWorks,
-} from '@/api/profile/readerFavorites.api'
+} from '@/lib/api/profile/readerFavorites.api'
 
 type PreviewWriter = {
   id: number
