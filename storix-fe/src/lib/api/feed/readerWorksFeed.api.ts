@@ -1,5 +1,5 @@
 // src/api/feed/readerWorksFeed.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import type { FeedSort } from './readerFavoriteWorks.api'
 
 export type FeedBoardImage = {

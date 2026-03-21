@@ -35,7 +35,7 @@ export default function TopicRoom() {
 
     return list.map((r) => ({
       id: r.topicRoomId,
-      thumbnail: r.thumbnailUrl ?? '/image/sample/topicroom-2.webp',
+      thumbnail: r.thumbnailUrl ?? '/home/topicroom/sample/topicroom-2.webp',
       title: r.topicRoomName,
       subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), //
       memberCount: r.activeUserNumber ?? 0,
@@ -48,7 +48,7 @@ export default function TopicRoom() {
     const list = popular ?? []
     return list.map((r) => ({
       id: String(r.topicRoomId),
-      imageUrl: r.thumbnailUrl ?? '/image/sample/topicroom-1.webp',
+      imageUrl: r.thumbnailUrl ?? '/home/topicroom/sample/topicroom-1.webp',
       title: r.topicRoomName,
       subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName),
       memberCount: r.activeUserNumber ?? 0,

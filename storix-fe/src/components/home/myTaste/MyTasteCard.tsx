@@ -7,7 +7,7 @@ export default function MyTasteCard() {
       className={`relative flex w-full h-[204px] rounded-2xl bg-gray-100 p-4 overflow-hidden`}
     >
       <Image
-        src={'/image/tasteImage.webp'}
+        src={'/home/mytaste/tasteImage.webp'}
         alt="나의 취향 탐색"
         fill
         className="object-cover object-top"

@@ -21,9 +21,9 @@ import {
   createReply,
   toggleReplyLike,
   type ReplyItem,
-} from '@/api/feed/readerBoardDetail.api'
-import { toggleBoardLike, reportBoard } from '@/api/feed/readerBoard.api'
-import { apiClient } from '@/api/axios-instance'
+} from '@/lib/api/feed/readerBoardDetail.api'
+import { toggleBoardLike, reportBoard } from '@/lib/api/feed/readerBoard.api'
+import { apiClient } from '@/lib/api/axios-instance'
 import { useProfileStore } from '@/store/profile.store'
 
 type ReportTargetBoard = {
@@ -529,7 +529,7 @@ export default function FeedArticlePage() {
   const Topbar = () => (
     <div className="w-full h-14 p-4 flex justify-between items-center bg-white">
       <img
-        src="/icons/back.svg"
+        src="/common/common/icons/back.svg"
         alt="뒤로가기"
         width={24}
         height={24}

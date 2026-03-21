@@ -4,8 +4,8 @@
 import Image from 'next/image'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import RightGradient from '@/public/icons/library/RightGradient'
-import LeftGradient from '@/public/icons/library/LeftGradient'
+import RightGradient from '@/public/library/icons/RightGradient'
+import LeftGradient from '@/public/library/icons/LeftGradient'
 
 export type Work = {
   id: number
@@ -276,7 +276,7 @@ export default function BookSpineCarousel({
             px-2.5 py-1 text-[var(--color-magenta-300)] text-center`}
             >
               <Image
-                src="/search/littleStar.svg"
+                src="/common/icons/littleStar.svg"
                 alt="star icon"
                 width={14}
                 height={14}

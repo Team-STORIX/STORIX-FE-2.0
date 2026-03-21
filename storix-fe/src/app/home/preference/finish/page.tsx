@@ -20,7 +20,7 @@ export default function PreferenceFinishPage() {
       </div>
 
       <img
-        src="/image/finishStar.webp"
+        src="/home/preference/finishStar.webp"
         alt="finish star illustration"
         className="flex mt-18 mb-46 mx-auto w-45 h-45"
       />
@@ -35,7 +35,7 @@ export default function PreferenceFinishPage() {
           ].join(' ')}
         >
           <span className="body-3 font-semibold">홈으로 돌아가기</span>
-          <img src="/onboarding/next.svg" alt="next" width={20} height={20} />
+          <img src="/common/onboarding/next.svg" alt="next" width={20} height={20} />
         </button>
       </div>
     </main>

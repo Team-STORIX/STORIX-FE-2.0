@@ -21,7 +21,7 @@ export const TopicRoomCoverSlider = ({ rooms }: TopicRoomCoverSliderProps) => {
     if (!data) return []
     return data.map((r) => ({
       id: String(r.topicRoomId),
-      imageUrl: r.thumbnailUrl ?? '/image/sample/topicroom-1.webp',
+      imageUrl: r.thumbnailUrl ?? '/home/topicroom/sample/topicroom-1.webp',
       title: r.topicRoomName,
       subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName),
       memberCount: r.activeUserNumber ?? 0,

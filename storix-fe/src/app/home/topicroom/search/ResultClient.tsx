@@ -41,7 +41,7 @@ export default function ResultClient() {
     return flat.map((r) => ({
       id: r.topicRoomId,
       roomId: r.topicRoomId, //
-      thumbnail: r.thumbnailUrl ?? '/image/sample/topicroom-2.webp',
+      thumbnail: r.thumbnailUrl ?? '/home/topicroom/sample/topicroom-2.webp',
       title: r.topicRoomName,
       subtitle: formatTopicRoomSubtitle(r.worksType, r.worksName), //
       memberCount: r.activeUserNumber ?? 0,

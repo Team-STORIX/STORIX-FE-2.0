@@ -63,7 +63,7 @@ function buildInitialState(works: PreferenceWork[]): PreferenceState {
 // 썸네일 없을 때 샘플 이미지 fallback
 const fallbackImage = (worksId: number) => {
   const idx = ((worksId % 5) + 5) % 5
-  return `/image/sample/topicroom-${idx + 1}.webp`
+  return `/home/topicroom/sample/topicroom-${idx + 1}.webp`
 }
 
 const mapExplorationToWork = (

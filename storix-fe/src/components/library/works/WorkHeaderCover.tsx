@@ -17,7 +17,7 @@ function Star({ value }: { value: number }) {
   return (
     <span className="caption-1 text-[var(--color-magenta-300)]">
       <Image
-        src="/search/littleStar.svg"
+        src="/common/icons/littleStar.svg"
         alt="star"
         width={9}
         height={10}
@@ -50,7 +50,7 @@ export default function WorkHeaderCover({
         style={{
           backgroundImage: `linear-gradient(0deg, rgba(255,255,255,0) 0%, #fff 100%),
                     linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 100%),
-                    url("${ui.thumb || '/image/sample/topicroom-1.webp'}")`,
+                    url("${ui.thumb || '/home/topicroom/sample/topicroom-1.webp'}")`,
           backgroundRepeat: 'no-repeat',
           backgroundPosition: '50% 50%',
           backgroundSize: 'cover',

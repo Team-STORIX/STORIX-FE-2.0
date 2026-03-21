@@ -49,7 +49,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
           </span>
           <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-3 text-[var(--color-magenta-300)]">
             <Image
-              src={'/icons/icon-topicroom-people.svg'}
+              src={'/common/icons/icon-topicroom-people.svg'}
               alt={'참여 인원'}
               width={12}
               height={12}

@@ -10,18 +10,18 @@ import type { ReportConfirmOutcome } from '@/hooks/useReportFlow'
 import {
   getMyActivityLikes,
   type ActivityBoardItem,
-} from '@/api/profile/readerActivity.api'
+} from '@/lib/api/profile/readerActivity.api'
 
 import BoardCard, {
   type BoardCardData,
 } from '@/components/common/board/BoardCard'
 
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import axios from 'axios'
 import {
   reportBoard,
   deleteBoard as deleteBoardApi,
-} from '@/api/feed/readerBoard.api'
+} from '@/lib/api/feed/readerBoard.api'
 
 /**
  *   게시글 좋아요 토글 API

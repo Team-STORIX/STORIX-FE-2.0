@@ -1,4 +1,4 @@
-// src/app/onboarding/components/final.tsx
+// src/app/common/onboarding/components/final.tsx
 export default function Final() {
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -32,7 +32,7 @@ export default function Final() {
       {/* 이미지 - 텍스트 125px 아래 */}
       <div className="mt-[125px]">
         <img
-          src="/icons/big-star-pink.png"
+          src="/common/icons/big-star-pink.png"
           alt="완료"
           width={180}
           height={180}

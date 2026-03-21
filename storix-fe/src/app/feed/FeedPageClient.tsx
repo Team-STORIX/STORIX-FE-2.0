@@ -12,14 +12,14 @@ import HorizontalPicker, {
 import FeedList from './components/feedList'
 import NavBar from '@/components/common/NavBar'
 
-import { getFavoriteWorks } from '@/api/feed/readerFavoriteWorks.api'
+import { getFavoriteWorks } from '@/lib/api/feed/readerFavoriteWorks.api'
 import { useOpenMenu } from '@/hooks/useOpenMenu'
 import { useReportFlow } from '@/hooks/useReportFlow'
 import { useDeleteFlow } from '@/hooks/useDeleteFlow'
 import ReportFlow from '@/components/common/report/ReportFlow'
 import DeleteFlow from '@/components/common/delete/DeleteFlow'
 import { useProfileStore } from '@/store/profile.store'
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 import { useFeedData } from './hooks/useFeedData'
 export type { UIPost } from './hooks/useFeedData'
@@ -211,7 +211,7 @@ export default function FeedPageClient() {
       {tab === 'writers' ? (
         <div className="flex flex-col items-center" style={{ marginTop: 196 }}>
           <img
-            src="/icons/big-star-pink.svg"
+            src="/common/common/icons/big-star-pink.svg"
             alt=""
             width={100}
             height={100}

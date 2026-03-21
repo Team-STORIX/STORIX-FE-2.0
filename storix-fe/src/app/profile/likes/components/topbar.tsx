@@ -9,7 +9,7 @@ export default function TopBar() {
     <div className="h-[56px] w-full flex items-center px-5">
       {/* 뒤로가기 -> /profile */}
       <Link href="/profile" className="transition-opacity hover:opacity-70">
-        <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+        <Image src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
       </Link>
 
       {/* 텍스트 (아이콘에서 12px) */}

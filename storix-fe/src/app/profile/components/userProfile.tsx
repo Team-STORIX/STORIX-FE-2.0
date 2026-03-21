@@ -69,7 +69,7 @@ export default function UserProfile({
         aria-label="프로필 수정"
       >
         <Image
-          src="/icons/arrow-next.svg"
+          src="/common/icons/arrow-next.svg"
           alt="프로필 수정"
           width={16}
           height={16}

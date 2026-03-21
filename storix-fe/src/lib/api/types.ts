@@ -1,4 +1,4 @@
-// src/lib/api/types.ts
+// src/api/types.ts
 export type ApiResponse<T> = {
   isSuccess: boolean
   code: string

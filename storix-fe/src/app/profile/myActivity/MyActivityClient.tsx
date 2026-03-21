@@ -14,7 +14,7 @@ import MyLikes from './components/myLikes'
 import NavBar from '@/components/common/NavBar'
 
 import { useProfileStore } from '@/store/profile.store'
-import { getMyProfile } from '@/api/profile/profile.api'
+import { getMyProfile } from '@/lib/api/profile/profile.api'
 
 type Tab = 'posts' | 'comments' | 'likes'
 const TABS: Tab[] = ['posts', 'comments', 'likes']

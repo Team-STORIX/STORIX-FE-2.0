@@ -92,7 +92,7 @@ export default function WriteBottomSheet({
           <span className="heading-2">작품선택</span>
           <button onClick={handleClose} className="cursor-pointer">
             <Image
-              src="/common/icons/cancel.svg"
+              src="/common/common/icons/cancel.svg"
               alt="닫기"
               width={20}
               height={20}
@@ -109,7 +109,7 @@ export default function WriteBottomSheet({
             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-body-2"
           />
           <Image
-            src="/common/icons/search.svg"
+            src="/common/common/icons/search.svg"
             alt="검색"
             width={20}
             height={20}

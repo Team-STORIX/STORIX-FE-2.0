@@ -66,7 +66,7 @@ export default function LibraryWorksListContent({
             <div className="flex items-center gap-2">
               <span className="caption-1 font-extrabold text-pink-500">
                 <Image
-                  src="/search/littleStar.svg"
+                  src="/common/icons/littleStar.svg"
                   alt="star icon"
                   width={9}
                   height={10}

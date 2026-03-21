@@ -20,7 +20,9 @@ export const getMyProfile = async (): Promise<ApiResponse<MeProfileResult>> => {
 export const updateProfileNickname = async (
   nickName: string,
 ): Promise<ApiResponse<string>> => {
-  const res = await apiClient.post('/api/v1/profile/nickname', { nickName })
+  const res = await apiClient.post('/api/v1/profile/reader/nickname', {
+    nickName,
+  })
   return res.data as ApiResponse<string>
 }
 

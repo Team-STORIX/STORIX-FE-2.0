@@ -52,7 +52,7 @@ export default function TopicRoomTopBar({
       ref={wrapRef}
     >
       <button type="button" onClick={onBack} className="h-6 w-6 cursor-pointer">
-        <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+        <Image src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
       </button>
 
       {/*   가운데: title / subtitle / 참여인원 */}
@@ -77,7 +77,7 @@ export default function TopicRoomTopBar({
           onPointerDown={(e) => e.stopPropagation()} //   (드래그 캡처 클릭 씹힘 방지)
         >
           <Image
-            src="/icons/menu-3dots.svg"
+            src="/common/icons/menu-3dots.svg"
             alt="메뉴"
             width={24}
             height={24}

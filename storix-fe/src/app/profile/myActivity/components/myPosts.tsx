@@ -14,8 +14,8 @@ import { useProfileStore } from '@/store/profile.store'
 import {
   getMyActivityBoards,
   type ActivityBoardItem,
-} from '@/api/profile/readerActivity.api'
-import { apiClient } from '@/api/axios-instance'
+} from '@/lib/api/profile/readerActivity.api'
+import { apiClient } from '@/lib/api/axios-instance'
 
 const FALLBACK_PROFILE = '/profile/profile-default.svg'
 const SORT: 'LATEST' = 'LATEST'

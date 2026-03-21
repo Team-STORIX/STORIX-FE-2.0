@@ -160,7 +160,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
       <div className="flex h-[54px] items-center justify-between px-4">
         <button onClick={() => router.back()} className="cursor-pointer">
-          <Image src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image src="/common/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
         <span className="text-body-1 font-medium">리뷰</span>
         <button
@@ -215,8 +215,8 @@ export default function ReviewWriteClient({ worksId }: Props) {
               <img
                 src={
                   spoiler
-                    ? '/common/icons/active.svg'
-                    : '/common/icons/deactive.svg'
+                    ? '/common/common/common/icons/active.svg'
+                    : '/common/common/common/icons/deactive.svg'
                 }
                 alt={spoiler ? '활성' : '비활성'}
                 className="h-4.5 w-8"

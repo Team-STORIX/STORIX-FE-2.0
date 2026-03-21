@@ -1,4 +1,4 @@
-// src/app/manual/components/step4.tsx
+// src/app/common/manual/components/step4.tsx
 export default function Step4() {
   return (
     <div className="flex justify-center items-center">
