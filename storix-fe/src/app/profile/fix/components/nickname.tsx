@@ -7,7 +7,7 @@
 
 import Image from 'next/image'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
-import { checkProfileNicknameValid } from '@/api/profile/readerNickname.api'
+import { checkProfileNicknameValid } from '@/lib/api/profile/readerNickname.api'
 
 interface NicknameProps {
   value: string
@@ -274,8 +274,8 @@ export default function Nickname({
       : 'text-[var(--color-gray-300)]'
 
   const iconSrc = canCheck
-    ? '/onboarding/id-check-pink.svg'
-    : '/onboarding/id-check-gray.svg'
+    ? '/common/onboarding/id-check-pink.svg'
+    : '/common/onboarding/id-check-gray.svg'
 
   const msgColorClass = isSuccess
     ? 'text-[var(--color-success)]'

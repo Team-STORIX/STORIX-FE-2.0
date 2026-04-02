@@ -5,8 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { withdrawUser } from '@/api/auth/withdraw.api'
-import { logoutUser } from '@/api/auth/logout.api'
+import { withdrawUser } from '@/lib/api/auth/withdraw.api'
+import { logoutUser } from '@/lib/api/auth/logout.api'
 import { useAuthStore } from '@/store/auth.store'
 import { useProfileStore } from '@/store/profile.store'
 
@@ -82,7 +82,7 @@ export default function SettingsClient() {
             className="absolute left-0 transition-opacity hover:opacity-70"
           >
             <Image
-              src="/icons/back.svg"
+              src="/common/icons/back.svg"
               alt="뒤로가기"
               width={24}
               height={24}

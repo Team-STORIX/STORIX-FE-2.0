@@ -1,6 +1,6 @@
-// src/app/onboarding/components/gender.tsx
-import MenIcon from '@/public/onboarding/MenIcon'
-import WomenIcon from '@/public/onboarding/WomenIcon'
+// src/app/common/onboarding/components/gender.tsx
+import MenIcon from '@/public/common/onboarding/MenIcon'
+import WomenIcon from '@/public/common/onboarding/WomenIcon'
 
 type GenderValue = 'MALE' | 'FEMALE' | 'NONE' | ''
 

@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/icons/:path*',
+        source: '/common/icons/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -24,7 +24,25 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/common/icons/:path*',
+        source: '/common/navbar/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/common/platform/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/common/pwa/:path*',
         headers: [
           {
             key: 'Cache-Control',

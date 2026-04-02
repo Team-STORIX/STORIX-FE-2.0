@@ -1,4 +1,4 @@
-// src/app/manual/page.tsx
+// src/app/common/manual/page.tsx
 'use client'
 
 import { useMemo, useState } from 'react'
@@ -10,7 +10,7 @@ export default function ManualPage() {
   const [step, setStep] = useState(1)
 
   const manualImages = useMemo(
-    () => Array.from({ length: 4 }, (_, i) => `/manual/manual-${i + 1}.png`),
+    () => Array.from({ length: 4 }, (_, i) => `/common/manual/manual-${i + 1}.png`),
     [],
   )
 
@@ -77,7 +77,7 @@ export default function ManualPage() {
         {/* Progress indicator */}
         <div className="flex justify-center mt-[20px]">
           <img
-            src={`/manual/progress-indicater-star-${step}.svg`}
+            src={`/common/manual/progress-indicater-star-${step}.svg`}
             alt={`진행도 ${step}/4`}
             className="w-[108px] h-[24px]"
             style={{ display: 'block' }}
@@ -98,14 +98,14 @@ export default function ManualPage() {
       <div className="absolute bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-[60]">
         {!isLast ? (
           <img
-            src="/onboarding/next.svg"
+            src="/common/onboarding/next.svg"
             alt="다음"
             className="w-full h-[50px] cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleNext}
           />
         ) : (
           <img
-            src="/manual/explore.svg"
+            src="/common/manual/explore.svg"
             alt="탐험 시작하기"
             className="w-full h-[50px] cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => router.push('/home')}

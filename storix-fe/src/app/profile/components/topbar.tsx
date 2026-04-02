@@ -48,7 +48,7 @@ export default function TopBar() {
             aria-label="설정"
           >
             <Image
-              src="/icons/settings.svg"
+              src="/common/icons/settings.svg"
               alt="설정"
               width={24}
               height={24}

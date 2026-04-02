@@ -43,7 +43,7 @@ export default function PreferenceSwipePage() {
           className="absolute left-4 text-black/70"
           aria-label="back"
         >
-          <img src="/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <img src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
         </button>
         <div className="text-sm font-semibold text-black">
           취향 저격 작품 탐색

@@ -1,4 +1,4 @@
-// src/app/onboarding/components/genre.tsx
+// src/app/common/onboarding/components/genre.tsx
 'use client'
 
 import Image from 'next/image'
@@ -33,55 +33,55 @@ const GENRE_OPTIONS: GenreOption[] = [
     key: 'ROMANCE',
     label: '로맨스',
     desc: '설레는 사랑과 깊은 감정 변화를 아름답게 그려낸 이야기',
-    icon: '/onboarding/romance.svg',
+    icon: '/common/onboarding/romance.svg',
   },
   {
     key: 'ROFAN',
     label: '로맨스 판타지',
     desc: '판타지 세계 속 주인공이 사랑과 운명을 개척하는 이야기',
-    icon: '/onboarding/rofan.svg',
+    icon: '/common/onboarding/rofan.svg',
   },
   {
     key: 'BL',
     label: 'BL',
     desc: '남성 주인공들 사이의 섬세한 관계성과 사랑 이야기',
-    icon: '/onboarding/bl.svg',
+    icon: '/common/onboarding/bl.svg',
   },
   {
     key: 'MODERN_FANTASY',
     label: '현대 판타지',
     desc: '현대에 초능력, 특별한 시스템이 나타나는 흥미로운 이야기',
-    icon: '/onboarding/mofan.svg',
+    icon: '/common/onboarding/mofan.svg',
   },
   {
     key: 'ACTION',
     label: '무협',
     desc: '화려한 무공과 문파 사이의 의리, 강호의 질서를 지키는 모험 이야기',
-    icon: '/onboarding/action.svg',
+    icon: '/common/onboarding/action.svg',
   },
   {
     key: 'FANTASY',
     label: '정통 판타지',
     desc: '마법과 기사가 존재하는 미지의 세계에서 펼쳐지는 거대한 서사시',
-    icon: '/onboarding/fantasy.svg',
+    icon: '/common/onboarding/fantasy.svg',
   },
   {
     key: 'THRILLER',
     label: '스릴러',
     desc: '긴박한 사건과 치밀한 심리전으로 극강의 긴장감을 주는 이야기',
-    icon: '/onboarding/thriller.svg',
+    icon: '/common/onboarding/thriller.svg',
   },
   {
     key: 'DRAMA',
     label: '드라마',
     desc: '우리 삶의 희로애락과 현실적인 인간관계를 깊이 있게 그린 이야기',
-    icon: '/onboarding/drama.svg',
+    icon: '/common/onboarding/drama.svg',
   },
   {
     key: 'DAILY',
     label: '일상',
     desc: '주변의 소소하고 평범한 일상을 통해 따뜻한 힐링을 주는 이야기',
-    icon: '/onboarding/daily.svg',
+    icon: '/common/onboarding/daily.svg',
   },
 ]
 
@@ -177,7 +177,7 @@ export default function Genre({ value, onChange }: GenreProps) {
 
               <Image
                 src={
-                  selected ? '/icons/check-pink.svg' : '/icons/check-gray.svg'
+                  selected ? '/common/icons/check-pink.svg' : '/common/icons/check-gray.svg'
                 }
                 alt=""
                 width={24}

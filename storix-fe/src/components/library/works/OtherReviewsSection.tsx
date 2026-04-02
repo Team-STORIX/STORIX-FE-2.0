@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import ForwardArrowIcon from '@/public/icons/layout/FowardArrowIcon'
+import ForwardArrowIcon from '@/public/common/layout/FowardArrowIcon'
 
 type OtherReviewItem = {
   reviewId: number
@@ -71,7 +71,7 @@ export default function OtherReviewsSection({
                     />
                   ) : (
                     <Image
-                      src={'/common/icons/reviewProfile.svg'}
+                      src={'/common/common/icons/reviewProfile.svg'}
                       alt={r.userName ?? 'profile'}
                       width={32}
                       height={32}

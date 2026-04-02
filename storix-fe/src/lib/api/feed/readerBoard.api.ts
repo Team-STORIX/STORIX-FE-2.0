@@ -1,5 +1,5 @@
 // src/api/feed/readerBoard.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 import axios from 'axios'
 
 export type FeedSort = 'LATEST'

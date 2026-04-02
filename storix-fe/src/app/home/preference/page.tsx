@@ -12,7 +12,7 @@ export default function PreferenceGuidePage() {
           </div>
         </div>
         <img
-          src="/image/preferenceGuide.webp"
+          src="/home/preference/preferenceGuide.webp"
           alt=" guide illustration"
           className="flex mt-24 mx-auto w-70 h-70 -translate-y-6"
         />

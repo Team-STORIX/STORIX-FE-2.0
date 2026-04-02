@@ -58,7 +58,7 @@ export default function AgreementPage() {
             className="absolute left-0 transition-opacity hover:opacity-70"
           >
             <Image
-              src="/icons/back.svg"
+              src="/common/common/icons/back.svg"
               alt="뒤로가기"
               width={24}
               height={24}
@@ -83,7 +83,7 @@ export default function AgreementPage() {
           <button onClick={handleAllAgree} className="w-full" type="button">
             <Image
               src={
-                allAgreed ? '/login/terms-pink.svg' : '/login/terms-gray.svg'
+                allAgreed ? '/common/common/login/terms-pink.svg' : '/common/common/login/terms-gray.svg'
               }
               alt="전체 동의"
               width={361}
@@ -103,7 +103,7 @@ export default function AgreementPage() {
             >
               <Image
                 src={
-                  agreement1 ? '/icons/check-pink.svg' : '/icons/check-gray.svg'
+                  agreement1 ? '/common/common/icons/check-pink.svg' : '/common/common/icons/check-gray.svg'
                 }
                 alt="체크"
                 width={20}
@@ -130,7 +130,7 @@ export default function AgreementPage() {
             >
               <Image
                 src={
-                  agreement2 ? '/icons/check-pink.svg' : '/icons/check-gray.svg'
+                  agreement2 ? '/common/common/icons/check-pink.svg' : '/common/common/icons/check-gray.svg'
                 }
                 alt="체크"
                 width={20}
@@ -157,7 +157,7 @@ export default function AgreementPage() {
             >
               <Image
                 src={
-                  agreement3 ? '/icons/check-pink.svg' : '/icons/check-gray.svg'
+                  agreement3 ? '/common/common/icons/check-pink.svg' : '/common/common/icons/check-gray.svg'
                 }
                 alt="체크"
                 width={20}
@@ -178,7 +178,7 @@ export default function AgreementPage() {
             className="w-full transition-opacity hover:opacity-90"
           >
             <Image
-              src="/onboarding/next.svg"
+              src="/common/common/onboarding/next.svg"
               alt="다음"
               width={361}
               height={50}
@@ -187,7 +187,7 @@ export default function AgreementPage() {
           </button>
         ) : (
           <Image
-            src="/onboarding/next-gray.svg"
+            src="/common/common/onboarding/next-gray.svg"
             alt="다음"
             width={361}
             height={50}

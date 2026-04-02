@@ -1,4 +1,4 @@
-// src/app/writers/login/page.tsx
+// src/app/writers/common/login/page.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -11,7 +11,7 @@ export default function Final() {
       {/*   상단 뒤로가기 */}
       <div className="w-full h-14 p-4 flex items-center bg-white">
         <img
-          src="/icons/back.svg"
+          src="/common/icons/back.svg"
           alt="뒤로가기"
           width={24}
           height={24}
@@ -51,7 +51,7 @@ export default function Final() {
         {/* 이미지 - 텍스트 125px 아래 */}
         <div className="mt-[125px]">
           <img
-            src="/onboarding/star-pink.svg"
+            src="/common/onboarding/star-pink.svg"
             alt="완료"
             width={150}
             height={150}

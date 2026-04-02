@@ -86,7 +86,7 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
       <div className="mt-auto flex items-center gap-3">
         <div className="flex items-center">
           <Image
-            src={isLiked ? '/icons/icon-like-pink.svg' : '/icons/icon-like.svg'}
+            src={isLiked ? '/common/icons/icon-like-pink.svg' : '/common/icons/icon-like.svg'}
             alt="좋아요"
             width={24}
             height={24}
@@ -98,7 +98,7 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
 
         <div className="flex items-center">
           <Image
-            src="/icons/icon-comment.svg"
+            src="/common/icons/icon-comment.svg"
             alt="댓글"
             width={24}
             height={24}

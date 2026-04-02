@@ -62,14 +62,14 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         <div className="flex items-center justify-end w-5">
           {isUp ? (
             <Image
-              src="/search/trendingUp.svg"
+              src="/home/search/trendingUp.svg"
               alt="상승"
               width={16}
               height={16}
             />
           ) : isDown ? (
             <Image
-              src="/search/trendingDown.svg"
+              src="/home/search/trendingDown.svg"
               alt="하락"
               width={16}
               height={16}

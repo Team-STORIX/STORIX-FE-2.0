@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   getReaderFavoriteArtists,
   getReaderFavoriteWorks,
-} from '@/api/profile/readerFavorites.api'
+} from '@/lib/api/profile/readerFavorites.api'
 
 type PreviewWriter = {
   id: number
@@ -109,7 +109,7 @@ export default function Preference() {
             className="transition-opacity hover:opacity-70 cursor-pointer"
           >
             <Image
-              src="/icons/arrow-next.svg"
+              src="/common/icons/arrow-next.svg"
               alt="더보기"
               width={24}
               height={24}
@@ -185,7 +185,7 @@ export default function Preference() {
             className="transition-opacity hover:opacity-70 cursor-pointer"
           >
             <Image
-              src="/icons/arrow-next.svg"
+              src="/common/icons/arrow-next.svg"
               alt="더보기"
               width={24}
               height={24}

@@ -10,7 +10,7 @@ import BookSpineCarousel from '@/components/library/gallery/BookSpineCarousel'
 import LibraryHeader from '@/components/library/LibraryHeader'
 import Warning from '@/components/common/Warining'
 import ReviewWriteBottomSheet from '@/components/home/bottomsheet/ReviewWriteBottomSheet'
-import ArrowDownIcon from '@/public/icons/ArrowDownIcon'
+import ArrowDownIcon from '@/public/common/icons/ArrowDownIcon'
 import { useLibraryReviewInfinite } from '@/hooks/library/useLibraryReview'
 import type { LibraryReviewSort } from '@/lib/api/library/library.api'
 
@@ -203,7 +203,7 @@ export default function LibraryGalleryPage() {
             className="hover:opacity-70 cursor-pointer"
           >
             <Image
-              src={'/icons/library/icon-list.svg'}
+              src={'/library/common/icons/icon-list.svg'}
               alt={'리스트형 보기'}
               width={24}
               height={24}

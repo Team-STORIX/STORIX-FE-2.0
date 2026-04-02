@@ -42,7 +42,7 @@ export default function ReviewKebabDropdown({ onEdit, onDelete }: Props) {
         className="cursor-pointer p-1"
         aria-label="메뉴"
       >
-        <Image src="/icons/menu-3dots.svg" alt="메뉴" width={24} height={24} />
+        <Image src="/common/icons/menu-3dots.svg" alt="메뉴" width={24} height={24} />
       </button>
 
       {/* 상단 케밥 드롭다운 */}

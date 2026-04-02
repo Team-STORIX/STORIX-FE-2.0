@@ -15,21 +15,21 @@ import NavBar from '@/components/common/NavBar'
 const MOCK_ROOMS: TopicRoomData[] = [
   {
     id: 'room1',
-    imageUrl: '/image/sample/topicroom-1.webp', // 일단 public에 더미 이미지 넣어두고 쓰기
+    imageUrl: '/home/topicroom/sample/topicroom-1.webp', // 일단 public에 더미 이미지 넣어두고 쓰기
     title: '탄서방 시어머니회',
     subtitle: '웹툰 상수리나무 아래',
     memberCount: 13,
   },
   {
     id: 'room2',
-    imageUrl: '/image/sample/topicroom-1.webp',
+    imageUrl: '/home/topicroom/sample/topicroom-1.webp',
     title: '탄서방 시어머니회 2',
     subtitle: '웹툰 상수리나무 아래',
     memberCount: 20,
   },
   {
     id: 'room3',
-    imageUrl: '/image/sample/topicroom-1.webp',
+    imageUrl: '/home/topicroom/sample/topicroom-1.webp',
     title: '탄서방 시어머니회 3',
     subtitle: '웹툰 상수리나무 아래',
     memberCount: 22,

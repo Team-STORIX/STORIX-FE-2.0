@@ -11,7 +11,7 @@ export function Splash() {
     >
       <div className="flex flex-col items-center">
         <img
-          src="/icons/logo-white.svg"
+          src="/common/common/icons/logo-white.svg"
           alt="STORIX Logo"
           width={100}
           height={100}

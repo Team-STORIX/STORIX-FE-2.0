@@ -1,4 +1,4 @@
-// src/app/feed/payPost/manual/page.tsx
+// src/app/feed/payPost/common/common/manual/page.tsx
 'use client'
 
 import Image from 'next/image'
@@ -28,7 +28,7 @@ export default function PayPostManualPage() {
       {/*   Topbar */}
       <div className="relative flex h-14 w-full items-center bg-white px-4">
         <img
-          src="/icons/back.svg"
+          src="/common/common/icons/back.svg"
           alt="뒤로가기"
           width={24}
           height={24}
@@ -87,7 +87,7 @@ export default function PayPostManualPage() {
             aria-label="다음으로"
           >
             <img
-              src="/onboarding/next.svg"
+              src="/common/common/onboarding/next.svg"
               alt="다음으로"
               width={361}
               height={50}

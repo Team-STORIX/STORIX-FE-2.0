@@ -15,14 +15,14 @@ import {
   getReaderFavoriteWorks,
   type FavoriteArtist,
   type FavoriteWork,
-} from '@/api/profile/readerFavorites.api'
+} from '@/lib/api/profile/readerFavorites.api'
 
 import {
   postFavoriteArtist,
   postFavoriteWork,
   deleteFavoriteArtist,
   deleteFavoriteWork,
-} from '@/api/favorite/toggleFavorite.api'
+} from '@/lib/api/favorite/toggleFavorite.api'
 
 type Tab = 'works' | 'writers'
 
@@ -345,7 +345,7 @@ export default function LikesClient() {
                           </span>
                           <span className="ml-1.5">
                             <Image
-                              src="/icons/star.svg"
+                              src="/common/icons/star.svg"
                               alt="별점"
                               width={9}
                               height={10}

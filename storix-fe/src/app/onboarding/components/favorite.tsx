@@ -1,11 +1,11 @@
-// src/app/onboarding/components/favorite.tsx
+// src/app/common/onboarding/components/favorite.tsx
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
 import {
   getOnboardingWorks,
   type OnboardingWork,
-} from '@/api/onboarding/onboardingWorks.api'
+} from '@/lib/api/onboarding/onboardingWorks.api'
 
 interface FavoriteProps {
   value: number[]
@@ -148,7 +148,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
                   {/*   체크 아이콘: 표지 내 좌상단 (8,8), 24x24 */}
                   {selected && (
                     <img
-                      src="/icons/check-pink.svg"
+                      src="/common/icons/check-pink.svg"
                       alt="선택됨"
                       className="absolute left-2 top-2 w-6 h-6"
                       draggable={false}

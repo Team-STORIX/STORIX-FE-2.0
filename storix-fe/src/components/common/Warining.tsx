@@ -23,7 +23,7 @@ export default function Warning({
       className={`flex w-full flex-col items-center justify-center gap-3 mt-48 px-4 ${className}`}
     >
       <Image
-        src="/common/icons/warningLarge.svg"
+        src="/common/common/icons/warningLarge.svg"
         alt="경고"
         width={120}
         height={120}

@@ -1,4 +1,4 @@
-// src/app/manual/components/topbar.tsx
+// src/app/common/manual/components/topbar.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'

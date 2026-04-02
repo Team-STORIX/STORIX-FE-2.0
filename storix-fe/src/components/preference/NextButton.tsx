@@ -28,7 +28,7 @@ export default function NextButton({
       ].join(' ')}
     >
       <span className="body-3 font-semibold">{label}</span>
-      <Image src="/onboarding/next.svg" alt="next" width={20} height={20} />
+      <Image src="/common/onboarding/next.svg" alt="next" width={20} height={20} />
     </button>
   )
 }

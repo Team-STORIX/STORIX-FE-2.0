@@ -1,5 +1,5 @@
 // src/api/favorite/toggleFavorite.api.ts
-import { apiClient } from '@/api/axios-instance'
+import { apiClient } from '@/lib/api/axios-instance'
 
 export type ApiEnvelope<T> = {
   isSuccess: boolean

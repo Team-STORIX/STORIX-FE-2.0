@@ -32,7 +32,7 @@ export const CardNav = ({ header, roomName, onNavigate }: CardNavProps) => {
           }}
         >
           <Image
-            src="/icons/icon-arrow-forward.svg"
+            src="/common/icons/icon-arrow-forward.svg"
             alt="forward arrow"
             width={24}
             height={24}

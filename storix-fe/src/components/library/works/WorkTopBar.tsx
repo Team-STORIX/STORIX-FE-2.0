@@ -18,7 +18,7 @@ export default function WorkTopBar({ onBack, isLiked, onToggleLike }: Props) {
         className="flex h-8 w-8 items-center justify-center cursor-pointer"
         aria-label="뒤로가기"
       >
-        <Image src="/icons/back.svg" alt="back" width={24} height={24} />
+        <Image src="/common/icons/back.svg" alt="back" width={24} height={24} />
       </button>
 
       <button
@@ -30,8 +30,8 @@ export default function WorkTopBar({ onBack, isLiked, onToggleLike }: Props) {
         <Image
           src={
             isLiked
-              ? '/icons/icon-add-active.svg'
-              : '/icons/icon-add-deactive.svg'
+              ? '/common/icons/icon-add-active.svg'
+              : '/common/icons/icon-add-deactive.svg'
           }
           alt="like"
           width={20}
