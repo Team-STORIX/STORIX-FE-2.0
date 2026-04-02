@@ -28,7 +28,7 @@ export default function MyActivityPage() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  // ✅ URL에서 tab 읽기 (없으면 posts)
+  //  URL에서 tab 읽기 (없으면 posts)
   const tabFromUrl = useMemo<Tab>(() => {
     const t = searchParams.get('tab')
     return isTab(t) ? t : 'posts'
@@ -36,12 +36,12 @@ export default function MyActivityPage() {
 
   const [activeTab, setActiveTab] = useState<Tab>(tabFromUrl)
 
-  // ✅ URL tab이 바뀌면 state도 동기화 (뒤로가기/앞으로가기 대응)
+  //  URL tab이 바뀌면 state도 동기화 (뒤로가기/앞으로가기 대응)
   useEffect(() => {
     setActiveTab(tabFromUrl)
   }, [tabFromUrl])
 
-  // ✅ 탭 변경 시 URL도 같이 변경 (뒤로가기로 복원되게)
+  //  탭 변경 시 URL도 같이 변경 (뒤로가기로 복원되게)
   const changeTab = (next: Tab) => {
     // 탭 바꾸기 전에 현재 스크롤 저장
     sessionStorage.setItem(scrollKey(activeTab), String(window.scrollY))
@@ -53,7 +53,7 @@ export default function MyActivityPage() {
     setActiveTab(next)
   }
 
-  // ✅ 탭별 스크롤 저장(스크롤할 때마다 갱신)
+  //  탭별 스크롤 저장(스크롤할 때마다 갱신)
   useEffect(() => {
     const onScroll = () => {
       sessionStorage.setItem(scrollKey(activeTab), String(window.scrollY))
@@ -62,7 +62,7 @@ export default function MyActivityPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [activeTab])
 
-  // ✅ 탭 바뀌거나(또는 뒤로가기) 마운트될 때 저장된 스크롤 복원
+  //  탭 바뀌거나(또는 뒤로가기) 마운트될 때 저장된 스크롤 복원
   useLayoutEffect(() => {
     const saved = sessionStorage.getItem(scrollKey(activeTab))
     if (!saved) return

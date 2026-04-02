@@ -56,14 +56,14 @@ export default function Nickname({
   // 페이지 진입 시 "기존 닉네임" 스냅샷
   const initialNicknameRef = useRef<string>('')
 
-  // ✅ iOS IME 보호: composing 상태 ref
+  //  iOS IME 보호: composing 상태 ref
   const composingRef = useRef(false)
 
-  // ✅ 외부 value를 그대로 쓰면 부모 렌더가 조합을 깨는 케이스가 있어 draft로 받음
+  //  외부 value를 그대로 쓰면 부모 렌더가 조합을 깨는 케이스가 있어 draft로 받음
   const [draft, setDraft] = useState(value)
 
   // NOTE: 요청하신 제한 범위(아래아 포함 X) 그대로 유지
-  // ✅ 다만 "입력 중"에는 검사하지 않고, "중복확인" 시점에만 검사한다.
+  //  다만 "입력 중"에는 검사하지 않고, "중복확인" 시점에만 검사한다.
   const allowedRegex = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9_ ]+$/
 
   const normalize = (s?: string) => (s ?? '').trim()
@@ -122,7 +122,7 @@ export default function Nickname({
     if (v) initialNicknameRef.current = v
   }, [currentNickname, value])
 
-  // ✅ draft ↔ value 동기화 (단, 조합 중엔 동기화 금지)
+  //  draft ↔ value 동기화 (단, 조합 중엔 동기화 금지)
   useEffect(() => {
     if (composingRef.current) return
     setDraft(value)
@@ -158,7 +158,7 @@ export default function Nickname({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSameNow, draft])
 
-  // ✅ 입력 중에는 "글자수(MAX)"만 처리
+  //  입력 중에는 "글자수(MAX)"만 처리
   // - composing 중: 절대 자르지 않음 (IME 보호)
   // - composing 아닐 때: MAX 초과하면 자르고 저장
   const applyLengthOnly = useCallback(
@@ -205,7 +205,7 @@ export default function Nickname({
     [value],
   )
 
-  // ✅ 중복확인 시점에만 검사
+  //  중복확인 시점에만 검사
   const validateOnCheck = useCallback(
     (v: string): { st: Status; message: string } => {
       const nv = normalize(v)
@@ -220,7 +220,7 @@ export default function Nickname({
       if (isAllSpaces(v)) return { st: 'spaces_only', message: MSG_SPACES }
       if (isJamoOnly(nv)) return { st: 'jamo_only', message: MSG_JAMO_ONLY }
 
-      // ✅ 타입검사는 여기서만
+      //  타입검사는 여기서만
       if (!allowedRegex.test(nv))
         return { st: 'invalid_chars', message: MSG_CHARS }
 
@@ -230,7 +230,7 @@ export default function Nickname({
   )
 
   // 동일(isSameNow)이면 무조건 중복확인 버튼 활성화
-  // ✅ 입력 중엔 타입검사 안 하므로, 버튼 조건은 "값 존재"만으로 단순화
+  //  입력 중엔 타입검사 안 하므로, 버튼 조건은 "값 존재"만으로 단순화
   const canCheck = useMemo(() => {
     if (status === 'checking') return false
     if (isSameNow) return true
@@ -240,7 +240,7 @@ export default function Nickname({
   const checkDuplicate = async () => {
     if (!canCheck) return
 
-    // ✅ 중복확인 시점에만 검사 실행
+    //  중복확인 시점에만 검사 실행
     clearMaxToast()
     const { st, message } = validateOnCheck(draft)
 
@@ -273,7 +273,7 @@ export default function Nickname({
       return
     }
 
-    // ✅ 이제 서버 중복확인
+    //  이제 서버 중복확인
     setStatus('checking')
     setMsg('')
 
@@ -363,7 +363,7 @@ export default function Nickname({
             }}
             onCompositionEnd={(e) => {
               composingRef.current = false
-              // ✅ 조합이 끝난 최종 문자열에만 "글자수 제한" 적용
+              //  조합이 끝난 최종 문자열에만 "글자수 제한" 적용
               applyLengthOnly(e.currentTarget.value)
             }}
             onFocus={() => setFocused(true)}
@@ -376,7 +376,7 @@ export default function Nickname({
               }
             }}
             placeholder="닉네임을 입력해 주세요"
-            // ✅ iOS 자동 기능 완화
+            //  iOS 자동 기능 완화
             autoCorrect="off"
             autoCapitalize="none"
             spellCheck={false}

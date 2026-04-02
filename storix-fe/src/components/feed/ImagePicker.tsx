@@ -63,7 +63,7 @@ export default function ImagePicker({
       </button>
 
       {files.length > 0 && (
-        <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="mt-3 flex gap-2 overflow-x-auto">
           {previews.map((p, idx) => (
             <div
               key={p.url}

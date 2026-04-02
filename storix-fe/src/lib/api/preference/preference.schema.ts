@@ -4,7 +4,7 @@ import { GenreKeySchema } from '@/lib/api/auth/auth.schema'
 
 /**
  * ⚠️ (중요) 프로젝트 다른 모듈에서도 ApiEnvelopeSchema를 export 중이므로
- * 여기서는 export 하지 않고 "파일 내부 전용"으로만 사용한다. // ✅
+ * 여기서는 export 하지 않고 "파일 내부 전용"으로만 사용한다. //
  */
 const ApiEnvelopeSchema = <T extends z.ZodTypeAny>(result: T) =>
   z.object({
@@ -34,7 +34,7 @@ export const PreferenceExplorationWorkSchema = z
 
 export const PreferenceExplorationResponseSchema = z.preprocess(
   (raw) => {
-    // ✅ 서버가 { result: { result: [...] } } 로 중첩해서 내려주는 케이스 방어
+    //  서버가 { result: { result: [...] } } 로 중첩해서 내려주는 케이스 방어
     if (raw && typeof raw === 'object') {
       const r = (raw as any).result
       if (r && typeof r === 'object' && (r as any).result) {

@@ -193,7 +193,12 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
       {/* TopBar */}
       <div className="flex h-[54px] items-center justify-between px-4">
         <button onClick={handleBack} className="cursor-pointer">
-          <Image src="/common/icons/back.svg" alt="뒤로가기" width={24} height={24} />
+          <Image
+            src="/common/icons/back.svg"
+            alt="뒤로가기"
+            width={24}
+            height={24}
+          />
         </button>
 
         <span className="text-body-1 font-medium">리뷰</span>
@@ -209,7 +214,6 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
             onEdit={onClickEdit}
             onDelete={openDeleteModal}
           />{' '}
-          {/* ✅ */}
         </div>
       </div>
       <div className="flex-1 overflow-y-auto px-4 pb-20">
@@ -297,7 +301,11 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
             aria-label="리뷰 좋아요"
           >
             <Image
-              src={liked ? '/common/icons/icon-like-pink.svg' : '/common/icons/icon-like.svg'}
+              src={
+                liked
+                  ? '/common/icons/icon-like-pink.svg'
+                  : '/common/icons/icon-like.svg'
+              }
               alt="좋아요"
               width={20}
               height={20}
@@ -312,7 +320,6 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
         onConfirm={onConfirmDelete}
         confirmDisabled={deleteMutation.isPending}
       />{' '}
-      {/* ✅ */}
     </main>
   )
 }

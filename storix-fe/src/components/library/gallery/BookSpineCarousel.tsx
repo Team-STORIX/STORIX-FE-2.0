@@ -181,7 +181,7 @@ export default function BookSpineCarousel({
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        className="w-full overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth"
+        className="w-full overflow-x-auto snap-x snap-mandatory scroll-smooth"
         style={{ touchAction: 'pan-x' }}
       >
         <div className="flex items-center gap-5.5 pl-35 pr-155 py-7">

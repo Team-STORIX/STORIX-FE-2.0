@@ -81,7 +81,7 @@ export default function Hashtag() {
 
             {/* 1위 */}
             <p
-              className="absolute heading-1 text-[var(--color-magenta-400)]"
+              className="absolute heading-1 text-[var(--color-magenta-300)]"
               style={{ left: 138, top: 47.6, fontFamily: 'Pretendard' }}
             >
               {ranks[1] || ''}
@@ -89,7 +89,7 @@ export default function Hashtag() {
 
             {/* 2위 */}
             <p
-              className="absolute heading-2 text-[var(--color-primary-main)]"
+              className="absolute heading-2 text-[var(--color-magenta-300)]"
               style={{ left: 211, top: 81.2, fontFamily: 'Pretendard' }}
             >
               {ranks[2] || ''}

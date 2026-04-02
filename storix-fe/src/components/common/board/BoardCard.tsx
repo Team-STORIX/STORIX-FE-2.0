@@ -56,7 +56,7 @@ type Props = {
 }
 
 /**
- * ✅ 해시태그 1줄 제한:
+ *  해시태그 1줄 제한:
  * - 컨테이너 너비 안에 "완전히 들어가는" 태그만 보여줌
  * - 중간에 잘릴 것 같은 태그는 아예 숨김
  */
@@ -235,7 +235,7 @@ export default function BoardCard({
           }
         }}
       >
-        {/* ✅ 상단 프로필/메뉴: 상세 이동 제외 + 커서 기본값 */}
+        {/*  상단 프로필/메뉴: 상세 이동 제외 + 커서 기본값 */}
         <div
           className="px-4 flex items-center justify-between h-[41px] cursor-default"
           onClick={(e) => e.stopPropagation()}
@@ -337,7 +337,7 @@ export default function BoardCard({
           </div>
         </div>
 
-        {/* ✅ 작품정보: PostCard처럼 "카드 클릭 범위"에 포함 (stopPropagation 제거)
+        {/*  작품정보: PostCard처럼 "카드 클릭 범위"에 포함 (stopPropagation 제거)
             - 화살표 버튼만 예외(작품 상세 이동) */}
         {data.works && (
           <div className="mt-5 px-4">
@@ -404,7 +404,7 @@ export default function BoardCard({
           </div>
         )}
 
-        {/* ✅ 스포일러 영역(이미지+본문만): PostCard와 동일하게 blur/opacity로 모자이크 느낌 */}
+        {/*  스포일러 영역(이미지+본문만): PostCard와 동일하게 blur/opacity로 모자이크 느낌 */}
         <div
           className="mt-5 relative"
           onClick={(e) => {
@@ -455,12 +455,12 @@ export default function BoardCard({
             </p>
           </div>
 
-          {/* ✅ 스포일러 문구: 문구만 클릭되게(보드카드 기존 방식 유지) */}
+          {/*  스포일러 문구: 문구만 클릭되게(보드카드 기존 방식 유지) */}
           {isSpoilerHidden && (
             <button
               type="button"
               className="absolute left-4 top-[12px] z-10 inline-flex w-fit max-w-[calc(100%-32px)]
-                font-medium text-[14px] leading-[140%] text-[var(--color-magenta-400)] truncate"
+                font-medium text-[14px] leading-[140%] text-[var(--color-magenta-300)] truncate"
               onClick={(e) => {
                 e.stopPropagation()
                 revealSpoiler()
@@ -473,7 +473,7 @@ export default function BoardCard({
           )}
         </div>
 
-        {/* ✅ 좋아요/댓글
+        {/*  좋아요/댓글
             - 하트+숫자: 상세 이동 제외 + 커서 기본값으로 통일
             - 댓글 영역은 PostCard처럼 '상세 이동 가능'로 유지(요구사항에 없었음) */}
         <div className="mt-5 px-4 flex items-center">

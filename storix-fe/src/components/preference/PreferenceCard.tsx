@@ -30,9 +30,9 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
   function PreferenceCard({ work, onSwiped }, ref) {
     const rootRef = useRef<HTMLDivElement | null>(null)
 
-    const onSwipedRef = useRef(onSwiped) // ✅ UI 변경
+    const onSwipedRef = useRef(onSwiped) //  UI 변경
     useEffect(() => {
-      onSwipedRef.current = onSwiped // ✅ UI 변경
+      onSwipedRef.current = onSwiped //  UI 변경
     }, [onSwiped])
 
     const startXRef = useRef(0)
@@ -43,7 +43,7 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
     const [x, setX] = useState(0)
     const [withTransition, setWithTransition] = useState(false)
 
-    // ✅ UI 변경: 타입이 프로젝트에서 확장되어도 안전하게 접근
+    //  UI 변경: 타입이 프로젝트에서 확장되어도 안전하게 접근
     const genre = (work as any)?.genre as string | undefined
     const description = (work as any)?.description as string | undefined
     const hashtags = useMemo(() => {
@@ -51,15 +51,15 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
       return Array.isArray(raw) ? raw.filter(Boolean).map(String) : []
     }, [work])
 
-    const OUT_MS = 360 // ✅ UI 변경: 날아가는 속도 조금 느리게
-    const RESET_MS = 260 // ✅ UI 변경: 복귀도 살짝 여유
+    const OUT_MS = 360 //  UI 변경: 날아가는 속도 조금 느리게
+    const RESET_MS = 260 //  UI 변경: 복귀도 살짝 여유
 
     const resetPosition = () => {
       setWithTransition(true)
       setX(0)
       window.setTimeout(() => {
         setWithTransition(false)
-      }, RESET_MS) // ✅ UI 변경
+      }, RESET_MS) //  UI 변경
     }
 
     const animateOut = (dir: PreferenceSwipeDir) => {
@@ -67,17 +67,17 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
       animatingRef.current = true
 
       const distance =
-        (typeof window !== 'undefined' ? window.innerWidth : 360) + 160 // ✅ UI 변경: 더 확실히 화면 밖으로
+        (typeof window !== 'undefined' ? window.innerWidth : 360) + 160 //  UI 변경: 더 확실히 화면 밖으로
 
       setWithTransition(true)
       setX(dir === 'like' ? distance : -distance)
 
       window.setTimeout(() => {
-        onSwipedRef.current?.(dir) // ✅ UI 변경: 버튼 swipe에서도 최신 콜백 실행
+        onSwipedRef.current?.(dir) //  UI 변경: 버튼 swipe에서도 최신 콜백 실행
         setWithTransition(false)
         setX(0)
         animatingRef.current = false
-      }, OUT_MS) // ✅ UI 변경
+      }, OUT_MS) //  UI 변경
     }
 
     const onPointerDown = (e: React.PointerEvent) => {
@@ -128,7 +128,7 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
       resetPosition()
     }
 
-    // ✅ UI 변경: work가 바뀌면 위치 초기화 (버튼/스와이프 공통)
+    //  UI 변경: work가 바뀌면 위치 초기화 (버튼/스와이프 공통)
     useEffect(() => {
       draggingRef.current = false
       animatingRef.current = false
@@ -146,7 +146,7 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
       [],
     )
 
-    // ✅ UI 변경: 틴더 느낌 회전(좌우로 이동할수록 회전)
+    //  UI 변경: 틴더 느낌 회전(좌우로 이동할수록 회전)
     const rotate = clamp(x / 18, -12, 12)
 
     return (
@@ -158,12 +158,12 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
           transform: `translateX(${x}px) rotate(${rotate}deg)`,
           transition: withTransition
             ? `transform ${OUT_MS}ms ease-out`
-            : 'none', // ✅ UI 변경
+            : 'none', //  UI 변경
         }}
-        onPointerDown={onPointerDown} // ✅ UI 변경
-        onPointerMove={onPointerMove} // ✅ UI 변경
-        onPointerUp={onPointerUp} // ✅ UI 변경
-        onPointerCancel={onPointerCancel} // ✅ UI 변경
+        onPointerDown={onPointerDown} //  UI 변경
+        onPointerMove={onPointerMove} //  UI 변경
+        onPointerUp={onPointerUp} //  UI 변경
+        onPointerCancel={onPointerCancel} //  UI 변경
       >
         {/* 아래는 기존 UI 유지 */}
         <div className="w-full rounded-xl overflow-hidden">

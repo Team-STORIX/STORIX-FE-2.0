@@ -2,8 +2,8 @@
 'use client'
 // 1월 30일 19시
 
-// ✅ 입력 중에는 "글자수(MAX)"만 처리하고, 타입(정규식) 검사는 "중복확인 버튼"을 눌렀을 때만 수행
-// ✅ iOS/천지인 IME 깨짐 방지: composing 중에는 절대 trim/slice/validate/sanitize 하지 않음
+//  입력 중에는 "글자수(MAX)"만 처리하고, 타입(정규식) 검사는 "중복확인 버튼"을 눌렀을 때만 수행
+//  iOS/천지인 IME 깨짐 방지: composing 중에는 절대 trim/slice/validate/sanitize 하지 않음
 
 import Image from 'next/image'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
@@ -52,10 +52,10 @@ export default function Nickname({
   const [status, setStatus] = useState<Status>('idle')
   const [msg, setMsg] = useState('')
 
-  // ✅ iOS(사파리/웹뷰) IME 이슈 방지: 조합 상태는 ref로
+  //  iOS(사파리/웹뷰) IME 이슈 방지: 조합 상태는 ref로
   const composingRef = useRef(false)
 
-  // ✅ 외부 value 변화(초기 로드/부모 동기화) 반영용 local draft
+  //  외부 value 변화(초기 로드/부모 동기화) 반영용 local draft
   //    (조합 중일 때 부모 value가 바뀌면 IME 깨질 수 있어 local draft가 안전)
   const [draft, setDraft] = useState(value)
 
@@ -63,7 +63,7 @@ export default function Nickname({
   const didInitRef = useRef(false)
 
   // NOTE: 요청하신 새 제한 범위(아래아 포함 X) 그대로 둠
-  // ✅ 하지만 "입력 중"에는 이 regex로 검사/필터링하지 않음. (중복확인 시점에만 검사)
+  //  하지만 "입력 중"에는 이 regex로 검사/필터링하지 않음. (중복확인 시점에만 검사)
   const allowedRegex = /^[가-힣a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ ]+$/
 
   const normalize = (s?: string) => (s ?? '').trim()
@@ -75,7 +75,7 @@ export default function Nickname({
     return /^[ㄱ-ㅎㅏ-ㅣ]+$/.test(t)
   }
 
-  // ✅ 외부 value가 바뀌면 draft를 동기화
+  //  외부 value가 바뀌면 draft를 동기화
   // (다만 조합 중엔 동기화하면 IME가 깨질 수 있어 composing 중에는 건드리지 않음)
   useEffect(() => {
     if (composingRef.current) return
@@ -88,7 +88,7 @@ export default function Nickname({
     return normalize(draft) === cur
   }, [draft, currentNickname])
 
-  // ✅ "중복확인 버튼" 눌렀을 때만 검사하는 validate
+  //  "중복확인 버튼" 눌렀을 때만 검사하는 validate
   const validateOnCheck = useCallback(
     (v: string): { st: Status; message: string } => {
       const nv = normalize(v)
@@ -105,7 +105,7 @@ export default function Nickname({
 
       if (isAllSpaces(v)) return { st: 'spaces_only', message: MSG_SPACES }
 
-      // ✅ 타입 검사도 확인 시점에만
+      //  타입 검사도 확인 시점에만
       if (!allowedRegex.test(nv))
         return { st: 'invalid_chars', message: MSG_CHARS }
 
@@ -116,7 +116,7 @@ export default function Nickname({
     [currentNickname],
   )
 
-  // ✅ 초기 1회 + currentNickname 변경 시: "same" 여부만 자연스럽게 반영
+  //  초기 1회 + currentNickname 변경 시: "same" 여부만 자연스럽게 반영
   useEffect(() => {
     if (!didInitRef.current) {
       const { st, message } = validateOnCheck(draft)
@@ -134,7 +134,7 @@ export default function Nickname({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNickname, validateOnCheck])
 
-  // ✅ 입력 중에는 "글자수만" 처리
+  //  입력 중에는 "글자수만" 처리
   // - composing 중: 절대 자르지 않음 (IME 보호)
   // - composing 아닐 때: MAX 초과하면 잘라서 적용
   const applyLengthOnly = (raw: string) => {
@@ -170,7 +170,7 @@ export default function Nickname({
   const checkDuplicate = async () => {
     if (!canCheck) return
 
-    // ✅ 여기서만 타입/길이/자모 검사
+    //  여기서만 타입/길이/자모 검사
     const { st, message } = validateOnCheck(draft)
     setStatus(st)
     setMsg(message)
@@ -312,7 +312,7 @@ export default function Nickname({
             }}
             onCompositionEnd={(e) => {
               composingRef.current = false
-              // ✅ 조합이 끝난 최종 문자열에만 "글자수 MAX" 적용
+              //  조합이 끝난 최종 문자열에만 "글자수 MAX" 적용
               applyLengthOnly(e.currentTarget.value)
             }}
             onFocus={() => setFocused(true)}
@@ -325,7 +325,7 @@ export default function Nickname({
               }
             }}
             placeholder="닉네임을 입력하세요"
-            // ✅ iOS 자동 기능이 조합을 건드리는 경우 완화
+            //  iOS 자동 기능이 조합을 건드리는 경우 완화
             autoCorrect="off"
             autoCapitalize="none"
             spellCheck={false}
