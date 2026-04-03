@@ -1,5 +1,5 @@
 ---
-name: Feature-request
+name: Feature request
 about: 개발해야 하는 기능을 단위 별로 명세합니다.
 title: 'Feat: 뭐시기 기능 구현'
 labels: ":rocket: feat"
