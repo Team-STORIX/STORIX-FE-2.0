@@ -32,6 +32,7 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
       {/* 텍스트 영역 */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 ">
         {/* HOT / 인원 뱃지 */}
+        {/* !!caption-3 폰트 수정하기!! */}
         <div className="mb-2 flex items-center gap-1.5">
           <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">
             <FireIcon />

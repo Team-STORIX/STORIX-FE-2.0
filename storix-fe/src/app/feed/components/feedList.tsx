@@ -57,7 +57,7 @@ export default function FeedList({
     [onClickDetail, router],
   )
 
-  // ✅ window 스크롤 가상화
+  //  window 스크롤 가상화
   const rowVirtualizer = useWindowVirtualizer({
     count: filtered.length,
     estimateSize: (index) => {
@@ -94,7 +94,7 @@ export default function FeedList({
         return (
           <div
             key={post.id}
-            ref={rowVirtualizer.measureElement} // ✅ 실제 높이 측정
+            ref={rowVirtualizer.measureElement} //  실제 높이 측정
             data-index={vRow.index}
             style={{
               position: 'absolute',

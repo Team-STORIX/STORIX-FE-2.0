@@ -32,7 +32,7 @@ export function useInfiniteScroll({
   const lastFireAtRef = useRef(0)
   const timeoutRef = useRef<number | null>(null)
 
-  // ✅ 최신 콜백만 유지 (observer 재생성 방지)
+  //  최신 콜백만 유지 (observer 재생성 방지)
   const onLoadMoreRef = useRef(onLoadMore)
   useEffect(() => {
     onLoadMoreRef.current = onLoadMore

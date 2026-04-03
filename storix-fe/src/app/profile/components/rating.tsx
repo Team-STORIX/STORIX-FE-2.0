@@ -46,7 +46,7 @@ export default function Rating() {
   const [countsRaw, setCountsRaw] = useState<RatingCountsMap | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // ✅ NavBar 수정 없이, 여기서 바텀시트 직접 띄우기
+  //  NavBar 수정 없이, 여기서 바텀시트 직접 띄우기
   const [showReviewSheet, setShowReviewSheet] = useState(false)
 
   useEffect(() => {
@@ -140,10 +140,10 @@ export default function Rating() {
           </p>
         )}
 
-        {/* ✅ 리뷰 0개면: 문구 + 버튼 */}
+        {/*  리뷰 0개면: 문구 + 버튼 */}
         {totalReviews === 0 ? (
           <div className="mt-6 flex flex-col items-center text-center">
-            {/* ✅ 요청한 스타일: Heading3 (SUIT / 18 / 600 / 140%) */}
+            {/*  요청한 스타일: Heading3 (SUIT / 18 / 600 / 140%) */}
             <p
               className="mt-[24px]"
               style={{
@@ -264,7 +264,7 @@ export default function Rating() {
         )}
       </div>
 
-      {/* ✅ NavBar를 건드리지 않아도 동일 바텀시트를 띄움 */}
+      {/*  NavBar를 건드리지 않아도 동일 바텀시트를 띄움 */}
       {showReviewSheet && (
         <ReviewWriteBottomSheet onClose={() => setShowReviewSheet(false)} />
       )}
