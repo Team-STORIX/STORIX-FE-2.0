@@ -29,6 +29,12 @@
   --color-success: #009126;
   --color-warning: #ef433e;
   /*-------- Magenta scale ---------*/
+  --color-magenta-900: #96005a;
+  --color-magenta-800: #bd0058;
+  --color-magenta-700: #d8016f;
+  --color-magenta-600: #e90075;
+  --color-magenta-500: #f80078;
+  --color-magenta-400: #ff0079;
   --color-magenta-300: #ff4093;
   --color-magenta-200: #ff80b3;
   --color-magenta-100: #fdbcd9;
