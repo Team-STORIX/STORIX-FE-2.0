@@ -72,13 +72,11 @@ body {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
   }
-
   .heading-2 {
     font-size: 20px;
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
   }
-
   .heading-3 {
     font-size: 18px;
     font-weight: var(--font-weight-bold);
@@ -89,41 +87,51 @@ body {
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-tight);
   }
-  .body-1 {
+  .body-1-medium {
     font-size: 16px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-  .body-2 {
+  .body-1-bold {
+    font-size: 16px;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+  }
+  .body-1-semibold {
+    font-size: 16px;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+  }
+  .body-2-medium {
     font-size: 14px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .caption-1 {
+  .body-2-bold {
+    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+  }
+  .caption-1-medium {
     font-size: 12px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .caption-2 {
+  .caption-1-extrabold {
+    font-size: 12px;
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--line-height-tight);
+  }
+  .caption-2-medium {
     font-size: 10px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .caption-3 {
+  .caption-2-extrabold {
     font-size: 10px;
     font-weight: var(--font-weight-extrabold);
     line-height: var(--line-height-tight);
   }
-
-  .caption-4 {
-    font-size: 12px;
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-tight);
-  }
-
   .date-text {
     font-size: 16px;
     font-weight: var(--font-weight-bold);
