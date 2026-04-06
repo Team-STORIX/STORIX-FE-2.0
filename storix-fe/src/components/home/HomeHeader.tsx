@@ -28,7 +28,7 @@ export default function HomeHeader() {
           className="flex h-6 w-6 items-center justify-center"
         >
           <Image
-            src="/common/common/icons/search.svg"
+            src="/common/icons/search.svg"
             alt="STORIX"
             width={24}
             height={24}
@@ -43,7 +43,7 @@ export default function HomeHeader() {
           className="flex h-6 w-6 items-center justify-center"
         >
           <Image
-            src="/common/common/icons/notification.svg"
+            src="/common/icons/notification.svg"
             alt="STORIX"
             width={24}
             height={24}

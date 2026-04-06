@@ -1,4 +1,4 @@
-// src/api/common/common/onboarding/onboardingWorks.api.ts
+// src/api/common/onboarding/onboardingWorks.api.ts
 import { apiClient } from '@/lib/api/axios-instance'
 
 export type OnboardingWork = {
@@ -18,7 +18,7 @@ type ApiResponse<T> = {
 
 export const getOnboardingWorks = async (): Promise<OnboardingWork[]> => {
   const res = await apiClient.get<ApiResponse<OnboardingWork[]>>(
-    '/api/v1/common/common/onboarding/works',
+    '/api/v1/common/onboarding/works',
   )
   return res.data.result ?? []
 }

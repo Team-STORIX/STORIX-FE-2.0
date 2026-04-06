@@ -78,7 +78,7 @@ export default function ReplyCard({
             }}
           >
             <Image
-              src="/common/common/icons/menu-3dots.svg"
+              src="/common/icons/menu-3dots.svg"
               alt="댓글 메뉴"
               width={24}
               height={24}
@@ -101,8 +101,8 @@ export default function ReplyCard({
               <img
                 src={
                   isMine
-                    ? '/common/common/icons/delete-dropdown.svg'
-                    : '/common/common/icons/comment-dropdown.svg'
+                    ? '/common/icons/delete-dropdown.svg'
+                    : '/common/icons/comment-dropdown.svg'
                 }
                 alt={isMine ? '삭제하기' : '신고하기'}
                 width={96}
@@ -132,8 +132,8 @@ export default function ReplyCard({
           <Image
             src={
               item.reply.isLiked
-                ? '/common/common/icons/icon-like-pink.svg'
-                : '/common/common/icons/icon-like.svg'
+                ? '/common/icons/icon-like-pink.svg'
+                : '/common/icons/icon-like.svg'
             }
             alt="좋아요"
             width={24}

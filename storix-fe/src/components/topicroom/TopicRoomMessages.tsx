@@ -153,7 +153,7 @@ export default function TopicRoomMessages({
                       />
                     ) : (
                       <Image
-                        src={'/common/common/icons/reviewProfile.svg'}
+                        src={'/common/icons/reviewProfile.svg'}
                         alt={m.senderName ?? 'profile'}
                         width={36}
                         height={36}

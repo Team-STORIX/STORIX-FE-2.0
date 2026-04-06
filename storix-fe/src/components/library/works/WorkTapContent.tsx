@@ -236,7 +236,7 @@ export default function WorkTabContent({
             className="flex flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white body-2 disabled:opacity-50 cursor-pointer"
           >
             <Image
-              src="/common/common/icons/fire.svg"
+              src="/common/icons/fire.svg"
               alt="fire"
               width={24}
               height={24}

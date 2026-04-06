@@ -23,7 +23,7 @@ export default function NotifyCard({
         {/* 왼쪽 동그란 썸네일 */}
         <div className="mt-1 h-6 w-6 flex-shrink-0 overflow-hidden rounded-full">
           <Image
-            src="/common/common/icons/notification-gray.svg"
+            src="/common/icons/notification-gray.svg"
             alt="STORIX"
             width={24}
             height={24}
