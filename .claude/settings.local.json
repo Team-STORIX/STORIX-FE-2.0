@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find c:Usersdbs0396STORIX-FE-2.0storix-fe -type f \\\\\\(-name *login* -o -name *auth* \\\\\\))",
+      "Bash(find \"/c/Users/dbs0396/STORIX-FE-2.0/storix-fe/src/app\" -type f -name \"page.tsx\" -exec grep -l \"use client\" {})",
+      "Bash(find . -type f -name \"page.tsx\" ! -exec grep -l \"use client\" {})",
+      "Bash(find . -type f -name \"page.tsx\" -exec grep -L \"use client\" {})"
+    ]
+  }
+}
