@@ -81,15 +81,6 @@ export const WorksSearchItemSchema = z
   })
   .passthrough()
 
-/** Artists item */
-export const ArtistsSearchItemSchema = z
-  .object({
-    artistId: z.coerce.number(),
-    artistName: z.string(),
-    profileUrl: z.string().nullable().optional(),
-  })
-  .passthrough()
-
 /**   Raw(실응답) 스키마 */
 export const WorksSearchRawResponseSchema = ApiResponseSchema(
   z.object({
@@ -98,19 +89,9 @@ export const WorksSearchRawResponseSchema = ApiResponseSchema(
   }),
 )
 
-export const ArtistsSearchRawResponseSchema = ApiResponseSchema(
-  z.object({
-    result: SliceSchema(ArtistsSearchItemSchema),
-    fallbackRecommendation: z.string().nullable().optional(),
-  }),
-)
-
 /**   Normalized(기존 FE 호환) 스키마: result가 곧 Slice */
 export const WorksSearchResponseSchema = ApiResponseSchema(
   SliceSchema(WorksSearchItemSchema),
-)
-export const ArtistsSearchResponseSchema = ApiResponseSchema(
-  SliceSchema(ArtistsSearchItemSchema),
 )
 
 /** ---- trending/recent (아직 실응답 JSON을 못 봐서 result 중첩만 방어적으로 언랩) ---- */
@@ -157,5 +138,4 @@ export const DeleteRecentResponseSchema = ApiResponseUnwrapSchema(z.any())
 
 export type WorksSort = 'NAME' | 'RATING' | 'REVIEW'
 export type WorksSearchItem = z.infer<typeof WorksSearchItemSchema>
-export type ArtistsSearchItem = z.infer<typeof ArtistsSearchItemSchema>
 export type TrendingKeyword = z.infer<typeof TrendingKeywordSchema>

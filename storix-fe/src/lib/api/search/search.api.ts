@@ -3,9 +3,7 @@
 import { apiClient } from '@/lib/api/axios-instance'
 import {
   WorksSearchRawResponseSchema,
-  ArtistsSearchRawResponseSchema,
   WorksSearchResponseSchema,
-  ArtistsSearchResponseSchema,
   TrendingResponseSchema,
   RecentResponseSchema,
   DeleteRecentResponseSchema,
@@ -38,7 +36,7 @@ export const getWorksSearch = async (params: {
   const { keyword, sort = 'NAME', page = 0 } = params
   const k = keyword.trim()
 
-  const res = await apiClient.get('/api/v1/search/works', {
+  const res = await apiClient.get('/api/v2/search/works', {
     params: { keyword: k, sort, page },
   })
 
@@ -53,29 +51,6 @@ export const getWorksSearch = async (params: {
 
   // 3) normalized 형태로 다시 한번 보증
   const parsed = WorksSearchResponseSchema.parse(normalized)
-
-  return parsed
-}
-
-export const getArtistsSearch = async (params: {
-  keyword: string
-  page?: number
-}) => {
-  const { keyword, page = 0 } = params
-  const k = keyword.trim()
-
-  const res = await apiClient.get('/api/v1/search/artists', {
-    params: { keyword: k, page },
-  })
-
-  const rawParsed = ArtistsSearchRawResponseSchema.parse(res.data)
-
-  const normalized = {
-    ...rawParsed,
-    result: rawParsed.result.result,
-  }
-
-  const parsed = ArtistsSearchResponseSchema.parse(normalized)
 
   return parsed
 }
