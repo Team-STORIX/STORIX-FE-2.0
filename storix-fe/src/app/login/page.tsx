@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
 import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
+import { developerLogin } from '@/lib/api/auth/developer-login.api'
+import { useAuthStore } from '@/store/auth.store'
 
 function generateNaverState() {
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
@@ -22,6 +24,19 @@ function generateNaverState() {
 export default function LoginPage() {
   const [showSplash, setShowSplash] = useState(true)
   const router = useRouter()
+  const setAccessToken = useAuthStore((s) => s.setAccessToken)
+
+  const handleDeveloperLogin = async () => {
+    const pendingId = window.prompt('pendingId를 입력하세요')
+    if (!pendingId) return
+    try {
+      const data = await developerLogin(pendingId)
+      setAccessToken(data.result.accessToken)
+      router.push('/home')
+    } catch {
+      alert('개발자 로그인에 실패했습니다.')
+    }
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 1500)
@@ -110,6 +125,18 @@ export default function LoginPage() {
             onClick={handleNaverLogin}
           />
         </div>
+
+        {/* 개발자 로그인 */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-2">
+            <button
+              onClick={handleDeveloperLogin}
+              className="w-[360px] h-[48px] text-sm text-gray-400 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+            >
+              개발자 로그인
+            </button>
+          </div>
+        )}
 
         {/*   작가 로그인 아이콘을 여기에 통합 */}
         <div className="mt-2">

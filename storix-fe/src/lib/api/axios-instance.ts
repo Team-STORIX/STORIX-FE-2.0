@@ -47,6 +47,7 @@ const isNoRefreshEndpoint = (url?: string) => {
   // baseURL 붙기 전/후 모두 대비해서 includes로 처리
   return (
     url.includes('/api/v1/auth/users/reader/signup') ||
+    url.includes('/api/v1/onboarding/works') ||
     url.includes('/api/v1/auth/tokens/refresh') ||
     url.includes('/api/v1/auth/login') ||
     url.includes('/api/v1/auth/oauth') ||
