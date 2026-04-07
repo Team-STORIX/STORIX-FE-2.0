@@ -4,11 +4,11 @@
 
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
-import TopicroomChip from './TopicroomChip' // ✅ UI 변경
+import TopicroomChip from './TopicroomChip' //  UI 변경
 
 export type TopicRoomUiMessage = {
   key: string
-  // ✅ UI 변경: 날짜/입퇴장 chip 지원
+  //  UI 변경: 날짜/입퇴장 chip 지원
   kind?: 'date' | 'presence' | 'chat'
   date?: string | Date
   action?: 'enter' | 'leave'
@@ -75,7 +75,7 @@ export default function TopicRoomMessages({
       )}
 
       {messages.map((m) => {
-        // ✅ UI 변경: 날짜 chip
+        //  UI 변경: 날짜 chip
         if (m.kind === 'date' && m.date) {
           return (
             <div key={m.key} className="my-5">
@@ -84,7 +84,7 @@ export default function TopicRoomMessages({
           )
         }
 
-        // ✅ UI 변경: 입/퇴장 chip
+        //  UI 변경: 입/퇴장 chip
         if (m.kind === 'presence' && m.action && m.userName) {
           return (
             <div key={m.key} className="my-3">
@@ -97,7 +97,7 @@ export default function TopicRoomMessages({
           )
         }
 
-        // ✅ UI 변경: 서버가 입/퇴장을 텍스트로만 주는 경우도 자동 chip 처리
+        //  UI 변경: 서버가 입/퇴장을 텍스트로만 주는 경우도 자동 chip 처리
         const presenceMatch =
           !m.isMine &&
           !m.senderId &&

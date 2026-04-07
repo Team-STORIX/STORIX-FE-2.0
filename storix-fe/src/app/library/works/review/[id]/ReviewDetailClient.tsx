@@ -214,7 +214,6 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
             onEdit={onClickEdit}
             onDelete={openDeleteModal}
           />{' '}
-          {/* ✅ */}
         </div>
       </div>
       <div className="flex-1 overflow-y-auto px-4 pb-20">
@@ -321,7 +320,6 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
         onConfirm={onConfirmDelete}
         confirmDisabled={deleteMutation.isPending}
       />{' '}
-      {/* ✅ */}
     </main>
   )
 }

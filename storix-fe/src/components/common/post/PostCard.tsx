@@ -204,7 +204,7 @@ export default function PostCard({
         }
       }}
     >
-      {/* ✅ 상단 프로필 한 줄(클릭 제외) */}
+      {/*  상단 프로필 한 줄(클릭 제외) */}
       <div
         className="px-4 flex items-center justify-between h-[41px] cursor-default"
         onClick={(e) => e.stopPropagation()}
@@ -293,7 +293,7 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* ✅ 작품 정보 (이제 영역 클릭하면 상세로 이동됨 / 화살표만 예외) */}
+      {/*  작품 정보 (이제 영역 클릭하면 상세로 이동됨 / 화살표만 예외) */}
       {showWorks && (
         <div className="mt-5 px-4">
           <div className="p-3 rounded-xl flex items-center gap-3 border border-[var(--color-gray-100)] bg-[var(--color-white)]">
@@ -346,11 +346,11 @@ export default function PostCard({
         </div>
       )}
 
-      {/* ✅ 본문/이미지/반응: 프로필(또는 작품영역)과의 간격을 20px로 고정 */}
+      {/*  본문/이미지/반응: 프로필(또는 작품영역)과의 간격을 20px로 고정 */}
       <div className="mt-5">
         <div className="relative">
           <div className={isSpoilerHidden ? 'select-none' : ''}>
-            {/* ✅ 첫 컨텐츠의 mt 제거: 위에서 mt-5로 이미 20px 확보 */}
+            {/*  첫 컨텐츠의 mt 제거: 위에서 mt-5로 이미 20px 확보 */}
             {images.length > 0 && (
               <div className="px-4">
                 <div className="overflow-x-auto">
@@ -397,7 +397,7 @@ export default function PostCard({
             </div>
           </div>
 
-          {/* ✅ 문구 클릭 시 블러 해제 */}
+          {/*  문구 클릭 시 블러 해제 */}
           {isSpoilerHidden && (
             <button
               type="button"
@@ -405,7 +405,7 @@ export default function PostCard({
               style={{
                 top: images.length > 0 ? '16px' : '12px',
                 overflow: 'hidden',
-                color: 'var(--magenta-400, #FF0079)',
+                color: 'var(--color-magenta-300)',
                 textAlign: 'justify',
                 textOverflow: 'ellipsis',
                 fontFamily: 'SUIT',
@@ -427,7 +427,7 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* ✅ 좋아요/댓글: 하트 영역만 클릭 제외 (stopPropagation) */}
+      {/*  좋아요/댓글: 하트 영역만 클릭 제외 (stopPropagation) */}
       <div className="mt-5 px-4 flex items-center">
         <button
           type="button"
@@ -440,7 +440,11 @@ export default function PostCard({
           aria-label="좋아요"
         >
           <Image
-            src={isLiked ? '/common/icons/icon-like-pink.svg' : '/common/icons/icon-like.svg'}
+            src={
+              isLiked
+                ? '/common/icons/icon-like-pink.svg'
+                : '/common/icons/icon-like.svg'
+            }
             alt="좋아요"
             width={24}
             height={24}

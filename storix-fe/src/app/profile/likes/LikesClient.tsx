@@ -329,7 +329,7 @@ export default function LikesClient() {
                         {w.worksName}
                       </p>
 
-                      {/* ✅ 제목 ↔ 작가 줄: 4px (mt-1) / ✅ 작가 줄: 14px 확정 (caption-1 제거) */}
+                      {/*  제목 ↔ 작가 줄: 4px (mt-1) /  작가 줄: 14px 확정 (caption-1 제거) */}
                       <p className="mt-1 body-2 text-[var(--color-gray-500)]">
                         {w.artistName} · {w.worksType}
                       </p>
@@ -338,7 +338,7 @@ export default function LikesClient() {
                         // 작가 줄 ↔ 평가함: 4px (mt-1)
                         <div className="mt-1 flex items-center">
                           <span
-                            className="text-[12px] font-medium tracking-[0.2px] text-[var(--color-primary-main)]"
+                            className="text-[12px] font-medium tracking-[0.2px] text-[var(--color-magenta-300)]"
                             style={{ fontFamily: 'SUIT', lineHeight: '138%' }}
                           >
                             평가함
@@ -351,7 +351,7 @@ export default function LikesClient() {
                               height={10}
                             />
                           </span>
-                          <span className="ml-0.5 text-[10px] font-medium text-[var(--color-primary-main)]">
+                          <span className="ml-0.5 text-[10px] font-medium text-[var(--color-magenta-300)]">
                             {w.rating ?? '-'}
                           </span>
                         </div>

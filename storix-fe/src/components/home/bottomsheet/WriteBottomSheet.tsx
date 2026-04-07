@@ -160,12 +160,12 @@ export default function WriteBottomSheet({
                     </div>
                     <div className="flex-1 flex flex-col min-w-0 items-start pr-2">
                       <span className="heading-4 w-full truncate text-left">
-                        {w.worksName ?? ''} {/* ✅ */}
+                        {w.worksName ?? ''}
                       </span>
                       <span className="caption-1 w-full truncate text-left text-gray-500">
-                        {w.artistName ?? ''} {/* ✅ */}
+                        {w.artistName ?? ''}
                         <span className="text-gray-300">·</span>
-                        {w.worksType ?? ''} {/* ✅ */}
+                        {w.worksType ?? ''}
                       </span>
                     </div>
                   </div>

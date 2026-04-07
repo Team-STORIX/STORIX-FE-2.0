@@ -3,8 +3,6 @@
 
 :root {
   /* Typography */
-  --font-family-sans:
-    var(--font-geist-sans), 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-weight-bold: 700;
   --font-weight-semibold: 600;
   --font-weight-medium: 500;
@@ -22,25 +20,14 @@
   display: none; /* Chrome, Safari, Opera */
 }
 
-/* ---------------------------------------------------
-   Color 
---------------------------------------------------- */
+/* -------- Color Scale --------- */
 
 :root {
-  --background: #ffeef6;
-  --foreground: #000000;
-  --color-black: #000a19;
+  --color-black: #000000;
   --color-white: #ffffff;
-  /*-------- Main color ---------*/
-  --color-primary-main: #ff4093;
-  --color-primary-light: #fdbcd9;
-  --color-primary-extra-light: #ffeef6;
-  --color-primary-dark: #d8016f;
   /*-------- Semantic color ---------*/
   --color-success: #009126;
   --color-warning: #ef433e;
-  --color-notice: #d8016f;
-  --color-info: #d8016f;
   /*-------- Magenta scale ---------*/
   --color-magenta-900: #96005a;
   --color-magenta-800: #bd0058;
@@ -54,20 +41,16 @@
   --color-magenta-50: #ffe1ed;
   --color-magenta-20: #ffeef6;
   /*-------- Gray scale ---------*/
-  --color-gray-900: #100f0f;
-  --color-gray-800: #302f2f;
-  --color-gray-700: #4e4d4d;
-  --color-gray-600: #616060;
-  --color-gray-500: #888787;
-  --color-gray-400: #a9a8a8;
-  --color-gray-300: #cecdcd;
-  --color-gray-200: #e1e0e0;
-  --color-gray-100: #eeeded;
-  --color-gray-50: #f8f7f7;
-
-  /*------ font -------*/
-  --font-sans: var(--font-family-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-gray-900: #131112;
+  --color-gray-800: #242223;
+  --color-gray-700: #484245;
+  --color-gray-600: #645c5f;
+  --color-gray-500: #847b7f;
+  --color-gray-400: #b0a5aa;
+  --color-gray-300: #cdc4c8;
+  --color-gray-200: #e3dcdf;
+  --color-gray-100: #f2edef;
+  --color-gray-50: #f9f6f7;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -89,13 +72,11 @@ body {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
   }
-
   .heading-2 {
     font-size: 20px;
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
   }
-
   .heading-3 {
     font-size: 18px;
     font-weight: var(--font-weight-bold);
@@ -106,42 +87,51 @@ body {
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-tight);
   }
-  .body-1 {
+  .body-1-medium {
     font-size: 16px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .body-2 {
+  .body-1-bold {
+    font-size: 16px;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+  }
+  .body-1-semibold {
+    font-size: 16px;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+  }
+  .body-2-medium {
     font-size: 14px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .caption-1 {
+  .body-2-bold {
+    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+  }
+  .caption-1-medium {
     font-size: 12px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .caption-2 {
+  .caption-1-extrabold {
+    font-size: 12px;
+    font-weight: var(--font-weight-extrabold);
+    line-height: var(--line-height-tight);
+  }
+  .caption-2-medium {
     font-size: 10px;
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-tight);
   }
-
-  .caption-3 {
+  .caption-2-extrabold {
     font-size: 10px;
     font-weight: var(--font-weight-extrabold);
     line-height: var(--line-height-tight);
   }
-
-  .caption-4 {
-    font-size: 12px;
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-tight);
-  }
-
   .date-text {
     font-size: 16px;
     font-weight: var(--font-weight-bold);
@@ -150,7 +140,6 @@ body {
   }
 
   /*------ iPhone16 Container ------*/
-  .ipone16-container,
   .iphone16-container {
     width: min(100%, 393px);
     background-color: var(--color-white);
@@ -160,16 +149,6 @@ body {
   .iphone16-container > .flex-1 > * {
     min-height: 100%;
     width: 100%;
-  }
-
-  /* 스크롤은 되지만 스크롤바는 안 보이게 하는 공용 클래스 */
-  .no-scrollbar {
-    -ms-overflow-style: none; /* IE, Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .no-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
   }
 
   /*-----border-bottom------*/

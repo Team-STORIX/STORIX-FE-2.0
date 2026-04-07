@@ -56,7 +56,12 @@ export default function TopicRoomCreateSuccessPage() {
           aria-label="뒤로가기"
           className="flex h-8 w-8 items-center justify-center cursor-pointer"
         >
-          <Image src="/common/icons/back.svg" alt="back" width={24} height={24} />
+          <Image
+            src="/common/icons/back.svg"
+            alt="back"
+            width={24}
+            height={24}
+          />
         </button>
       </div>
 
@@ -79,6 +84,8 @@ export default function TopicRoomCreateSuccessPage() {
                 className="object-cover"
               />
             </div>
+
+            {/* !!caption-3 폰트 수정하기!! */}
 
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-black/0 p-3">
               <div className="flex items-center gap-2">

@@ -33,7 +33,7 @@ export const CardTopicroomInsideCoverSlider = ({
 
   return (
     <section className="w-full">
-      <div className="flex flex-col h-full w-full gap-4 no-scrollbar px-4 mb-4">
+      <div className="flex flex-col h-full w-full gap-4 px-4 mb-4">
         {roomsToRender.map((room) => (
           <CardTopicRoomInsideCover key={room.id} room={room} />
         ))}

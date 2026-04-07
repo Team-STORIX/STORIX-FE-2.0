@@ -57,10 +57,10 @@ type DeleteTargetReply = {
 const FALLBACK_PROFILE = '/profile/profile-default.svg'
 const MAX_COMMENT_LEN = 300
 
-// ✅ Feed 스크롤 복원용 snapshot key
+//  Feed 스크롤 복원용 snapshot key
 const FEED_SNAPSHOT_KEY = 'storix_feed_snapshot_v1'
 
-// ✅ 내 글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
+//  내 글 삭제 API (명세: DELETE /api/v1/feed/reader/board/{boardId})
 const deleteBoard = async (boardId: number) => {
   const res = await apiClient.delete(`/api/v1/feed/reader/board/${boardId}`)
   return res.data
@@ -137,7 +137,7 @@ export default function FeedArticlePage() {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ (핵심) 뒤로가기: feed snapshot이 있으면 그 URL로 replace
+  //  (핵심) 뒤로가기: feed snapshot이 있으면 그 URL로 replace
   const handleBack = () => {
     if (typeof window === 'undefined') {
       router.back()
@@ -164,7 +164,7 @@ export default function FeedArticlePage() {
   // - 68 + 16 = 84 (조금 더 여유 주고 싶으면 96도 OK)
   const TOAST_BOTTOM = 84
 
-  // ✅ 댓글 추가 후 맨 아래로 스크롤 (overflow-y-auto 컨테이너 기준)
+  //  댓글 추가 후 맨 아래로 스크롤 (overflow-y-auto 컨테이너 기준)
   const scrollToBottom = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
@@ -417,7 +417,7 @@ export default function FeedArticlePage() {
       },
     }
 
-    // ✅ 오래된순(ASC) 정렬에 맞게: 새 댓글은 맨 아래로 붙이기
+    //  오래된순(ASC) 정렬에 맞게: 새 댓글은 맨 아래로 붙이기
     setReplies((prev) => [...prev, newReply])
 
     setPost((prev) =>
@@ -425,7 +425,7 @@ export default function FeedArticlePage() {
     )
     setCommentText('')
 
-    // ✅ 렌더 반영 후 맨 아래로 스크롤 + 포커스
+    //  렌더 반영 후 맨 아래로 스크롤 + 포커스
     requestAnimationFrame(() => {
       scrollToBottom()
       textareaRef.current?.focus()
@@ -768,7 +768,7 @@ export default function FeedArticlePage() {
             </button>
           </div>
 
-          {/* ✅ 300자 제한 토스트 (3초) */}
+          {/*  300자 제한 토스트 (3초) */}
           {limitToastOpen && (
             <div
               className="fixed left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-[12px] body-2"
