@@ -12,11 +12,7 @@ type Props = {
   loadMoreRef?: RefObject<HTMLDivElement | null>
 }
 
-export default function SearchResultWorks({
-  works,
-  isFetching = false,
-  loadMoreRef,
-}: Props) {
+export default function SearchResultWorks({ works, loadMoreRef }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const sp = useSearchParams()

@@ -1,18 +1,21 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import SearchBar from '@/components/common/SearchBar'
 import Warning from '@/components/common/Warining'
+import Tabs from '@/components/common/Tabs'
 import {
   useWorksSearchInfinite,
-  useArtistsSearchInfinite,
 } from '@/hooks/search/useSearch'
+
+type SearchTab = 'works' | 'topicroom'
 
 export default function SearchResultEmptyOnlyPage() {
   const router = useRouter()
   const sp = useSearchParams()
   const keyword = (sp.get('keyword') ?? '').trim()
+  const [tab, setTab] = useState<SearchTab>('works')
 
   // keyword 없으면 검색 홈으로
   useEffect(() => {
@@ -21,16 +24,11 @@ export default function SearchResultEmptyOnlyPage() {
 
   //   0페이지 요청해서 존재 여부만 판단(페이저 훅 그대로 사용)
   const worksPager = useWorksSearchInfinite(keyword, 'NAME')
-  const artistsPager = useArtistsSearchInfinite(keyword)
-
   const worksReady = worksPager.meta !== null
-  const artistsReady = artistsPager.meta !== null
-
   const worksHasAny = worksPager.items.length > 0
-  const artistsHasAny = artistsPager.items.length > 0
 
-  const isReady = worksReady && artistsReady
-  const hasAny = worksHasAny || artistsHasAny
+  const isReady = worksReady
+  const hasAny = worksHasAny
 
   //   결과가 하나라도 있으면 자동으로 works 화면으로 이동
   useEffect(() => {
@@ -59,28 +57,44 @@ export default function SearchResultEmptyOnlyPage() {
   return (
     <div className="flex w-full flex-col">
       <SearchBar onSearchClick={goSearch} />
-      <div className="px-4 inline-flex items-center justify-end">
-        <button
-          className="py-1 body-2 text-gray-300 cursor-pointer"
-          onClick={() =>
-            window.open(
-              `https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015`,
-            )
-          }
-        >
-          <p className="underline">이 작품이 없다고?</p>
-        </button>
-      </div>
+      <Tabs
+        tabs={['works', 'topicroom'] as [SearchTab, SearchTab]}
+        labels={['작품', '토픽룸']}
+        active={tab}
+        onChange={setTab}
+      />
 
-      {showEmpty ? (
+      {tab === 'works' ? (
+        <>
+          <div className="px-4 inline-flex items-center justify-end">
+            <button
+              className="py-1 body-2 text-gray-300 cursor-pointer"
+              onClick={() =>
+                window.open(
+                  `https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015`,
+                )
+              }
+            >
+              <p className="underline">이 작품이 없다고?</p>
+            </button>
+          </div>
+
+          {showEmpty ? (
+            <Warning
+              title="검색 결과가 없습니다"
+              description="다른 키워드로 검색해보세요."
+              className="mt-48"
+            />
+          ) : (
+            <div className="px-4 py-10 body-2 text-gray-400">불러오는 중…</div>
+          )}
+        </>
+      ) : (
         <Warning
-          title="검색 결과가 없습니다"
+          title="검색 결과가 없어요"
           description="다른 키워드로 검색해보세요."
           className="mt-48"
         />
-      ) : (
-        // 결과가 있으면 곧바로 replace 될 거라서 빈 컨테이너만
-        <div className="px-4 py-10 body-2 text-gray-400">불러오는 중…</div>
       )}
     </div>
   )

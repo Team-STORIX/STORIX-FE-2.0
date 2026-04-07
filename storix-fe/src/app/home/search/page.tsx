@@ -47,9 +47,7 @@ export default function SearchHomePage() {
               ))}
             </div>
           ) : (
-            <p className="text-[12px] font-medium text-gray-400">
-              최근 검색어가 없어요.
-            </p>
+            <p className="body-2-medium text-gray-400">최근 검색어가 없어요.</p>
           )}
         </div>
 

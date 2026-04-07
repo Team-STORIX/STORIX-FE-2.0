@@ -52,8 +52,8 @@ export default function SearchBar({
   }
 
   return (
-    <div className="flex h-17 w-full justify-between px-4 py-2.5 bg-white">
-      <div className="flex w-full items-center gap-[15px]">
+    <div className="flex pt-5.5 w-full justify-between px-4 bg-white">
+      <div className="flex w-full items-center gap-2">
         <button
           type="button"
           onClick={() => router.push(href)}
@@ -67,35 +67,30 @@ export default function SearchBar({
           />
         </button>
 
-        <div className="flex flex-col w-full">
-          <div>
-            <div className="flex px-2 justify-between">
-              <input
-                type="text"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={placeholder}
-                className="flex-1 bg-transparent body-1 placeholder:text-gray-400 outline-none"
+        <div className="flex py-3 flex-col w-full bg-[var(--color-gray-50)] rounded-lg">
+          <div className="flex pl-3 pr-2 justify-between">
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              className="flex-1 bg-transparent body-1-medium placeholder:text-gray-400 outline-none"
+            />
+            <button
+              type="button"
+              aria-label="검색"
+              onClick={handleSearchClick}
+              className="flex h-6 w-6 items-center justify-center cursor-pointer"
+            >
+              <Image
+                src={'/common/icons/search.svg'}
+                alt={'검색'}
+                width={24}
+                height={24}
+                className="inline-block"
               />
-              <button
-                type="button"
-                aria-label="검색"
-                onClick={handleSearchClick}
-                className="flex h-6 w-6 items-center justify-center cursor-pointer"
-              >
-                <Image
-                  src={'/common/icons/search.svg'}
-                  alt={'검색'}
-                  width={24}
-                  height={24}
-                  className="inline-block"
-                />
-              </button>
-            </div>
-          </div>
-          <div>
-            <div className="mt-[10px] h-[2px] w-full bg-black" />
+            </button>
           </div>
         </div>
       </div>
