@@ -10,11 +10,12 @@ export default function ManualPage() {
   const [step, setStep] = useState(1)
 
   const manualImages = useMemo(
-    () => Array.from({ length: 4 }, (_, i) => `/common/manual/manual-${i + 1}.png`),
+    () =>
+      Array.from({ length: 4 }, (_, i) => `/common/manual/manual-${i + 1}.png`),
     [],
   )
 
-  // ✅ step별 문구
+  //  step별 문구
   const copy = useMemo(() => {
     const map: Record<number, { title: string; desc: string }> = {
       1: {
@@ -94,7 +95,7 @@ export default function ManualPage() {
         </div>
       </div>
 
-      {/* ✅ 하단 버튼 */}
+      {/*  하단 버튼 */}
       <div className="absolute bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-[60]">
         {!isLast ? (
           <img

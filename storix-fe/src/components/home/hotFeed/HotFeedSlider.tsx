@@ -9,7 +9,7 @@ export default function HotFeedSlider() {
 
   return (
     <section>
-      <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 -mx-4">
+      <div className="flex gap-2 overflow-x-auto px-4 -mx-4">
         {isLoading
           ? Array.from({ length: 5 }).map((_, i) => (
               <HotFeedCard key={i} className="bg-gray-100" /> //   로딩 스켈레톤(기존 더미 유지)

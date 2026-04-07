@@ -86,11 +86,17 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
       <div className="mt-auto flex items-center gap-3">
         <div className="flex items-center">
           <Image
-            src={isLiked ? '/common/icons/icon-like-pink.svg' : '/common/icons/icon-like.svg'}
+            src={
+              isLiked
+                ? '/common/icons/icon-like-pink.svg'
+                : '/common/icons/icon-like.svg'
+            }
             alt="좋아요"
             width={24}
             height={24}
           />
+          {/* !!caption-4 폰트 수정하기!! */}
+
           <span className="ml-1 caption-4 text-[var(--color-gray-500)]">
             {likeCount}
           </span>
@@ -103,6 +109,7 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
             width={24}
             height={24}
           />
+          {/* !!caption-4 폰트 수정하기!! */}
           <span className="ml-1 caption-4 text-[var(--color-gray-500)]">
             {replyCount}
           </span>

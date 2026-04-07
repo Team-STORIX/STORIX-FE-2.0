@@ -69,7 +69,7 @@ export default function ParticipationChat({
     <section className="border-bottom">
       {/* 가로로 페이지 슬라이드 영역 */}
       <div
-        className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory"
+        className="flex overflow-x-auto snap-x snap-mandatory"
         onScroll={handleScroll}
       >
         {pages.map((pageItems, pageIndex) => (
