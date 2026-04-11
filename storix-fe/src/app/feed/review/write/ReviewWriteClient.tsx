@@ -220,8 +220,8 @@ export default function ReviewWriteClient({ worksId }: Props) {
               <img
                 src={
                   spoiler
-                    ? '/common/common/icons/active.svg'
-                    : '/common/common/icons/deactive.svg'
+                    ? '/common/icons/active.svg'
+                    : '/common/icons/deactive.svg'
                 }
                 alt={spoiler ? '활성' : '비활성'}
                 className="h-4.5 w-8"

@@ -4,14 +4,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import SearchBar from '@/components/common/SearchBar'
+import WorksSortBottomSheet from '@/components/home/bottomsheet/WorksSortBottomSheet'
 import SearchResultWorks from '@/components/home/search/SearchResultWorks'
 import Warning from '@/components/common/Warining'
 import Tabs from '@/components/common/Tabs'
 import { useWorksSearchInfinite } from '@/hooks/search/useSearch'
-
-type SearchTab = 'works' | 'topicroom'
 import type { WorksSort } from '@/lib/api/search/search.schema'
 import ArrowDownIcon from '@/public/common/icons/ArrowDownIcon'
+
+type SearchTab = 'works' | 'topicroom'
 
 export default function SearchWorksPage() {
   const router = useRouter()
@@ -24,20 +25,7 @@ export default function SearchWorksPage() {
 
   const [tab, setTab] = useState<SearchTab>('works')
   const [sort, setSort] = useState<WorksSort>('NAME')
-  const [sortOpen, setSortOpen] = useState(false)
-  const sortWrapRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!sortOpen) return
-    const onDown = (e: MouseEvent) => {
-      const el = sortWrapRef.current
-      if (!el) return
-      if (el.contains(e.target as Node)) return
-      setSortOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [sortOpen])
+  const [showSortSheet, setShowSortSheet] = useState(false)
 
   const sortLabel: Record<WorksSort, string> = {
     NAME: '기본순',
@@ -46,10 +34,8 @@ export default function SearchWorksPage() {
   }
 
   const worksPager = useWorksSearchInfinite(keyword, sort)
-
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
 
-  //   iPhone 스크롤 컨테이너 root
   const scrollRootRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
     scrollRootRef.current = document.getElementById(
@@ -57,7 +43,6 @@ export default function SearchWorksPage() {
     ) as HTMLElement | null
   }, [])
 
-  //   무한스크롤 트리거
   const lockRef = useRef(false)
   const hasNextRef = useRef(false)
   const fetchingRef = useRef(false)
@@ -78,8 +63,8 @@ export default function SearchWorksPage() {
 
     const obs = new IntersectionObserver(
       (entries) => {
-        const e = entries[0]
-        if (!e?.isIntersecting) return
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
         if (lockRef.current) return
         if (!hasNextRef.current) return
         if (fetchingRef.current) return
@@ -99,9 +84,11 @@ export default function SearchWorksPage() {
   }, [keyword, worksPager])
 
   const goSearch = (raw: string) => {
-    const k = raw.replace(/^#/, '').trim()
-    if (!k) return
-    router.push(`/home/search/result/works?keyword=${encodeURIComponent(k)}`)
+    const nextKeyword = raw.replace(/^#/, '').trim()
+    if (!nextKeyword) return
+    router.push(
+      `/home/search/result/works?keyword=${encodeURIComponent(nextKeyword)}`,
+    )
   }
 
   const isEmpty = worksPager.items.length === 0 && worksPager.meta !== null
@@ -118,76 +105,17 @@ export default function SearchWorksPage() {
 
       {tab === 'works' ? (
         <>
-          <div className="flex justify-between">
+          <div className="flex justify-between pt-4">
             {!isEmpty && (
-              <div
-                className="px-4 flex items-center justify-start"
-                ref={sortWrapRef}
-              >
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setSortOpen((v) => !v)}
-                    className="py-1 body-2 text-gray-500 cursor-pointer flex items-center"
-                    onPointerDown={(e) => e.stopPropagation()}
-                  >
-                    {sortLabel[sort]}
-                    <ArrowDownIcon />
-                  </button>
-
-                  {sortOpen && (
-                    <div className="absolute left-0 top-8 z-50 w-24 rounded-sm border border-gray-100 bg-white shadow-md">
-                      <button
-                        type="button"
-                        className={[
-                          'w-full px-2 pt-2 pb-1.5 text-left body-2 text-gray-900 rounded-t-sm cursor-pointer transition-bg hover:bg-gray-50',
-                          sort === 'NAME' ? 'font-semibold' : '',
-                        ].join(' ')}
-                        onClick={() => {
-                          setSort('NAME')
-                          setSortOpen(false)
-                        }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                      >
-                        기본순
-                      </button>
-
-                      <div className="h-[1px] w-full bg-gray-100" />
-
-                      <button
-                        type="button"
-                        className={[
-                          'w-full px-2 pt-2 pb-1.5 text-left body-2 text-gray-900 cursor-pointer transition-bg hover:bg-gray-50',
-                          sort === 'RATING' ? 'font-semibold' : '',
-                        ].join(' ')}
-                        onClick={() => {
-                          setSort('RATING')
-                          setSortOpen(false)
-                        }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                      >
-                        별점순
-                      </button>
-
-                      <div className="h-[1px] w-full bg-gray-100" />
-
-                      <button
-                        type="button"
-                        className={[
-                          'w-full px-2 pt-2 pb-1.5 text-left body-2 text-gray-900 rounded-b-sm cursor-pointer transition-bg hover:bg-gray-50',
-                          sort === 'REVIEW' ? 'font-semibold' : '',
-                        ].join(' ')}
-                        onClick={() => {
-                          setSort('REVIEW')
-                          setSortOpen(false)
-                        }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                      >
-                        리뷰순
-                      </button>
-                    </div>
-                  )}
-                </div>
+              <div className="px-4 flex items-center justify-start">
+                <button
+                  type="button"
+                  onClick={() => setShowSortSheet(true)}
+                  className="p-1 caption-1-medium text-gray-800 cursor-pointer flex items-center border border-gray-300 rounded-full"
+                >
+                  <p className="ml-1.5">{sortLabel[sort]}</p>
+                  <ArrowDownIcon />
+                </button>
               </div>
             )}
 
@@ -196,11 +124,11 @@ export default function SearchWorksPage() {
                 className="py-1 body-2 text-gray-300 cursor-pointer"
                 onClick={() =>
                   window.open(
-                    `https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015`,
+                    'https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015',
                   )
                 }
               >
-                <p className="underline">이 작품이 없다고?</p>
+                <p className="underline">찾는 작품이 없다고?</p>
               </button>
             </div>
           </div>
@@ -216,11 +144,18 @@ export default function SearchWorksPage() {
       ) : (
         <Warning
           title="검색 결과가 없어요"
-          description="다른 키워드로 검색해보세요."
+          description="다른 키워드로 검색해보세요"
           className="mt-48"
         />
       )}
 
+      {showSortSheet && (
+        <WorksSortBottomSheet
+          currentSort={sort}
+          onApply={setSort}
+          onClose={() => setShowSortSheet(false)}
+        />
+      )}
     </div>
   )
 }
