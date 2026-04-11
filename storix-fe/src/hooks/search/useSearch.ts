@@ -8,6 +8,8 @@ import {
   deleteRecentKeyword,
 } from '@/lib/api/search/search.api'
 import type {
+  SearchGenre,
+  SearchWorksType,
   WorksSort,
   WorksSearchItem,
 } from '@/lib/api/search/search.schema'
@@ -49,8 +51,12 @@ const shouldStop = (meta: {
 export const useWorksSearchInfinite = (
   keyword: string,
   sort: WorksSort = 'NAME',
+  worksTypes: SearchWorksType[] = [],
+  genres: SearchGenre[] = [],
 ): PagerResult<WorksSearchItem> => {
   const k = keyword.trim()
+  const worksTypesKey = worksTypes.join(',')
+  const genresKey = genres.join(',')
 
   const [page, setPage] = useState(0)
   const pageRef = useRef(0)
@@ -88,13 +94,13 @@ export const useWorksSearchInfinite = (
   useEffect(() => {
     reset()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [k, sort])
+  }, [k, sort, worksTypesKey, genresKey])
 
   const shouldFetch =
     k.length > 0 && !stopRef.current && !requestedPagesRef.current.has(page)
 
   const query = useQuery({
-    queryKey: ['search', 'works', k, sort, page],
+    queryKey: ['search', 'works', k, sort, page, worksTypes, genres],
     enabled: shouldFetch,
     retry: false,
     refetchOnWindowFocus: false,
@@ -102,7 +108,7 @@ export const useWorksSearchInfinite = (
     queryFn: async () => {
       requestedPagesRef.current.add(page)
       //console.log('[PAGER][works] fetch page', { keyword: k, sort, page })
-      return getWorksSearch({ keyword: k, sort, page })
+      return getWorksSearch({ keyword: k, sort, page, worksTypes, genres })
     },
   })
 

@@ -7,6 +7,8 @@ import {
   TrendingResponseSchema,
   RecentResponseSchema,
   DeleteRecentResponseSchema,
+  type SearchGenre,
+  type SearchWorksType,
   type WorksSort,
 } from './search.schema'
 
@@ -28,16 +30,48 @@ export interface SearchResultNormalized {
   fallbackRecommendation?: string | null
 }
 
-export const getWorksSearch = async (params: {
+type GetWorksSearchParams = {
   keyword: string
   sort?: WorksSort
   page?: number
-}) => {
-  const { keyword, sort = 'NAME', page = 0 } = params
+  worksTypes?: SearchWorksType[]
+  genres?: SearchGenre[]
+}
+
+export const getWorksSearch = async (params: GetWorksSearchParams) => {
+  const {
+    keyword,
+    sort = 'NAME',
+    page = 0,
+    worksTypes = [],
+    genres = [],
+  } = params
   const k = keyword.trim()
+  const normalizedWorksTypes = Array.from(new Set(worksTypes))
+  const normalizedGenres = Array.from(new Set(genres))
 
   const res = await apiClient.get('/api/v2/search/works', {
-    params: { keyword: k, sort, page },
+    params: {
+      keyword: k,
+      sort,
+      page,
+      worksTypes: normalizedWorksTypes,
+      genres: normalizedGenres,
+    },
+    paramsSerializer: (requestParams) => {
+      const searchParams = new URLSearchParams()
+
+      searchParams.set('keyword', String(requestParams.keyword ?? ''))
+      searchParams.set('sort', String(requestParams.sort ?? 'NAME'))
+      searchParams.set('page', String(requestParams.page ?? 0))
+
+      normalizedWorksTypes.forEach((value) =>
+        searchParams.append('worksTypes', value),
+      )
+      normalizedGenres.forEach((value) => searchParams.append('genres', value))
+
+      return searchParams.toString()
+    },
   })
 
   // 1) Raw 구조로 파싱

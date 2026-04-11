@@ -136,6 +136,28 @@ export const RecentResponseSchema = ApiResponseUnwrapSchema(
 /** Delete recent */
 export const DeleteRecentResponseSchema = ApiResponseUnwrapSchema(z.any())
 
+export const WORKS_TYPE_VALUES = ['WEBTOON', 'WEBNOVEL', 'COMIC'] as const
+export const SEARCH_GENRE_VALUES = [
+  'RORMACE',
+  'FANTASY',
+  'DAILY',
+  'ROFAN',
+  'HISTORICAL',
+  'DRAMA',
+  'GAG',
+  'THRILLER',
+  'ACTION',
+  'SPORTS',
+  'SENTIMENTAL',
+  'BL',
+  'MODERN_FANTASY',
+] as const
+
+export const SearchWorksTypeSchema = z.enum(WORKS_TYPE_VALUES)
+export const SearchGenreSchema = z.enum(SEARCH_GENRE_VALUES)
+
 export type WorksSort = 'NAME' | 'RATING' | 'REVIEW'
 export type WorksSearchItem = z.infer<typeof WorksSearchItemSchema>
 export type TrendingKeyword = z.infer<typeof TrendingKeywordSchema>
+export type SearchWorksType = z.infer<typeof SearchWorksTypeSchema>
+export type SearchGenre = z.infer<typeof SearchGenreSchema>
