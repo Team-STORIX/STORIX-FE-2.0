@@ -2,6 +2,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useAuthStore } from '@/store/auth.store'
 import {
   getOnboardingWorks,
   type OnboardingWork,
@@ -16,15 +17,18 @@ const MIN_SELECT = 2
 const MAX_SELECT = 18
 
 export default function Favorite({ value, onChange }: FavoriteProps) {
+  const onboardingToken = useAuthStore((s) => s.onboardingToken)
   const [works, setWorks] = useState<OnboardingWork[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    if (!onboardingToken) return
+
     let mounted = true
     const run = async () => {
       setLoading(true)
       try {
-        const list = await getOnboardingWorks()
+        const list = await getOnboardingWorks(onboardingToken)
         if (!mounted) return
         setWorks(Array.isArray(list) ? list : [])
       } catch {
@@ -39,7 +43,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [onboardingToken])
 
   const handleSelect = (id: number) => {
     if (value.includes(id)) {

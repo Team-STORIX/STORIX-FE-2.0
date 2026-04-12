@@ -211,7 +211,7 @@ export default function FeedPageClient() {
       {tab === 'writers' ? (
         <div className="flex flex-col items-center" style={{ marginTop: 196 }}>
           <img
-            src="/common/common/icons/big-star-pink.svg"
+            src="/common/icons/big-star-pink.svg"
             alt=""
             width={100}
             height={100}

@@ -230,7 +230,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
               />
             ) : (
               <Image
-                src={'/common/common/icons/reviewProfile.svg'}
+                src={'/common/icons/reviewProfile.svg'}
                 alt={ui.userName || 'profile'}
                 width={40}
                 height={40}

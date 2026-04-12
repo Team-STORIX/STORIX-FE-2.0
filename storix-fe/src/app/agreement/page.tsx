@@ -83,7 +83,9 @@ export default function AgreementPage() {
           <button onClick={handleAllAgree} className="w-full" type="button">
             <Image
               src={
-                allAgreed ? '/common/login/terms-pink.svg' : '/common/login/terms-gray.svg'
+                allAgreed
+                  ? '/common/login/terms-pink.svg'
+                  : '/common/login/terms-gray.svg'
               }
               alt="전체 동의"
               width={361}
@@ -103,7 +105,9 @@ export default function AgreementPage() {
             >
               <Image
                 src={
-                  agreement1 ? '/common/icons/check-pink.svg' : '/common/icons/check-gray.svg'
+                  agreement1
+                    ? '/common/icons/check-pink.svg'
+                    : '/common/icons/check-gray.svg'
                 }
                 alt="체크"
                 width={20}
@@ -130,7 +134,9 @@ export default function AgreementPage() {
             >
               <Image
                 src={
-                  agreement2 ? '/common/icons/check-pink.svg' : '/common/icons/check-gray.svg'
+                  agreement2
+                    ? '/common/icons/check-pink.svg'
+                    : '/common/icons/check-gray.svg'
                 }
                 alt="체크"
                 width={20}
@@ -157,7 +163,9 @@ export default function AgreementPage() {
             >
               <Image
                 src={
-                  agreement3 ? '/common/icons/check-pink.svg' : '/common/icons/check-gray.svg'
+                  agreement3
+                    ? '/common/icons/check-pink.svg'
+                    : '/common/icons/check-gray.svg'
                 }
                 alt="체크"
                 width={20}

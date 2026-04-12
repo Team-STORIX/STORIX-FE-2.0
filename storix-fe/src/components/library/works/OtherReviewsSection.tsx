@@ -71,7 +71,7 @@ export default function OtherReviewsSection({
                     />
                   ) : (
                     <Image
-                      src={'/common/common/icons/reviewProfile.svg'}
+                      src={'/common/icons/reviewProfile.svg'}
                       alt={r.userName ?? 'profile'}
                       width={32}
                       height={32}

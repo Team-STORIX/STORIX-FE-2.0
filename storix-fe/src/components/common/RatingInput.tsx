@@ -8,7 +8,7 @@ type Props = {
   className?: string
 }
 
-const STAR_URL = '/common/common/icons/ratingStar.svg'
+const STAR_URL = '/common/icons/ratingStar.svg'
 
 export default function RatingInput({
   value,

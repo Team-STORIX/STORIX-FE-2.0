@@ -110,7 +110,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
             className="cursor-pointer"
           >
             <Image
-              src="/common/common/icons/cancel.svg"
+              src="/common/icons/cancel.svg"
               alt="닫기"
               width={18}
               height={18}
@@ -152,7 +152,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
                 </p>
                 <div className="flex pt-4 items-center justify-center">
                   <Image
-                    src="/common/common/icons/warningSmall.svg"
+                    src="/common/icons/warningSmall.svg"
                     alt="경고"
                     width={40}
                     height={40}

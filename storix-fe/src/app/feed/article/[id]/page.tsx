@@ -529,7 +529,7 @@ export default function FeedArticlePage() {
   const Topbar = () => (
     <div className="w-full h-14 p-4 flex justify-between items-center bg-white">
       <img
-        src="/common/common/icons/back.svg"
+        src="/common/icons/back.svg"
         alt="뒤로가기"
         width={24}
         height={24}

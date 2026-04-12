@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"stompjs\\\\|@stomp\" /c/Users/dbs0396/STORIX-FE-2.0/storix-fe/src --include=*.tsx --include=*.ts --include=*.json)"
+    ]
+  }
+}
