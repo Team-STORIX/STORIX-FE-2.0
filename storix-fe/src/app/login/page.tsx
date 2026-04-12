@@ -140,15 +140,14 @@ export default function LoginPage() {
 
         {/*   작가 로그인 아이콘을 여기에 통합 */}
         <div className="mt-2">
-          <Link href="/writers/signup">
-            <Image
-              src="/common/login/writer-login.svg"
-              alt="작가 로그인"
-              width={360}
-              height={48}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-            />
-          </Link>
+          <Image
+            src="/common/login/login-twitter.svg"
+            alt="트위터 로그인"
+            width={360}
+            height={48}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            // onClick={handletwitterLogin}
+          />
         </div>
       </div>
     </div>
