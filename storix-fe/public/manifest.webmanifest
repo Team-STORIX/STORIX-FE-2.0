@@ -1,0 +1,8 @@
+{
+  "name": "Storix",
+  "short_name": "Storix",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}

@@ -50,6 +50,7 @@ const isNoRefreshEndpoint = (url?: string) => {
     url.includes('/api/v1/onboarding/works') ||
     url.includes('/api/v1/auth/tokens/refresh') ||
     url.includes('/api/v1/auth/login') ||
+    url.includes('/api/v1/auth/developer/login') ||
     url.includes('/api/v1/auth/oauth') ||
     url.includes('/api/v1/auth/users') ||
     url.includes('/api/v1/auth/nickname')

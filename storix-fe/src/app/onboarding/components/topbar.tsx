@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 
 interface TopbarProps {
   onBack: () => void
+  showSkip?: boolean
+  onSkip?: () => void
 }
 
-export default function Topbar({ onBack }: TopbarProps) {
+export default function Topbar({ onBack, showSkip, onSkip }: TopbarProps) {
   const router = useRouter()
 
   return (
@@ -21,6 +23,17 @@ export default function Topbar({ onBack }: TopbarProps) {
         className="cursor-pointer brightness-0"
         onClick={onBack}
       />
+
+      {/* 건너뛰기: 2, 4단계에만 표시 */}
+      {showSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="body-2 text-[var(--color-gray-500)] cursor-pointer hover:opacity-70 transition-opacity"
+        >
+          건너뛰기
+        </button>
+      )}
     </div>
   )
 }

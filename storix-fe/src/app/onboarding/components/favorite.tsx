@@ -2,7 +2,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useAuthStore } from '@/store/auth.store'
 import {
   getOnboardingWorks,
   type OnboardingWork,
@@ -17,18 +16,15 @@ const MIN_SELECT = 2
 const MAX_SELECT = 18
 
 export default function Favorite({ value, onChange }: FavoriteProps) {
-  const onboardingToken = useAuthStore((s) => s.onboardingToken)
   const [works, setWorks] = useState<OnboardingWork[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!onboardingToken) return
-
     let mounted = true
     const run = async () => {
       setLoading(true)
       try {
-        const list = await getOnboardingWorks(onboardingToken)
+        const list = await getOnboardingWorks()
         if (!mounted) return
         setWorks(Array.isArray(list) ? list : [])
       } catch {
@@ -43,7 +39,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
     return () => {
       mounted = false
     }
-  }, [onboardingToken])
+  }, [])
 
   const handleSelect = (id: number) => {
     if (value.includes(id)) {
@@ -73,7 +69,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
   return (
     <div>
       <h1 className="heading-1" style={{ color: 'var(--color-black)' }}>
-        좋아하는 작품을 선택해 주세요
+        관심있는 작품을 선택하세요
       </h1>
 
       {/*   0개일 땐 두 줄만 / 1개 이상이면 문구+카운트로 변경 */}
@@ -82,7 +78,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
           className="body-1 mt-[5px]"
           style={{ color: 'var(--color-gray-500)' }}
         >
-          선택 작품을 기반으로 피드를 구성해드려요!
+          선택 작품을 기반으로 피드를 구성해드려요
         </p>
       ) : (
         <div className="mt-[5px] flex items-center">
@@ -109,7 +105,7 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
               key={id}
               role="button"
               tabIndex={0}
-              className="w-[108px] h-[191px] cursor-pointer transition-opacity hover:opacity-80"
+              className="w-[108px] cursor-pointer transition-opacity hover:opacity-80"
               onClick={() => {
                 if (isLoadingItem) return
                 handleSelect(id)
@@ -122,72 +118,76 @@ export default function Favorite({ value, onChange }: FavoriteProps) {
                 }
               }}
             >
-              {/*   카드 외곽은 그대로, '선택 효과'는 표지(이미지) 영역에만 */}
-              <div className="w-full h-full rounded-[8px] overflow-hidden">
-                {/* 표지 */}
-                <div
-                  className="relative w-[108px] h-[144px] rounded-[8px]"
+              {/* 표지 */}
+              <div
+                className="relative w-[108px] h-[144px] rounded-[8px]"
+                style={{
+                  backgroundColor: 'var(--color-gray-100)',
+                  backgroundImage:
+                    !isLoadingItem && item.thumbnailUrl
+                      ? `url(${item.thumbnailUrl})`
+                      : undefined,
+                  backgroundPosition: '50% 50%',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                  border: selected
+                    ? '2px solid var(--color-magenta-300)'
+                    : '2px solid transparent',
+                }}
+              >
+                {/* 선택 핑크 오버레이 */}
+                {selected && (
+                  <div
+                    className="absolute inset-0 rounded-[8px]"
+                    style={{ backgroundColor: 'rgba(255, 64, 147, 0.30)' }}
+                  />
+                )}
+
+                {/* 체크 아이콘: 좌상단 (8,8), 24x24 */}
+                {selected && (
+                  <img
+                    src="/common/icons/check-pink.svg"
+                    alt="선택됨"
+                    className="absolute left-2 top-2 w-6 h-6"
+                    draggable={false}
+                  />
+                )}
+              </div>
+
+              {/* 텍스트 영역: 표지 8px 아래, 좌우 4px 패딩, 100×40 */}
+              <div className="mt-2 px-1 w-[108px]">
+                <p
                   style={{
-                    backgroundColor: 'var(--color-gray-100)',
-                    backgroundImage:
-                      !isLoadingItem && item.thumbnailUrl
-                        ? `url(${item.thumbnailUrl})`
-                        : undefined,
-                    backgroundPosition: '50% 50%',
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    border: selected
-                      ? '2px solid var(--color-magenta-300)'
-                      : '2px solid transparent',
+                    color: '#000',
+                    fontFamily: 'SUIT',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    lineHeight: '140%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
                   }}
+                  title={!isLoadingItem ? item.worksName : undefined}
                 >
-                  {/*   선택 핑크 필터(썸네일이 위에 깔려도 무조건 보이게 오버레이로) */}
-                  {selected && (
-                    <div
-                      className="absolute inset-0 rounded-[8px]"
-                      style={{ backgroundColor: 'rgba(255, 64, 147, 0.30)' }}
-                    />
-                  )}
+                  {isLoadingItem ? '' : item.worksName}
+                </p>
 
-                  {/*   체크 아이콘: 표지 내 좌상단 (8,8), 24x24 */}
-                  {selected && (
-                    <img
-                      src="/common/icons/check-pink.svg"
-                      alt="선택됨"
-                      className="absolute left-2 top-2 w-6 h-6"
-                      draggable={false}
-                    />
-                  )}
-                </div>
-
-                {/* 텍스트 영역 */}
-                <div className="px-1">
-                  <p
-                    className="body-2 mt-2"
-                    style={{
-                      color: '#000',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                    title={!isLoadingItem ? item.worksName : undefined}
-                  >
-                    {isLoadingItem ? '' : item.worksName}
-                  </p>
-
-                  <p
-                    className="caption-1 mt-[3px]"
-                    style={{
-                      color: 'var(--color-gray-400)',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                    title={!isLoadingItem ? item.artistName : undefined}
-                  >
-                    {isLoadingItem ? '' : item.artistName}
-                  </p>
-                </div>
+                <p
+                  style={{
+                    marginTop: '3px',
+                    color: 'var(--Grayscale-400, #B0A5AA)',
+                    fontFamily: 'SUIT',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    lineHeight: '140%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={!isLoadingItem ? item.artistName : undefined}
+                >
+                  {isLoadingItem ? '' : item.artistName}
+                </p>
               </div>
             </div>
           )

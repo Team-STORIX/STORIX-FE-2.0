@@ -1,13 +1,13 @@
-// src/app/common/onboarding/page.tsx
+// src/app/onboarding/page.tsx
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
 import { useSignup } from '@/hooks/auth/useSignup'
 import Topbar from './components/topbar'
-import Nickname from './components/nickname'
-import Gender from './components/gender'
+import Profile from './components/profile'
+import Bio from './components/bio'
 import Genre from './components/genre'
 import type { GenreKey } from './components/genre'
 import Favorite from './components/favorite'
@@ -15,24 +15,31 @@ import Final from './components/final'
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { marketingAgree } = useAuthStore()
   const { mutate: signupMutate, isPending } = useSignup()
 
-  const [step, setStep] = useState(1)
+  const devStep =
+    process.env.NODE_ENV === 'development'
+      ? Number(searchParams.get('devStep') ?? 1)
+      : 1
+
+  const [step, setStep] = useState(devStep)
   const [nickname, setNickname] = useState('')
-  const [gender, setGender] = useState<'MALE' | 'FEMALE' | 'NONE' | ''>('')
+  const [profileImage, setProfileImage] = useState<string | null>(null)
+  const [bio, setBio] = useState('')
   const [genres, setGenres] = useState<GenreKey[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
 
-  //   1단계(닉네임)에서만 쓰는 "다음으로" 활성화 상태
   const [canGoNextNickname, setCanGoNextNickname] = useState(false)
 
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return canGoNextNickname
+        return process.env.NODE_ENV === 'development' || canGoNextNickname
       case 2:
-        return gender !== ''
+        // 한줄소개는 선택 항목
+        return true
       case 3:
         return genres.length >= 1
       case 4:
@@ -53,19 +60,20 @@ export default function OnboardingPage() {
   }
 
   const handleSignup = () => {
-    if (gender === '') return
+    const savedProfileImage = profileImage ?? '/profile/profile-default.svg'
 
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('signup_nickname', nickname)
       sessionStorage.setItem('signup_genres', JSON.stringify(genres))
       sessionStorage.setItem('signup_favoriteIds', JSON.stringify(favoriteIds))
-      sessionStorage.setItem('signup_gender', gender)
+      sessionStorage.setItem('signup_bio', bio)
+      sessionStorage.setItem('signup_profile_image', savedProfileImage)
     }
 
     signupMutate({
       marketingAgree,
       nickName: nickname,
-      gender,
+      gender: 'NONE',
       favoriteGenreList: genres,
       favoriteWorksIdList: favoriteIds,
     })
@@ -88,12 +96,14 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative w-full min-h-screen bg-white">
-      {/*   Topbar: absolute 제거 → 레이아웃 흐름에 포함 */}
       <div className="sticky top-0 z-50 bg-white">
-        <Topbar onBack={handleBack} />
+        <Topbar
+          onBack={handleBack}
+          showSkip={step === 2 || step === 4}
+          onSkip={() => setStep((s) => s + 1)}
+        />
       </div>
 
-      {/*   Progress: absolute 제거 → Topbar 아래로 자연스럽게 내려옴 */}
       {step <= 4 && (
         <div className="px-4 pt-4">
           <img
@@ -105,16 +115,17 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/*   컨텐츠 영역: 위쪽 큰 padding 제거(전체가 같이 위로 올라감) */}
       <div className="px-4" style={{ paddingTop: 24, paddingBottom: 134 }}>
         {step === 1 && (
-          <Nickname
+          <Profile
             value={nickname}
             onChange={setNickname}
             onAvailabilityChange={setCanGoNextNickname}
+            profileImage={profileImage}
+            onProfileImageChange={setProfileImage}
           />
         )}
-        {step === 2 && <Gender value={gender} onChange={setGender} />}
+        {step === 2 && <Bio onChange={setBio} />}
         {step === 3 && <Genre value={genres} onChange={setGenres} />}
         {step === 4 && (
           <Favorite value={favoriteIds} onChange={setFavoriteIds} />
@@ -122,7 +133,6 @@ export default function OnboardingPage() {
         {step === 5 && <Final />}
       </div>
 
-      {/*   하단 다음 버튼: 기존 유지 */}
       <div className="fixed bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-50">
         <img
           src={

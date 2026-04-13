@@ -126,6 +126,17 @@ export default function LoginPage() {
           />
         </div>
 
+        <div className="mt-2">
+          <Image
+            src="/common/login/login-apple.svg"
+            alt="Apple로 로그인"
+            width={360}
+            height={48}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            // onClick={handleAppleLogin}
+          />
+        </div>
+
         {/* 개발자 로그인 */}
         {process.env.NODE_ENV === 'development' && (
           <div className="mt-2">

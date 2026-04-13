@@ -1,5 +1,6 @@
 // src/api/common/onboarding/onboardingWorks.api.ts
 import { apiClient } from '@/lib/api/axios-instance'
+
 export type OnboardingWork = {
   worksId: number
   worksName: string
@@ -15,16 +16,9 @@ type ApiResponse<T> = {
   timestamp: string
 }
 
-export const getOnboardingWorks = async (
-  onboardingToken: string,
-): Promise<OnboardingWork[]> => {
+export const getOnboardingWorks = async (): Promise<OnboardingWork[]> => {
   const res = await apiClient.get<ApiResponse<OnboardingWork[]>>(
     '/api/v1/onboarding/works',
-    {
-      headers: {
-        Authorization: `Bearer ${onboardingToken.trim()}`,
-      },
-    },
   )
   return res.data.result ?? []
 }

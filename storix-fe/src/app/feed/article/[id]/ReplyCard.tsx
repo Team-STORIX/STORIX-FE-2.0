@@ -17,6 +17,8 @@ interface ReplyCardProps {
   onToggleLike: () => void
   onOpenDelete: () => void
   onOpenReport: () => void
+  isReplyTarget?: boolean
+  onReplyTo: () => void
 }
 
 export default function ReplyCard({
@@ -28,14 +30,20 @@ export default function ReplyCard({
   onToggleLike,
   onOpenDelete,
   onOpenReport,
+  isReplyTarget = false,
+  onReplyTo,
 }: ReplyCardProps) {
   const profileImage = item.profile.profileImageUrl ?? FALLBACK_PROFILE
   const isMine = myUserId != null && item.reply.userId === myUserId
 
   return (
     <article
-      className="px-4 py-3 flex flex-col gap-3 bg-white"
-      style={{ borderBottom: '1px solid var(--color-gray-100)' }}
+      className="px-4 py-3 flex flex-col gap-3"
+      style={{
+        borderBottom: '1px solid var(--color-gray-100)',
+        background: isReplyTarget ? 'rgba(255, 64, 147, 0.20)' : '#fff',
+        transition: 'background 0.15s',
+      }}
     >
       <div className="w-full flex items-center justify-between">
         <div className="flex items-center">
@@ -119,7 +127,7 @@ export default function ReplyCard({
         {item.reply.comment}
       </p>
 
-      <div className="flex items-center">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           className="transition-opacity hover:opacity-70 cursor-pointer"
@@ -143,12 +151,29 @@ export default function ReplyCard({
 
         {item.reply.likeCount > 0 && (
           <span
-            className="ml-1 text-[14px] font-bold leading-[140%]"
+            className="text-[14px] font-bold leading-[140%]"
             style={{ color: 'var(--color-gray-500)' }}
           >
             {item.reply.likeCount}
           </span>
         )}
+
+        <button
+          type="button"
+          className="transition-opacity hover:opacity-70 cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation()
+            onReplyTo()
+          }}
+          aria-label="대댓글 달기"
+        >
+          <Image
+            src="/feed/upload-comment.svg"
+            alt="대댓글 달기"
+            width={24}
+            height={24}
+          />
+        </button>
       </div>
     </article>
   )
