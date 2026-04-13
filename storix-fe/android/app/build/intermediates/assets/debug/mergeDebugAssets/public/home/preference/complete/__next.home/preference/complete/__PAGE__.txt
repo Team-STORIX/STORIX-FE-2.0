@@ -1,0 +1,7 @@
+1:"$Sreact.fragment"
+2:I[4523,["5772","static/chunks/5772-742636133f6ef6a4.js","614","static/chunks/app/home/preference/complete/page-600e10fa7ebecf3e.js"],"default"]
+3:I[484,[],"OutletBoundary"]
+4:"$Sreact.suspense"
+:HL["/image/preferenceGuide-2.webp","image"]
+0:{"buildId":"dJcVWVgkeBVbh5GkSaXIT","rsc":["$","$1","c",{"children":[["$","main",null,{"className":"min-h-dvh bg-white flex flex-col","children":[["$","div",null,{"className":"flex-1 flex-col justify-center px-6","children":[["$","div",null,{"className":"text-center mt-24","children":[["$","div",null,{"className":"heading-1 text-black","children":"탐색 완료!"}],["$","div",null,{"className":"mt-1 body-1 text-gray-500","children":["탐색결과를 확인하고, ",["$","br",null,{}],"마음에 드는 작품을 관심작품으로 등록해봐요"]}]]}],["$","img",null,{"src":"/image/preferenceGuide-2.webp","alt":"guide illustration","className":"w-full h-full object-contain"}]]}],["$","div",null,{"className":"px-4 pb-6","children":["$","$L2",null,{"href":"/home/preference/list"}]}]]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+5:null

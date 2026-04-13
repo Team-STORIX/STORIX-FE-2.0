@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:"$Sreact.suspense"
+3:I[9777,["5772","static/chunks/5772-742636133f6ef6a4.js","7963","static/chunks/7963-95724eaaf323c35c.js","6778","static/chunks/app/pending/page-2222d62b262dc2e8.js"],"default"]
+4:I[484,[],"OutletBoundary"]
+0:{"buildId":"dJcVWVgkeBVbh5GkSaXIT","rsc":["$","$1","c",{"children":[["$","$2",null,{"fallback":["$","div",null,{"className":"flex h-full w-full flex-col items-center justify-center","children":["$","p",null,{"className":"body-1 font-medium text-gray-700","children":"로그인 중입니다"}]}],"children":["$","$L3",null,{}]}],null,["$","$L4",null,{"children":["$","$2",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+5:null
