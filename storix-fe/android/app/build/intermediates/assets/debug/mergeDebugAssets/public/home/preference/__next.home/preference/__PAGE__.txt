@@ -1,7 +1,0 @@
-1:"$Sreact.fragment"
-2:I[4523,["5772","static/chunks/5772-742636133f6ef6a4.js","2404","static/chunks/app/home/preference/page-600e10fa7ebecf3e.js"],"default"]
-3:I[484,[],"OutletBoundary"]
-4:"$Sreact.suspense"
-:HL["/image/preferenceGuide.webp","image"]
-0:{"buildId":"dJcVWVgkeBVbh5GkSaXIT","rsc":["$","$1","c",{"children":[["$","main",null,{"className":"min-h-dvh bg-white flex flex-col","children":[["$","div",null,{"className":"flex-1 flex-col justify-center px-6","children":[["$","div",null,{"className":"text-center mt-24","children":[["$","div",null,{"className":"heading-1 text-black","children":"작품 탐색을 시작해볼까요?"}],["$","div",null,{"className":"mt-1 body-1 text-gray-500","children":["마음에 들면 오른쪽으로 ",["$","br",null,{}],"아니면 왼쪽으로 스와이프하세요!"]}]]}],["$","img",null,{"src":"/image/preferenceGuide.webp","alt":" guide illustration","className":"flex mt-24 mx-auto w-70 h-70 -translate-y-6"}]]}],["$","div",null,{"className":"px-4 pb-6","children":["$","$L2",null,{"href":"/home/preference/swipe"}]}]]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
-5:null

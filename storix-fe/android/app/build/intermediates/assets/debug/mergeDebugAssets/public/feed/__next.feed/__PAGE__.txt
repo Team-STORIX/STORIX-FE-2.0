@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:"$Sreact.suspense"
-3:I[6227,["5772","static/chunks/5772-742636133f6ef6a4.js","7963","static/chunks/7963-95724eaaf323c35c.js","7173","static/chunks/7173-6bdd52d819422d10.js","3747","static/chunks/3747-249503e5adc75f01.js","9108","static/chunks/9108-a7fbdf33d1ef67bb.js","7232","static/chunks/7232-3e5ac18109ea7eeb.js","4702","static/chunks/4702-51d84da063c25c2d.js","9669","static/chunks/9669-7832c39113a31935.js","1076","static/chunks/1076-7310d54edb3271bd.js","9441","static/chunks/9441-12f0ef1cc037b96a.js","1403","static/chunks/app/feed/page-83e36e03c9d54dbe.js"],"default"]
-4:I[484,[],"OutletBoundary"]
-0:{"buildId":"dJcVWVgkeBVbh5GkSaXIT","rsc":["$","$1","c",{"children":[["$","$2",null,{"fallback":null,"children":["$","$L3",null,{}]}],null,["$","$L4",null,{"children":["$","$2",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
-5:null

@@ -1,7 +1,0 @@
-1:"$Sreact.fragment"
-2:I[3704,["5772","static/chunks/5772-742636133f6ef6a4.js","8500","static/chunks/8500-27ab90e35aa7c15c.js","3244","static/chunks/app/home/notify/page-f50930653945da90.js"],"default"]
-3:I[5077,["5772","static/chunks/5772-742636133f6ef6a4.js","8500","static/chunks/8500-27ab90e35aa7c15c.js","3244","static/chunks/app/home/notify/page-f50930653945da90.js"],"default"]
-4:I[484,[],"OutletBoundary"]
-5:"$Sreact.suspense"
-0:{"buildId":"dJcVWVgkeBVbh5GkSaXIT","rsc":["$","$1","c",{"children":[["$","div",null,{"children":[["$","$L2",null,{}],["$","$L3",null,{"title":"알림이 없어요","description":"좋아요, 댓글, 팔로우 요청, 친구 새소식 등"}]]}],null,["$","$L4",null,{"children":["$","$5",null,{"name":"Next.MetadataOutlet","children":"$@6"}]}]]}],"loading":null,"isPartial":false}
-6:null
