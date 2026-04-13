@@ -31,7 +31,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${suit.className}`}>
-      <body className="min-h-dvh overflow-y-auto justify-center">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+      </head>
+      <body className="min-h-dvh overflow-y-auto justify-center" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <Providers>
           <GoogleAnalytics />
           <Suspense fallback={null}>

@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
 import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
 import { developerLogin } from '@/lib/api/auth/developer-login.api'
+import { appleLogin } from '@/lib/api/auth/apple.api'
 import { useAuthStore } from '@/store/auth.store'
 
 function generateNaverState() {
@@ -49,6 +50,37 @@ export default function LoginPage() {
       window.location.href = authUrl
     } catch {
       alert('로그인 준비에 실패했습니다.')
+    }
+  }
+
+  const handleAppleLogin = async () => {
+    try {
+      const { SignInWithApple } = await import(
+        '@capacitor-community/apple-sign-in'
+      )
+      const result = await SignInWithApple.authorize({
+        clientId: 'kr.storix.app',
+        redirectURI: 'https://api.storix.kr',
+        scopes: 'email name',
+        state: '',
+        nonce: '',
+      })
+      const code = result.response.identityToken
+      if (!code) throw new Error('identityToken이 없습니다.')
+
+      const data = await appleLogin(code)
+      const loginResult = data.result
+      if (loginResult.isRegistered && loginResult.readerLoginResponse) {
+        setAccessToken(loginResult.readerLoginResponse.accessToken)
+        router.push('/home')
+      } else if (loginResult.readerPreLoginResponse) {
+        useAuthStore
+          .getState()
+          .setOnboardingToken(loginResult.readerPreLoginResponse.onboardingToken)
+        router.push('/agreement')
+      }
+    } catch {
+      alert('Apple 로그인에 실패했습니다.')
     }
   }
 
@@ -147,6 +179,17 @@ export default function LoginPage() {
             height={48}
             className="cursor-pointer hover:opacity-80 transition-opacity"
             // onClick={handletwitterLogin}
+          />
+        </div>
+
+        <div className="mt-2">
+          <Image
+            src="/common/login/login-apple.svg"
+            alt="Apple 로그인"
+            width={360}
+            height={48}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={handleAppleLogin}
           />
         </div>
       </div>
