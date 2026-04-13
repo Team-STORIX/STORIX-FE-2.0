@@ -107,7 +107,7 @@ export default function MyLikes() {
     root: scrollRef,
     target: sentinelRef,
     hasNextPage: !isLast,
-    isLoading,
+    isFetchingNextPage: isLoading,
     onLoadMore: loadMore,
     rootMargin: '200px',
   })

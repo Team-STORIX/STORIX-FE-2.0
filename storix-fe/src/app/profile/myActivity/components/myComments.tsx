@@ -113,7 +113,7 @@ export default function MyComments() {
     root: scrollRef,
     target: sentinelRef,
     hasNextPage: !isLast,
-    isLoading: isLoading,
+    isFetchingNextPage: isLoading,
     onLoadMore: loadMore,
     rootMargin: '200px',
   })
