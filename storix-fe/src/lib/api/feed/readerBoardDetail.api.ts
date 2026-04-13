@@ -72,6 +72,26 @@ export const createReply = async (params: {
   return data.result
 }
 
+export const createSubReply = async (params: {
+  boardId: number
+  replyId: number
+  comment: string
+}) => {
+  const { data } = await apiClient.post<
+    ApiResponse<{
+      profile: {
+        userId: number
+        profileImageUrl: string | null
+        nickName: string
+      }
+      content: { replyId: number; content: string; likeCount: number }
+    }>
+  >(`/api/v1/feed/reader/board/${params.boardId}/reply/${params.replyId}/sub-reply`, {
+    comment: params.comment,
+  })
+  return data.result
+}
+
 /**   deleteReply는 딱 1개만! */
 export const deleteReply = async (params: {
   boardId: number

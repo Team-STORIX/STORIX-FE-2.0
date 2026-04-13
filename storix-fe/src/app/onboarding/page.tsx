@@ -1,13 +1,13 @@
 // src/app/common/onboarding/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
 import { useSignup } from '@/hooks/auth/useSignup'
 import Topbar from './components/topbar'
 import Nickname from './components/nickname'
-import Gender from './components/gender'
+import Gender from './components/bio'
 import Genre from './components/genre'
 import type { GenreKey } from './components/genre'
 import Favorite from './components/favorite'
@@ -26,6 +26,14 @@ export default function OnboardingPage() {
 
   //   1단계(닉네임)에서만 쓰는 "다음으로" 활성화 상태
   const [canGoNextNickname, setCanGoNextNickname] = useState(false)
+  const [profileImagePreview, setProfileImagePreview] = useState<string | undefined>(undefined)
+  const profileImageFileRef = useRef<File | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (profileImagePreview?.startsWith('blob:')) URL.revokeObjectURL(profileImagePreview)
+    }
+  }, [profileImagePreview])
 
   const isStepValid = () => {
     switch (step) {
@@ -90,7 +98,7 @@ export default function OnboardingPage() {
     <div className="relative w-full min-h-screen bg-white">
       {/*   Topbar: absolute 제거 → 레이아웃 흐름에 포함 */}
       <div className="sticky top-0 z-50 bg-white">
-        <Topbar onBack={handleBack} />
+        <Topbar onBack={handleBack} onSkip={step < 5 ? () => setStep((s) => s + 1) : undefined} />
       </div>
 
       {/*   Progress: absolute 제거 → Topbar 아래로 자연스럽게 내려옴 */}
@@ -112,6 +120,12 @@ export default function OnboardingPage() {
             value={nickname}
             onChange={setNickname}
             onAvailabilityChange={setCanGoNextNickname}
+            profileImagePreview={profileImagePreview}
+            onImageChange={(file) => {
+              profileImageFileRef.current = file
+              if (profileImagePreview?.startsWith('blob:')) URL.revokeObjectURL(profileImagePreview)
+              setProfileImagePreview(URL.createObjectURL(file))
+            }}
           />
         )}
         {step === 2 && <Gender value={gender} onChange={setGender} />}

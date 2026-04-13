@@ -14,6 +14,8 @@ interface NicknameProps {
   onAvailabilityChange?: (ok: boolean) => void
   currentNickname?: string
   variant?: 'onboarding' | 'inline'
+  profileImagePreview?: string
+  onImageChange?: (file: File) => void
 }
 
 type Status =
@@ -45,6 +47,8 @@ export default function Nickname({
   onAvailabilityChange,
   currentNickname,
   variant = 'onboarding',
+  profileImagePreview,
+  onImageChange,
 }: NicknameProps) {
   const [focused, setFocused] = useState(false)
   const [status, setStatus] = useState<Status>('idle')
@@ -52,6 +56,7 @@ export default function Nickname({
 
   const lastChecked = useRef('')
   const maxToastTimer = useRef<number | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   // 페이지 진입 시 "기존 닉네임" 스냅샷
   const initialNicknameRef = useRef<string>('')
@@ -340,14 +345,56 @@ export default function Nickname({
         <>
           <h1 className="heading-1 text-black">닉네임을 입력해 주세요</h1>
           <p className="body-1 text-[var(--color-gray-500)] mt-[5px]">
-            한글, 영문, 숫자, 밑줄(_) 2~10자까지 입력 가능해요
+            닉네임과 프로필 사진을 설정해주세요
           </p>
+
+          {/* 프로필 사진: 텍스트 42px 아래, 좌우 중앙 */}
+          <div className="mt-[42px] flex justify-center">
+            <div className="relative h-[100px] w-[100px]">
+              <div className="h-[100px] w-[100px] overflow-hidden rounded-full">
+                <Image
+                  src={profileImagePreview || '/common/onboarding/profilephoto.svg'}
+                  alt="프로필 사진"
+                  width={100}
+                  height={100}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 z-10 h-[32px] w-[32px] cursor-pointer transition-opacity hover:opacity-80"
+                aria-label="프로필 사진 변경"
+              >
+                <Image
+                  src="/profile/profile-change.svg"
+                  alt="프로필 사진 변경"
+                  width={32}
+                  height={32}
+                />
+              </button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  e.currentTarget.value = ''
+                  if (!file) return
+                  onImageChange?.(file)
+                }}
+              />
+            </div>
+          </div>
         </>
       )}
 
       <div
         className={[
-          variant === 'onboarding' ? 'mt-[80px]' : 'mt-0',
+          variant === 'onboarding' ? 'mt-[36px]' : 'mt-0',
           'w-[361px]',
         ].join(' ')}
       >
@@ -375,7 +422,7 @@ export default function Nickname({
                 checkDuplicate()
               }
             }}
-            placeholder="닉네임을 입력해 주세요"
+            placeholder="프로필을 설정해주세요"
             //  iOS 자동 기능 완화
             autoCorrect="off"
             autoCapitalize="none"
