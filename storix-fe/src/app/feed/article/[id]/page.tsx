@@ -10,7 +10,6 @@ import PostCard from '@/components/common/post/PostCard'
 import ReportFlow from '@/components/common/report/ReportFlow'
 import DeleteFlow from '@/components/common/delete/DeleteFlow'
 import ReplyCard from './ReplyCard'
-import SubReplyCard from './SubReplyCard'
 
 import { useOpenMenu } from '@/hooks/useOpenMenu'
 import { useReportFlow } from '@/hooks/useReportFlow'
@@ -20,7 +19,6 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll'
 import {
   getBoardDetail,
   createReply,
-  createSubReply,
   toggleReplyLike,
   type ReplyItem,
 } from '@/lib/api/feed/readerBoardDetail.api'
@@ -52,7 +50,6 @@ type DeleteTargetBoard = {
 type DeleteTargetReply = {
   boardId: number
   replyId: number
-  parentReplyId?: number
   profileImage: string
   nickname: string
 }
@@ -123,78 +120,14 @@ const reportReply = async (args: {
   return res.data
 }
 
-// ─── dev 전용 목업 데이터 ──────────────────────────────────────────────────────
-const DEV_MOCK_POST = {
-  profileImage: FALLBACK_PROFILE,
-  nickname: '테스트유저',
-  createdAt: '1시간 전',
-  content:
-    '이건 목업 게시글입니다. API 연결 없이 디자인 확인용으로 사용하세요 😊\n두 번째 줄 내용입니다.',
-  images: [] as string[],
-  worksId: null,
-  works: {
-    thumbnailUrl: '',
-    worksName: '목업 작품 제목',
-    artistName: '목업 작가',
-    worksType: 'WEBTOON',
-    genre: 'ROMANCE',
-    hashtags: ['로맨스', '판타지'],
-  },
-  like: { isLiked: false, likeCount: 12 },
-  replyCount: 3,
-  isSpoiler: false,
-  writerUserId: 1,
-}
-
-const DEV_MOCK_REPLIES: ReplyItem[] = [
-  {
-    profile: { userId: 2, profileImageUrl: null, nickName: '댓글유저A' },
-    reply: {
-      replyId: 101,
-      userId: 2,
-      comment: '첫 번째 댓글입니다! 대댓글 달기 버튼을 눌러보세요.',
-      lastCreatedTime: '30분 전',
-      likeCount: 3,
-      isLiked: false,
-    },
-  },
-  {
-    profile: { userId: 3, profileImageUrl: null, nickName: '댓글유저B' },
-    reply: {
-      replyId: 102,
-      userId: 3,
-      comment: '두 번째 댓글이에요. 메세지 아이콘 클릭 시 핑크색으로 변해요.',
-      lastCreatedTime: '15분 전',
-      likeCount: 0,
-      isLiked: true,
-    },
-  },
-  {
-    profile: { userId: 1, profileImageUrl: null, nickName: '내댓글(삭제가능)' },
-    reply: {
-      replyId: 103,
-      userId: 1,
-      comment: '이건 내 댓글입니다. 점 세개 메뉴에서 삭제가 나와요.',
-      lastCreatedTime: '5분 전',
-      likeCount: 1,
-      isLiked: false,
-    },
-  },
-]
-// ──────────────────────────────────────────────────────────────────────────────
-
 export default function FeedArticlePage() {
   const router = useRouter()
-
-  const isMock =
-    process.env.NODE_ENV === 'development' &&
-    window.location.search.includes('mock=1')
 
   const returnTo = encodeURIComponent(
     `${window.location.pathname}${window.location.search}`,
   )
   const params = useParams<{ id: string }>()
-  const boardId = isMock ? 0 : Number(params?.id)
+  const boardId = Number(params?.id)
 
   //   내 userId
   const me = useProfileStore((s) => s.me)
@@ -273,12 +206,6 @@ export default function FeedArticlePage() {
   const [replyLoading, setReplyLoading] = useState(false)
 
   const loadDetail = useCallback(async () => {
-    if (isMock) {
-      setPost(DEV_MOCK_POST)
-      setReplies(DEV_MOCK_REPLIES)
-      setReplyLast(true)
-      return
-    }
     if (!boardId || Number.isNaN(boardId)) return
     setLoading(true)
     try {
@@ -351,12 +278,6 @@ export default function FeedArticlePage() {
   // ----------------------------
   const postMenu = useOpenMenu<number>() // boardId
   const replyMenu = useOpenMenu<number>() // replyId
-  const subReplyMenu = useOpenMenu<number>() // sub-replyId
-
-  // 대댓글 모드: 어떤 댓글에 답하는지 (null = 일반 댓글 모드)
-  const [replyTargetId, setReplyTargetId] = useState<number | null>(null)
-  // 대댓글 목록: 댓글ID -> 대댓글 배열
-  const [subRepliesMap, setSubRepliesMap] = useState<Record<number, ReplyItem[]>>({})
 
   // ----------------------------
   //   게시글 좋아요
@@ -430,53 +351,6 @@ export default function FeedArticlePage() {
   }
 
   // ----------------------------
-  //   대댓글 좋아요
-  // ----------------------------
-  const onToggleSubReplyLike = async (
-    parentReplyId: number,
-    subReplyId: number,
-  ) => {
-    setSubRepliesMap((prev) => ({
-      ...prev,
-      [parentReplyId]: (prev[parentReplyId] ?? []).map((sr) =>
-        sr.reply.replyId === subReplyId
-          ? {
-              ...sr,
-              reply: {
-                ...sr.reply,
-                isLiked: !sr.reply.isLiked,
-                likeCount: Math.max(
-                  0,
-                  sr.reply.likeCount + (!sr.reply.isLiked ? 1 : -1),
-                ),
-              },
-            }
-          : sr,
-      ),
-    }))
-    try {
-      const res = await toggleReplyLike({ boardId, replyId: subReplyId })
-      setSubRepliesMap((prev) => ({
-        ...prev,
-        [parentReplyId]: (prev[parentReplyId] ?? []).map((sr) =>
-          sr.reply.replyId === subReplyId
-            ? {
-                ...sr,
-                reply: {
-                  ...sr.reply,
-                  isLiked: res.isLiked,
-                  likeCount: res.likeCount,
-                },
-              }
-            : sr,
-        ),
-      }))
-    } catch {
-      loadDetail()
-    }
-  }
-
-  // ----------------------------
   //   댓글 작성
   // ----------------------------
   const [commentText, setCommentText] = useState('')
@@ -525,58 +399,30 @@ export default function FeedArticlePage() {
     const trimmed = commentText.trim()
     if (!trimmed) return
 
-    if (replyTargetId !== null) {
-      // 대댓글 등록
-      const targetId = replyTargetId
-      const res = await createSubReply({
-        boardId,
-        replyId: targetId,
-        comment: trimmed,
-      })
-      const newSubReply: ReplyItem = {
-        profile: {
-          userId: res.profile.userId,
-          profileImageUrl: res.profile.profileImageUrl,
-          nickName: res.profile.nickName,
-        },
-        reply: {
-          replyId: res.content.replyId,
-          userId: res.profile.userId,
-          comment: res.content.content,
-          lastCreatedTime: '방금 전',
-          likeCount: res.content.likeCount,
-          isLiked: false,
-        },
-      }
-      setSubRepliesMap((prev) => ({
-        ...prev,
-        [targetId]: [...(prev[targetId] ?? []), newSubReply],
-      }))
-      setReplyTargetId(null)
-    } else {
-      // 일반 댓글 등록
-      const res = await createReply({ boardId, comment: trimmed })
-      const newReply: ReplyItem = {
-        profile: {
-          userId: res.profile.userId,
-          profileImageUrl: res.profile.profileImageUrl,
-          nickName: res.profile.nickName,
-        },
-        reply: {
-          replyId: res.content.replyId,
-          userId: res.profile.userId,
-          comment: res.content.content,
-          lastCreatedTime: '방금 전',
-          likeCount: res.content.likeCount,
-          isLiked: false,
-        },
-      }
-      setReplies((prev) => [...prev, newReply])
-      setPost((prev) =>
-        prev ? { ...prev, replyCount: prev.replyCount + 1 } : prev,
-      )
+    const res = await createReply({ boardId, comment: trimmed })
+
+    const newReply: ReplyItem = {
+      profile: {
+        userId: res.profile.userId,
+        profileImageUrl: res.profile.profileImageUrl,
+        nickName: res.profile.nickName,
+      },
+      reply: {
+        replyId: res.content.replyId,
+        userId: res.profile.userId,
+        comment: res.content.content,
+        lastCreatedTime: '방금 전',
+        likeCount: res.content.likeCount,
+        isLiked: false,
+      },
     }
 
+    //  오래된순(ASC) 정렬에 맞게: 새 댓글은 맨 아래로 붙이기
+    setReplies((prev) => [...prev, newReply])
+
+    setPost((prev) =>
+      prev ? { ...prev, replyCount: prev.replyCount + 1 } : prev,
+    )
     setCommentText('')
 
     //  렌더 반영 후 맨 아래로 스크롤 + 포커스
@@ -668,25 +514,11 @@ export default function FeedArticlePage() {
       if (data?.isSuccess === false) {
         throw new Error(data?.message ?? '삭제에 실패했어요.')
       }
-      if (t.parentReplyId != null) {
-        // 대댓글 삭제
-        setSubRepliesMap((prev) => ({
-          ...prev,
-          [t.parentReplyId!]: (prev[t.parentReplyId!] ?? []).filter(
-            (sr) => sr.reply.replyId !== t.replyId,
-          ),
-        }))
-        subReplyMenu.close()
-      } else {
-        // 일반 댓글 삭제
-        setReplies((prev) => prev.filter((x) => x.reply.replyId !== t.replyId))
-        setPost((prev) =>
-          prev
-            ? { ...prev, replyCount: Math.max(0, prev.replyCount - 1) }
-            : prev,
-        )
-        replyMenu.close()
-      }
+      setReplies((prev) => prev.filter((x) => x.reply.replyId !== t.replyId))
+      setPost((prev) =>
+        prev ? { ...prev, replyCount: Math.max(0, prev.replyCount - 1) } : prev,
+      )
+      replyMenu.close()
     },
     doneDurationMs: 1500,
   })
@@ -713,7 +545,7 @@ export default function FeedArticlePage() {
     </div>
   )
 
-  if (!isMock && (!boardId || Number.isNaN(boardId))) {
+  if (!boardId || Number.isNaN(boardId)) {
     return (
       <div className="relative w-full min-h-full bg-white">
         <Topbar />
@@ -812,93 +644,36 @@ export default function FeedArticlePage() {
         {/* 댓글 리스트 */}
         {showCommentList &&
           replies.map((r) => (
-            <div key={r.reply.replyId}>
-              <ReplyCard
-                boardId={boardId}
-                myUserId={myUserId ?? null}
-                item={r}
-                isMenuOpen={replyMenu.openId === r.reply.replyId}
-                onToggleMenu={() => replyMenu.toggle(r.reply.replyId)}
-                menuRef={replyMenu.bindRef(r.reply.replyId)}
-                onClickDetail={() => router.push(`/feed/article/${boardId}`)}
-                onToggleLike={() => onToggleReplyLike(r.reply.replyId)}
-                isReplyTarget={replyTargetId === r.reply.replyId}
-                onReplyTo={() => {
-                  setReplyTargetId((prev) =>
-                    prev === r.reply.replyId ? null : r.reply.replyId,
-                  )
-                  requestAnimationFrame(() => textareaRef.current?.focus())
-                }}
-                onOpenDelete={() => {
-                  deleteReplyFlow.openDeleteModal({
-                    boardId,
-                    replyId: r.reply.replyId,
-                    profileImage: r.profile.profileImageUrl ?? FALLBACK_PROFILE,
-                    nickname: r.profile.nickName,
-                  })
-                  replyMenu.close()
-                }}
-                onOpenReport={() => {
-                  reportReplyFlow.openReportModal({
-                    boardId,
-                    replyId: r.reply.replyId,
-                    reportedUserId: r.reply.userId,
-                    profileImage: r.profile.profileImageUrl ?? FALLBACK_PROFILE,
-                    nickname: r.profile.nickName,
-                  })
-                  replyMenu.close()
-                }}
-              />
-
-              {/* 대댓글 리스트 */}
-              {(subRepliesMap[r.reply.replyId] ?? []).length > 0 && (
-                <div className="px-4 pb-2 bg-white flex flex-col gap-2">
-                  {(subRepliesMap[r.reply.replyId] ?? []).map((sr) => (
-                    <SubReplyCard
-                      key={sr.reply.replyId}
-                      myUserId={myUserId ?? null}
-                      item={sr}
-                      isMenuOpen={subReplyMenu.openId === sr.reply.replyId}
-                      onToggleMenu={() =>
-                        subReplyMenu.toggle(sr.reply.replyId)
-                      }
-                      menuRef={subReplyMenu.bindRef(sr.reply.replyId)}
-                      onToggleLike={() =>
-                        onToggleSubReplyLike(r.reply.replyId, sr.reply.replyId)
-                      }
-                      onReplyTo={() => {
-                        setReplyTargetId(r.reply.replyId)
-                        requestAnimationFrame(() =>
-                          textareaRef.current?.focus(),
-                        )
-                      }}
-                      onOpenDelete={() => {
-                        deleteReplyFlow.openDeleteModal({
-                          boardId,
-                          replyId: sr.reply.replyId,
-                          parentReplyId: r.reply.replyId,
-                          profileImage:
-                            sr.profile.profileImageUrl ?? FALLBACK_PROFILE,
-                          nickname: sr.profile.nickName,
-                        })
-                        subReplyMenu.close()
-                      }}
-                      onOpenReport={() => {
-                        reportReplyFlow.openReportModal({
-                          boardId,
-                          replyId: sr.reply.replyId,
-                          reportedUserId: sr.reply.userId,
-                          profileImage:
-                            sr.profile.profileImageUrl ?? FALLBACK_PROFILE,
-                          nickname: sr.profile.nickName,
-                        })
-                        subReplyMenu.close()
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+            <ReplyCard
+              key={r.reply.replyId}
+              boardId={boardId}
+              myUserId={myUserId ?? null}
+              item={r}
+              isMenuOpen={replyMenu.openId === r.reply.replyId}
+              onToggleMenu={() => replyMenu.toggle(r.reply.replyId)}
+              menuRef={replyMenu.bindRef(r.reply.replyId)}
+              onClickDetail={() => router.push(`/feed/article/${boardId}`)}
+              onToggleLike={() => onToggleReplyLike(r.reply.replyId)}
+              onOpenDelete={() => {
+                deleteReplyFlow.openDeleteModal({
+                  boardId,
+                  replyId: r.reply.replyId,
+                  profileImage: r.profile.profileImageUrl ?? FALLBACK_PROFILE,
+                  nickname: r.profile.nickName,
+                })
+                replyMenu.close()
+              }}
+              onOpenReport={() => {
+                reportReplyFlow.openReportModal({
+                  boardId,
+                  replyId: r.reply.replyId,
+                  reportedUserId: r.reply.userId,
+                  profileImage: r.profile.profileImageUrl ?? FALLBACK_PROFILE,
+                  nickname: r.profile.nickName,
+                })
+                replyMenu.close()
+              }}
+            />
           ))}
 
         <div ref={sentinelRef} style={{ height: 1 }} />
@@ -946,11 +721,7 @@ export default function FeedArticlePage() {
                   setCommentText(next)
                 }}
                 rows={1}
-                placeholder={
-                  replyTargetId !== null
-                    ? '대댓글을 입력하세요'
-                    : '댓글을 입력하세요'
-                }
+                placeholder="댓글을 입력하세요"
                 className="w-full bg-transparent outline-none resize-none body-2"
                 style={{
                   color:

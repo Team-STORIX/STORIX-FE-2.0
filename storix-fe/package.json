@@ -9,26 +9,21 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "cd .. && husky install storix-fe/.husky"
+    "prepare": "husky install"
   },
   "dependencies": {
-    "@capacitor/android": "^8.3.0",
-    "@capacitor/core": "^8.3.0",
-    "@serwist/next": "^9.5.0",
     "@stomp/stompjs": "^7.2.1",
     "@tanstack/react-query": "^5.90.16",
     "@tanstack/react-query-devtools": "^5.91.2",
     "@tanstack/react-virtual": "^3.13.18",
     "axios": "^1.13.2",
     "next": "^16.0.10",
-    "next-pwa": "^5.6.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-intersection-observer": "^10.0.2",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.3.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -39,7 +34,6 @@
     "husky": "^8.0.0",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
-    "serwist": "^9.5.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

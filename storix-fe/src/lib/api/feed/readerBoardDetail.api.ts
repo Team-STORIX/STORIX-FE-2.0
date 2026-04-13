@@ -82,24 +82,3 @@ export const deleteReply = async (params: {
   )
   return data.result
 }
-
-export const createSubReply = async (params: {
-  boardId: number
-  replyId: number
-  comment: string
-}) => {
-  const { data } = await apiClient.post<
-    ApiResponse<{
-      profile: {
-        userId: number
-        profileImageUrl: string | null
-        nickName: string
-      }
-      content: { replyId: number; content: string; likeCount: number }
-    }>
-  >(
-    `/api/v1/feed/reader/board/${params.boardId}/reply/${params.replyId}/re-reply`,
-    { comment: params.comment },
-  )
-  return data.result
-}
