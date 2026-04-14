@@ -28,10 +28,10 @@ export default function Final() {
 
       {/* 버튼 */}
       <button
-        onClick={() => router.push('/home')}
+        onClick={() => router.push('/feed/article/1?mock=1')}
         className="mt-10 w-[200px] h-[44px] rounded-[8px] bg-[var(--color-magenta-300)] text-white body-1-bold flex items-center justify-center"
       >
-        홈으로 가기
+        대댓글 디자인만 보러가자
       </button>
     </div>
   )

@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import axios from 'axios'
 
 import PostCard from '@/components/common/post/PostCard'
@@ -185,13 +185,15 @@ const DEV_MOCK_REPLIES: ReplyItem[] = [
 
 export default function FeedArticlePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
 
   const isMock =
     process.env.NODE_ENV === 'development' &&
-    window.location.search.includes('mock=1')
+    searchParams.get('mock') === '1'
 
   const returnTo = encodeURIComponent(
-    `${window.location.pathname}${window.location.search}`,
+    `${pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`,
   )
   const params = useParams<{ id: string }>()
   const boardId = isMock ? 0 : Number(params?.id)
@@ -324,7 +326,7 @@ export default function FeedArticlePage() {
   }, [loadDetail])
 
   const loadMoreReplies = useCallback(async () => {
-    if (replyLoading || replyLast) return
+    if (isMock || replyLoading || replyLast) return
     const next = replyPage + 1
     setReplyLoading(true)
     try {
@@ -358,7 +360,7 @@ export default function FeedArticlePage() {
   // 대댓글 목록: 댓글ID -> 대댓글 배열
   const [subRepliesMap, setSubRepliesMap] = useState<Record<number, ReplyItem[]>>({})
   // 방금 등록된 대댓글 ID (핑크 하이라이트용)
-  const [highlightedSubReplyId, setHighlightedSubReplyId] = useState<number | null>(null)
+  // highlightedSubReplyId 제거: 대댓글은 단계가 1개뿐이므로 하이라이트 없이 바로 연한 색 표시
 
   // ----------------------------
   //   게시글 좋아요
@@ -576,7 +578,6 @@ export default function FeedArticlePage() {
           ...prev,
           [targetId]: [...(prev[targetId] ?? []), newSubReply],
         }))
-        setHighlightedSubReplyId(newSubReply.reply.replyId)
         setReplyTargetId(null)
       } else {
         // 일반 댓글 등록
@@ -900,15 +901,17 @@ export default function FeedArticlePage() {
                 }}
               />
 
-              {/* 대댓글 리스트 */}
+              {/* 대댓글 리스트: 기존 댓글 8px 아래, 좌측 20px, 우측 16px */}
               {(subRepliesMap[r.reply.replyId] ?? []).length > 0 && (
-                <div className="px-4 pb-2 bg-white flex flex-col gap-2">
+                <div
+                  className="bg-white flex flex-col gap-2"
+                  style={{ paddingLeft: 20, paddingRight: 16, paddingTop: 8, paddingBottom: 8 }}
+                >
                   {(subRepliesMap[r.reply.replyId] ?? []).map((sr) => (
                     <SubReplyCard
                       key={sr.reply.replyId}
                       myUserId={myUserId ?? null}
                       item={sr}
-                      isHighlighted={highlightedSubReplyId === sr.reply.replyId}
                       isMenuOpen={subReplyMenu.openId === sr.reply.replyId}
                       onToggleMenu={() =>
                         subReplyMenu.toggle(sr.reply.replyId)
@@ -917,12 +920,6 @@ export default function FeedArticlePage() {
                       onToggleLike={() =>
                         onToggleSubReplyLike(r.reply.replyId, sr.reply.replyId)
                       }
-                      onReplyTo={() => {
-                        setReplyTargetId(r.reply.replyId)
-                        requestAnimationFrame(() =>
-                          textareaRef.current?.focus(),
-                        )
-                      }}
                       onOpenDelete={() => {
                         deleteReplyFlow.openDeleteModal({
                           boardId,
