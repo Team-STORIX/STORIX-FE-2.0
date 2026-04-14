@@ -201,7 +201,7 @@ export default function PreferenceSwipePage() {
           <button
             type="button"
             onClick={() => cardRef.current?.swipe('dislike')}
-            className="h-[52px] body-3 rounded-xl bg-[var(--color-magenta-50)] text-[var(--color-magenta-300)]"
+            className="py-2.5 px-10 body-1-semibold rounded-xl bg-[var(--color-magenta-50)] text-[var(--color-magenta-300)]"
             onPointerDown={(e) => e.stopPropagation()}
           >
             별로에요
@@ -209,7 +209,7 @@ export default function PreferenceSwipePage() {
           <button
             type="button"
             onClick={() => cardRef.current?.swipe('like')}
-            className="h-[52px] body-3 rounded-xl bg-[var(--color-magenta-300)] text-white"
+            className="py-3.5 px-15 body-1-semibold rounded-xl bg-[var(--color-magenta-300)] text-white"
             onPointerDown={(e) => e.stopPropagation()}
           >
             좋아요!

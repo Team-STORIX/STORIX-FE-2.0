@@ -3,6 +3,7 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -24,6 +25,7 @@ export type PreferenceWork = {
   id: number
   title: string
   imageSrc: string
+  worksType?: string
   genre: string
   description: string
   hashtags: string[]
@@ -71,6 +73,7 @@ const mapExplorationToWork = (
   id: w.worksId,
   title: w.worksName ?? '',
   imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
+  worksType: w.worksType ?? '',
   genre: w.genre ?? '',
   description: w.description ?? '',
   hashtags: Array.isArray(w.hashtags) ? w.hashtags : [],
@@ -83,6 +86,7 @@ const mapResultToWork = (w: PreferenceResultWork): PreferenceWork => {
     id: w.worksId,
     title: w.worksName,
     imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
+    worksType: w.worksType ?? '',
     genre: w.genre ?? '',
     description: '',
     hashtags: [],
@@ -230,22 +234,22 @@ export default function PreferenceProvider({
     () => new Set(),
   )
 
-  const onFavoriteAdded = (worksId: number) => {
+  const onFavoriteAdded = useCallback((worksId: number) => {
     setLikedSuccessIds((prev) => {
       const next = new Set(prev)
       next.add(worksId)
       return next
     })
-  }
+  }, [])
 
-  const onFavoriteRemoved = (worksId: number) => {
+  const onFavoriteRemoved = useCallback((worksId: number) => {
     setLikedSuccessIds((prev) => {
       if (!prev.has(worksId)) return prev
       const next = new Set(prev)
       next.delete(worksId)
       return next
     })
-  }
+  }, [])
 
   const likedWorks = useMemo(() => {
     if (useServerResults && result)

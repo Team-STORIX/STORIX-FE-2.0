@@ -44,7 +44,7 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
     const [x, setX] = useState(0)
     const [withTransition, setWithTransition] = useState(false)
 
-    const { genre, description } = work
+    const { genre, worksType, description } = work
     const hashtags = useMemo(() => {
       return work.hashtags.filter(Boolean)
     }, [work])
@@ -154,11 +154,18 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
             }}
           >
             <div className="absolute left-4 right-4 bottom-4 text-white">
-              {!!genre && (
+              {!!(genre || worksType) && (
                 <div className="mb-2 flex items-center gap-2">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full bg-[var(--color-magenta-300)] text-white body-2-bold">
-                    {genre}
-                  </span>
+                  {!!worksType && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-magenta-300)] text-white body-2-bold">
+                      {worksType}
+                    </span>
+                  )}
+                  {!!genre && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-white text-[var(--color-magenta-300)] body-2-bold">
+                      {genre}
+                    </span>
+                  )}
                 </div>
               )}
 
@@ -171,7 +178,7 @@ const PreferenceCard = forwardRef<PreferenceCardHandle, Props>(
               )}
 
               {hashtags.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex max-h-8 flex-wrap gap-2 overflow-hidden">
                   {hashtags.map((t, i) => (
                     <span
                       key={`${work.id}-tag-${i}`}
