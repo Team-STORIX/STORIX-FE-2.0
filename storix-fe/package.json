@@ -9,7 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky install"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@capacitor-community/apple-sign-in": "^7.1.0",

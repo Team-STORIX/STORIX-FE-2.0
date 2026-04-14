@@ -1,8 +1,6 @@
 // src/app/common/onboarding/components/genre.tsx
 'use client'
 
-import Image from 'next/image'
-
 // 백엔드 ENUM 값(전송용) 타입
 export type GenreKey =
   | 'ROMANCE'
@@ -24,71 +22,23 @@ interface GenreProps {
 type GenreOption = {
   key: GenreKey
   label: string
-  desc: string
   icon: string
 }
 
+// 판타지 무협 현판 / 로맨스 로판 일상 / BL 스릴러 드라마
 const GENRE_OPTIONS: GenreOption[] = [
-  {
-    key: 'ROMANCE',
-    label: '로맨스',
-    desc: '설레는 사랑과 깊은 감정 변화를 아름답게 그려낸 이야기',
-    icon: '/common/onboarding/romance.svg',
-  },
-  {
-    key: 'ROFAN',
-    label: '로맨스 판타지',
-    desc: '판타지 세계 속 주인공이 사랑과 운명을 개척하는 이야기',
-    icon: '/common/onboarding/rofan.svg',
-  },
-  {
-    key: 'BL',
-    label: 'BL',
-    desc: '남성 주인공들 사이의 섬세한 관계성과 사랑 이야기',
-    icon: '/common/onboarding/bl.svg',
-  },
-  {
-    key: 'MODERN_FANTASY',
-    label: '현대 판타지',
-    desc: '현대에 초능력, 특별한 시스템이 나타나는 흥미로운 이야기',
-    icon: '/common/onboarding/mofan.svg',
-  },
-  {
-    key: 'ACTION',
-    label: '무협',
-    desc: '화려한 무공과 문파 사이의 의리, 강호의 질서를 지키는 모험 이야기',
-    icon: '/common/onboarding/action.svg',
-  },
-  {
-    key: 'FANTASY',
-    label: '정통 판타지',
-    desc: '마법과 기사가 존재하는 미지의 세계에서 펼쳐지는 거대한 서사시',
-    icon: '/common/onboarding/fantasy.svg',
-  },
-  {
-    key: 'THRILLER',
-    label: '스릴러',
-    desc: '긴박한 사건과 치밀한 심리전으로 극강의 긴장감을 주는 이야기',
-    icon: '/common/onboarding/thriller.svg',
-  },
-  {
-    key: 'DRAMA',
-    label: '드라마',
-    desc: '우리 삶의 희로애락과 현실적인 인간관계를 깊이 있게 그린 이야기',
-    icon: '/common/onboarding/drama.svg',
-  },
-  {
-    key: 'DAILY',
-    label: '일상',
-    desc: '주변의 소소하고 평범한 일상을 통해 따뜻한 힐링을 주는 이야기',
-    icon: '/common/onboarding/daily.svg',
-  },
+  { key: 'FANTASY',        label: '판타지', icon: '/common/onboarding/fantasy.svg'  },
+  { key: 'ACTION',         label: '무협',   icon: '/common/onboarding/action.svg'   },
+  { key: 'MODERN_FANTASY', label: '현판',   icon: '/common/onboarding/mofan.svg'    },
+  { key: 'ROMANCE',        label: '로맨스', icon: '/common/onboarding/romance.svg'  },
+  { key: 'ROFAN',          label: '로판',   icon: '/common/onboarding/rofan.svg'    },
+  { key: 'DAILY',          label: '일상',   icon: '/common/onboarding/daily.svg'    },
+  { key: 'BL',             label: 'BL',     icon: '/common/onboarding/bl.svg'       },
+  { key: 'THRILLER',       label: '스릴러', icon: '/common/onboarding/thriller.svg' },
+  { key: 'DRAMA',          label: '드라마', icon: '/common/onboarding/drama.svg'    },
 ]
 
 const MAX_GENRE_SELECTION = 3
-
-const cx = (...v: Array<string | false | null | undefined>) =>
-  v.filter(Boolean).join(' ')
 
 export default function Genre({ value, onChange }: GenreProps) {
   const toggle = (k: GenreKey) => {
@@ -103,7 +53,7 @@ export default function Genre({ value, onChange }: GenreProps) {
       <div className="mt-[5px] flex items-center gap-1">
         <p className="body-1 text-[var(--color-gray-500)]">
           {value.length === 0
-            ? '선택 장르를 기반으로 작품과 키워드를 추천드려요!'
+            ? '선택 장르를 기반으로 작품과 키워드를 추천드려요'
             : '최소 1개~최대 3개 선택가능'}
         </p>
 
@@ -114,8 +64,9 @@ export default function Genre({ value, onChange }: GenreProps) {
         )}
       </div>
 
-      <div className="mt-16 flex flex-col gap-4">
-        {GENRE_OPTIONS.map(({ key, label, desc, icon }) => {
+      {/* 텍스트 80px 아래, 3열 그리드 */}
+      <div className="mt-[80px] grid grid-cols-3 gap-y-[20px]">
+        {GENRE_OPTIONS.map(({ key, label, icon }) => {
           const selected = value.includes(key)
           const disabled = !selected && value.length >= MAX_GENRE_SELECTION
 
@@ -126,64 +77,36 @@ export default function Genre({ value, onChange }: GenreProps) {
               disabled={disabled}
               onClick={() => toggle(key)}
               aria-pressed={selected}
-              className={cx(
-                'w-[361px] h-[115px] rounded-[12px] border px-[20px] py-[17px]',
-                'flex items-center justify-between text-left transition-opacity',
-                selected
-                  ? 'border-[var(--color-magenta-300)] bg-[var(--color-magenta-20)]'
-                  : 'border-[var(--color-gray-100)] bg-[var(--color-gray-50)]',
-                disabled
-                  ? 'cursor-not-allowed opacity-30'
-                  : 'cursor-pointer hover:opacity-80',
-              )}
+              className="flex flex-col items-center gap-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-30"
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-[80px] h-[80px] flex-shrink-0"
-                  style={{
-                    backgroundColor: selected
-                      ? 'var(--color-magenta-300)'
-                      : 'var(--color-gray-500)',
-                    WebkitMask: `url(${icon}) center / contain no-repeat`,
-                    mask: `url(${icon}) center / contain no-repeat`,
-                  }}
-                  aria-hidden
-                />
-
-                <div className="flex flex-col">
-                  <p
-                    className={cx(
-                      'text-[18px] font-semibold leading-[140%]',
-                      selected
-                        ? 'text-[var(--color-magenta-300)]'
-                        : 'text-[var(--color-gray-500)]',
-                    )}
-                  >
-                    {label}
-                  </p>
-
-                  <p
-                    className={cx(
-                      'mt-2 body-2 w-[185px] line-clamp-2 break-keep whitespace-normal',
-                      selected
-                        ? 'text-[var(--color-magenta-300)]'
-                        : 'text-[var(--color-gray-500)]',
-                    )}
-                  >
-                    {desc}
-                  </p>
-                </div>
-              </div>
-
-              <Image
-                src={
-                  selected ? '/common/icons/check-pink.svg' : '/common/icons/check-gray.svg'
-                }
-                alt=""
-                width={24}
-                height={24}
-                draggable={false}
+              {/* 아이콘 80×80, 선택 여부에 따라 색 변경 */}
+              <div
+                className="w-[80px] h-[80px] flex-shrink-0"
+                style={{
+                  backgroundColor: selected
+                    ? 'var(--color-magenta-300)'
+                    : '#131112',
+                  WebkitMask: `url(${icon}) center / contain no-repeat`,
+                  mask: `url(${icon}) center / contain no-repeat`,
+                }}
+                aria-hidden
               />
+
+              {/* 장르 이름, 아이콘 12px 아래 */}
+              <p
+                className="mt-[12px]"
+                style={{
+                  color: selected ? 'var(--color-magenta-300)' : 'var(--Grayscale-900, #131112)',
+                  textAlign: 'center',
+                  fontFamily: 'SUIT',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: 500,
+                  lineHeight: '140%',
+                }}
+              >
+                {label}
+              </p>
             </button>
           )
         })}

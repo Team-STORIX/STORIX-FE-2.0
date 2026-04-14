@@ -1,46 +1,53 @@
 // src/app/common/onboarding/page.tsx
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/auth.store'
-import { useSignup } from '@/hooks/auth/useSignup'
+import { useEffect, useRef, useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+// import { useAuthStore } from '@/store/auth.store'   // 디자인 확인용: 주석처리
+// import { useSignup } from '@/hooks/auth/useSignup'  // 디자인 확인용: 주석처리
 import Topbar from './components/topbar'
 import Nickname from './components/nickname'
-import Gender from './components/gender'
+import Gender from './components/bio'
 import Genre from './components/genre'
 import type { GenreKey } from './components/genre'
 import Favorite from './components/favorite'
 import Final from './components/final'
 
-export default function OnboardingPage() {
+function OnboardingInner() {
   const router = useRouter()
-  const { marketingAgree } = useAuthStore()
-  const { mutate: signupMutate, isPending } = useSignup()
+  const searchParams = useSearchParams()
+  const stepParam = Number(searchParams.get('step') ?? '1')
+  const step = isNaN(stepParam) || stepParam < 1 || stepParam > 5 ? 1 : stepParam
 
-  const [step, setStep] = useState(1)
+  // const { marketingAgree } = useAuthStore()          // 디자인 확인용: 주석처리
+  // const { mutate: signupMutate, isPending } = useSignup()  // 디자인 확인용: 주석처리
+
   const [nickname, setNickname] = useState('')
-  const [gender, setGender] = useState<'MALE' | 'FEMALE' | 'NONE' | ''>('')
+  const [bio, setBio] = useState('')
   const [genres, setGenres] = useState<GenreKey[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
-
-  //   1단계(닉네임)에서만 쓰는 "다음으로" 활성화 상태
   const [canGoNextNickname, setCanGoNextNickname] = useState(false)
+  const [profileImagePreview, setProfileImagePreview] = useState<string | undefined>(undefined)
+  const profileImageFileRef = useRef<File | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (profileImagePreview?.startsWith('blob:')) URL.revokeObjectURL(profileImagePreview)
+    }
+  }, [profileImagePreview])
+
+  const setStep = (s: number) => {
+    router.push(`/onboarding?step=${s}`)
+  }
 
   const isStepValid = () => {
     switch (step) {
-      case 1:
-        return canGoNextNickname
-      case 2:
-        return gender !== ''
-      case 3:
-        return genres.length >= 1
-      case 4:
-        return favoriteIds.length >= 2 && favoriteIds.length <= 18
-      case 5:
-        return true
-      default:
-        return false
+      case 1: return canGoNextNickname
+      case 2: return true
+      case 3: return genres.length >= 1
+      case 4: return favoriteIds.length <= 18
+      case 5: return true
+      default: return false
     }
   }
 
@@ -48,52 +55,24 @@ export default function OnboardingPage() {
 
   const handleNext = () => {
     if (!canProceed) return
-    if (step < 5) setStep((s) => s + 1)
-    else handleSignup()
-  }
-
-  const handleSignup = () => {
-    if (gender === '') return
-
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('signup_nickname', nickname)
-      sessionStorage.setItem('signup_genres', JSON.stringify(genres))
-      sessionStorage.setItem('signup_favoriteIds', JSON.stringify(favoriteIds))
-      sessionStorage.setItem('signup_gender', gender)
-    }
-
-    signupMutate({
-      marketingAgree,
-      nickName: nickname,
-      gender,
-      favoriteGenreList: genres,
-      favoriteWorksIdList: favoriteIds,
-    })
+    if (step < 5) setStep(step + 1)
+    // else handleSignup()  // 디자인 확인용: 주석처리
   }
 
   const handleBack = () => {
-    if (step > 1) setStep((s) => s - 1)
+    if (step > 1) setStep(step - 1)
     else router.push('/agreement')
-  }
-
-  if (isPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-[16px] font-medium text-[var(--color-gray-700)]">
-          회원가입 중...
-        </p>
-      </div>
-    )
   }
 
   return (
     <div className="relative w-full min-h-screen bg-white">
-      {/*   Topbar: absolute 제거 → 레이아웃 흐름에 포함 */}
       <div className="sticky top-0 z-50 bg-white">
-        <Topbar onBack={handleBack} />
+        <Topbar
+          onBack={handleBack}
+          onSkip={step < 5 ? () => setStep(step + 1) : undefined}
+        />
       </div>
 
-      {/*   Progress: absolute 제거 → Topbar 아래로 자연스럽게 내려옴 */}
       {step <= 4 && (
         <div className="px-4 pt-4">
           <img
@@ -105,38 +84,44 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/*   컨텐츠 영역: 위쪽 큰 padding 제거(전체가 같이 위로 올라감) */}
       <div className="px-4" style={{ paddingTop: 24, paddingBottom: 134 }}>
         {step === 1 && (
           <Nickname
             value={nickname}
             onChange={setNickname}
             onAvailabilityChange={setCanGoNextNickname}
+            profileImagePreview={profileImagePreview}
+            onImageChange={(file) => {
+              profileImageFileRef.current = file
+              if (profileImagePreview?.startsWith('blob:')) URL.revokeObjectURL(profileImagePreview)
+              setProfileImagePreview(URL.createObjectURL(file))
+            }}
           />
         )}
-        {step === 2 && <Gender value={gender} onChange={setGender} />}
+        {step === 2 && <Gender value={bio} onChange={setBio} />}
         {step === 3 && <Genre value={genres} onChange={setGenres} />}
-        {step === 4 && (
-          <Favorite value={favoriteIds} onChange={setFavoriteIds} />
-        )}
+        {step === 4 && <Favorite value={favoriteIds} onChange={setFavoriteIds} />}
         {step === 5 && <Final />}
       </div>
 
-      {/*   하단 다음 버튼: 기존 유지 */}
       <div className="fixed bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-50">
         <img
-          src={
-            canProceed ? '/common/onboarding/next.svg' : '/common/onboarding/next-gray.svg'
-          }
+          src={canProceed ? '/common/onboarding/next.svg' : '/common/onboarding/next-gray.svg'}
           alt="다음"
           className={`w-full h-[50px] ${
-            canProceed
-              ? 'cursor-pointer hover:opacity-80 transition-opacity'
-              : 'cursor-not-allowed opacity-50'
+            canProceed ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-not-allowed opacity-50'
           }`}
           onClick={handleNext}
         />
       </div>
     </div>
+  )
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense>
+      <OnboardingInner />
+    </Suspense>
   )
 }
