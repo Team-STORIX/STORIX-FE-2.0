@@ -2,6 +2,7 @@
 
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import Script from 'next/script'
 import { Providers } from './providers'
 import { Suspense } from 'react'
 import '@/styles/globals.css'
@@ -33,6 +34,27 @@ export default function RootLayout({
     <html lang="ko" className={`${suit.className}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <Script id="startup-error-capture" strategy="beforeInteractive">
+          {`
+            (function () {
+              if (typeof window === 'undefined') return;
+              window.addEventListener('error', function (e) {
+                try {
+                  var stack = e && e.error && e.error.stack ? String(e.error.stack) : '';
+                  console.error('[BOOT_ERROR]', e.message, e.filename + ':' + e.lineno + ':' + e.colno, stack);
+                } catch (_) {}
+              });
+              window.addEventListener('unhandledrejection', function (e) {
+                try {
+                  var reason = e && e.reason;
+                  var msg = reason && reason.message ? reason.message : String(reason);
+                  var stack = reason && reason.stack ? String(reason.stack) : '';
+                  console.error('[BOOT_REJECTION]', msg, stack);
+                } catch (_) {}
+              });
+            })();
+          `}
+        </Script>
       </head>
       <body className="min-h-dvh overflow-y-auto justify-center" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <Providers>
