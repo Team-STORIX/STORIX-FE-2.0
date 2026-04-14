@@ -50,22 +50,24 @@ export default function SearchResultWorks({ works, loadMoreRef }: Props) {
 
               {/* 텍스트 */}
               <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <p className="truncate body-1 text-black">{w.worksName}</p>
+                <p className="truncate body-2-medium text-gray-900">
+                  {w.worksName}
+                </p>
 
-                <p className="truncate body-2 text-gray-500">
+                <p className="truncate caption-1-medium text-gray-500">
                   {w.artistName}
-                  <span className="mx-2 text-gray-300">·</span>
+                  <span className="mx-1">·</span>
                   {w.worksType}
                 </p>
 
                 <div className="flex items-center gap-2">
-                  <span className="caption-1 text-[var(--color-magenta-300)]">
+                  <span className="caption-1-medium text-[var(--color-magenta-300)]">
                     <Image
                       src="/common/icons/littleStar.svg"
                       alt="star icon"
                       width={9}
                       height={10}
-                      className="inline-block mr-1 mb-0.5"
+                      className="inline-block mr-1 mb-0.5 rounded-sm"
                     />
                     {Number(w.avgRating).toFixed(1)}
                   </span>

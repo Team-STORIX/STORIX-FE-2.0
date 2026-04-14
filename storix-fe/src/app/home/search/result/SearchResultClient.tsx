@@ -7,7 +7,6 @@ import SearchBar from '@/components/common/SearchBar'
 import Tabs from '@/components/common/Tabs'
 import WorksSortBottomSheet from '@/components/home/bottomsheet/WorksSortBottomSheet'
 import WorksFilterBottomSheet from '@/components/home/bottomsheet/WorksFilterBottomSheet'
-import SearchFloatingButton from '@/components/home/search/SearchFloatingButton'
 import SearchResultWorksTab from '@/components/home/search/SearchResultWorksTab'
 import SearchResultTopicRoomTab from '@/components/home/search/SearchResultTopicRoomTab'
 import {
