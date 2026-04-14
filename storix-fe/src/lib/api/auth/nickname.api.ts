@@ -24,12 +24,18 @@ export type NicknameValidResponse = z.infer<typeof NicknameValidResponseSchema>
 export const checkNicknameValid = async (
   nickname: string,
 ): Promise<NicknameValidResponse> => {
-  const response = await apiClient.get('/api/v1/auth/nickname/valid', {
-    params: { nickname },
-    validateStatus: (status) => status >= 200 && status < 500,
-  })
-
-  return NicknameValidResponseSchema.parse(response.data)
+  console.error('[NICKNAME] request start', { nickname })
+  try {
+    const response = await apiClient.get('/api/v1/auth/nickname/valid', {
+      params: { nickname },
+      validateStatus: (status) => status >= 200 && status < 500,
+    })
+    console.error('[NICKNAME] response', response.status, JSON.stringify(response.data).slice(0, 300))
+    return NicknameValidResponseSchema.parse(response.data)
+  } catch (err: any) {
+    console.error('[NICKNAME] ERROR', err?.message ?? String(err), err?.response?.status, err?.response?.data)
+    throw err
+  }
 }
 
 /**

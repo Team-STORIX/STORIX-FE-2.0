@@ -17,6 +17,7 @@ export const signup = async (
     '/api/v1/auth/users/reader/signup',
     data,
     {
+      withCredentials: true,
       headers: {
         Authorization: `Bearer ${onboardingToken.trim()}`,
       },
