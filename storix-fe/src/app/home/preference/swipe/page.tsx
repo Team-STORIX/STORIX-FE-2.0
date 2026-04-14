@@ -151,10 +151,10 @@ export default function PreferenceSwipePage() {
             <div
               key={i}
               className={[
-                'flex-1 h-1 rounded-full transition-colors duration-300',
+                'flex-1 h-1 transition-colors duration-300',
                 i < progressFilled
                   ? 'bg-[var(--color-magenta-300)]'
-                  : 'bg-gray-100',
+                  : 'bg-[var(--color-magenta-50)]',
               ].join(' ')}
             />
           ))}
