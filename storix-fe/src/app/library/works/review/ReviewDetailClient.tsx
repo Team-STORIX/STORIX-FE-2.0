@@ -1,8 +1,8 @@
-// src/app/library/works/review/[id]/ReviewDetailClient.tsx
+// src/app/library/works/review/ReviewDetailClient.tsx
 'use client'
 
 import Image from 'next/image'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import {
   useDeleteMyReview,
@@ -27,9 +27,8 @@ const formatKoreanDate = (iso?: string) => {
 
 export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
-  const searchParams = useSearchParams() //
-  const fromReviewWrite = searchParams.get('from') === 'reviewWrite' //
+  const searchParams = useSearchParams()
+  const fromReviewWrite = searchParams.get('from') === 'reviewWrite'
 
   const handleBack = () => {
     if (fromReviewWrite) {
@@ -39,11 +38,11 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
     router.back() // 기존 동작 유지
   }
 
-  // props가 NaN/0이면 params에서 재파싱 (enabled=false 방지)
+  // props가 NaN/0이면 ?id= 쿼리에서 재파싱 (enabled=false 방지)
   const resolvedReviewId =
     Number.isFinite(reviewId) && reviewId > 0
       ? reviewId
-      : Number.parseInt(params?.id ?? '', 10)
+      : Number.parseInt(searchParams.get('id') ?? '', 10)
 
   const { data, isLoading, isError } = useWorksReviewDetail(resolvedReviewId)
 
@@ -170,7 +169,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
     }
 
     router.push(
-      `/feed/review/write/${ui.worksId}?mode=edit&reviewId=${resolvedReviewId}`,
+      `/feed/review/write?id=${ui.worksId}&mode=edit&reviewId=${resolvedReviewId}`,
     )
   }
 
@@ -181,7 +180,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
       await deleteMutation.mutateAsync(resolvedReviewId)
       setIsDeleteModalOpen(false)
       router.replace(
-        ui.worksId ? `/library/works/${ui.worksId}` : '/library/list',
+        ui.worksId ? `/library/works?id=${ui.worksId}` : '/library/list',
       )
     } catch (e) {
       alert(e instanceof Error ? e.message : '리뷰 삭제 실패')

@@ -24,7 +24,7 @@ export default function SearchResultWorks({
     `${pathname}${sp.toString() ? `?${sp.toString()}` : ''}`,
   )
   const onClickWorks = (worksId: number) => {
-    router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
+    router.push(`/library/works?id=${worksId}&returnTo=${returnTo}`)
   }
   return (
     <section className="flex w-full flex-col gap-3">

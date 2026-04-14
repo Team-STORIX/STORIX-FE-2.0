@@ -1,9 +1,9 @@
-// src/app/feed/article/[id]/page.tsx
+// src/app/feed/article/page.tsx
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import axios from 'axios'
 
 import PostCard from '@/components/common/post/PostCard'
@@ -183,7 +183,7 @@ const DEV_MOCK_REPLIES: ReplyItem[] = [
 ]
 // ──────────────────────────────────────────────────────────────────────────────
 
-export default function FeedArticlePage() {
+function FeedArticleContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
@@ -195,8 +195,7 @@ export default function FeedArticlePage() {
   const returnTo = encodeURIComponent(
     `${pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`,
   )
-  const params = useParams<{ id: string }>()
-  const boardId = isMock ? 0 : Number(params?.id)
+  const boardId = isMock ? 0 : Number(searchParams.get('id') ?? '')
 
   //   내 userId
   const me = useProfileStore((s) => s.me)
@@ -843,7 +842,7 @@ export default function FeedArticlePage() {
             onClickWorksArrow={() => {
               const worksId = post?.worksId
               if (!worksId) return
-              router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
+              router.push(`/library/works?id=${worksId}&returnTo=${returnTo}`)
             }}
           />
         </section>
@@ -872,7 +871,7 @@ export default function FeedArticlePage() {
                 isMenuOpen={replyMenu.openId === r.reply.replyId}
                 onToggleMenu={() => replyMenu.toggle(r.reply.replyId)}
                 menuRef={replyMenu.bindRef(r.reply.replyId)}
-                onClickDetail={() => router.push(`/feed/article/${boardId}`)}
+                onClickDetail={() => router.push(`/feed/article?id=${boardId}`)}
                 onToggleLike={() => onToggleReplyLike(r.reply.replyId)}
                 onReplyTo={() => {
                   setReplyTargetId((prev) =>
@@ -1123,5 +1122,13 @@ export default function FeedArticlePage() {
         doneBottom={TOAST_BOTTOM}
       />
     </>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <FeedArticleContent />
+    </Suspense>
   )
 }

@@ -1,8 +1,8 @@
-// src/app/library/works/[id]/page.tsx
+// src/app/library/works/page.tsx
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { findTopicRoomIdByWorksName } from '@/lib/api/topicroom/topicroom.api'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
@@ -17,10 +17,10 @@ type TabKey = 'info' | 'review'
 
 const STORAGE_KEY_REVIEW = 'storix:selectedWork:review'
 
-export default function LibraryWorkHomePage() {
+function LibraryWorkHomeContent() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
-  const worksId = Number(params?.id)
+  const sp = useSearchParams()
+  const worksId = Number(sp.get('id') ?? '')
 
   const handleBack = () => {
     const raw = new URLSearchParams(window.location.search).get('returnTo')
@@ -146,7 +146,7 @@ export default function LibraryWorkHomePage() {
     }
 
     //요구 라우팅으로 변경
-    router.push(`/feed/review/write/${ui.id}`)
+    router.push(`/feed/review/write?id=${ui.id}`)
   }
 
   const handleTopicroomEnter = async () => {
@@ -158,7 +158,7 @@ export default function LibraryWorkHomePage() {
 
       if (existingRoomId) {
         router.push(
-          `/home/topicroom/${existingRoomId}?worksName=${encodeURIComponent(
+          `/home/topicroom/detail?id=${existingRoomId}&worksName=${encodeURIComponent(
             ui.worksName,
           )}`,
         )
@@ -255,5 +255,13 @@ export default function LibraryWorkHomePage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <LibraryWorkHomeContent />
+    </Suspense>
   )
 }

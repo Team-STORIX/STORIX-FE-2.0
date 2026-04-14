@@ -1,15 +1,15 @@
-// src/app/library/works/[id]/topicroom/page.tsx
+// src/app/library/works/topicroom/page.tsx
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useWorksDetail } from '@/hooks/works/useWorksDetail'
 
-export default function TopicRoomCreateSuccessPage() {
+function TopicRoomCreateSuccessContent() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
-  const worksId = Number(params?.id)
+  const sp = useSearchParams()
+  const worksId = Number(sp.get('id') ?? '')
 
   const [topicRoomId, setTopicRoomId] = useState<number>(0)
   const [topicRoomName, setTopicRoomName] = useState<string>('')
@@ -34,7 +34,7 @@ export default function TopicRoomCreateSuccessPage() {
   const onGoRoom = () => {
     if (!topicRoomId) return
     router.push(
-      `/home/topicroom/${topicRoomId}?worksName=${encodeURIComponent(
+      `/home/topicroom/detail?id=${topicRoomId}&worksName=${encodeURIComponent(
         ui.worksName,
       )}`,
     )
@@ -48,7 +48,7 @@ export default function TopicRoomCreateSuccessPage() {
           type="button"
           onClick={() =>
             router.push(
-              `/library/works/${worksId}?returnTo=${encodeURIComponent(
+              `/library/works?id=${worksId}&returnTo=${encodeURIComponent(
                 '/library/list',
               )}`,
             )
@@ -135,6 +135,14 @@ export default function TopicRoomCreateSuccessPage() {
         토픽룸으로 이동
       </button>
     </div>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <TopicRoomCreateSuccessContent />
+    </Suspense>
   )
 }
 

@@ -1,8 +1,8 @@
-// src/app/home/topicroom/[id]/TopicRoomClient.tsx
+// src/app/home/topicroom/detail/TopicRoomClient.tsx
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useJoinTopicRoom } from '@/hooks/topicroom/useJoinTopicRoom'
 import { useLeaveTopicRoom } from '@/hooks/topicroom/useLeaveTopicRoom'
 import { useTopicRoomInfoById } from '@/hooks/topicroom/useTopicRoomInfoById'
@@ -32,10 +32,9 @@ const formatKoreanTime = (value?: string | null) => {
 
 export default function TopicRoomPage() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
   const sp = useSearchParams()
 
-  const roomId = Number(params.id)
+  const roomId = Number(sp.get('id') ?? '')
   const worksName = sp.get('worksName') ?? ''
 
   const accessToken = useAuthStore((s) => s.accessToken)
@@ -340,7 +339,7 @@ export default function TopicRoomPage() {
   }
 
   const onClickReport = () => {
-    router.push(`/home/topicroom/${roomId}/report`)
+    router.push(`/home/topicroom/report?id=${roomId}`)
   }
 
   const onClickLeave = () => {
