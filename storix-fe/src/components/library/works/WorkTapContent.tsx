@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import ForwardArrowIcon from '@/public/common/layout/FowardArrowIcon'
+import ForwardArrowIcon from '@/public/common/icons/FowardArrowIcon'
 import OtherReviewsSection from '@/components/library/works/OtherReviewsSection'
 import Tabs from '@/components/common/Tabs'
 

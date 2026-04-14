@@ -1,3 +1,4 @@
+// src/components/home/search/SearchResultWorks.tsx
 'use client'
 
 import Image from 'next/image'
@@ -5,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import type { RefObject } from 'react'
 import type { WorksSearchItem } from '@/lib/api/search/search.schema'
 import Warning from '@/components/common/Warining'
+import SearchFloatingButton from '@/components/home/search/SearchFloatingButton'
 
 type Props = {
   works: WorksSearchItem[]
@@ -34,7 +36,7 @@ export default function SearchResultWorks({ works, loadMoreRef }: Props) {
               className="flex w-full gap-4 border-b border-gray-100 p-4 hover:opacity-90 cursor-pointer text-left"
             >
               {/* 썸네일 */}
-              <div className="relative h-[116px] w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100 ">
+              <div className="relative h-29 w-[87px] shrink-0 overflow-hidden rounded-sm bg-gray-100 ">
                 {w.thumbnailUrl ? (
                   <Image
                     src={w.thumbnailUrl}
@@ -74,13 +76,20 @@ export default function SearchResultWorks({ works, loadMoreRef }: Props) {
         </div>
       ) : (
         <Warning
-          title="검색 결과가 없습니다"
-          description="다른 키워드로 검색해보세요."
+          title="검색 결과가 없어요.."
+          description="대신 이런 검색어는 어때요?"
           className="mt-48"
         />
       )}
 
       {loadMoreRef ? <div ref={loadMoreRef} className="h-6 w-full" /> : null}
+      <SearchFloatingButton
+        onClick={() =>
+          window.open(
+            'https://truth-gopher-09e.notion.site/2ede81f70948801bb0f4ecc8e76a6015',
+          )
+        }
+      />
     </section>
   )
 }

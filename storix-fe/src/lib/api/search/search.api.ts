@@ -7,9 +7,12 @@ import {
   TrendingResponseSchema,
   RecentResponseSchema,
   DeleteRecentResponseSchema,
+  TopicRoomSearchRawResponseSchema,
+  TopicRoomSearchResponseSchema,
   type SearchGenre,
   type SearchWorksType,
   type WorksSort,
+  type TopicRoomSort,
 } from './search.schema'
 
 /*
@@ -87,6 +90,50 @@ export const getWorksSearch = async (params: GetWorksSearchParams) => {
   const parsed = WorksSearchResponseSchema.parse(normalized)
 
   return parsed
+}
+
+type GetTopicRoomSearchParams = {
+  keyword: string
+  sort?: TopicRoomSort
+  page?: number
+  worksTypes?: SearchWorksType[]
+  genres?: SearchGenre[]
+}
+
+export const getTopicRoomSearch = async (params: GetTopicRoomSearchParams) => {
+  const {
+    keyword,
+    sort = 'DEFAULT',
+    page = 0,
+    worksTypes = [],
+    genres = [],
+  } = params
+  const k = keyword.trim()
+  const normalizedWorksTypes = Array.from(new Set(worksTypes))
+  const normalizedGenres = Array.from(new Set(genres))
+
+  const res = await apiClient.get('/api/v2/search/topic-rooms', {
+    params: {
+      keyword: k,
+      sort,
+      page,
+      worksTypes: normalizedWorksTypes,
+      genres: normalizedGenres,
+    },
+    paramsSerializer: (requestParams) => {
+      const searchParams = new URLSearchParams()
+      searchParams.set('keyword', String(requestParams.keyword ?? ''))
+      searchParams.set('sort', String(requestParams.sort ?? 'DEFAULT'))
+      searchParams.set('page', String(requestParams.page ?? 0))
+      normalizedWorksTypes.forEach((v) => searchParams.append('worksTypes', v))
+      normalizedGenres.forEach((v) => searchParams.append('genres', v))
+      return searchParams.toString()
+    },
+  })
+
+  const rawParsed = TopicRoomSearchRawResponseSchema.parse(res.data)
+  const normalized = { ...rawParsed, result: rawParsed.result.result }
+  return TopicRoomSearchResponseSchema.parse(normalized)
 }
 
 export const getTrendingKeywords = async () => {

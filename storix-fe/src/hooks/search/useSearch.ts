@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   getWorksSearch,
+  getTopicRoomSearch,
   getTrendingKeywords,
   getRecentKeywords,
   deleteRecentKeyword,
@@ -12,10 +13,11 @@ import type {
   SearchWorksType,
   WorksSort,
   WorksSearchItem,
+  TopicRoomSort,
+  TopicRoomSearchItem,
 } from '@/lib/api/search/search.schema'
 
 /**
- *   요구사항 반영
  * - keyword 빈 문자열이면 요청 X (enabled/guard)
  * - 무한스크롤 종료 조건: 서버 응답 기반(last/empty/content length + number)
  * - 디버깅 로그:
@@ -173,6 +175,121 @@ export const useWorksSearchInfinite = (
     //   current: pageRef.current,
     //   next,
     // })
+    setPage(next)
+  }
+
+  return {
+    items,
+    meta,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    error: query.error,
+    hasNext,
+    requestNext,
+    reset,
+  }
+}
+
+export const useTopicRoomSearchInfinite = (
+  keyword: string,
+  sort: TopicRoomSort = 'DEFAULT',
+  worksTypes: SearchWorksType[] = [],
+  genres: SearchGenre[] = [],
+): PagerResult<TopicRoomSearchItem> => {
+  const k = keyword.trim()
+  const worksTypesKey = worksTypes.join(',')
+  const genresKey = genres.join(',')
+
+  const [page, setPage] = useState(0)
+  const pageRef = useRef(0)
+
+  const [items, setItems] = useState<TopicRoomSearchItem[]>([])
+  const [meta, setMeta] = useState<SliceMeta | null>(null)
+  const [hasNext, setHasNext] = useState(false)
+
+  const requestedPagesRef = useRef<Set<number>>(new Set())
+  const seenIdsRef = useRef<Set<number>>(new Set())
+  const loadingRef = useRef(false)
+  const stopRef = useRef(false)
+
+  useEffect(() => {
+    pageRef.current = page
+  }, [page])
+
+  const reset = () => {
+    setPage(0)
+    pageRef.current = 0
+    setItems([])
+    setMeta(null)
+    setHasNext(false)
+    requestedPagesRef.current.clear()
+    seenIdsRef.current.clear()
+    loadingRef.current = false
+    stopRef.current = false
+  }
+
+  useEffect(() => {
+    reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [k, sort, worksTypesKey, genresKey])
+
+  const shouldFetch =
+    k.length > 0 && !stopRef.current && !requestedPagesRef.current.has(page)
+
+  const query = useQuery({
+    queryKey: ['search', 'topicroom', k, sort, page, worksTypes, genres],
+    enabled: shouldFetch,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    queryFn: async () => {
+      requestedPagesRef.current.add(page)
+      return getTopicRoomSearch({ keyword: k, sort, page, worksTypes, genres })
+    },
+  })
+
+  useEffect(() => {
+    loadingRef.current = query.isFetching
+  }, [query.isFetching])
+
+  useEffect(() => {
+    const data = query.data
+    if (!data) return
+
+    const r = data.result
+    const nextMeta: SliceMeta = {
+      number: r.number,
+      size: r.size,
+      last: r.last,
+      empty: r.empty,
+      numberOfElements: r.numberOfElements,
+      contentLen: r.content.length,
+    }
+
+    if (Array.isArray(r.content) && r.content.length > 0) {
+      const appended: TopicRoomSearchItem[] = []
+      for (const item of r.content as TopicRoomSearchItem[]) {
+        const id = Number(item.topicRoomId)
+        if (!Number.isFinite(id)) continue
+        if (seenIdsRef.current.has(id)) continue
+        seenIdsRef.current.add(id)
+        appended.push(item)
+      }
+      if (appended.length > 0) setItems((prev) => prev.concat(appended))
+    }
+
+    setMeta(nextMeta)
+    const stop = shouldStop(nextMeta)
+    stopRef.current = stop
+    setHasNext(!stop)
+  }, [query.data])
+
+  const requestNext = () => {
+    if (k.length === 0) return
+    if (stopRef.current) return
+    if (loadingRef.current) return
+    const next = pageRef.current + 1
+    if (requestedPagesRef.current.has(next)) return
     setPage(next)
   }
 

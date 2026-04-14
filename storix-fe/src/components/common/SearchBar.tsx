@@ -17,7 +17,7 @@ type SearchBarProps = {
 }
 
 export default function SearchBar({
-  placeholder = '좋아하는 작품/작가를 검색하세요',
+  placeholder = '좋아하는 작품/토픽룸을 검색하세요',
   onSearchClick,
   backHref,
   defaultKeyword = '',

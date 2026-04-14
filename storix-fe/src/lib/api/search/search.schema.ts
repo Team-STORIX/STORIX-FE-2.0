@@ -40,17 +40,6 @@ const PageableSchema = z
   })
   .passthrough()
 
-const SortItemSchema = z
-  .object({
-    direction: z.string().optional(),
-    property: z.string().optional(),
-    ignoreCase: z.boolean().optional(),
-    nullHandling: z.string().optional(),
-    ascending: z.boolean().optional(),
-    descending: z.boolean().optional(),
-  })
-  .passthrough()
-
 const SliceSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z
     .object({
@@ -138,7 +127,7 @@ export const DeleteRecentResponseSchema = ApiResponseUnwrapSchema(z.any())
 
 export const WORKS_TYPE_VALUES = ['WEBTOON', 'WEBNOVEL', 'COMIC'] as const
 export const SEARCH_GENRE_VALUES = [
-  'RORMACE',
+  'ROMANCE',
   'FANTASY',
   'DAILY',
   'ROFAN',
@@ -161,3 +150,29 @@ export type WorksSearchItem = z.infer<typeof WorksSearchItemSchema>
 export type TrendingKeyword = z.infer<typeof TrendingKeywordSchema>
 export type SearchWorksType = z.infer<typeof SearchWorksTypeSchema>
 export type SearchGenre = z.infer<typeof SearchGenreSchema>
+
+/** ---- /api/v2/search/topic-rooms ---- */
+export const TopicRoomSearchItemSchema = z.object({
+  topicRoomId: z.number(),
+  topicRoomName: z.string(),
+  worksType: z.string().nullish(),
+  worksName: z.string(),
+  thumbnailUrl: z.string().nullish(),
+  activeUserNumber: z.number().nullish(),
+  lastChatTime: z.string().nullish(),
+  isJoined: z.boolean().nullish(),
+})
+
+export const TopicRoomSearchRawResponseSchema = ApiResponseSchema(
+  z.object({
+    result: SliceSchema(TopicRoomSearchItemSchema),
+  }),
+)
+
+export const TopicRoomSearchResponseSchema = ApiResponseSchema(
+  SliceSchema(TopicRoomSearchItemSchema),
+)
+
+export const TOPIC_ROOM_SORT_VALUES = ['DEFAULT', 'LATEST', 'ACTIVE'] as const
+export type TopicRoomSort = (typeof TOPIC_ROOM_SORT_VALUES)[number]
+export type TopicRoomSearchItem = z.infer<typeof TopicRoomSearchItemSchema>

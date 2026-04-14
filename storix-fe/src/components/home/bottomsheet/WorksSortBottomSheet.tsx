@@ -1,3 +1,4 @@
+// src/components/home/bottomsheet/WorksSortBottomSheet.tsx
 'use client'
 
 import Image from 'next/image'
@@ -52,7 +53,7 @@ export default function WorksSortBottomSheet({
     >
       <div
         className={[
-          'w-full max-w-[393px] rounded-t-[24px] bg-white px-6 pt-10 pb-6',
+          'flex w-full max-w-98.25 max-h-145 flex-col overflow-hidden rounded-t-[1.25rem] bg-white px-4 pt-7 pb-9',
           'transform transition-transform duration-200 ease-out will-change-transform',
           isOpen ? 'translate-y-0' : 'translate-y-full',
         ].join(' ')}
@@ -60,7 +61,11 @@ export default function WorksSortBottomSheet({
       >
         <div className="flex items-center justify-between">
           <h2 className="heading-2 text-black">정렬</h2>
-          <button type="button" onClick={handleClose} className="cursor-pointer">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="cursor-pointer"
+          >
             <Image
               src="/common/icons/cancel.svg"
               alt="닫기"
@@ -70,9 +75,9 @@ export default function WorksSortBottomSheet({
           </button>
         </div>
 
-        <div className="-mx-6 mt-8 h-px bg-gray-100" />
+        <div className="-mx-4 mt-6 h-px bg-gray-100" />
 
-        <div className="py-6">
+        <div className="flex flex-col gap-5 py-7">
           {SORT_OPTIONS.map((option) => {
             const checked = draftSort === option.value
             return (
@@ -80,12 +85,12 @@ export default function WorksSortBottomSheet({
                 key={option.value}
                 type="button"
                 onClick={() => setDraftSort(option.value)}
-                className="flex w-full items-center justify-between py-4 text-left"
+                className="flex w-full items-center justify-between text-left"
               >
                 <span className="body-1 text-black">{option.label}</span>
                 {checked ? (
                   <Image
-                    src="/common/icons/check-pink.svg"
+                    src="/home/search/icon-check.svg"
                     alt="selected"
                     width={24}
                     height={24}
@@ -102,14 +107,14 @@ export default function WorksSortBottomSheet({
           <button
             type="button"
             onClick={() => setDraftSort('NAME')}
-            className="h-14 min-w-[110px] rounded-2xl bg-[var(--color-gray-50)] px-6 body-1 text-black"
+            className="h-14 min-w-27.5 rounded-lg bg-[var(--color-gray-50)] px-6 body-1-bold text-black"
           >
             초기화
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="h-14 flex-1 rounded-2xl bg-black body-1 text-white"
+            className="h-14 flex-1 rounded-lg bg-black body-1-bold text-white"
           >
             적용하기
           </button>
