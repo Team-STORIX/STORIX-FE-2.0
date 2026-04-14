@@ -1,3 +1,4 @@
+// src/app/home/search/page.tsx
 'use client'
 
 import { useMemo } from 'react'
@@ -8,6 +9,7 @@ import TrendingSearch from '@/components/home/search/TrendingSearch'
 import {
   useRecentKeywords,
   useDeleteRecentKeyword,
+  useDeleteAllRecentKeywords,
 } from '@/hooks/search/useSearch'
 
 export default function SearchHomePage() {
@@ -15,6 +17,7 @@ export default function SearchHomePage() {
 
   const { data: recentRes } = useRecentKeywords()
   const { mutate: removeRecent } = useDeleteRecentKeyword()
+  const { mutate: removeAllRecent } = useDeleteAllRecentKeywords()
 
   const recentItems = useMemo(
     () => recentRes?.result?.recentKeywords ?? [],
@@ -33,8 +36,10 @@ export default function SearchHomePage() {
 
       <div className="flex w-full flex-col gap-6 px-4 pt-4 pb-10">
         <div className="flex flex-col w-full gap-3">
-          <p className="body-1 text-gray-900">최근 검색어</p>
-
+          <div className="flex justify-between">
+            <p className="body-1-medium text-gray-900">최근 검색어</p>
+            <p className="body-2-medium text-gray-300 cursor-pointer" onClick={() => removeAllRecent()}>전체 삭제</p>
+          </div>
           {recentItems.length ? (
             <div className="flex flex-wrap gap-2">
               {recentItems.map((k) => (

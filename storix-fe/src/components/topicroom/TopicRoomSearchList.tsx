@@ -13,8 +13,8 @@ export default function TopicRoomSearchList({ list, onItemClick }: Props) {
   if (!list.length) return null
 
   return (
-    <section className="border-bottom">
-      <div className="flex flex-col space-y-4">
+    <section className="p-4">
+      <div className="flex flex-col gap-4">
         {list.map(
           ({ id, thumbnail, title, subtitle, memberCount, timeAgo }) => {
             const rightText = timeAgo
@@ -26,7 +26,7 @@ export default function TopicRoomSearchList({ list, onItemClick }: Props) {
                 key={id}
                 type="button"
                 onClick={() => onItemClick(id)}
-                className="flex w-full items-center p-4 text-left cursor-pointer"
+                className="flex w-full gap-3 items-center text-left cursor-pointer"
               >
                 {/* 왼쪽 원형 썸네일 */}
                 <div className="flex-none h-15 w-15 overflow-hidden rounded-full">
@@ -42,14 +42,14 @@ export default function TopicRoomSearchList({ list, onItemClick }: Props) {
                 {/* 가운데 텍스트들 */}
                 <div className="flex flex-col gap-1 flex-1 min-w-0">
                   <div className="flex justify-between items-start gap-2">
-                    <p className="body-2-medium leading-tight text-gray-900 flex-1 min-w-0 w-full truncate">
+                    <p className="body-2-medium text-gray-900 flex-1 min-w-0 w-full truncate">
                       {subtitle}
                     </p>
-                    <div className="whitespace-nowrap caption-1 text-gray-500">
+                    <div className="whitespace-nowrap caption-1-medium text-gray-500">
                       {rightText}
                     </div>
                   </div>
-                  <p className="mt-1 caption-1-medium text-gray-500 w-full truncate">
+                  <p className="caption-1-medium text-gray-500 w-full truncate">
                     {title}
                   </p>
                 </div>
