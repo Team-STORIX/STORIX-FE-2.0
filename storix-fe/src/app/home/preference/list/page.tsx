@@ -42,16 +42,14 @@ export default function PreferenceListPage() {
       </div>
 
       {/* 탭 */}
-      <div className="px-4">
-        <div className="grid grid-cols-2 body-1  border-b border-gray-200 -mx-4">
+      <div className="relative">
+        <div className="grid grid-cols-2 body-1 border-b border-gray-200">
           <button
             type="button"
             onClick={() => setTab('like')}
             className={[
               'py-3 text-center cursor-pointer',
-              tab === 'like'
-                ? 'text-black  border-b border-gray-200 -mx-4'
-                : 'text-gray-400',
+              tab === 'like' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
             좋아요
@@ -61,20 +59,18 @@ export default function PreferenceListPage() {
             onClick={() => setTab('dislike')}
             className={[
               'py-3 text-center cursor-pointer',
-              tab === 'dislike' ? 'text-black ' : 'text-gray-400',
+              tab === 'dislike' ? 'text-black' : 'text-gray-400',
             ].join(' ')}
           >
             별로에요
           </button>
         </div>
-        <div className="relative -mx-4 px-4">
-          <div
-            className={[
-              'absolute -top-[1px] h-[2px] w-1/2 bg-black transition-transform duration-200 -mx-4 px-4',
-              tab === 'like' ? 'translate-x-0' : 'translate-x-full',
-            ].join(' ')}
-          />
-        </div>
+        <div
+          className={[
+            'absolute bottom-0 h-[2px] w-1/2 bg-black transition-transform duration-200',
+            tab === 'like' ? 'translate-x-0' : 'translate-x-full',
+          ].join(' ')}
+        />
       </div>
 
       {/* 리스트 */}

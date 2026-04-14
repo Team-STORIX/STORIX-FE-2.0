@@ -56,7 +56,7 @@ export default function Home() {
 
       // 이미 오늘 참여한 경우: 빈 리스트
       if (items.length === 0) {
-        showToast('하루 한번 만 가능합니다.')
+        showToast('하루 한번만 가능합니다.')
         return
       }
 

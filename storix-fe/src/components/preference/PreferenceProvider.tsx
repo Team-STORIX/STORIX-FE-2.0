@@ -9,7 +9,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import {
   usePreferenceAnalyze,
   usePreferenceExploration,
@@ -96,7 +95,6 @@ export default function PreferenceProvider({
 }: {
   children: React.ReactNode
 }) {
-  const queryClient = useQueryClient()
   const explorationQuery = usePreferenceExploration()
   const resultsQuery = usePreferenceResults(true)
   const analyzeMutation = usePreferenceAnalyze()
@@ -227,42 +225,6 @@ export default function PreferenceProvider({
     explorationList.length === 0
 
   const useServerResults = hasResultLists || isLimitedDay
-
-  // DEBUG: "2개 눌렀는데 12로 뜨는" 원인 추적 로그
-  useEffect(() => {
-    // 필요하면 false로 꺼도 됨
-    const DEBUG = true
-    if (!DEBUG) return
-
-    const resultLikedLen = result?.likedWorks?.length ?? 0
-    const resultDislikedLen = result?.dislikedWorks?.length ?? 0
-
-    console.group('[Preference DEBUG] source check')
-    console.log('explorationQuery.isSuccess:', explorationQuery.isSuccess)
-    console.log('exploration works length:', works.length)
-    console.log('likedWorksLocal length:', likedWorksLocal.length)
-    console.log('dislikedWorksLocal length:', dislikedWorksLocal.length)
-
-    console.log('resultsQuery.status:', resultsQuery.status)
-    console.log('result exists:', !!result)
-    console.log('result.likedWorks length:', resultLikedLen)
-    console.log('result.dislikedWorks length:', resultDislikedLen)
-
-    console.log('hasResultLists:', hasResultLists)
-    console.log('isLimitedDay:', isLimitedDay)
-    console.log('useServerResults:', useServerResults)
-    console.groupEnd()
-  }, [
-    explorationQuery.isSuccess,
-    works.length,
-    likedWorksLocal.length,
-    dislikedWorksLocal.length,
-    resultsQuery.status,
-    result,
-    hasResultLists,
-    isLimitedDay,
-    useServerResults,
-  ])
 
   const [likedSuccessIds, setLikedSuccessIds] = useState<Set<number>>(
     () => new Set(),
