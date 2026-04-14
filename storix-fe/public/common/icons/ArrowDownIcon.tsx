@@ -10,7 +10,7 @@ export default function ArrowDownIcon(props: React.SVGProps<SVGSVGElement>) {
       <g clipPath="url(#clip0_4285_19121)">
         <path
           d="M11.6537 15.708L6 10.0542L7.05375 9.00049L11.6537 13.6005L16.2537 9.00049L17.3075 10.0542L11.6537 15.708Z"
-          fill="#888787"
+          fill="currentColor"
         />
       </g>
       <defs>

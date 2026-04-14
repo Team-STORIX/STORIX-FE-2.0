@@ -1,57 +1,70 @@
 import path from 'node:path'
 import type { NextConfig } from 'next'
 
+// CAPACITOR_BUILD=true 일 때만 static export (iOS/Android 번들용).
+// 일반 웹 배포/dev에서는 기존 동작 그대로.
+const isCapacitor = process.env.CAPACITOR_BUILD === 'true'
+
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
-  async headers() {
-    return [
-      {
-        source: '/common/icons/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/profile/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/common/navbar/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/common/platform/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/common/pwa/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ]
-  },
+  allowedDevOrigins: ['*'],
+  ...(isCapacitor
+    ? {
+        output: 'export' as const,
+        // static export에서는 동적 trailing slash 처리 불가 → 명시적으로 고정
+        trailingSlash: true,
+      }
+    : {
+        async headers() {
+          return [
+            {
+              source: '/common/icons/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/profile/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/common/navbar/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/common/platform/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+            {
+              source: '/common/pwa/:path*',
+              headers: [
+                {
+                  key: 'Cache-Control',
+                  value: 'public, max-age=31536000, immutable',
+                },
+              ],
+            },
+          ]
+        },
+      }),
 
   images: {
     unoptimized: true,

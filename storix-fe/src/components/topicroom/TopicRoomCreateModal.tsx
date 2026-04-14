@@ -76,7 +76,7 @@ export default function TopicRoomCreateModal({ open, onClose, work }: Props) {
     didNavigateRef.current = true
     closeWithAnim()
     router.push(
-      `/library/works/${work.id}/topicroom?topicRoomId=${createMut.data}&topicRoomName=${encodeURIComponent(
+      `/library/works/topicroom?id=${work.id}&topicRoomId=${createMut.data}&topicRoomName=${encodeURIComponent(
         topicRoomName,
       )}`,
     )

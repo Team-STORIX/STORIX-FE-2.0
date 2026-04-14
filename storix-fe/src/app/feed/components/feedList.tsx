@@ -52,7 +52,7 @@ export default function FeedList({
   const goDetail = useCallback(
     (post: UIPost) => {
       if (onClickDetail) return onClickDetail(post)
-      router.push(`/feed/article/${post.id}`)
+      router.push(`/feed/article?id=${post.id}`)
     },
     [onClickDetail, router],
   )

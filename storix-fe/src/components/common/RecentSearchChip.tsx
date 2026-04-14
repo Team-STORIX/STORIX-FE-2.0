@@ -22,7 +22,7 @@ export default function RecentSearchChip({
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') onClick?.()
       }}
-      className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 body-2 cursor-default ${className}`}
+      className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 body-2-medium cursor-default ${className}`}
     >
       <span>{label}</span>
 

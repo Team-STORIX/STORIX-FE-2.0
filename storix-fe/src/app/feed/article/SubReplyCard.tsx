@@ -9,34 +9,30 @@ const FALLBACK_PROFILE = '/profile/profile-default.svg'
 interface SubReplyCardProps {
   myUserId: number | null
   item: ReplyItem
-  isHighlighted?: boolean
   isMenuOpen: boolean
   onToggleMenu: () => void
   menuRef: (el: HTMLDivElement | null) => void
   onToggleLike: () => void
   onOpenDelete: () => void
   onOpenReport: () => void
-  onReplyTo: () => void
 }
 
 export default function SubReplyCard({
   myUserId,
   item,
-  isHighlighted = false,
   isMenuOpen,
   onToggleMenu,
   menuRef,
   onToggleLike,
   onOpenDelete,
   onOpenReport,
-  onReplyTo,
 }: SubReplyCardProps) {
   const profileImage = item.profile.profileImageUrl ?? FALLBACK_PROFILE
   const isMine = myUserId != null && item.reply.userId === myUserId
 
   return (
     <div className="flex items-start">
-      {/* 화살표 아이콘 */}
+      {/* 화살표 아이콘: 14×14, 카드와 상단 정렬 */}
       <img
         src="/feed/comment-arrow.svg"
         alt=""
@@ -46,17 +42,14 @@ export default function SubReplyCard({
         style={{ marginTop: 3, flexShrink: 0 }}
       />
 
-      {/* 카드: 화살표에서 12px 오른쪽, 패딩 위아래 12px / 좌우 16px */}
+      {/* 카드: 화살표에서 12px 오른쪽, border-radius 8, 배경 #F9F6F7 */}
       <div
         style={{
           marginLeft: 12,
           flex: 1,
           borderRadius: 8,
-          background: isHighlighted
-            ? 'rgba(255, 64, 147, 0.20)'
-            : 'var(--Grayscale-50, #F9F6F7)',
+          background: 'var(--Grayscale-50, #F9F6F7)',
           padding: '12px 16px',
-          transition: 'background 0.15s',
         }}
       >
         <div className="flex flex-col gap-3">
@@ -143,7 +136,7 @@ export default function SubReplyCard({
             {item.reply.comment}
           </p>
 
-          {/* 액션: 좋아요 + 대댓글 아이콘 */}
+          {/* 액션: 좋아요만 (대대댓글 불가이므로 메시지 아이콘 없음) */}
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -174,23 +167,6 @@ export default function SubReplyCard({
                 {item.reply.likeCount}
               </span>
             )}
-
-            <button
-              type="button"
-              className="transition-opacity hover:opacity-70 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation()
-                onReplyTo()
-              }}
-              aria-label="대댓글 달기"
-            >
-              <Image
-                src="/common/icons/icon-comment.svg"
-                alt="대댓글 달기"
-                width={24}
-                height={24}
-              />
-            </button>
           </div>
         </div>
       </div>

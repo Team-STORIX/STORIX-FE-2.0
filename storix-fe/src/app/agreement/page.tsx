@@ -26,14 +26,7 @@ export default function AgreementPage() {
 
   const handleNext = () => {
     if (!allAgreed) return
-
-    //   "다음"을 눌렀다는 건 필수 약관 전체 동의 완료라는 의미
-    //   따라서 marketingAgree도 true로 세팅 (termsAgreed와 동일하게 사용)
     setMarketingAgree(true)
-
-    // console.log('[agreement] termsAgreed:', true, 'marketingAgree:', true)
-
-    // 온보딩 페이지로 이동
     router.push('/onboarding')
   }
 

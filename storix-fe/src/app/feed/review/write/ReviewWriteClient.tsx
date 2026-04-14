@@ -2,7 +2,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useMemo, useState, useEffect } from 'react'
 import RatingInput from '@/components/common/RatingInput'
 import { createReaderReview } from '@/lib/api/plus/plusWrite'
@@ -19,8 +19,6 @@ const MAX_CONTENT_LENGTH = 500
 
 export default function ReviewWriteClient({ worksId }: Props) {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
-  const routeId = Number(params?.id)
 
   const [resolvedWork, setResolvedWork] = useState<Work | null>(null)
   const [text, setText] = useState('')
@@ -121,7 +119,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
         })
 
         sessionStorage.removeItem(STORAGE_KEY_EDIT_REVIEW)
-        router.replace(`/library/works/review/${editReviewId}`)
+        router.replace(`/library/works/review?id=${editReviewId}`)
         return
       }
 
@@ -137,12 +135,12 @@ export default function ReviewWriteClient({ worksId }: Props) {
 
       const newReviewId = extractReviewId(res)
       if (newReviewId) {
-        router.replace(`/library/works/review/${newReviewId}?from=reviewWrite`)
+        router.replace(`/library/works/review?id=${newReviewId}&from=reviewWrite`)
         return
       }
 
       // 혹시 reviewId가 응답에 없다면 최소한 작품 상세로
-      router.replace(`/library/works/${resolvedWork.id}`)
+      router.replace(`/library/works?id=${resolvedWork.id}`)
     } catch (e) {
       alert(
         e instanceof Error
@@ -220,8 +218,8 @@ export default function ReviewWriteClient({ worksId }: Props) {
               <img
                 src={
                   spoiler
-                    ? '/common/common/icons/active.svg'
-                    : '/common/common/icons/deactive.svg'
+                    ? '/common/icons/active.svg'
+                    : '/common/icons/deactive.svg'
                 }
                 alt={spoiler ? '활성' : '비활성'}
                 className="h-4.5 w-8"

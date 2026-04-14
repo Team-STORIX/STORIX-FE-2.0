@@ -15,8 +15,8 @@ export const CardTopicRoomInsideCover = ({ room }: TopicRoomCoverCardProps) => {
   const href =
     Number.isFinite(roomId) && roomId > 0
       ? {
-          pathname: `/home/topicroom/${roomId}`,
-          query: worksName ? { worksName } : {},
+          pathname: '/home/topicroom/detail',
+          query: worksName ? { id: roomId, worksName } : { id: roomId },
         }
       : '/home/topicroom'
   return (

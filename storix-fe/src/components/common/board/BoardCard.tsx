@@ -158,7 +158,7 @@ export default function BoardCard({
 }: Props) {
   const router = useRouter()
   const { boardId } = data
-  const link = to ?? `/feed/article/${boardId}`
+  const link = to ?? `/feed/article?id=${boardId}`
 
   const meProfile = useProfileStore((s) => s.me)
   const myUserId = meProfile?.userId

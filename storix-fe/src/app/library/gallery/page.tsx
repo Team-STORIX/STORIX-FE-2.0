@@ -203,7 +203,7 @@ export default function LibraryGalleryPage() {
             className="hover:opacity-70 cursor-pointer"
           >
             <Image
-              src={'/library/common/icons/icon-list.svg'}
+              src={'/library/icons/icon-list.svg'}
               alt={'리스트형 보기'}
               width={24}
               height={24}

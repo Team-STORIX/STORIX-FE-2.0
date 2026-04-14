@@ -180,7 +180,7 @@ export default function PostCard({
   const goDetail = () => {
     if (!clickable) return
     if (onClickDetail) onClickDetail()
-    else router.push(`/feed/article/${boardId}`)
+    else router.push(`/feed/article?id=${boardId}`)
   }
 
   return (

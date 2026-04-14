@@ -1,14 +1,24 @@
-import { Suspense } from 'react'
-import WorksClient from './WorksClient'
+'use client'
+
+import { Suspense, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+
+function WorksRedirect() {
+  const router = useRouter()
+  const sp = useSearchParams()
+
+  useEffect(() => {
+    const keyword = sp.get('keyword') ?? ''
+    router.replace(`/home/search/result?keyword=${encodeURIComponent(keyword)}`)
+  }, [router, sp])
+
+  return null
+}
 
 export default function Page() {
   return (
-    <Suspense
-      fallback={
-        <div className="px-4 py-10 text-[12px] text-gray-400">불러오는 중…</div>
-      }
-    >
-      <WorksClient />
+    <Suspense fallback={null}>
+      <WorksRedirect />
     </Suspense>
   )
 }

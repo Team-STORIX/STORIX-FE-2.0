@@ -70,7 +70,7 @@ export default function ResultClient() {
   return (
     <main className="min-h-screen bg-white">
       <SearchBar
-        placeholder="좋아하는 작품/작가를 검색하세요"
+        placeholder="좋아하는 작품/토픽룸을 검색하세요"
         defaultKeyword={keyword}
         onSearchClick={goResult}
         backHref="/library/search"
@@ -96,7 +96,7 @@ export default function ResultClient() {
             />
           }
           onItemClick={(id) =>
-            router.push(`/library/works/${id}?returnTo=${returnTo}`)
+            router.push(`/library/works?id=${id}&returnTo=${returnTo}`)
           }
           infiniteScrollRef={ref}
           isFetchingNextPage={isFetchingNextPage}

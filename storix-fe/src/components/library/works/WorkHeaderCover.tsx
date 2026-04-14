@@ -36,12 +36,7 @@ type Props = {
   onTopicroomEnter: () => void
 }
 
-export default function WorkHeaderCover({
-  ui,
-  isCheckingRoom,
-  onReviewWrite,
-  onTopicroomEnter,
-}: Props) {
+export default function WorkHeaderCover({ ui }: Props) {
   return (
     <div className="relative">
       {/* watermark bg */}

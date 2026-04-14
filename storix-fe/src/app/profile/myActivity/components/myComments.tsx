@@ -265,11 +265,11 @@ export default function MyComments() {
               style={{ borderBottom: '1px solid var(--color-gray-100)' }}
               role="button"
               tabIndex={0}
-              onClick={() => router.push(`/feed/article/${item.reply.boardId}`)}
+              onClick={() => router.push(`/feed/article?id=${item.reply.boardId}`)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
-                  router.push(`/feed/article/${item.reply.boardId}`)
+                  router.push(`/feed/article?id=${item.reply.boardId}`)
                 }
               }}
             >

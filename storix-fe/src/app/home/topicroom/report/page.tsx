@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTopicRoomMembers } from '@/hooks/topicroom/useTopicRoomMembers'
 import { useReportTopicRoomUser } from '@/hooks/topicroom/useReportTopicRoomUser'
 import ReportTargetSelect from '@/components/topicroom/report/ReportTargetSelect'
@@ -10,10 +10,10 @@ import ReportReasonSelect from '@/components/topicroom/report/ReportReasonSelect
 
 type ReasonKey = 'ABUSE' | 'REDIRECT' | 'OTHER'
 
-export default function TopicRoomReportPage() {
+function TopicRoomReportContent() {
   const router = useRouter()
-  const params = useParams<{ id: string }>()
-  const roomId = Number(params.id)
+  const sp = useSearchParams()
+  const roomId = Number(sp.get('id') ?? '')
 
   const membersQuery = useTopicRoomMembers(roomId)
   const reportMut = useReportTopicRoomUser()
@@ -116,5 +116,13 @@ export default function TopicRoomReportPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function TopicRoomReportPage() {
+  return (
+    <Suspense fallback={null}>
+      <TopicRoomReportContent />
+    </Suspense>
   )
 }

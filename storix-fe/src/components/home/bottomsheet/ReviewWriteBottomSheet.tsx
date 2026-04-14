@@ -3,7 +3,7 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import CheckBox from '@/public/common/icons/CheckBox'
 import { usePlusWorksSearch } from '@/hooks/plus/usePlusWorksSearch'
 import { usePlusReviewDuplicateCheck } from '@/hooks/plus/usePlusReviewDuplicateCheck'
@@ -89,7 +89,7 @@ export default function ReviewWriteBottomSheet({
 
     saveSelectedWorkToSession(picked)
     handleClose()
-    router.push(`/feed/review/write/${selected}`)
+    router.push(`/feed/review/write?id=${selected}`)
   }
 
   const reviewButtonDisabled =

@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import ForwardArrowIcon from '@/public/common/layout/FowardArrowIcon'
+import ForwardArrowIcon from '@/public/common/icons/FowardArrowIcon'
 
 type OtherReviewItem = {
   reviewId: number
@@ -25,7 +25,7 @@ export default function OtherReviewsSection({
   const router = useRouter()
 
   const goReviewDetail = (reviewId: number) => {
-    router.push(`/library/works/review/${reviewId}`)
+    router.push(`/library/works/review?id=${reviewId}`)
   }
   const [revealedSpoilerIds, setRevealedSpoilerIds] = useState<Set<number>>(
     new Set(),

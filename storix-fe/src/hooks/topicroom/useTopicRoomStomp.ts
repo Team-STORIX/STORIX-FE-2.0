@@ -41,7 +41,7 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
   )
 
   const unsubscribe = useCallback(() => {
-    //   요구사항: UNSUBSCRIBE 명시
+    // UNSUBSCRIBE 명시
     try {
       if (subRef.current) {
         subRef.current.unsubscribe() //
