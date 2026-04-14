@@ -43,13 +43,13 @@ export const HotFeedCard = ({ className, data }: HotFeedCardProps) => {
       tabIndex={canClick ? 0 : -1}
       onClick={() => {
         if (!canClick) return
-        router.push(`/feed/article/${boardId}`)
+        router.push(`/feed/article?id=${boardId}`)
       }}
       onKeyDown={(e) => {
         if (!canClick) return
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          router.push(`/feed/article/${boardId}`)
+          router.push(`/feed/article?id=${boardId}`)
         }
       }}
       className={[

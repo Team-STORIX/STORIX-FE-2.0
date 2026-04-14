@@ -3,8 +3,8 @@
 
 import { useEffect, useRef, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-// import { useAuthStore } from '@/store/auth.store'   // 디자인 확인용: 주석처리
-// import { useSignup } from '@/hooks/auth/useSignup'  // 디자인 확인용: 주석처리
+import { useAuthStore } from '@/store/auth.store'
+import { useSignup } from '@/hooks/auth/useSignup'
 import Topbar from './components/topbar'
 import Nickname from './components/nickname'
 import Gender from './components/bio'
@@ -19,8 +19,8 @@ function OnboardingInner() {
   const stepParam = Number(searchParams.get('step') ?? '1')
   const step = isNaN(stepParam) || stepParam < 1 || stepParam > 5 ? 1 : stepParam
 
-  // const { marketingAgree } = useAuthStore()          // 디자인 확인용: 주석처리
-  // const { mutate: signupMutate, isPending } = useSignup()  // 디자인 확인용: 주석처리
+  const { marketingAgree } = useAuthStore()
+  const { mutate: signupMutate, isPending } = useSignup()
 
   const [nickname, setNickname] = useState('')
   const [bio, setBio] = useState('')
@@ -53,15 +53,36 @@ function OnboardingInner() {
 
   const canProceed = isStepValid()
 
+  const handleSignup = () => {
+    if (isPending) return
+    signupMutate({
+      marketingAgree,
+      nickName: nickname,
+      favoriteGenreList: genres,
+      favoriteWorksIdList: favoriteIds,
+      profileDescription: bio,
+    })
+  }
+
   const handleNext = () => {
     if (!canProceed) return
     if (step < 5) setStep(step + 1)
-    // else handleSignup()  // 디자인 확인용: 주석처리
+    else handleSignup()
   }
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1)
     else router.push('/agreement')
+  }
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-[16px] font-medium text-[var(--color-gray-700)]">
+          회원가입 중...
+        </p>
+      </div>
+    )
   }
 
   return (

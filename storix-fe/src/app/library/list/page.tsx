@@ -225,7 +225,7 @@ export default function LibraryListPage() {
               const returnTo = encodeURIComponent(
                 `${window.location.pathname}${window.location.search}`,
               )
-              router.push(`/library/works/${id}?returnTo=${returnTo}`)
+              router.push(`/library/works?id=${id}&returnTo=${returnTo}`)
             }}
             infiniteScrollRef={ref}
             isFetchingNextPage={isFetchingNextPage}

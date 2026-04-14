@@ -255,7 +255,7 @@ export default function FeedPageClient() {
             onClickWorksArrow={(post) => {
               const worksId = Number.parseInt(post.workId ?? '', 10)
               if (!Number.isFinite(worksId) || worksId <= 0) return
-              router.push(`/library/works/${worksId}?returnTo=${returnTo}`)
+              router.push(`/library/works?id=${worksId}&returnTo=${returnTo}`)
             }}
             onClickDetail={(post: UIPost) => {
               goDetailFromFeed(post)

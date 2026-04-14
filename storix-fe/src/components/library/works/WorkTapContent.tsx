@@ -80,7 +80,7 @@ export default function WorkTabContent({
   const platformIconSrc = ui.platform ? getPlatformIconSrc(ui.platform) : null
 
   const goReviewDetail = (reviewId: number) => {
-    router.push(`/library/works/review/${reviewId}`)
+    router.push(`/library/works/review?id=${reviewId}`)
   }
 
   return (

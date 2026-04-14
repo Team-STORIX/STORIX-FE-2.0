@@ -10,7 +10,9 @@ import { useAuthStore } from '@/store/auth.store'
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
-  withCredentials: true, //   배포환경에서 refreshToken 쿠키 전송
+  // 기본은 false. 쿠키 필요한 엔드포인트(회원가입, 소셜 로그인, 토큰 재발급, 로그아웃)에서만
+  // 개별 요청에 withCredentials: true 명시.
+  withCredentials: false,
   headers: {
     'Content-Type': 'application/json',
   },

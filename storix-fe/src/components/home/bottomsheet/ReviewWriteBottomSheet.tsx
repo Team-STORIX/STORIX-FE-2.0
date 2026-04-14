@@ -89,7 +89,7 @@ export default function ReviewWriteBottomSheet({
 
     saveSelectedWorkToSession(picked)
     handleClose()
-    router.push(`/feed/review/write/${selected}`)
+    router.push(`/feed/review/write?id=${selected}`)
   }
 
   const reviewButtonDisabled =

@@ -72,7 +72,7 @@ export default function ResultClient() {
 
   const pushToRoom = (roomId: number, worksName: string) => {
     router.push(
-      `/home/topicroom/${roomId}?worksName=${encodeURIComponent(worksName ?? '')}`, //
+      `/home/topicroom/detail?id=${roomId}&worksName=${encodeURIComponent(worksName ?? '')}`,
     )
   }
 

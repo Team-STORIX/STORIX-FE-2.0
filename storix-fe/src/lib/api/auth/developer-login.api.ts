@@ -14,6 +14,7 @@ export async function developerLogin(pendingId: string) {
   const res = await apiClient.post<DeveloperLoginResponse>(
     '/api/v1/auth/developer/login',
     { pendingId },
+    { withCredentials: true },
   )
   return res.data
 }

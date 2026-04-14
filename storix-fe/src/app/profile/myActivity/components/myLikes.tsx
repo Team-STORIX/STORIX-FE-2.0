@@ -254,7 +254,7 @@ export default function MyLikes() {
           <BoardCard
             key={data.boardId}
             data={data}
-            to={`/feed/article/${data.boardId}`}
+            to={`/feed/article?id=${data.boardId}`}
             onToggleLike={() => handleUnlike(data.boardId)}
             onReportConfirm={handleReportConfirm}
             onDeleteConfirm={handleDeleteConfirm}

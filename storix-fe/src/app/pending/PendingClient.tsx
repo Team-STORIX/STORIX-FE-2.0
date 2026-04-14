@@ -8,7 +8,7 @@ import { useAuthStore } from '@/store/auth.store'
 import { useProfileStore } from '@/store/profile.store'
 import { getMyProfile } from '@/lib/api/profile/profile.api'
 
-type Provider = 'kakao' | 'naver'
+type Provider = 'kakao' | 'naver' | 'apple'
 
 export default function PendingClient() {
   const router = useRouter()
@@ -23,6 +23,7 @@ export default function PendingClient() {
     const run = async () => {
       const code = searchParams.get('code')
       const state = searchParams.get('state')
+      const providerParam = searchParams.get('provider')
       const error = searchParams.get('error')
       const errorDescription = searchParams.get('error_description')
 
@@ -44,7 +45,12 @@ export default function PendingClient() {
         const apiBase = process.env.NEXT_PUBLIC_API_URL
         if (!apiBase) throw new Error('NEXT_PUBLIC_API_URL is not set')
 
-        const provider: Provider = state ? 'naver' : 'kakao'
+        const provider: Provider =
+          providerParam === 'apple'
+            ? 'apple'
+            : state
+              ? 'naver'
+              : 'kakao'
 
         let url = ''
         if (provider === 'naver') {
@@ -54,7 +60,7 @@ export default function PendingClient() {
             `${apiBase}/api/v1/auth/oauth/naver/login` +
             `?code=${encodeURIComponent(code)}` +
             `&state=${encodeURIComponent(state)}`
-        } else {
+        } else if (provider === 'kakao') {
           const redirectUri =
             process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ||
             'http://localhost:3000/pending'
@@ -63,18 +69,41 @@ export default function PendingClient() {
             `${apiBase}/api/v1/auth/oauth/kakao/login` +
             `?code=${encodeURIComponent(code)}` +
             `&redirectUri=${encodeURIComponent(redirectUri)}`
+        } else {
+          url =
+            `${apiBase}/api/v1/auth/oauth/apple/login` +
+            `?code=${encodeURIComponent(code)}`
         }
 
-        const res = await fetch(url, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { Accept: 'application/json' },
-        })
+        const capHttp = (window as any)?.Capacitor?.Plugins?.CapacitorHttp
+        let status = 0
+        let bodyText = ''
+        if (capHttp && typeof capHttp.request === 'function') {
+          const response = await capHttp.request({
+            url,
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+          })
+          status = response.status
+          bodyText =
+            typeof response.data === 'string'
+              ? response.data
+              : JSON.stringify(response.data)
+        } else {
+          const res = await fetch(url, {
+            method: 'GET',
+            credentials: 'include',
+            headers: { Accept: 'application/json' },
+          })
+          status = res.status
+          bodyText = await res.text()
+        }
 
-        const text = await res.text()
-        if (!res.ok) throw new Error(`Login API failed: ${res.status} ${text}`)
+        if (status < 200 || status >= 300) {
+          throw new Error(`Login API failed: ${status} ${bodyText}`)
+        }
 
-        const data = JSON.parse(text)
+        const data = JSON.parse(bodyText)
         const result = data?.result
         if (!result || typeof result.isRegistered !== 'boolean') {
           throw new Error('Unexpected response: missing result.isRegistered')

@@ -1,14 +1,12 @@
 // src/app/common/login/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
 import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
 import { developerLogin } from '@/lib/api/auth/developer-login.api'
-import { appleLogin } from '@/lib/api/auth/apple.api'
 import { useAuthStore } from '@/store/auth.store'
 
 function generateNaverState() {
@@ -23,7 +21,7 @@ function generateNaverState() {
 }
 
 export default function LoginPage() {
-  const [showSplash, setShowSplash] = useState(true)
+  const [showSplash] = useState(false)
   const router = useRouter()
   const setAccessToken = useAuthStore((s) => s.setAccessToken)
 
@@ -38,11 +36,6 @@ export default function LoginPage() {
       alert('개발자 로그인에 실패했습니다.')
     }
   }
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1500)
-    return () => clearTimeout(timer)
-  }, [])
 
   const handleKakaoLogin = async () => {
     try {
@@ -65,20 +58,11 @@ export default function LoginPage() {
         state: '',
         nonce: '',
       })
-      const code = result.response.identityToken
-      if (!code) throw new Error('identityToken이 없습니다.')
+      const code =
+        result?.response?.authorizationCode || result?.response?.identityToken
+      if (!code) throw new Error('Apple code가 없습니다.')
 
-      const data = await appleLogin(code)
-      const loginResult = data.result
-      if (loginResult.isRegistered && loginResult.readerLoginResponse) {
-        setAccessToken(loginResult.readerLoginResponse.accessToken)
-        router.push('/home')
-      } else if (loginResult.readerPreLoginResponse) {
-        useAuthStore
-          .getState()
-          .setOnboardingToken(loginResult.readerPreLoginResponse.onboardingToken)
-        router.push('/agreement')
-      }
+      router.replace(`/pending?provider=apple&code=${encodeURIComponent(code)}`)
     } catch {
       alert('Apple 로그인에 실패했습니다.')
     }
@@ -137,25 +121,33 @@ export default function LoginPage() {
 
         {/* 독자 소셜 로그인 */}
         <div className="mt-16">
-          <Image
-            src="/common/login/login-kakao.svg"
-            alt="카카오 로그인"
-            width={360}
-            height={48}
+          <button
+            type="button"
             className="cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleKakaoLogin}
-          />
+          >
+            <Image
+              src="/common/login/login-kakao.svg"
+              alt="카카오 로그인"
+              width={360}
+              height={48}
+            />
+          </button>
         </div>
 
         <div className="mt-2">
-          <Image
-            src="/common/login/login-naver.svg"
-            alt="네이버 로그인"
-            width={360}
-            height={48}
+          <button
+            type="button"
             className="cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleNaverLogin}
-          />
+          >
+            <Image
+              src="/common/login/login-naver.svg"
+              alt="네이버 로그인"
+              width={360}
+              height={48}
+            />
+          </button>
         </div>
 
         {/* 개발자 로그인 */}
@@ -183,14 +175,18 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-2">
-          <Image
-            src="/common/login/login-apple.svg"
-            alt="Apple 로그인"
-            width={360}
-            height={48}
+          <button
+            type="button"
             className="cursor-pointer hover:opacity-80 transition-opacity"
             onClick={handleAppleLogin}
-          />
+          >
+            <Image
+              src="/common/login/login-apple.svg"
+              alt="Apple 로그인"
+              width={360}
+              height={48}
+            />
+          </button>
         </div>
       </div>
     </div>

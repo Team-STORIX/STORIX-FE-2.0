@@ -20,8 +20,8 @@ export default function ParticipationChatItem({ item }: Props) {
     : `${memberCount}명`
 
   const handleClick = () => {
-    const qs = worksName ? `?worksName=${encodeURIComponent(worksName)}` : '' //
-    router.push(`/home/topicroom/${id}${qs}`) //
+    const extra = worksName ? `&worksName=${encodeURIComponent(worksName)}` : ''
+    router.push(`/home/topicroom/detail?id=${id}${extra}`)
   }
 
   return (

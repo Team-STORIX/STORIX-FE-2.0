@@ -123,7 +123,7 @@ export default function BookSpineCarousel({
     if (!work) return
     // 이미 활성인 책을 다시 누르면 상세로 이동
     if (idx === activeIdx) {
-      router.push(`/library/works/${work.id}?returnTo=${returnTo}`) // 라우팅
+      router.push(`/library/works?id=${work.id}&returnTo=${returnTo}`) // 라우팅
       return
     }
 

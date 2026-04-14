@@ -96,7 +96,7 @@ export default function ResultClient() {
             />
           }
           onItemClick={(id) =>
-            router.push(`/library/works/${id}?returnTo=${returnTo}`)
+            router.push(`/library/works?id=${id}&returnTo=${returnTo}`)
           }
           infiniteScrollRef={ref}
           isFetchingNextPage={isFetchingNextPage}

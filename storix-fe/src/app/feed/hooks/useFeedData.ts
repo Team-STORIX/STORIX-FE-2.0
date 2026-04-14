@@ -371,7 +371,7 @@ export function useFeedData() {
         }
       }
 
-      router.push(`/feed/article/${post.id}`)
+      router.push(`/feed/article?id=${post.id}`)
     },
     [feedLast, feedPage, pathname, pick, posts, router, searchParams, tab],
   )

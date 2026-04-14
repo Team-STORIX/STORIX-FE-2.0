@@ -13,15 +13,22 @@ export const signup = async (
   data: SignupRequest,
   onboardingToken: string,
 ): Promise<SignupResponse> => {
+  console.error('[SIGNUP] request', {
+    hasToken: !!onboardingToken,
+    tokenLen: onboardingToken?.length,
+    body: data,
+  })
   const response = await apiClient.post(
     '/api/v1/auth/users/reader/signup',
     data,
     {
+      withCredentials: true,
       headers: {
         Authorization: `Bearer ${onboardingToken.trim()}`,
       },
     },
   )
+  console.error('[SIGNUP] response', response.status, JSON.stringify(response.data).slice(0, 500))
 
   // Zod로 응답 검증
   return SignupResponseSchema.parse(response.data)
