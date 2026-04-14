@@ -24,6 +24,7 @@ export const PreferenceExplorationWorkSchema = z
     worksId: z.coerce.number(),
     worksName: z.string().catch(''),
     thumbnailUrl: z.string().nullable().optional(),
+    worksType: z.string().catch(''),
     artistName: z.string().catch(''),
     platform: z.string().catch(''),
     genre: z.string().catch(''),

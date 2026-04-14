@@ -3,7 +3,7 @@ import NextButton from '@/components/preference/NextButton'
 export default function PreferenceCompletePage() {
   return (
     <main className="min-h-dvh bg-white flex flex-col">
-      <div className="flex-1 flex-col justify-center px-6">
+      <div className="flex-1 flex-col justify-center px-4">
         <div className="text-center mt-24">
           <div className="heading-1 text-black">탐색 완료!</div>
           <div className="mt-1 body-1 text-gray-500">
@@ -18,8 +18,8 @@ export default function PreferenceCompletePage() {
         />
       </div>
 
-      <div className="px-4 pb-6">
-        <NextButton href="/home/preference/list" />
+      <div className="px-4 pb-8.5">
+        <NextButton href="/home/preference/list" label="다음으로" />
       </div>
     </main>
   )

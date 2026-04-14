@@ -1,7 +1,10 @@
+// src/app/home/preference/finish/page.tsx
 'use client'
 
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { usePreference } from '@/components/preference/PreferenceProvider'
+import NextButton from '@/components/preference/NextButton'
 
 export default function PreferenceFinishPage() {
   const router = useRouter()
@@ -19,24 +22,16 @@ export default function PreferenceFinishPage() {
         </div>
       </div>
 
-      <img
+      <Image
         src="/home/preference/finishStar.webp"
         alt="finish star illustration"
-        className="flex mt-18 mb-46 mx-auto w-45 h-45"
+        width={180}
+        height={180}
+        className="flex mt-18 mb-46 mx-auto"
       />
 
-      <div className="px-4 pb-6 shrink-0">
-        <button
-          type="button"
-          onClick={() => router.push('/home')}
-          className={[
-            'w-full h-[56px] rounded-full bg-black text-white',
-            'flex items-center justify-center gap-2 cursor-pointer',
-          ].join(' ')}
-        >
-          <span className="body-3 font-semibold">홈으로 돌아가기</span>
-          <img src="/common/onboarding/next.svg" alt="next" width={20} height={20} />
-        </button>
+      <div className="px-4 pb-8.5 shrink-0">
+        <NextButton href="/home" label="홈으로 돌아가기" />
       </div>
     </main>
   )

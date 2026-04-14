@@ -1,7 +1,7 @@
 // src/hooks/favorite/useFavoriteWork.ts
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   favoriteWork,
@@ -28,6 +28,10 @@ export function useFavoriteWork(
     [worksId],
   )
 
+  // 콜백을 ref로 관리하여 useEffect 의존성에서 제외
+  const optionsRef = useRef(options)
+  optionsRef.current = options
+
   const statusQuery = useQuery({
     queryKey,
     queryFn: () => getFavoriteWorkStatus(worksId!), // enabled로 가드
@@ -47,21 +51,18 @@ export function useFavoriteWork(
     if (!enabled) return
 
     if (addMutation.isSuccess) {
-      options?.onAdded?.(worksId!)
-    }
-    if (removeMutation.isSuccess) {
-      options?.onRemoved?.(worksId!)
-    }
-
-    if (addMutation.isSuccess || removeMutation.isSuccess) {
+      optionsRef.current?.onAdded?.(worksId!)
       queryClient.invalidateQueries({ queryKey })
       addMutation.reset()
+    }
+    if (removeMutation.isSuccess) {
+      optionsRef.current?.onRemoved?.(worksId!)
+      queryClient.invalidateQueries({ queryKey })
       removeMutation.reset()
     }
   }, [
     enabled,
     worksId,
-    options,
     addMutation.isSuccess,
     removeMutation.isSuccess,
     queryClient,

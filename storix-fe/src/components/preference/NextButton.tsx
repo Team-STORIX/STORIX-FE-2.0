@@ -1,7 +1,6 @@
 // src/components/preference/NextButton.tsx
 'use client'
 
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 type Props = {
@@ -10,11 +9,7 @@ type Props = {
   className?: string
 }
 
-export default function NextButton({
-  href,
-  label = '다음으로',
-  className = '',
-}: Props) {
+export default function NextButton({ href, label, className = '' }: Props) {
   const router = useRouter()
 
   return (
@@ -22,13 +17,12 @@ export default function NextButton({
       type="button"
       onClick={() => router.push(href)}
       className={[
-        'w-full h-[56px] rounded-full bg-black text-white',
-        'flex items-center justify-center gap-2 cursor-pointer',
+        'py-3.5 px-38.25 rounded-lg bg-black text-white',
+        'flex items-center justify-center cursor-pointer',
         className,
       ].join(' ')}
     >
-      <span className="body-3 font-semibold">{label}</span>
-      <Image src="/common/onboarding/next.svg" alt="next" width={20} height={20} />
+      <span className="body-1-medium flex flex-shrink-0 ">{label}</span>
     </button>
   )
 }
