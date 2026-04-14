@@ -100,7 +100,7 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
           </div>
         ) : top10.length === 0 ? (
           <div className="py-6">
-            <p className="body-2 text-gray-500">인기 검색어가 없어요.</p>
+            <p className="body-2-medium text-gray-500">인기 검색어가 없어요.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-x-8">

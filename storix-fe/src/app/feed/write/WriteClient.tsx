@@ -146,8 +146,8 @@ export default function WriteClient() {
               <img
                 src={
                   isWorksNotNeeded
-                    ? '/common/common/icons/active.svg'
-                    : '/common/common/icons/deactive.svg'
+                    ? '/common/icons/active.svg'
+                    : '/common/icons/deactive.svg'
                 }
                 alt={isWorksNotNeeded ? '활성' : '비활성'}
                 className="h-4.5 w-8"
@@ -168,7 +168,7 @@ export default function WriteClient() {
                 함께 이야기하고 싶은 작품을 검색하세요
               </span>
               <Image
-                src="/common/common/icons/search.svg"
+                src="/common/icons/search.svg"
                 alt="검색"
                 width={20}
                 height={20}
@@ -218,8 +218,8 @@ export default function WriteClient() {
               <img
                 src={
                   spoiler
-                    ? '/common/common/icons/active.svg'
-                    : '/common/common/icons/deactive.svg'
+                    ? '/common/icons/active.svg'
+                    : '/common/icons/deactive.svg'
                 }
                 alt={spoiler ? '활성' : '비활성'}
                 className="h-4.5 w-8"

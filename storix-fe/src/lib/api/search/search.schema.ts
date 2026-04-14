@@ -40,17 +40,6 @@ const PageableSchema = z
   })
   .passthrough()
 
-const SortItemSchema = z
-  .object({
-    direction: z.string().optional(),
-    property: z.string().optional(),
-    ignoreCase: z.boolean().optional(),
-    nullHandling: z.string().optional(),
-    ascending: z.boolean().optional(),
-    descending: z.boolean().optional(),
-  })
-  .passthrough()
-
 const SliceSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z
     .object({
@@ -81,15 +70,6 @@ export const WorksSearchItemSchema = z
   })
   .passthrough()
 
-/** Artists item */
-export const ArtistsSearchItemSchema = z
-  .object({
-    artistId: z.coerce.number(),
-    artistName: z.string(),
-    profileUrl: z.string().nullable().optional(),
-  })
-  .passthrough()
-
 /**   Raw(실응답) 스키마 */
 export const WorksSearchRawResponseSchema = ApiResponseSchema(
   z.object({
@@ -98,19 +78,9 @@ export const WorksSearchRawResponseSchema = ApiResponseSchema(
   }),
 )
 
-export const ArtistsSearchRawResponseSchema = ApiResponseSchema(
-  z.object({
-    result: SliceSchema(ArtistsSearchItemSchema),
-    fallbackRecommendation: z.string().nullable().optional(),
-  }),
-)
-
 /**   Normalized(기존 FE 호환) 스키마: result가 곧 Slice */
 export const WorksSearchResponseSchema = ApiResponseSchema(
   SliceSchema(WorksSearchItemSchema),
-)
-export const ArtistsSearchResponseSchema = ApiResponseSchema(
-  SliceSchema(ArtistsSearchItemSchema),
 )
 
 /** ---- trending/recent (아직 실응답 JSON을 못 봐서 result 중첩만 방어적으로 언랩) ---- */
@@ -155,7 +125,54 @@ export const RecentResponseSchema = ApiResponseUnwrapSchema(
 /** Delete recent */
 export const DeleteRecentResponseSchema = ApiResponseUnwrapSchema(z.any())
 
+export const WORKS_TYPE_VALUES = ['WEBTOON', 'WEBNOVEL', 'COMIC'] as const
+export const SEARCH_GENRE_VALUES = [
+  'ROMANCE',
+  'FANTASY',
+  'DAILY',
+  'ROFAN',
+  'HISTORICAL',
+  'DRAMA',
+  'GAG',
+  'THRILLER',
+  'ACTION',
+  'SPORTS',
+  'SENTIMENTAL',
+  'BL',
+  'MODERN_FANTASY',
+] as const
+
+export const SearchWorksTypeSchema = z.enum(WORKS_TYPE_VALUES)
+export const SearchGenreSchema = z.enum(SEARCH_GENRE_VALUES)
+
 export type WorksSort = 'NAME' | 'RATING' | 'REVIEW'
 export type WorksSearchItem = z.infer<typeof WorksSearchItemSchema>
-export type ArtistsSearchItem = z.infer<typeof ArtistsSearchItemSchema>
 export type TrendingKeyword = z.infer<typeof TrendingKeywordSchema>
+export type SearchWorksType = z.infer<typeof SearchWorksTypeSchema>
+export type SearchGenre = z.infer<typeof SearchGenreSchema>
+
+/** ---- /api/v2/search/topic-rooms ---- */
+export const TopicRoomSearchItemSchema = z.object({
+  topicRoomId: z.number(),
+  topicRoomName: z.string(),
+  worksType: z.string().nullish(),
+  worksName: z.string(),
+  thumbnailUrl: z.string().nullish(),
+  activeUserNumber: z.number().nullish(),
+  lastChatTime: z.string().nullish(),
+  isJoined: z.boolean().nullish(),
+})
+
+export const TopicRoomSearchRawResponseSchema = ApiResponseSchema(
+  z.object({
+    result: SliceSchema(TopicRoomSearchItemSchema),
+  }),
+)
+
+export const TopicRoomSearchResponseSchema = ApiResponseSchema(
+  SliceSchema(TopicRoomSearchItemSchema),
+)
+
+export const TOPIC_ROOM_SORT_VALUES = ['DEFAULT', 'LATEST', 'ACTIVE'] as const
+export type TopicRoomSort = (typeof TOPIC_ROOM_SORT_VALUES)[number]
+export type TopicRoomSearchItem = z.infer<typeof TopicRoomSearchItemSchema>

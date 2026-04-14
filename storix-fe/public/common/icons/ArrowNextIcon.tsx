@@ -1,20 +1,21 @@
-export default function ArrowDownIcon(props: React.SVGProps<SVGSVGElement>) {
+// public/common/icons/ArrowNextIcon.tsx
+export default function ArrowNextIcon() {
   return (
     <svg
       width="24"
       height="24"
       viewBox="0 0 24 24"
-      fill="none"
+      fill="white"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clipPath="url(#clip0_4285_19121)">
+      <g clip-path="url(#clip0_4893_20156)">
         <path
-          d="M11.6537 15.708L6 10.0542L7.05375 9.00049L11.6537 13.6005L16.2537 9.00049L17.3075 10.0542L11.6537 15.708Z"
+          d="M14.4192 21.308L13 19.8887L21.2345 11.6542L13 3.41974L14.4192 2.00049L24.073 11.6542L14.4192 21.308Z"
           fill="currentColor"
         />
       </g>
       <defs>
-        <clipPath id="clip0_4285_19121">
+        <clipPath id="clip0_4893_20156">
           <rect width="24" height="24" fill="white" />
         </clipPath>
       </defs>

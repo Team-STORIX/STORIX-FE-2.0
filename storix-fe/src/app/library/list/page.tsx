@@ -198,7 +198,7 @@ export default function LibraryListPage() {
             className="hover:opacity-70 cursor-pointer"
           >
             <Image
-              src={'/library/common/icons/icon-gallery.svg'}
+              src={'/library/icons/icon-gallery.svg'}
               alt={'갤러리형 보기'}
               width={24}
               height={24}

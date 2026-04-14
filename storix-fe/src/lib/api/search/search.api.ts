@@ -3,13 +3,16 @@
 import { apiClient } from '@/lib/api/axios-instance'
 import {
   WorksSearchRawResponseSchema,
-  ArtistsSearchRawResponseSchema,
   WorksSearchResponseSchema,
-  ArtistsSearchResponseSchema,
   TrendingResponseSchema,
   RecentResponseSchema,
   DeleteRecentResponseSchema,
+  TopicRoomSearchRawResponseSchema,
+  TopicRoomSearchResponseSchema,
+  type SearchGenre,
+  type SearchWorksType,
   type WorksSort,
+  type TopicRoomSort,
 } from './search.schema'
 
 /*
@@ -30,16 +33,48 @@ export interface SearchResultNormalized {
   fallbackRecommendation?: string | null
 }
 
-export const getWorksSearch = async (params: {
+type GetWorksSearchParams = {
   keyword: string
   sort?: WorksSort
   page?: number
-}) => {
-  const { keyword, sort = 'NAME', page = 0 } = params
-  const k = keyword.trim()
+  worksTypes?: SearchWorksType[]
+  genres?: SearchGenre[]
+}
 
-  const res = await apiClient.get('/api/v1/search/works', {
-    params: { keyword: k, sort, page },
+export const getWorksSearch = async (params: GetWorksSearchParams) => {
+  const {
+    keyword,
+    sort = 'NAME',
+    page = 0,
+    worksTypes = [],
+    genres = [],
+  } = params
+  const k = keyword.trim()
+  const normalizedWorksTypes = Array.from(new Set(worksTypes))
+  const normalizedGenres = Array.from(new Set(genres))
+
+  const res = await apiClient.get('/api/v2/search/works', {
+    params: {
+      keyword: k,
+      sort,
+      page,
+      worksTypes: normalizedWorksTypes,
+      genres: normalizedGenres,
+    },
+    paramsSerializer: (requestParams) => {
+      const searchParams = new URLSearchParams()
+
+      searchParams.set('keyword', String(requestParams.keyword ?? ''))
+      searchParams.set('sort', String(requestParams.sort ?? 'NAME'))
+      searchParams.set('page', String(requestParams.page ?? 0))
+
+      normalizedWorksTypes.forEach((value) =>
+        searchParams.append('worksTypes', value),
+      )
+      normalizedGenres.forEach((value) => searchParams.append('genres', value))
+
+      return searchParams.toString()
+    },
   })
 
   // 1) Raw 구조로 파싱
@@ -57,27 +92,48 @@ export const getWorksSearch = async (params: {
   return parsed
 }
 
-export const getArtistsSearch = async (params: {
+type GetTopicRoomSearchParams = {
   keyword: string
+  sort?: TopicRoomSort
   page?: number
-}) => {
-  const { keyword, page = 0 } = params
-  const k = keyword.trim()
+  worksTypes?: SearchWorksType[]
+  genres?: SearchGenre[]
+}
 
-  const res = await apiClient.get('/api/v1/search/artists', {
-    params: { keyword: k, page },
+export const getTopicRoomSearch = async (params: GetTopicRoomSearchParams) => {
+  const {
+    keyword,
+    sort = 'DEFAULT',
+    page = 0,
+    worksTypes = [],
+    genres = [],
+  } = params
+  const k = keyword.trim()
+  const normalizedWorksTypes = Array.from(new Set(worksTypes))
+  const normalizedGenres = Array.from(new Set(genres))
+
+  const res = await apiClient.get('/api/v2/search/topic-rooms', {
+    params: {
+      keyword: k,
+      sort,
+      page,
+      worksTypes: normalizedWorksTypes,
+      genres: normalizedGenres,
+    },
+    paramsSerializer: (requestParams) => {
+      const searchParams = new URLSearchParams()
+      searchParams.set('keyword', String(requestParams.keyword ?? ''))
+      searchParams.set('sort', String(requestParams.sort ?? 'DEFAULT'))
+      searchParams.set('page', String(requestParams.page ?? 0))
+      normalizedWorksTypes.forEach((v) => searchParams.append('worksTypes', v))
+      normalizedGenres.forEach((v) => searchParams.append('genres', v))
+      return searchParams.toString()
+    },
   })
 
-  const rawParsed = ArtistsSearchRawResponseSchema.parse(res.data)
-
-  const normalized = {
-    ...rawParsed,
-    result: rawParsed.result.result,
-  }
-
-  const parsed = ArtistsSearchResponseSchema.parse(normalized)
-
-  return parsed
+  const rawParsed = TopicRoomSearchRawResponseSchema.parse(res.data)
+  const normalized = { ...rawParsed, result: rawParsed.result.result }
+  return TopicRoomSearchResponseSchema.parse(normalized)
 }
 
 export const getTrendingKeywords = async () => {

@@ -4,7 +4,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import ForwardArrowIcon from '@/public/common/layout/FowardArrowIcon'
+import ForwardArrowIcon from '@/public/common/icons/FowardArrowIcon'
 
 type OtherReviewItem = {
   reviewId: number
