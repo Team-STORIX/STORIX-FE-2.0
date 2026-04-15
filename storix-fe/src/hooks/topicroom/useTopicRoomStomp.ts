@@ -118,6 +118,9 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
         //   Native WebSocket: brokerURL 직접 입력 (SockJS 금지)
         brokerURL: STORIX_STOMP_BROKER_URL, //
         reconnectDelay: 3000, //
+        debug: (msg) => {
+          console.debug('[STOMP]', msg)
+        },
         connectHeaders: {
           Authorization: `Bearer ${accessToken}`, //   JWT 헤더 필수
         },
@@ -174,16 +177,35 @@ export const useTopicRoomStomp = (params: { roomId: number }) => {
 
           console.log('[STOMP] connected', roomId) //   디버그(원하면 나중에 제거)
         },
-        onWebSocketClose: () => {
+        onWebSocketClose: (event) => {
           if (cancelled) return
+          console.warn('[STOMP] websocket closed', {
+            roomId,
+            code: event.code,
+            reason: event.reason,
+            wasClean: event.wasClean,
+            origin:
+              typeof window !== 'undefined' ? window.location.origin : null,
+          })
           setStatus('closed')
         },
-        onWebSocketError: () => {
+        onWebSocketError: (event) => {
           if (cancelled) return
+          console.error('[STOMP] websocket error', {
+            roomId,
+            event,
+            origin:
+              typeof window !== 'undefined' ? window.location.origin : null,
+          })
           setStatus('error')
         },
-        onStompError: (_frame: IFrame) => {
+        onStompError: (frame: IFrame) => {
           if (cancelled) return
+          console.error('[STOMP] broker error', {
+            roomId,
+            headers: frame.headers,
+            body: frame.body,
+          })
           setStatus('error')
         },
       })

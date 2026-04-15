@@ -5,6 +5,11 @@ import { useEffect, useRef, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/auth.store'
 import { useSignup } from '@/hooks/auth/useSignup'
+import {
+  createProfileImagePresignedPutUrl,
+  type ImageContentType,
+} from '@/lib/api/image/image.api'
+import { updateProfileImage } from '@/lib/api/profile/profile.api'
 import Topbar from './components/topbar'
 import Nickname from './components/nickname'
 import Gender from './components/bio'
@@ -20,7 +25,8 @@ function OnboardingInner() {
   const step = isNaN(stepParam) || stepParam < 1 || stepParam > 5 ? 1 : stepParam
 
   const { marketingAgree } = useAuthStore()
-  const { mutate: signupMutate, isPending } = useSignup()
+  const { mutateAsync: signupMutateAsync, isPending } = useSignup()
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   const [nickname, setNickname] = useState('')
   const [bio, setBio] = useState('')
@@ -51,17 +57,74 @@ function OnboardingInner() {
     }
   }
 
-  const canProceed = isStepValid()
+  const canProceed = isStepValid() && !isUploadingImage
 
-  const handleSignup = () => {
-    if (isPending) return
-    signupMutate({
-      marketingAgree,
-      nickName: nickname,
-      favoriteGenreList: genres,
-      favoriteWorksIdList: favoriteIds,
-      profileDescription: bio,
+  const toContentType = (file: File): ImageContentType | null => {
+    if (file.type === 'image/jpeg') return 'image/jpeg'
+    if (file.type === 'image/png') return 'image/png'
+    if (file.type === 'image/webp') return 'image/webp'
+    return null
+  }
+
+  // 회원가입 성공 직후 accessToken 으로 프로필 이미지 업로드
+  // 1) presigned PUT URL 발급 → 2) S3 직접 PUT → 3) objectKey 로 프로필 이미지 적용
+  const uploadProfileImage = async (file: File): Promise<void> => {
+    const contentType = toContentType(file)
+    if (!contentType) {
+      throw new Error('업로드 가능한 이미지 형식은 JPG/PNG/WEBP 입니다.')
+    }
+
+    const presignRes = await createProfileImagePresignedPutUrl(contentType)
+    if (!presignRes.isSuccess) {
+      throw new Error(presignRes.message || 'Presigned URL 발급 실패')
+    }
+
+    const { url: presignedPutUrl, objectKey } = presignRes.result
+
+    const putRes = await fetch(presignedPutUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': contentType },
+      body: file,
     })
+    if (!putRes.ok) {
+      const body = await putRes.text().catch(() => '')
+      throw new Error(`이미지 업로드 실패: ${putRes.status} ${body}`)
+    }
+
+    const applyRes = await updateProfileImage(objectKey)
+    if (!applyRes.isSuccess) {
+      throw new Error(applyRes.message || '프로필 이미지 변경 실패')
+    }
+  }
+
+  const handleSignup = async () => {
+    if (isPending || isUploadingImage) return
+    try {
+      await signupMutateAsync({
+        marketingAgree,
+        nickName: nickname,
+        favoriteGenreList: genres,
+        favoriteWorksIdList: favoriteIds,
+        profileDescription: bio,
+      })
+
+      // 회원가입 성공 → 프로필 이미지 있으면 업로드 (실패해도 온보딩은 진행)
+      if (profileImageFileRef.current) {
+        setIsUploadingImage(true)
+        try {
+          await uploadProfileImage(profileImageFileRef.current)
+        } catch (e: any) {
+          console.error('[onboarding] 프로필 이미지 업로드 실패:', e?.message)
+        } finally {
+          profileImageFileRef.current = null
+          setIsUploadingImage(false)
+        }
+      }
+
+      router.replace('/manual')
+    } catch {
+      // signup 실패는 useSignup 의 onError 에서 alert + clearAuth 처리됨
+    }
   }
 
   const handleNext = () => {
@@ -75,7 +138,7 @@ function OnboardingInner() {
     else router.push('/agreement')
   }
 
-  if (isPending) {
+  if (isPending || isUploadingImage) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-[16px] font-medium text-[var(--color-gray-700)]">

@@ -1,15 +1,13 @@
 // src/hooks/auth/useSignup.ts
 import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'next/navigation'
 import { signup } from '@/lib/api/auth/signup.api'
 import { useAuthStore } from '@/store/auth.store'
 import type { SignupRequest } from '@/lib/api/auth/auth.schema'
 import { AxiosError } from 'axios'
 
+// 회원가입 후 프로필 이미지 업로드 작업을 caller 에서 이어가기 위해
+// 네비게이션 X, accessToken 만 전역 스토어에 심음
 export const useSignup = () => {
-  const router = useRouter()
-
-  const onboardingToken = useAuthStore((s) => s.onboardingToken)
   const setAccessToken = useAuthStore((s) => s.setAccessToken)
   const clearAuth = useAuthStore((s) => s.clearAuth)
 
@@ -20,12 +18,9 @@ export const useSignup = () => {
       return signup(data, onboardingToken)
     },
 
-    onSuccess: async (response) => {
+    onSuccess: (response) => {
       const token = response.result.accessToken
       setAccessToken(token)
-
-      //   온보딩(회원가입) 완료 직후: manual 노출 → manual에서 home으로
-      router.replace('/manual')
     },
 
     onError: (error: AxiosError) => {
