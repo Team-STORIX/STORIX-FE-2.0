@@ -3,6 +3,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { isAxiosError } from 'axios'
 import Warning from '@/components/common/Warining'
 import TopicRoomSearchList from '@/components/topicroom/TopicRoomSearchList'
 import { useTopicRoomSearchInfinite } from '@/hooks/search/useSearch'
@@ -130,13 +131,11 @@ export default function SearchResultTopicRoomTab({
 
   if (pager.meta === null) {
     return (
-      <div className="px-4 py-10 body-2 text-gray-400">불러오는 중…</div>
-    )
-  }
-
-  if (pager.error) {
-    return (
-      <div className="px-4 py-10 body-2 text-gray-400">검색에 실패했어요.</div>
+      <Warning
+        title="검색 결과가 없어요.."
+        description="대신 이런 검색어는 어때요?"
+        className="mt-48"
+      />
     )
   }
 

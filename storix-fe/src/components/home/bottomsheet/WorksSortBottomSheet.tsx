@@ -3,9 +3,8 @@
 
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import type { WorksSort } from '@/lib/api/search/search.schema'
 
-const SORT_OPTIONS: Array<{ value: WorksSort; label: string }> = [
+const DEFAULT_SORT_OPTIONS: Array<{ value: string; label: string }> = [
   { value: 'NAME', label: '기본순' },
   { value: 'RATING', label: '별점순' },
   { value: 'REVIEW', label: '리뷰순' },
@@ -13,15 +12,19 @@ const SORT_OPTIONS: Array<{ value: WorksSort; label: string }> = [
 
 export default function WorksSortBottomSheet({
   currentSort,
+  resetValue = 'NAME',
+  options = DEFAULT_SORT_OPTIONS,
   onApply,
   onClose,
 }: {
-  currentSort: WorksSort
-  onApply: (sort: WorksSort) => void
+  currentSort: string
+  resetValue?: string
+  options?: Array<{ value: string; label: string }>
+  onApply: (sort: string) => void
   onClose: () => void
 }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [draftSort, setDraftSort] = useState<WorksSort>(currentSort)
+  const [draftSort, setDraftSort] = useState<string>(currentSort)
 
   useEffect(() => {
     setDraftSort(currentSort)
@@ -78,7 +81,7 @@ export default function WorksSortBottomSheet({
         <div className="-mx-4 mt-6 h-px bg-gray-100" />
 
         <div className="flex flex-col gap-5 py-7">
-          {SORT_OPTIONS.map((option) => {
+          {options.map((option) => {
             const checked = draftSort === option.value
             return (
               <button
@@ -106,7 +109,7 @@ export default function WorksSortBottomSheet({
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setDraftSort('NAME')}
+            onClick={() => setDraftSort(resetValue)}
             className="h-14 min-w-27.5 rounded-lg bg-[var(--color-gray-50)] px-6 body-1-bold text-black"
           >
             초기화

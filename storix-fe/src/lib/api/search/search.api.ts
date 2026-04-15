@@ -161,3 +161,11 @@ export const deleteRecentKeyword = async (keyword: string) => {
 
   return parsed
 }
+
+export const deleteAllRecentKeywords = async () => {
+  const res = await apiClient.delete('/api/v1/search/recent/all')
+
+  const parsed = DeleteRecentResponseSchema.parse(res.data)
+
+  return parsed
+}

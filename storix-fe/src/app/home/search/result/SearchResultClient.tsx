@@ -7,7 +7,6 @@ import SearchBar from '@/components/common/SearchBar'
 import Tabs from '@/components/common/Tabs'
 import WorksSortBottomSheet from '@/components/home/bottomsheet/WorksSortBottomSheet'
 import WorksFilterBottomSheet from '@/components/home/bottomsheet/WorksFilterBottomSheet'
-import SearchFloatingButton from '@/components/home/search/SearchFloatingButton'
 import SearchResultWorksTab from '@/components/home/search/SearchResultWorksTab'
 import SearchResultTopicRoomTab from '@/components/home/search/SearchResultTopicRoomTab'
 import {
@@ -34,7 +33,7 @@ const WORKS_SORT_LABELS: Record<WorksSort, string> = {
 const TR_SORT_LABELS: Record<TopicRoomSort, string> = {
   DEFAULT: '기본순',
   LATEST: '최신순',
-  ACTIVE: '참여자순',
+  ACTIVE: '참여순',
 }
 const WORKS_TYPE_LABELS: Record<SearchWorksType, string> = {
   WEBTOON: '웹툰',
@@ -57,6 +56,9 @@ const GENRE_LABELS: Record<SearchGenre, string> = {
   MODERN_FANTASY: '현판',
 }
 
+const WORKS_SORT_OPTIONS = (['NAME', 'RATING', 'REVIEW'] as WorksSort[]).map(
+  (value) => ({ value, label: WORKS_SORT_LABELS[value] }),
+)
 const TR_SORT_OPTIONS = TOPIC_ROOM_SORT_VALUES.map((value) => ({
   value,
   label: TR_SORT_LABELS[value],
@@ -111,6 +113,11 @@ export default function SearchResultClient() {
     router.push(`/home/search/result?keyword=${encodeURIComponent(k)}`)
   }
 
+  const isSortSelected =
+    tab === 'works' ? worksSort !== 'NAME' : topicRoomSort !== 'DEFAULT'
+  const isTypeSelected = selectedTypes.length > 0
+  const isGenreSelected = selectedGenres.length > 0
+
   const sortLabel =
     tab === 'works'
       ? WORKS_SORT_LABELS[worksSort]
@@ -142,28 +149,34 @@ export default function SearchResultClient() {
           <button
             type="button"
             onClick={() => setActiveSheet('sort')}
-            className="flex cursor-pointer items-center rounded-full border border-gray-300 p-1 caption-1-medium text-gray-800"
+            className="flex cursor-pointer items-center rounded-full border border-gray-300 p-1 caption-1-medium text-gray-800 transition-all duration-200"
           >
             <p className="ml-1.5">{sortLabel}</p>
-            <ArrowDownIcon />
+            <ArrowDownIcon
+              className={`transition-transform duration-300 ${isSortSelected ? 'rotate-180' : ''}`}
+            />
           </button>
 
           <button
             type="button"
             onClick={() => setActiveSheet('type')}
-            className="flex cursor-pointer items-center rounded-full border border-gray-300 p-1 caption-1-medium text-gray-800"
+            className="flex cursor-pointer items-center rounded-full border border-gray-300 p-1 caption-1-medium text-gray-800 transition-all duration-200"
           >
             <p className="ml-1.5">{typeLabel}</p>
-            <ArrowDownIcon />
+            <ArrowDownIcon
+              className={`transition-transform duration-300 ${isTypeSelected ? 'rotate-180' : ''}`}
+            />
           </button>
 
           <button
             type="button"
             onClick={() => setActiveSheet('genre')}
-            className="flex cursor-pointer items-center rounded-full border border-gray-300 p-1 caption-1-medium text-gray-800"
+            className="flex cursor-pointer items-center rounded-full border border-gray-300 p-1 caption-1-medium text-gray-800 transition-all duration-200"
           >
             <p className="ml-1.5">{genreLabel}</p>
-            <ArrowDownIcon />
+            <ArrowDownIcon
+              className={`transition-transform duration-300 ${isGenreSelected ? 'rotate-180' : ''}`}
+            />
           </button>
         </div>
       </div>
@@ -191,14 +204,15 @@ export default function SearchResultClient() {
       {activeSheet === 'sort' && tab === 'works' && (
         <WorksSortBottomSheet
           currentSort={worksSort}
-          onApply={setWorksSort}
+          resetValue="NAME"
+          options={WORKS_SORT_OPTIONS}
+          onApply={(v) => setWorksSort(v as WorksSort)}
           onClose={() => setActiveSheet(null)}
         />
       )}
       {activeSheet === 'sort' && tab === 'topicroom' && (
-        <WorksFilterBottomSheet
-          title="정렬"
-          currentValue={topicRoomSort}
+        <WorksSortBottomSheet
+          currentSort={topicRoomSort}
           resetValue="DEFAULT"
           options={TR_SORT_OPTIONS}
           onApply={(v) => setTopicRoomSort(v as TopicRoomSort)}

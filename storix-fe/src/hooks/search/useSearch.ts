@@ -7,6 +7,7 @@ import {
   getTrendingKeywords,
   getRecentKeywords,
   deleteRecentKeyword,
+  deleteAllRecentKeywords,
 } from '@/lib/api/search/search.api'
 import type {
   SearchGenre,
@@ -325,6 +326,16 @@ export const useDeleteRecentKeyword = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (keyword: string) => deleteRecentKeyword(keyword),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['search', 'recent'] })
+    },
+  })
+}
+
+export const useDeleteAllRecentKeywords = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: deleteAllRecentKeywords,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['search', 'recent'] })
     },

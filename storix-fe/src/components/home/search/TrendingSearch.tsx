@@ -49,14 +49,14 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
         <div className="flex items-center gap-3 min-w-0">
           <span
             className={[
-              'body-2 font-semibold inline-flex w-[2ch] justify-center',
+              'body-2-medium font-semibold inline-flex w-[2ch] justify-center',
               rank <= 3 ? 'text-[var(--color-magenta-300)]' : 'text-black',
             ].join(' ')}
           >
             {rank}
           </span>
 
-          <span className="body-2 text-black truncate">{keyword}</span>
+          <span className="body-2-medium text-black truncate">{keyword}</span>
         </div>
 
         <div className="flex items-center justify-end w-5">
@@ -90,11 +90,11 @@ export default function TrendingSearch({ onSelect, className = '' }: Props) {
       <div className="mt-3 w-full bg-white">
         {isLoading ? (
           <div className="py-6">
-            <p className="body-2 text-gray-500">불러오는 중…</p>
+            <p className="body-2-medium text-gray-500">불러오는 중…</p>
           </div>
         ) : isError ? (
           <div className="py-6">
-            <p className="body-2 text-gray-500">
+            <p className="body-2-medium text-gray-500">
               인기 검색어를 불러오지 못했어요.
             </p>
           </div>
