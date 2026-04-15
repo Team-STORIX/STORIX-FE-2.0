@@ -3,10 +3,11 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCreateReaderBoard } from '@/hooks/plus/useCreateReaderBoard'
 import ImagePicker from '@/components/feed/ImagePicker'
+import SpoilerToggle from '@/components/feed/write/SpoilerToggle'
 import WriteBottomSheet from '@/components/home/bottomsheet/WriteBottomSheet'
 
 type SelectedWork = {
@@ -29,9 +30,44 @@ export default function WriteClient() {
 
   const [text, setText] = useState('')
   const [spoiler, setSpoiler] = useState(false)
+  const [spoilerMessage, setSpoilerMessage] = useState('')
   const [images, setImages] = useState<File[]>([])
 
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
   const createBoard = useCreateReaderBoard()
+
+  // 키보드(visualViewport) 감지
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+
+    const syncKeyboardViewport = () => {
+      const bottomInset = Math.max(
+        0,
+        window.innerHeight - vv.height - vv.offsetTop,
+      )
+
+      if (bottomInset > 100) {
+        setIsKeyboardOpen(true)
+        setKeyboardHeight(bottomInset)
+      } else {
+        setIsKeyboardOpen(false)
+        setKeyboardHeight(0)
+      }
+    }
+
+    syncKeyboardViewport()
+
+    vv.addEventListener('resize', syncKeyboardViewport)
+    vv.addEventListener('scroll', syncKeyboardViewport)
+    return () => {
+      vv.removeEventListener('resize', syncKeyboardViewport)
+      vv.removeEventListener('scroll', syncKeyboardViewport)
+    }
+  }, [])
 
   //   새로고침/재진입 시 작품 선택 복구
   useEffect(() => {
@@ -86,6 +122,7 @@ export default function WriteClient() {
         isWorksSelected,
         worksId,
         isSpoiler: spoiler,
+        spoilerScript: spoiler ? spoilerMessage.trim() : '',
         content,
         images,
       })
@@ -105,7 +142,7 @@ export default function WriteClient() {
 
   return (
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
-      <div className="flex h-[54px] items-center justify-between px-4">
+      <div className="flex h-13.5 items-center justify-between px-4">
         <button onClick={() => router.back()} className="cursor-pointer">
           <Image
             src="/common/icons/back.svg"
@@ -206,29 +243,10 @@ export default function WriteClient() {
         {/* 게시글 작성 */}
         <div className="flex items-center justify-between -mx-4 px-4 border-t border-gray-100">
           <span className="heading-2 mt-6">게시글 작성</span>
-          <div className="mt-6 flex items-center gap-1">
-            <span className="caption-1 text-gray-500">스포일러 방지</span>
-            <button
-              type="button"
-              onClick={() => setSpoiler((prev) => !prev)}
-              aria-pressed={spoiler}
-              aria-label="스포일러 방지 토글"
-              className="ml-auto cursor-pointer hover:opacity-80"
-            >
-              <img
-                src={
-                  spoiler
-                    ? '/common/icons/active.svg'
-                    : '/common/icons/deactive.svg'
-                }
-                alt={spoiler ? '활성' : '비활성'}
-                className="h-4.5 w-8"
-              />
-            </button>
-          </div>
         </div>
 
         <textarea
+          ref={textareaRef}
           value={text}
           maxLength={MAX_CONTENT_LENGTH} //
           onChange={(e) => {
@@ -240,16 +258,30 @@ export default function WriteClient() {
             ) //
           }}
           placeholder="좋아하는 작품에 대해 적어보세요!"
-          className="mt-4 h-60 w-full resize-none body-1 text-gray-700 outline-none"
+          className="-mx-4 px-4 mt-4 h-60 w-full resize-none body-1 text-gray-700 outline-none border-bottom"
         />
 
-        <div className="flex justify-between items-center py-3 -mx-4 px-4 border-t border-gray-300 caption-1 text-gray-400">
+        {/* 스포일러 방지 */}
+        <SpoilerToggle
+          enabled={spoiler}
+          onToggle={() => setSpoiler((prev) => !prev)}
+          message={spoilerMessage}
+          onMessageChange={setSpoilerMessage}
+        />
+      </div>
+
+      {/* 이미지 첨부 + 글자 수 카운트 — 키보드 위 고정 */}
+      {isKeyboardOpen && (
+        <div
+          className="fixed left-0 right-0 mx-auto flex max-w-[393px] items-center justify-between py-3 px-4 border-t border-gray-300 bg-white body-1-bold text-gray-500 z-50"
+          style={{ bottom: keyboardHeight }}
+        >
           <ImagePicker files={images} onChange={setImages} max={3} />
           <span>
             <span
               className={
                 contentLength === MAX_CONTENT_LENGTH
-                  ? 'text-[var(--color-warning)]' // UI 변경
+                  ? 'text-[var(--color-warning)]'
                   : 'text-gray-400'
               }
             >
@@ -258,7 +290,7 @@ export default function WriteClient() {
             /{MAX_CONTENT_LENGTH}
           </span>
         </div>
-      </div>
+      )}
 
       {isSheetOpen && (
         <WriteBottomSheet

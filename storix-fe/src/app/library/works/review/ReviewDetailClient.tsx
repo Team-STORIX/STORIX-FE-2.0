@@ -161,6 +161,7 @@ export default function ReviewDetailClient({ reviewId }: { reviewId: number }) {
           worksId: ui.worksId,
           rating: ui.rating,
           isSpoiler: !!(data as any)?.isSpoiler,
+          spoilerScript: (data as any)?.spoilerScript ?? '',
           content: ui.content,
         }),
       )

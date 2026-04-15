@@ -11,6 +11,7 @@ type OtherReviewItem = {
   userName?: string
   content?: string
   profileImageUrl?: string | null
+  spoilerScript?: string
 }
 
 type Props = {
@@ -104,7 +105,7 @@ export default function OtherReviewsSection({
                   {isHidden && (
                     <span className="absolute inset-0 flex items-center justify-center">
                       <span className="px-3 py-1.5 text-[var(--color-magenta-300)] caption-1">
-                        스포일러가 포함된 리뷰입니다 · 탭해서 보기
+                        {r.spoilerScript || '스포일러가 포함된 리뷰입니다 · 탭해서 보기'}
                       </span>
                     </span>
                   )}

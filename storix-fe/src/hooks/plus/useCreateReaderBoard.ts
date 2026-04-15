@@ -10,6 +10,7 @@ type CreateReaderBoardArgs = {
   isWorksSelected: boolean
   worksId: number //   isWorksSelected=false일 때는 0으로 전달
   isSpoiler: boolean
+  spoilerScript: string
   content: string
   images: File[] // 사용자가 선택한 이미지들(최대 3장)
 }
