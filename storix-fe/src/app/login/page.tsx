@@ -125,6 +125,17 @@ export default function LoginPage() {
           둘러보기
         </button>
       </div>
+
+      {/* 온보딩 바로가기 (임시) */}
+      <div className="absolute top-20 left-4">
+        <button
+          className="text-[12px] font-medium leading-[140%] transition-opacity hover:opacity-70"
+          style={{ color: 'var(--color-gray-400)' }}
+          onClick={() => router.push('/agreement')}
+        >
+          온보딩
+        </button>
+      </div>
       <div className="flex flex-col items-center mt-[326px]">
         <div className="mt-1">
           <Image

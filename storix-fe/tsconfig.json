@@ -19,7 +19,6 @@
         "name": "next"
       }
     ],
-
     "paths": {
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"]
@@ -27,12 +26,14 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    //".next/dev/types/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "ios"]
+  "exclude": [
+    "node_modules",
+    "android",
+    "android/**"
+  ]
 }
