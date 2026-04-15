@@ -54,11 +54,13 @@ export const ReaderPreLoginResponseSchema = z.object({
 
 /**
  * 카카오 로그인 결과
+ * BE가 @JsonInclude(NON_NULL) 로 null 필드를 응답에서 생략하므로
+ * null 뿐 아니라 undefined 도 허용해야 함.
  */
 export const KakaoLoginResultSchema = z.object({
   isRegistered: z.boolean(),
-  readerLoginResponse: ReaderLoginResponseSchema.nullable(),
-  readerPreLoginResponse: ReaderPreLoginResponseSchema.nullable(),
+  readerLoginResponse: ReaderLoginResponseSchema.nullable().optional(),
+  readerPreLoginResponse: ReaderPreLoginResponseSchema.nullable().optional(),
 })
 
 /**
@@ -66,6 +68,15 @@ export const KakaoLoginResultSchema = z.object({
  */
 export const KakaoLoginResponseSchema = ApiResponseSchema(
   KakaoLoginResultSchema,
+)
+
+/**
+ * 소셜 로그인 공통 응답 (kakao/naver/apple 모두 동일한 shape)
+ * — 네이티브 엔드포인트도 동일 스키마를 재사용.
+ */
+export const SocialLoginResultSchema = KakaoLoginResultSchema
+export const SocialLoginResponseSchema = ApiResponseSchema(
+  SocialLoginResultSchema,
 )
 
 /**
@@ -139,6 +150,8 @@ export type ReaderPreLoginResponse = z.infer<
 >
 export type KakaoLoginResult = z.infer<typeof KakaoLoginResultSchema>
 export type KakaoLoginResponse = z.infer<typeof KakaoLoginResponseSchema>
+export type SocialLoginResult = z.infer<typeof SocialLoginResultSchema>
+export type SocialLoginResponse = z.infer<typeof SocialLoginResponseSchema>
 
 export type SignupRequest = z.infer<typeof SignupRequestSchema>
 export type SignupResponse = z.infer<typeof SignupResponseSchema>
