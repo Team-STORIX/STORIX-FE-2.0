@@ -20,10 +20,14 @@ import type {
   PreferenceResultWork,
 } from '@/lib/api/preference'
 import { z } from 'zod'
+import { getWorksTypeLabel } from './worksTypeLabel'
 
 export type PreferenceWork = {
   id: number
   title: string
+  author?: string
+  illustrator?: string
+  originalAuthor?: string
   imageSrc: string
   worksType?: string
   genre: string
@@ -69,28 +73,40 @@ const fallbackImage = (worksId: number) => {
 
 const mapExplorationToWork = (
   w: z.infer<typeof PreferenceExplorationWorkSchema>,
-): PreferenceWork => ({
-  id: w.worksId,
-  title: w.worksName ?? '',
-  imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
-  worksType: w.worksType ?? '',
-  genre: w.genre ?? '',
-  description: w.description ?? '',
-  hashtags: Array.isArray(w.hashtags) ? w.hashtags : [],
-  meta: `${w.artistName} · ${w.platform} · ${w.genre}`,
-})
+): PreferenceWork => {
+  const worksType = getWorksTypeLabel(w.worksType)
+
+  return {
+    id: w.worksId,
+    title: w.worksName ?? '',
+    imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
+    worksType,
+    genre: w.genre ?? '',
+    description: w.description ?? '',
+    hashtags: Array.isArray(w.hashtags) ? w.hashtags : [],
+    author: w.artistName ?? '',
+  }
+}
 
 const mapResultToWork = (w: PreferenceResultWork): PreferenceWork => {
-  const authorLine = [w.author, w.illustrator, w.worksType].filter(Boolean)
+  const worksType = getWorksTypeLabel(w.worksType)
+  const illustrator =
+    w.originalAuthor && w.illustrator === w.originalAuthor
+      ? ''
+      : w.illustrator
+  const authorLine = [w.originalAuthor, illustrator, worksType].filter(Boolean)
   return {
     id: w.worksId,
     title: w.worksName,
     imageSrc: w.thumbnailUrl ?? fallbackImage(w.worksId),
-    worksType: w.worksType ?? '',
+    worksType,
     genre: w.genre ?? '',
     description: '',
     hashtags: [],
     meta: `${authorLine.join(' · ')} · ${w.genre}`,
+    author: w.author ?? '',
+    illustrator: w.illustrator ?? '',
+    originalAuthor: w.originalAuthor ?? '',
   }
 }
 

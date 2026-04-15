@@ -21,7 +21,7 @@ export default function PreferenceListPage() {
   return (
     <main className="min-h-dvh bg-white flex flex-col">
       {/* 헤더 */}
-      <div className="h-[52px] px-4 flex items-center justify-center relative">
+      <div className="h-13 px-4 flex items-center justify-center relative">
         <button
           type="button"
           onClick={() => router.back()}

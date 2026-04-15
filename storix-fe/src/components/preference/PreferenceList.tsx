@@ -2,16 +2,22 @@
 'use client'
 
 import Image from 'next/image'
-import type { PreferenceWork } from './PreferenceProvider'
 import { useFavoriteWork } from '@/hooks/favorite/useFavoriteWork'
+import type { PreferenceWork } from './PreferenceProvider'
 import { usePreference } from './PreferenceProvider'
 
 function PreferenceListRow({ w }: { w: PreferenceWork }) {
   const { onFavoriteAdded, onFavoriteRemoved } = usePreference()
   const { isFavorite, isMutating, toggleFavorite } = useFavoriteWork(w.id, {
-    onAdded: onFavoriteAdded, // addMutation 성공만 카운트
-    onRemoved: onFavoriteRemoved, // 취소하면 카운트에서 제외
+    onAdded: onFavoriteAdded,
+    onRemoved: onFavoriteRemoved,
   })
+
+  const illustrator =
+    w.originalAuthor && w.illustrator === w.originalAuthor ? '' : w.illustrator
+  const workMeta = [w.originalAuthor, illustrator, w.worksType]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <div className="border-bottom">
@@ -25,7 +31,7 @@ function PreferenceListRow({ w }: { w: PreferenceWork }) {
             {w.title}
           </div>
           <div className="mt-1 body-2-medium text-gray-500 truncate w-full">
-            {w.meta}
+            {workMeta}
           </div>
           {w.ratingText ? (
             <div className="mt-1 caption-1-medium text-[var(--color-magenta-300)]">
@@ -34,7 +40,6 @@ function PreferenceListRow({ w }: { w: PreferenceWork }) {
           ) : null}
         </div>
 
-        {/* 우측 + 아이콘 (API 연동: 관심 상태에 따라 active/deactive) */}
         <div className="self-stretch flex items-center">
           <button
             type="button"
@@ -42,7 +47,7 @@ function PreferenceListRow({ w }: { w: PreferenceWork }) {
             aria-label={isFavorite ? '관심 해제' : '관심 추가'}
             onClick={() => toggleFavorite()}
             disabled={isMutating}
-            onPointerDown={(e) => e.stopPropagation()} // (클릭 씹힘/드래그 가드)
+            onPointerDown={(e) => e.stopPropagation()}
           >
             <img
               src={
