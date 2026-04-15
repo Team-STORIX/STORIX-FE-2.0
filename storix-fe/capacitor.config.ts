@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Storix',
   webDir: '.next',
   server: {
-    url: 'https://storix-fe-2-0-nxvy.vercel.app/login',
+    url: 'https://storix-fe-2-0-nxvy.vercel.app/agreement',
     cleartext: false,
   },
   ios: {
