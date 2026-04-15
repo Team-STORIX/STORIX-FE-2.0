@@ -21,6 +21,7 @@ const WorksReviewItemOutputSchema = z.object({
   userName: z.string().optional(),
   content: z.string().optional(),
   isSpoiler: z.boolean().optional(),
+  spoilerScript: z.string().optional(),
   rating: z
     .preprocess((v) => (v == null ? v : Number(v)), z.number())
     .nullable()
@@ -43,6 +44,7 @@ export const WorksReviewItemSchema = z.preprocess((input) => {
         userName: obj.profile?.nickName,
         content: obj.review?.content,
         isSpoiler: obj.review?.isSpoiler,
+        spoilerScript: obj.review?.spoilerScript,
         rating: obj.review?.rating,
         likeCount: obj.review?.likeCount,
         userId: obj.profile?.userId,
@@ -62,6 +64,7 @@ const WorksReviewDetailOutputSchema = z.object({
   profileImageUrl: z.string().nullable().optional(),
   content: z.string().optional(),
   isSpoiler: z.boolean().optional(),
+  spoilerScript: z.string().optional(),
   rating: z
     .preprocess((v) => (v == null ? v : Number(v)), z.number())
     .nullable()
@@ -101,6 +104,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
         profileImageUrl: obj.profile?.profileImageUrl,
         content: obj.review?.content,
         isSpoiler: obj.review?.isSpoiler,
+        spoilerScript: obj.review?.spoilerScript,
         rating: obj.review?.rating,
         likeCount: obj.review?.likeCount,
         isLiked: obj.review?.isLiked,
@@ -121,6 +125,7 @@ export const WorksReviewDetailSchema = z.preprocess((input) => {
         profileImageUrl: obj.profileImageUrl,
         content: obj.content,
         isSpoiler: obj.isSpoiler,
+        spoilerScript: obj.spoilerScript,
         rating: obj.rating,
         likeCount: obj.likeCount,
         isLiked: obj.isLiked,

@@ -1,12 +1,13 @@
-//   src/app/feed/review/write/ReviewWriteClient.tsx
+// src/app/feed/review/write/ReviewWriteClient.tsx
 'use client'
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import RatingInput from '@/components/common/RatingInput'
-import { createReaderReview } from '@/lib/api/plus/plusWrite'
+import SpoilerToggle from '@/components/feed/write/SpoilerToggle'
 import { useUpdateMyReview } from '@/hooks/works/useWorksReviews'
+import { createReaderReview } from '@/lib/api/plus/plusWrite'
 
 type Work = { id: number; title: string; meta: string; thumb: string }
 type Props = {
@@ -23,6 +24,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
   const [resolvedWork, setResolvedWork] = useState<Work | null>(null)
   const [text, setText] = useState('')
   const [spoiler, setSpoiler] = useState(false)
+  const [spoilerMessage, setSpoilerMessage] = useState('')
   const [rating, setRating] = useState(0)
   const [submitting, setSubmitting] = useState(false)
 
@@ -31,7 +33,6 @@ export default function ReviewWriteClient({ worksId }: Props) {
 
   const updateMutation = useUpdateMyReview({ worksId })
 
-  //   work가 null이거나, routeId랑 다르면 sessionStorage에서 복구
   useEffect(() => {
     const raw = sessionStorage.getItem(STORAGE_KEY_REVIEW)
     if (!raw) return
@@ -44,7 +45,6 @@ export default function ReviewWriteClient({ worksId }: Props) {
     }
   }, [worksId])
 
-  // edit mode 감지 + 초기값 복구 (세션 저장 기반)
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search)
     const mode = sp.get('mode')
@@ -64,6 +64,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
         worksId: number
         rating?: number | null
         isSpoiler?: boolean
+        spoilerScript?: string
         content?: string
       }
 
@@ -72,6 +73,9 @@ export default function ReviewWriteClient({ worksId }: Props) {
       if (typeof parsed.rating === 'number') setRating(parsed.rating)
       if (typeof parsed.content === 'string') setText(parsed.content)
       if (typeof parsed.isSpoiler === 'boolean') setSpoiler(parsed.isSpoiler)
+      if (typeof parsed.spoilerScript === 'string') {
+        setSpoilerMessage(parsed.spoilerScript)
+      }
     } catch {
       // ignore
     }
@@ -92,7 +96,8 @@ export default function ReviewWriteClient({ worksId }: Props) {
     if (!resolvedWork?.id) return
     if (!canSubmit || submitting) return
 
-    // 응답에서 reviewId 뽑는 유틸
+    const spoilerScript = spoiler ? spoilerMessage.trim() : ''
+
     const extractReviewId = (res: any) => {
       return (
         res?.reviewId ??
@@ -107,14 +112,14 @@ export default function ReviewWriteClient({ worksId }: Props) {
     try {
       setSubmitting(true)
 
-      // 수정 모드면 업데이트 API 호출
       if (isEditMode && editReviewId) {
         await updateMutation.mutateAsync({
           reviewId: editReviewId,
           payload: {
-            rating: rating.toFixed(1), // (string)
+            rating: rating.toFixed(1),
             isSpoiler: spoiler,
-            content, // (string)
+            spoilerScript,
+            content,
           },
         })
 
@@ -127,19 +132,20 @@ export default function ReviewWriteClient({ worksId }: Props) {
         worksId: resolvedWork.id,
         rating: rating.toFixed(1),
         isSpoiler: spoiler,
+        spoilerScript,
         content,
       })
 
-      // 성공하면 저장값 제거(다음 글쓰기 때 헷갈림 방지)
       sessionStorage.removeItem(STORAGE_KEY_REVIEW)
 
       const newReviewId = extractReviewId(res)
       if (newReviewId) {
-        router.replace(`/library/works/review?id=${newReviewId}&from=reviewWrite`)
+        router.replace(
+          `/library/works/review?id=${newReviewId}&from=reviewWrite`,
+        )
         return
       }
 
-      // 혹시 reviewId가 응답에 없다면 최소한 작품 상세로
       router.replace(`/library/works?id=${resolvedWork.id}`)
     } catch (e) {
       alert(
@@ -156,7 +162,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
 
   return (
     <main className="relative mx-auto flex h-screen max-w-[393px] flex-col bg-white">
-      <div className="flex h-[54px] items-center justify-between px-4">
+      <div className="flex h-13.5 items-center justify-between px-4">
         <button onClick={() => router.back()} className="cursor-pointer">
           <Image
             src="/common/icons/back.svg"
@@ -165,7 +171,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
             height={24}
           />
         </button>
-        <span className="text-body-1 font-medium">리뷰</span>
+        <span className="body-1-medium">리뷰</span>
         <button
           onClick={onSubmit}
           disabled={!canSubmit || submitting}
@@ -180,7 +186,7 @@ export default function ReviewWriteClient({ worksId }: Props) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-32">
-        <div className="mb-6 flex items-center gap-3">
+        <div className="-mx-4 flex items-center gap-3 border-bottom px-4 pb-6">
           {resolvedWork?.thumb ? (
             <Image
               src={resolvedWork.thumb}
@@ -194,67 +200,43 @@ export default function ReviewWriteClient({ worksId }: Props) {
           )}
 
           <div className="flex flex-col">
-            <span className="heading-4 mb-1">
+            <span className="body-1-semibold mb-1">
               {resolvedWork?.title ?? '작품 제목'}
             </span>
-            <span className="caption-1 text-gray-500 mb-4">
+            <span className="caption-1-medium text-gray-500 mb-4">
               {resolvedWork?.meta ?? ''}
             </span>
             <RatingInput value={rating} onChange={setRating} />
           </div>
         </div>
 
-        <div className="mb-2 flex items-center justify-between border-t border-gray-200">
-          <span className="heading-2 mt-6">리뷰 작성</span>
-          <div className="mt-6 flex items-center gap-1">
-            <span className="caption-1 text-gray-500">스포일러 방지</span>
-            <button
-              type="button"
-              onClick={() => setSpoiler((prev) => !prev)}
-              aria-pressed={spoiler}
-              aria-label="스포일러 방지 토글"
-              className="ml-auto cursor-pointer"
-            >
-              <img
-                src={
-                  spoiler
-                    ? '/common/icons/active.svg'
-                    : '/common/icons/deactive.svg'
-                }
-                alt={spoiler ? '활성' : '비활성'}
-                className="h-4.5 w-8"
-              />
-            </button>
-          </div>
+        <div className="flex items-center justify-between">
+          <span className="heading-2 mt-6 pl-1">리뷰 작성</span>
+        </div>
+        <div className="-mx-4 px-4 border-bottom">
+          <textarea
+            value={text}
+            maxLength={MAX_CONTENT_LENGTH}
+            onChange={(e) => {
+              const next = e.target.value
+              setText(
+                next.length > MAX_CONTENT_LENGTH
+                  ? next.slice(0, MAX_CONTENT_LENGTH)
+                  : next,
+              )
+            }}
+            placeholder="좋아하는 작품에 대해 적어보세요!"
+            className="px-1 mt-4 h-60 w-full resize-none body-2-medium text-gray-700 outline-none"
+          />
         </div>
 
-        <textarea
-          value={text}
-          maxLength={MAX_CONTENT_LENGTH}
-          onChange={(e) => {
-            const next = e.target.value
-            setText(
-              next.length > MAX_CONTENT_LENGTH
-                ? next.slice(0, MAX_CONTENT_LENGTH)
-                : next,
-            )
-          }}
-          placeholder="좋아하는 작품에 대해 적어보세요!"
-          className="mt-4 h-60 w-full resize-none body-1 text-gray-700 outline-none"
+        <SpoilerToggle
+          enabled={spoiler}
+          onToggle={() => setSpoiler((prev) => !prev)}
+          message={spoilerMessage}
+          onMessageChange={setSpoilerMessage}
+          defaultMessage="스포일러가 포함된 리뷰 보기"
         />
-
-        <div className="mt-2 flex justify-end px-1 text-caption text-gray-400">
-          <span
-            className={
-              contentLength === MAX_CONTENT_LENGTH
-                ? 'text-[var(--color-warning)]'
-                : 'text-gray-400'
-            }
-          >
-            {contentLength}
-          </span>
-          /{MAX_CONTENT_LENGTH}
-        </div>
       </div>
     </main>
   )

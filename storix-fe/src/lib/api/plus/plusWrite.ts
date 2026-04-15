@@ -5,6 +5,7 @@ export type CreateReviewBody = {
   worksId: number
   rating: string // "0.5" ~ "5.0":contentReference[oaicite:6]{index=6}
   isSpoiler: boolean
+  spoilerScript: string
   content: string
 }
 
@@ -12,6 +13,7 @@ export type CreateBoardBody = {
   isWorksSelected: boolean
   worksId?: number
   isSpoiler: boolean
+  spoilerScript: string
   content: string
   files?: { objectKey: string }[] // 없으면 필드 자체 생략 가능:contentReference[oaicite:7]{index=7}
 }

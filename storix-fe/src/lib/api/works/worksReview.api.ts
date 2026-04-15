@@ -84,6 +84,7 @@ export const postWorksReviewReport = async (params: {
 const UpdateMyReviewPayloadSchema = z.object({
   rating: z.string(), // swagger 기준 string
   isSpoiler: z.boolean(),
+  spoilerScript: z.string(),
   content: z.string(),
 })
 export type UpdateMyReviewPayload = z.infer<typeof UpdateMyReviewPayloadSchema>

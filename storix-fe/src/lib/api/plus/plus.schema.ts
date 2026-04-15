@@ -32,6 +32,7 @@ export const ReaderReviewCreateRequestSchema = z.object({
   worksId: z.number(),
   rating: z.union([z.string(), z.number()]).transform(String), // "0.5" 형태 보장
   isSpoiler: z.boolean(),
+  spoilerScript: z.string(),
   content: z.string(),
 })
 
@@ -50,6 +51,7 @@ export const ReaderBoardCreateRequestSchema = z.object({
   isWorksSelected: z.boolean(),
   worksId: z.number(),
   isSpoiler: z.boolean(),
+  spoilerScript: z.string(),
   content: z.string(),
   files: z
     .array(

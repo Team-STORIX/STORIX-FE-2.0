@@ -61,9 +61,8 @@ export default function LoginPage() {
 
   const handleAppleLogin = async () => {
     try {
-      const { SignInWithApple } = await import(
-        '@capacitor-community/apple-sign-in'
-      )
+      const { SignInWithApple } =
+        await import('@capacitor-community/apple-sign-in')
       const result = await SignInWithApple.authorize({
         clientId: 'kr.storix.app',
         redirectURI: 'https://api.storix.kr',
@@ -85,17 +84,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative w-full h-full flex flex-col items-center">
-      {/* 둘러보기 버튼 */}
-      <div className="absolute top-20 right-4">
-        <button
-          className="text-[16px] font-medium leading-[140%] transition-opacity hover:opacity-70"
-          style={{ color: 'var(--color-gray-500)' }}
-          onClick={() => router.push('/home/demo')}
-        >
-          둘러보기
-        </button>
-      </div>
-      <div className="flex flex-col items-center mt-[326px]">
+      <div className="flex flex-col items-center mt-65.5">
         <div className="mt-1">
           <Image
             src="/common/icons/logo-word.svg"
@@ -136,18 +125,6 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* 개발자 로그인 */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-2">
-            <button
-              onClick={handleDeveloperLogin}
-              className="w-[360px] h-[48px] text-sm text-gray-400 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-            >
-              개발자 로그인
-            </button>
-          </div>
-        )}
-
         {/*   작가 로그인 아이콘을 여기에 통합 */}
         <div className="mt-2">
           <Image
@@ -174,6 +151,17 @@ export default function LoginPage() {
             />
           </button>
         </div>
+        {/* 개발자 로그인 */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-2">
+            <button
+              onClick={handleDeveloperLogin}
+              className="w-[360px] h-[48px] text-sm text-white border border-gray-300 bg-[var(--color-magenta-300)] rounded"
+            >
+              개발자 로그인
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
