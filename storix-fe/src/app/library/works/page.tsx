@@ -44,14 +44,11 @@ function LibraryWorkHomeContent() {
   const { isFavorite, toggleFavorite } = useFavoriteWork(worksId)
 
   const { data: work, isLoading: loading } = useWorksDetail(worksId)
-
-  // 내 리뷰 존재 여부(이미 작성했는지)
   const { data: myReview } = useWorksMyReview(worksId)
 
   const [isCheckingRoom, setIsCheckingRoom] = useState(false)
   const [topicModalOpen, setTopicModalOpen] = useState(false)
 
-  // 토스트 (이미 작성 시)
   const [toastOpen, setToastOpen] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const toastTimerRef = useRef<number | null>(null)
@@ -90,9 +87,11 @@ function LibraryWorkHomeContent() {
         reviewCount: 0,
         description: '',
         keywords: [] as string[],
-        platform: '',
+        platforms: [] as string[],
         worksName: '',
         worksType: '',
+        genre: '',
+        hasTopicRoom: false,
       }
     }
 
@@ -102,8 +101,8 @@ function LibraryWorkHomeContent() {
     const metaAuthor = metaAuthorParts.join(' , ')
 
     const metaWorksParts: string[] = []
-    if (work.worksType) metaWorksParts.push(`${work.worksType}`)
-    if (work.genre) metaWorksParts.push(`${work.genre}`)
+    if (work.worksType) metaWorksParts.push(work.worksType)
+    if (work.genre) metaWorksParts.push(work.genre)
     const metaWorks = metaWorksParts.join(' · ')
 
     return {
@@ -116,20 +115,20 @@ function LibraryWorkHomeContent() {
       reviewCount: work.reviewCount ?? 0,
       description: work.description ?? '',
       keywords: work.hashtags ?? [],
-      platform: work.platform ?? '',
+      platforms: work.platforms ?? [],
       worksName: work.worksName ?? '',
       worksType: work.worksType ?? '',
+      genre: work.genre ?? '',
+      hasTopicRoom: work.hasTopicRoom ?? false,
     }
   }, [work, worksId])
 
   const handleReviewWrite = () => {
-    //이미 리뷰가 있으면 작성 대신 토스트
     if (myReview?.reviewId) {
-      showToast('이미 작성하였습니다')
+      showToast('이미 작성하셨습니다')
       return
     }
 
-    //review/write 페이지에서 작품 정보 복구용(있으면 활용)
     try {
       const meta = [ui.metaAuthor, ui.metaWorks].filter(Boolean).join(' · ')
       sessionStorage.setItem(
@@ -145,12 +144,12 @@ function LibraryWorkHomeContent() {
       // ignore
     }
 
-    //요구 라우팅으로 변경
     router.push(`/feed/review/write?id=${ui.id}`)
   }
 
   const handleTopicroomEnter = async () => {
     if (!ui.worksName) return
+
     try {
       setIsCheckingRoom(true)
 
@@ -174,12 +173,12 @@ function LibraryWorkHomeContent() {
   }
 
   if (loading) {
-    return <div className="p-4 body-2 text-gray-400">로딩중...</div>
+    return <div className="body-2 p-4 text-gray-400">로딩중...</div>
   }
 
   if (!work) {
     return (
-      <div className="p-4 body-2 text-gray-400">
+      <div className="body-2 p-4 text-gray-400">
         작품 정보를 불러오지 못했어요
       </div>
     )
@@ -202,9 +201,10 @@ function LibraryWorkHomeContent() {
           rating: ui.rating,
           reviewCount: ui.reviewCount,
           worksType: ui.worksType,
+          genre: ui.genre,
         }}
         isCheckingRoom={isCheckingRoom}
-        onReviewWrite={handleReviewWrite} //(라우팅 변경/토스트)
+        onReviewWrite={handleReviewWrite}
         onTopicroomEnter={handleTopicroomEnter}
       />
 
@@ -217,10 +217,11 @@ function LibraryWorkHomeContent() {
           title: ui.title,
           description: ui.description,
           keywords: ui.keywords,
-          platform: ui.platform,
+          platforms: ui.platforms,
         }}
         isCheckingRoom={isCheckingRoom}
-        onReviewWrite={handleReviewWrite} //(라우팅 변경/토스트)
+        hasTopicRoom={ui.hasTopicRoom}
+        onReviewWrite={handleReviewWrite}
         onTopicroomEnter={handleTopicroomEnter}
       />
 
@@ -230,20 +231,20 @@ function LibraryWorkHomeContent() {
         work={{
           id: ui.id,
           title: ui.title,
-          meta: ui.worksType ? `${ui.worksType}` : ui.metaAuthor,
+          meta: ui.worksType ? ui.worksType : ui.metaAuthor,
           thumb: ui.thumb,
         }}
       />
 
       {toastOpen && (
         <div
-          className="fixed left-1/2 -translate-x-1/2 z-[130]"
+          className="fixed left-1/2 z-[130] -translate-x-1/2"
           style={{ bottom: 24 }}
           role="status"
           aria-live="polite"
         >
           <div
-            className="relative flex items-center gap-2 px-4 h-[56px] rounded-[12px] shadow-md"
+            className="relative flex h-[56px] items-center gap-2 rounded-[12px] px-4 shadow-md"
             style={{
               width: 333,
               backgroundColor: 'var(--color-gray-900)',

@@ -38,9 +38,9 @@ export default function WorkTopBar({ onBack, isLiked, onToggleLike }: Props) {
           height={20}
         />
         {isLiked ? (
-          <span className="body-2 text-black">관심중</span>
+          <span className="body-2-medium text-black">관심중</span>
         ) : (
-          <span className="body-2 text-gray-400">관심</span>
+          <span className="body-2-medium text-gray-400">관심</span>
         )}
       </button>
     </div>

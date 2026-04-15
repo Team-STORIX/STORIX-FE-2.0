@@ -30,7 +30,7 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
         }
       : '/home/topicroom'
   return (
-    <div className="relative h-full w-[266px] flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+    <div className="relative h-full w-66.5 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
       {/* 배경 이미지 */}
       <Image
         src={room.imageUrl}
@@ -44,11 +44,11 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
         {/* HOT / 인원 뱃지 */}
         {/* !!caption-3 폰트 수정하기!! */}
         <div className="mb-2 flex items-center gap-1.5">
-          <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-3 text-white">
+          <span className="inline-flex items-center rounded-full bg-pink-500 px-1 py-0.5 caption-2-extrabold text-white">
             <FireIcon />
             <p className="ml-0.5">HOT</p>
           </span>
-          <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-3 text-[var(--color-magenta-300)]">
+          <span className="inline-flex items-center rounded-full bg-white px-1 py-0.5 caption-2-extrabold text-[var(--color-magenta-300)]">
             <Image
               src={'/common/icons/icon-topicroom-people.svg'}
               alt={'참여 인원'}
@@ -61,9 +61,9 @@ export const TopicRoomCoverCard = ({ room }: TopicRoomCoverCardProps) => {
         </div>
 
         {/* 제목 / 부제목 */}
-        <div className="flex-1 min-w-0 max-w-[200px] space-y-0.5 text-white text-left">
+        <div className="flex-1 min-w-0 max-w-50 space-y-0.5 text-white text-left">
           <p className="heading-2 w-full truncate">{room.subtitle}</p>
-          <p className="body-1 ">{room.title}</p>
+          <p className="body-1-medium ">{room.title}</p>
         </div>
       </div>
 

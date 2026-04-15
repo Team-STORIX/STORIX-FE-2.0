@@ -11,8 +11,9 @@ const WorksDetailSchema = z.object({
   illustrator: z.string().nullable().optional(),
   originalAuthor: z.string().nullable().optional(),
   genre: z.string().nullable().optional(),
-  platform: z.string().nullable().optional(),
+  platforms: z.array(z.string()).optional(),
   ageClassification: z.string().nullable().optional(),
+  hasTopicRoom: z.boolean().optional(),
 
   //   swagger/서버에 따라 string으로 내려올 수도 있어서 안전 변환
   avgRating: z

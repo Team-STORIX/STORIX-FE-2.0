@@ -6,13 +6,17 @@ import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ForwardArrowIcon from '@/public/common/icons/FowardArrowIcon'
+import ForwardArrowSmallIcon from '@/public/common/icons/ForwardArrowSmallIcon'
 import OtherReviewsSection from '@/components/library/works/OtherReviewsSection'
+import ReviewMetaBar from '@/components/library/works/ReviewMetaBar'
+import TopicRoomEnterButton from '@/components/library/works/TopicRoomEnterButton'
 import Tabs from '@/components/common/Tabs'
 
 import {
   useWorksMyReview,
   useWorksReviewsInfinite,
 } from '@/hooks/works/useWorksReviews'
+import { useProfileStore } from '@/store/profile.store'
 
 type TabKey = 'info' | 'review'
 
@@ -21,7 +25,7 @@ type UIData = {
   title: string
   description: string
   keywords: string[]
-  platform: string
+  platforms: string[]
 }
 
 const getPlatformIconSrc = (platform: string) => {
@@ -41,6 +45,7 @@ type Props = {
   onChangeTab: (tab: TabKey) => void
   ui: UIData
   isCheckingRoom: boolean
+  hasTopicRoom: boolean
   onReviewWrite: () => void
   onTopicroomEnter: () => void
 }
@@ -51,10 +56,12 @@ export default function WorkTabContent({
   onChangeTab,
   ui,
   isCheckingRoom,
+  hasTopicRoom,
   onReviewWrite,
   onTopicroomEnter,
 }: Props) {
   const router = useRouter()
+  const userName = useProfileStore((s) => s.me?.nickName ?? '유저')
   const { data: myReview } = useWorksMyReview(worksId)
   const {
     data: reviewPages,
@@ -64,12 +71,14 @@ export default function WorkTabContent({
   } = useWorksReviewsInfinite(worksId)
 
   const otherReviews = reviewPages?.pages.flatMap((p) => p.content ?? []) ?? []
+  const platforms = ui.platforms.filter(
+    (platform) => platform.trim().length > 0,
+  )
 
   const { ref, inView } = useInView({
     threshold: 0,
   })
 
-  // 무한스크롤 트리거
   useEffect(() => {
     if (!inView) return
     if (!hasNextPage) return
@@ -77,15 +86,12 @@ export default function WorkTabContent({
     fetchNextPage()
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
-  const platformIconSrc = ui.platform ? getPlatformIconSrc(ui.platform) : null
-
   const goReviewDetail = (reviewId: number) => {
     router.push(`/library/works/review?id=${reviewId}`)
   }
 
   return (
     <>
-      {/* Tabs */}
       <Tabs
         tabs={['info', 'review'] as [TabKey, TabKey]}
         labels={['정보', `리뷰(${ui.reviewCount})`]}
@@ -93,40 +99,44 @@ export default function WorkTabContent({
         onChange={onChangeTab}
       />
 
-      {/* Tab Content */}
       <div className="px-4 pb-[calc(env(safe-area-inset-bottom)+88px)]">
         {tab === 'info' ? (
           <div>
             <section className="pt-6">
               <p className="heading-2 text-black">감상 가능한 곳</p>
 
-              {ui.platform.length === 0 ? (
-                <p className="body-2 mt-3 text-gray-400">
+              {platforms.length === 0 ? (
+                <p className="body-2-medium mt-3 text-gray-400">
                   플랫폼 정보가 없어요
                 </p>
               ) : (
                 <div className="mt-3 flex flex-col gap-2">
-                  <div key={ui.platform} className="flex items-center gap-3">
-                    {/*   UI 변경: R 제거 -> 35px 원형 플랫폼 아이콘 */}
-                    <div className="relative h-[35px] w-[35px] overflow-hidden rounded-full bg-gray-100">
-                      {platformIconSrc ? (
-                        <Image
-                          src={platformIconSrc}
-                          alt={ui.platform}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : null}
-                    </div>
-                    <p className="body-2 text-gray-700">{ui.platform}</p>
-                  </div>
+                  {platforms.map((platform) => {
+                    const platformIconSrc = getPlatformIconSrc(platform)
+
+                    return (
+                      <div key={platform} className="flex items-center gap-3">
+                        <div className="relative h-9 w-9 overflow-hidden rounded-full bg-gray-100">
+                          {platformIconSrc ? (
+                            <Image
+                              src={platformIconSrc}
+                              alt={platform}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : null}
+                        </div>
+                        <p className="body-1-bold text-gray-700">{platform}</p>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </section>
 
             <section className="pt-8">
               <p className="heading-2 text-black">작품 소개</p>
-              <p className="body-2 mt-3 whitespace-pre-line text-gray-600 line-clamp-6">
+              <p className="body-2-medium mt-3 whitespace-pre-line text-gray-600 line-clamp-6">
                 {ui.description || '작품 소개가 없어요'}
               </p>
             </section>
@@ -134,13 +144,15 @@ export default function WorkTabContent({
             <section className="pt-8">
               <p className="heading-2 text-black">키워드</p>
               {ui.keywords.length === 0 ? (
-                <p className="body-2 mt-3 text-gray-400">키워드가 없어요</p>
+                <p className="body-2-medium mt-3 text-gray-600">
+                  키워드가 없어요
+                </p>
               ) : (
                 <div className="mt-3 flex flex-wrap gap-2 ">
                   {ui.keywords.map((k) => (
                     <span
                       key={k}
-                      className="inline-flex items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm cursor-pointer"
+                      className="inline-flex cursor-pointer items-center gap-1 rounded border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm"
                     >
                       #{k}
                     </span>
@@ -151,32 +163,54 @@ export default function WorkTabContent({
           </div>
         ) : (
           <div>
-            <section className="-mx-4 px-5 bg-gray-50 border-b border-gray-100">
-              <p className="heading-2 text-black px-1 pt-5 pb-3">내 리뷰</p>
+            <section className="-mx-4 border-b border-gray-100 bg-gray-50 px-5">
+              <p className="heading-2 px-1 pt-5 pb-3 text-black">내 리뷰</p>
 
-              <button
-                type="button"
-                onClick={() => {
-                  // 내 리뷰가 있으면 상세로, 없으면 작성으로
-                  if (myReview?.content && myReview.reviewId) {
-                    goReviewDetail(myReview.reviewId)
-                    return
-                  }
-                  onReviewWrite()
-                }}
-                className="w-full py-5 px-1 text-left cursor-pointer "
-              >
-                {myReview?.content ? (
-                  <p className="inline-flex w-full body-2 mt-1 text-gray-500 line-clamp-2 justify-between">
-                    {myReview.content}
-                    <ForwardArrowIcon />
-                  </p>
-                ) : (
-                  <p className="body-2 mt-1 text-gray-700 line-clamp-2">
-                    아직 작성한 리뷰가 없어요. 리뷰를 작성해보세요!
-                  </p>
-                )}
-              </button>
+              {myReview?.content ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (myReview.reviewId) {
+                        goReviewDetail(myReview.reviewId)
+                      }
+                    }}
+                    className="w-full cursor-pointer px-1 py-5 text-left"
+                  >
+                    <p className="body-2-medium mt-1 inline-flex w-full justify-between text-gray-500 line-clamp-2">
+                      {myReview.content}
+                      <ForwardArrowIcon />
+                    </p>
+                  </button>
+
+                  <div className="px-1 pb-5">
+                    <ReviewMetaBar
+                      rating={myReview.rating}
+                      likeCount={myReview.likeCount}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="px-1 pt-1 pb-5">
+                  <div className="rounded-xl bg-white px-4 py-5 text-center shadow-[0_0_4px_0_rgba(19,17,18,0.20)]">
+                    <p className="body-1-semibold text-gray-600">
+                      아직 리뷰가 없어요!
+                    </p>
+                    <p className="body-1-semibold text-gray-600">
+                      어서 {userName}님의 감상을 나눠주세요!
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={onReviewWrite}
+                      className="body-2-bold mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--color-magenta-100)] bg-[var(--color-magenta-50)] px-6 py-2.5 text-[var(--color-magenta-300)]"
+                    >
+                      <span>리뷰 작성하기</span>
+                      <ForwardArrowSmallIcon />
+                    </button>
+                  </div>
+                </div>
+              )}
             </section>
 
             <OtherReviewsSection
@@ -186,41 +220,12 @@ export default function WorkTabContent({
           </div>
         )}
       </div>
-      <div className="flex w-[393px] fixed bottom-0 z-50 bg-white pt-3 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-        <div className="flex gap-3 w-full max-w-[393px]">
-          <button
-            type="button"
-            // onClick={onReviewWrite}
-            className="flex py-1.5 px-1.5 items-center justify-center gap-1 rounded-xl bg-[var(--color-magenta-50)] cursor-pointer"
-          >
-            <Image
-              src="/common/icons/icon-share.svg"
-              alt="share"
-              width={32}
-              height={32}
-              className="inline-block"
-              priority
-            />
-          </button>
 
-          <button
-            type="button"
-            onClick={onTopicroomEnter}
-            disabled={isCheckingRoom}
-            className="flex flex-1 items-center justify-center rounded-xl bg-[var(--color-magenta-300)] text-white body-2 disabled:opacity-50 cursor-pointer"
-          >
-            <Image
-              src="/common/icons/fire.svg"
-              alt="fire"
-              width={24}
-              height={24}
-              className="inline-block mb-0.5"
-              priority
-            />
-            {isCheckingRoom ? '확인 중...' : '토픽룸 입장'}
-          </button>
-        </div>
-      </div>
+      <TopicRoomEnterButton
+        isCheckingRoom={isCheckingRoom}
+        hasTopicRoom={hasTopicRoom}
+        onClick={onTopicroomEnter}
+      />
     </>
   )
 }
