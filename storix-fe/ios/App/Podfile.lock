@@ -1,14 +1,63 @@
 PODS:
+  - Alamofire (5.11.2)
   - Capacitor (7.6.1):
     - CapacitorCordova
   - CapacitorCommunityAppleSignIn (7.1.0):
     - Capacitor
   - CapacitorCordova (7.6.1)
+  - CapacitorKakaoLoginPlugin (3.0.0):
+    - Capacitor
+    - KakaoSDKAuth
+    - KakaoSDKCommon
+    - KakaoSDKShare
+    - KakaoSDKStory
+    - KakaoSDKTalk
+    - KakaoSDKTemplate
+    - KakaoSDKUser
+  - KakaoSDKAuth (2.18.2):
+    - KakaoSDKCommon (= 2.18.2)
+  - KakaoSDKCommon (2.18.2):
+    - KakaoSDKCommon/Common (= 2.18.2)
+    - KakaoSDKCommon/Network (= 2.18.2)
+  - KakaoSDKCommon/Common (2.18.2)
+  - KakaoSDKCommon/Network (2.18.2):
+    - Alamofire (~> 5.1)
+    - KakaoSDKCommon/Common (= 2.18.2)
+  - KakaoSDKShare (2.18.2):
+    - KakaoSDKCommon (= 2.18.2)
+    - KakaoSDKTemplate (= 2.18.2)
+  - KakaoSDKStory (2.18.2):
+    - KakaoSDKUser (= 2.18.2)
+  - KakaoSDKTalk (2.18.2):
+    - KakaoSDKTemplate (= 2.18.2)
+    - KakaoSDKUser (= 2.18.2)
+  - KakaoSDKTemplate (2.18.2):
+    - KakaoSDKCommon/Common (= 2.18.2)
+  - KakaoSDKUser (2.18.2):
+    - KakaoSDKAuth (= 2.18.2)
+  - naveridlogin-sdk-ios (4.2.3)
+  - TeamLepisodeCapacitorNaverLogin (7.0.0):
+    - Capacitor
+    - naveridlogin-sdk-ios (>= 4.2.1)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorCommunityAppleSignIn (from `../../node_modules/@capacitor-community/apple-sign-in`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - CapacitorKakaoLoginPlugin (from `../../node_modules/capacitor-kakao-login-plugin`)
+  - "TeamLepisodeCapacitorNaverLogin (from `../../node_modules/@team-lepisode/capacitor-naver-login`)"
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - KakaoSDKAuth
+    - KakaoSDKCommon
+    - KakaoSDKShare
+    - KakaoSDKStory
+    - KakaoSDKTalk
+    - KakaoSDKTemplate
+    - KakaoSDKUser
+    - naveridlogin-sdk-ios
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -17,12 +66,27 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor-community/apple-sign-in"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorKakaoLoginPlugin:
+    :path: "../../node_modules/capacitor-kakao-login-plugin"
+  TeamLepisodeCapacitorNaverLogin:
+    :path: "../../node_modules/@team-lepisode/capacitor-naver-login"
 
 SPEC CHECKSUMS:
+  Alamofire: 400275dd1c6d87d95a041861d2a59da4b520a203
   Capacitor: b8dd0e1151c953171b0e02d04aa57f3389edcd97
   CapacitorCommunityAppleSignIn: 271cb2860576fd2961508bbfa7a82117d93eadca
   CapacitorCordova: 6ab7337f25a2c9ce7a3fdc2f249c480f447853e0
+  CapacitorKakaoLoginPlugin: 037a574f18ef7dfe4ee984b68b7a175ba12f3c10
+  KakaoSDKAuth: 3daf72ec463876e0fe6d0d37c7d6b0b2729169f1
+  KakaoSDKCommon: 516f68bc6b223ed502c34a362d6ecc9145e0dcc0
+  KakaoSDKShare: 8980e83a3a80bd805ab859c102dd41ed6801424e
+  KakaoSDKStory: 63c8deb29ba1baa0bcd6ab9fcf0d3310226a5e41
+  KakaoSDKTalk: 567d2697b419b4f01f2f8bdb28e13100817c4090
+  KakaoSDKTemplate: 0fcfbbb7cc05986fe6690b85e19dd8de0fc634e6
+  KakaoSDKUser: 5b0826033381d314f550dd90fbf70d3612044ad6
+  naveridlogin-sdk-ios: d9d46d02119d303023d7000cd5963864d5bb89e5
+  TeamLepisodeCapacitorNaverLogin: f226aa83f0c68600726d54c39e994cbe7b68c911
 
-PODFILE CHECKSUM: 3e1e20367b7f02d25dbc5f30ece45b40965bbe70
+PODFILE CHECKSUM: 38cb8a113cfdbd0fc11767b342f129f52b5ce489
 
 COCOAPODS: 1.16.2

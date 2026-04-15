@@ -11,11 +11,12 @@ type UIData = {
   rating: number
   reviewCount: number
   worksType: string
+  genre: string
 }
 
 function Star({ value }: { value: number }) {
   return (
-    <span className="caption-1 text-[var(--color-magenta-300)]">
+    <span className="caption-1-medium text-[var(--color-magenta-300)]">
       <Image
         src="/common/icons/littleStar.svg"
         alt="star"
@@ -54,7 +55,7 @@ export default function WorkHeaderCover({ ui }: Props) {
 
       <div className="relative z-10 px-4 pb-4">
         <div className="mt-2 flex flex-col items-center">
-          <div className="relative h-[280px] w-[210px] overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
+          <div className="relative h-70 w-52.5 overflow-hidden rounded-lg bg-gray-100 shadow-sm">
             {/* 외부 URL 썸네일 안전하게 */}
             <img
               src={ui.thumb}
@@ -64,13 +65,13 @@ export default function WorkHeaderCover({ ui }: Props) {
           </div>
 
           <p className="heading-3 mt-4 text-black text-center">{ui.title}</p>
-          <p className="body-2 mt-2 text-gray-500 text-center">
+          <p className="body-2-medium mt-1 text-gray-500 text-center">
             {ui.metaAuthor}
           </p>
 
-          <div className="mt-2">
-            <span className="caption-1 text-[var(--color-magenta-300)] mr-3">
-              {ui.worksType}{' '}
+          <div className="mt-1">
+            <span className="caption-1-medium text-[var(--color-magenta-300)] mr-3">
+              {ui.worksType} · {ui.genre}
             </span>
             <Star value={ui.rating} />
           </div>

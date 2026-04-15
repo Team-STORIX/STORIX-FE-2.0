@@ -12,6 +12,8 @@ def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCommunityAppleSignIn', :path => '../../node_modules/@capacitor-community/apple-sign-in'
+  pod 'TeamLepisodeCapacitorNaverLogin', :path => '../../node_modules/@team-lepisode/capacitor-naver-login'
+  pod 'CapacitorKakaoLoginPlugin', :path => '../../node_modules/capacitor-kakao-login-plugin'
 end
 
 target 'App' do

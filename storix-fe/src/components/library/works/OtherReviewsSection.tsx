@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import ForwardArrowIcon from '@/public/common/icons/FowardArrowIcon'
+import ReviewMetaBar from '@/components/library/works/ReviewMetaBar'
 
 type OtherReviewItem = {
   reviewId: number
@@ -12,11 +13,14 @@ type OtherReviewItem = {
   content?: string
   profileImageUrl?: string | null
   spoilerScript?: string
+  rating?: number | null
+  likeCount?: number | null
+  isSpoiler?: boolean
 }
 
 type Props = {
   otherReviews: OtherReviewItem[]
-  sentinelRef: (node?: Element | null) => void //   useInView의 ref 그대로 받기
+  sentinelRef: (node?: Element | null) => void
 }
 
 export default function OtherReviewsSection({
@@ -24,15 +28,16 @@ export default function OtherReviewsSection({
   sentinelRef,
 }: Props) {
   const router = useRouter()
+  const [revealedSpoilerIds, setRevealedSpoilerIds] = useState<Set<number>>(
+    new Set(),
+  )
 
   const goReviewDetail = (reviewId: number) => {
     router.push(`/library/works/review?id=${reviewId}`)
   }
-  const [revealedSpoilerIds, setRevealedSpoilerIds] = useState<Set<number>>(
-    new Set(),
-  )
+
   return (
-    <section className="flex flex-col items-stretch w-full">
+    <section className="flex w-full flex-col items-stretch">
       <p className="heading-2 -mx-4 px-5 pt-5 pb-3 text-black">
         다른 유저들의 리뷰
       </p>
@@ -41,8 +46,7 @@ export default function OtherReviewsSection({
         <p className="body-2 text-gray-400">아직 다른 유저 리뷰가 없어요</p>
       ) : (
         otherReviews.map((r) => {
-          const isSpoiler = Boolean((r as any).isSpoiler)
-          const isHidden = isSpoiler && !revealedSpoilerIds.has(r.reviewId)
+          const isHidden = Boolean(r.isSpoiler) && !revealedSpoilerIds.has(r.reviewId)
 
           const onClick = () => {
             if (isHidden) {
@@ -53,15 +57,17 @@ export default function OtherReviewsSection({
               })
               return
             }
+
             goReviewDetail(r.reviewId)
           }
+
           return (
             <div
               key={r.reviewId}
-              className="text-left -mx-4 px-5 border-b border-gray-100"
+              className="-mx-4 border-b border-gray-100 px-5 text-left"
             >
-              <div className="flex items-center gap-2 mt-5">
-                <div className="h-8 w-8 shrink-0 rounded-full overflow-hidden flex items-center justify-center">
+              <div className="mt-5 flex items-center gap-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
                   {r.profileImageUrl ? (
                     <Image
                       src={r.profileImageUrl}
@@ -72,7 +78,7 @@ export default function OtherReviewsSection({
                     />
                   ) : (
                     <Image
-                      src={'/common/icons/reviewProfile.svg'}
+                      src="/common/icons/reviewProfile.svg"
                       alt={r.userName ?? 'profile'}
                       width={32}
                       height={32}
@@ -81,23 +87,21 @@ export default function OtherReviewsSection({
                   )}
                 </div>
 
-                <p className="body-2 text-gray-900 flex-1 min-w-0 w-full truncate">
+                <p className="body-2 min-w-0 flex-1 truncate text-gray-900">
                   {r.userName ?? '익명'}
                 </p>
               </div>
 
-              {/*   아래: content 블럭 */}
               <button
-                className="flex w-full py-5 justify-between items-center text-left cursor-pointer "
-                key={r.reviewId}
+                className="flex w-full items-center justify-between py-5 text-left"
                 type="button"
                 onClick={onClick}
               >
                 <div className="relative flex-1">
                   <p
                     className={[
-                      'body-2 text-gray-700 whitespace-pre-wrap break-words line-clamp-3 pr-6',
-                      isHidden ? 'blur-sm select-none' : '',
+                      'body-2 break-words whitespace-pre-wrap pr-6 text-gray-700 line-clamp-3',
+                      isHidden ? 'select-none blur-sm' : '',
                     ].join(' ')}
                   >
                     {r.content ?? ''}
@@ -113,12 +117,15 @@ export default function OtherReviewsSection({
 
                 <ForwardArrowIcon />
               </button>
+
+              <div className="pb-5">
+                <ReviewMetaBar rating={r.rating} likeCount={r.likeCount} />
+              </div>
             </div>
           )
         })
       )}
 
-      {/*   UI 변경 없음: 무한스크롤 sentinel */}
       <div ref={sentinelRef} />
     </section>
   )
