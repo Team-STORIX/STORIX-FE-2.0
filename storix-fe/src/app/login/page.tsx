@@ -5,25 +5,19 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Splash } from '@/app/splash'
-import { getKakaoAuthUrl } from '@/lib/api/auth/kakao.api'
 import { developerLogin } from '@/lib/api/auth/developer-login.api'
 import { useAuthStore } from '@/store/auth.store'
-
-function generateNaverState() {
-  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
-    const bytes = new Uint8Array(16)
-    window.crypto.getRandomValues(bytes)
-    return Array.from(bytes)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
-  }
-  return `${Date.now()}_${Math.random().toString(16).slice(2)}`
-}
+import {
+  isNativePlatform,
+  webSocialAuthProvider,
+} from '@/lib/auth/social'
+import { useNativeSocialLogin } from '@/hooks/auth/useNativeSocialLogin'
 
 export default function LoginPage() {
   const [showSplash] = useState(false)
   const router = useRouter()
   const setAccessToken = useAuthStore((s) => s.setAccessToken)
+  const nativeSocialLogin = useNativeSocialLogin()
 
   const handleDeveloperLogin = async () => {
     const pendingId = window.prompt('pendingId를 입력하세요')
@@ -37,12 +31,31 @@ export default function LoginPage() {
     }
   }
 
+  // iOS/Android 네이티브 → SDK + BE native 엔드포인트
+  // 그 외(웹)            → 기존 리다이렉트 플로우 → /pending 에서 code 교환
   const handleKakaoLogin = async () => {
+    if (isNativePlatform()) {
+      nativeSocialLogin.mutate('kakao')
+      return
+    }
     try {
-      const authUrl = await getKakaoAuthUrl()
+      const authUrl = webSocialAuthProvider.getKakaoAuthUrl()
       window.location.href = authUrl
     } catch {
       alert('로그인 준비에 실패했습니다.')
+    }
+  }
+
+  const handleNaverLogin = () => {
+    if (isNativePlatform()) {
+      nativeSocialLogin.mutate('naver')
+      return
+    }
+    try {
+      const authUrl = webSocialAuthProvider.getNaverAuthUrl()
+      window.location.href = authUrl
+    } catch {
+      alert('네이버 로그인 설정이 누락되었습니다.')
     }
   }
 
@@ -66,33 +79,6 @@ export default function LoginPage() {
     } catch {
       alert('Apple 로그인에 실패했습니다.')
     }
-  }
-
-  const handleNaverLogin = () => {
-    const clientId = process.env.NEXT_PUBLIC_NAVER_CLIENT_ID
-    const redirectUri = process.env.NEXT_PUBLIC_NAVER_REDIRECT_URI
-
-    if (!clientId) {
-      //console.error('NEXT_PUBLIC_NAVER_CLIENT_ID is not set')
-      alert('네이버 로그인 설정이 누락되었습니다. (CLIENT_ID)')
-      return
-    }
-    if (!redirectUri) {
-      //console.error('NEXT_PUBLIC_NAVER_REDIRECT_URI is not set')
-      alert('네이버 로그인 설정이 누락되었습니다. (REDIRECT_URI)')
-      return
-    }
-
-    const state = generateNaverState()
-
-    const authUrl =
-      `https://nid.naver.com/oauth2.0/authorize` +
-      `?response_type=code` +
-      `&client_id=${clientId}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&state=${encodeURIComponent(state)}`
-
-    window.location.href = authUrl
   }
 
   if (showSplash) return <Splash />
