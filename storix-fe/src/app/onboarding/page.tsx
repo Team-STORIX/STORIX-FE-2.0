@@ -66,38 +66,34 @@ function OnboardingInner() {
     return null
   }
 
+  // 회원가입 성공 직후 accessToken 으로 프로필 이미지 업로드
+  // 1) presigned PUT URL 발급 → 2) S3 직접 PUT → 3) objectKey 로 프로필 이미지 적용
   const uploadProfileImage = async (file: File): Promise<void> => {
     const contentType = toContentType(file)
     if (!contentType) {
       throw new Error('업로드 가능한 이미지 형식은 JPG/PNG/WEBP 입니다.')
     }
 
-    setIsUploadingImage(true)
-    try {
-      const presignRes = await createProfileImagePresignedPutUrl(contentType)
-      if (!presignRes.isSuccess) {
-        throw new Error(presignRes.message || 'Presigned URL 발급 실패')
-      }
+    const presignRes = await createProfileImagePresignedPutUrl(contentType)
+    if (!presignRes.isSuccess) {
+      throw new Error(presignRes.message || 'Presigned URL 발급 실패')
+    }
 
-      const { url: presignedPutUrl, objectKey } = presignRes.result
+    const { url: presignedPutUrl, objectKey } = presignRes.result
 
-      const putRes = await fetch(presignedPutUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': contentType },
-        body: file,
-      })
+    const putRes = await fetch(presignedPutUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': contentType },
+      body: file,
+    })
+    if (!putRes.ok) {
+      const body = await putRes.text().catch(() => '')
+      throw new Error(`이미지 업로드 실패: ${putRes.status} ${body}`)
+    }
 
-      if (!putRes.ok) {
-        const t = await putRes.text().catch(() => '')
-        throw new Error(`이미지 업로드 실패: ${putRes.status} ${t}`)
-      }
-
-      const applyRes = await updateProfileImage(objectKey)
-      if (!applyRes.isSuccess) {
-        throw new Error(applyRes.message || '프로필 이미지 변경 실패')
-      }
-    } finally {
-      setIsUploadingImage(false)
+    const applyRes = await updateProfileImage(objectKey)
+    if (!applyRes.isSuccess) {
+      throw new Error(applyRes.message || '프로필 이미지 변경 실패')
     }
   }
 
@@ -130,21 +126,8 @@ function OnboardingInner() {
     }
   }
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (!canProceed) return
-
-    // step 1 → 2: 이미지가 선택된 경우 먼저 업로드
-    if (step === 1 && profileImageFileRef.current) {
-      try {
-        await uploadProfileImage(profileImageFileRef.current)
-        profileImageFileRef.current = null
-      } catch (e: any) {
-        // 업로드 실패해도 다음 단계는 진행 (이미지 없이 계속)
-        console.error('[onboarding] 프로필 이미지 업로드 실패:', e?.message)
-        profileImageFileRef.current = null
-      }
-    }
-
     if (step < 5) setStep(step + 1)
     else handleSignup()
   }
