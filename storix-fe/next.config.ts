@@ -11,7 +11,6 @@ const nextConfig: NextConfig = {
   ...(isCapacitor
     ? {
         output: 'export' as const,
-        // static export에서는 동적 trailing slash 처리 불가 → 명시적으로 고정
         trailingSlash: true,
       }
     : {

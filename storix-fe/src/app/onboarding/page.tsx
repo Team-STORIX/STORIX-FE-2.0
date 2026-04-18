@@ -66,34 +66,38 @@ function OnboardingInner() {
     return null
   }
 
-  // 회원가입 성공 직후 accessToken 으로 프로필 이미지 업로드
-  // 1) presigned PUT URL 발급 → 2) S3 직접 PUT → 3) objectKey 로 프로필 이미지 적용
   const uploadProfileImage = async (file: File): Promise<void> => {
     const contentType = toContentType(file)
     if (!contentType) {
       throw new Error('업로드 가능한 이미지 형식은 JPG/PNG/WEBP 입니다.')
     }
 
-    const presignRes = await createProfileImagePresignedPutUrl(contentType)
-    if (!presignRes.isSuccess) {
-      throw new Error(presignRes.message || 'Presigned URL 발급 실패')
-    }
+    setIsUploadingImage(true)
+    try {
+      const presignRes = await createProfileImagePresignedPutUrl(contentType)
+      if (!presignRes.isSuccess) {
+        throw new Error(presignRes.message || 'Presigned URL 발급 실패')
+      }
 
-    const { url: presignedPutUrl, objectKey } = presignRes.result
+      const { url: presignedPutUrl, objectKey } = presignRes.result
 
-    const putRes = await fetch(presignedPutUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': contentType },
-      body: file,
-    })
-    if (!putRes.ok) {
-      const body = await putRes.text().catch(() => '')
-      throw new Error(`이미지 업로드 실패: ${putRes.status} ${body}`)
-    }
+      const putRes = await fetch(presignedPutUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': contentType },
+        body: file,
+      })
 
-    const applyRes = await updateProfileImage(objectKey)
-    if (!applyRes.isSuccess) {
-      throw new Error(applyRes.message || '프로필 이미지 변경 실패')
+      if (!putRes.ok) {
+        const t = await putRes.text().catch(() => '')
+        throw new Error(`이미지 업로드 실패: ${putRes.status} ${t}`)
+      }
+
+      const applyRes = await updateProfileImage(objectKey)
+      if (!applyRes.isSuccess) {
+        throw new Error(applyRes.message || '프로필 이미지 변경 실패')
+      }
+    } finally {
+      setIsUploadingImage(false)
     }
   }
 
@@ -108,7 +112,6 @@ function OnboardingInner() {
         profileDescription: bio,
       })
 
-      // 회원가입 성공 → 프로필 이미지 있으면 업로드 (실패해도 온보딩은 진행)
       if (profileImageFileRef.current) {
         setIsUploadingImage(true)
         try {
@@ -127,8 +130,21 @@ function OnboardingInner() {
     }
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!canProceed) return
+
+    // step 1 → 2: 이미지가 선택된 경우 먼저 업로드
+    if (step === 1 && profileImageFileRef.current) {
+      try {
+        await uploadProfileImage(profileImageFileRef.current)
+        profileImageFileRef.current = null
+      } catch (e: any) {
+        // 업로드 실패해도 다음 단계는 진행 (이미지 없이 계속)
+        console.error('[onboarding] 프로필 이미지 업로드 실패:', e?.message)
+        profileImageFileRef.current = null
+      }
+    }
+
     if (step < 5) setStep(step + 1)
     else handleSignup()
   }
@@ -189,14 +205,20 @@ function OnboardingInner() {
       </div>
 
       <div className="fixed bottom-[34px] left-1/2 -translate-x-1/2 w-[361px] z-50">
-        <img
-          src={canProceed ? '/common/onboarding/next.svg' : '/common/onboarding/next-gray.svg'}
-          alt="다음"
-          className={`w-full h-[50px] ${
-            canProceed ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-not-allowed opacity-50'
-          }`}
-          onClick={handleNext}
-        />
+        {isUploadingImage ? (
+          <div className="w-full h-[50px] flex items-center justify-center rounded-[8px] bg-[var(--color-magenta-300)]">
+            <span className="text-white body-1-bold">업로드 중…</span>
+          </div>
+        ) : (
+          <img
+            src={canProceed ? '/common/onboarding/next.svg' : '/common/onboarding/next-gray.svg'}
+            alt="다음"
+            className={`w-full h-[50px] ${
+              canProceed ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-not-allowed opacity-50'
+            }`}
+            onClick={handleNext}
+          />
+        )}
       </div>
     </div>
   )

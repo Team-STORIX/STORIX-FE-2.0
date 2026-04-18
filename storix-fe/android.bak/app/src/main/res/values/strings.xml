@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Storix</string>
+    <string name="title_activity_main">Storix</string>
+    <string name="package_name">kr.storix.app</string>
+    <string name="custom_url_scheme">kr.storix.app</string>
+    <string name="kakao_native_app_key">344d3d813aee8e9a15d97762d2da1001</string>
+    <string name="kakao_scheme">kakao344d3d813aee8e9a15d97762d2da1001</string>
+</resources>

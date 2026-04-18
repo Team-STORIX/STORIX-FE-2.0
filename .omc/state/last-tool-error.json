@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"git merge pr-28\",\"description\":\"Merge PR #28 into develop\"}",
+  "error": "Exit code 1\nAuto-merging storix-fe/capacitor.config.ts\nCONFLICT (content): Merge conflict in storix-fe/capacitor.config.ts\nAuto-merging storix-fe/next.config.ts\nCONFLICT (content): Merge conflict in storix-fe/next.config.ts\nAuto-merging storix-fe/package-lock.json\nCONFLICT (content): Merge conflict in storix-fe/package-lock.json\nAuto-merging storix-fe/package.json\nCONFLICT (content): Merge conflict in storix-fe/package.json\nAuto-merging storix-fe/src/app/login/page.tsx\nCONFLICT (content): Merge ...",
+  "timestamp": "2026-04-18T04:36:42.657Z",
+  "retry_count": 7
+}

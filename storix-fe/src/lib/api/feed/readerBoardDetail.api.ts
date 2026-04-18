@@ -84,9 +84,17 @@ export const createSubReply = async (params: {
         profileImageUrl: string | null
         nickName: string
       }
-      content: { replyId: number; content: string; likeCount: number }
+      content: {
+        replyId: number
+        content: string
+        likeCount: number
+        depth: number
+        childReplyCount: number
+        parentReplyId: number
+        deleted: boolean
+      }
     }>
-  >(`/api/v1/feed/reader/board/${params.boardId}/reply/${params.replyId}/sub-reply`, {
+  >(`/api/v1/feed/reader/board/${params.boardId}/reply/${params.replyId}/reply`, {
     comment: params.comment,
   })
   return data.result
