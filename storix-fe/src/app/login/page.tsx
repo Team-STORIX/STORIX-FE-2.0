@@ -9,6 +9,7 @@ import { developerLogin } from '@/lib/api/auth/developer-login.api'
 import { useAuthStore } from '@/store/auth.store'
 import {
   isNativePlatform,
+  getPlatform,
   webSocialAuthProvider,
 } from '@/lib/auth/social'
 import { useNativeSocialLogin } from '@/hooks/auth/useNativeSocialLogin'
@@ -158,20 +159,22 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="mt-2">
-          <button
-            type="button"
-            className="cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={handleAppleLogin}
-          >
-            <Image
-              src="/common/login/login-apple.svg"
-              alt="Apple 로그인"
-              width={360}
-              height={48}
-            />
-          </button>
-        </div>
+        {getPlatform() !== 'android' && (
+          <div className="mt-2">
+            <button
+              type="button"
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={handleAppleLogin}
+            >
+              <Image
+                src="/common/login/login-apple.svg"
+                alt="Apple 로그인"
+                width={360}
+                height={48}
+              />
+            </button>
+          </div>
+        )}
         {/* 개발자 로그인 */}
         {process.env.NODE_ENV === 'development' && (
           <div className="mt-2">

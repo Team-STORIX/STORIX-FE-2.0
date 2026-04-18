@@ -4,3 +4,9 @@ project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/
 
 include ':capacitor-community-apple-sign-in'
 project(':capacitor-community-apple-sign-in').projectDir = new File('../node_modules/@capacitor-community/apple-sign-in/android')
+
+include ':team-lepisode-capacitor-naver-login'
+project(':team-lepisode-capacitor-naver-login').projectDir = new File('../node_modules/@team-lepisode/capacitor-naver-login/android')
+
+include ':capacitor-kakao-login-plugin'
+project(':capacitor-kakao-login-plugin').projectDir = new File('../node_modules/capacitor-kakao-login-plugin/android')

@@ -38,6 +38,10 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: 'always',
   },
+  android: {
+    // 프로덕션 빌드는 https 로만 서비스. dev 빌드는 cleartext 허용 (server.cleartext 로 제어)
+    allowMixedContent: !isCapacitorBuild,
+  },
   plugins: {
     CapacitorHttp: {
       enabled: true,
@@ -45,6 +49,7 @@ const config: CapacitorConfig = {
     // 네이버 네이티브 로그인 SDK 설정 — 값이 비어 있으면 .env.local 을 먼저 채우세요.
     // NEXT_PUBLIC_NAVER_CLIENT_ID / NEXT_PUBLIC_NAVER_CLIENT_SECRET /
     // NEXT_PUBLIC_NAVER_APP_NAME / NEXT_PUBLIC_NAVER_URL_SCHEME
+    // Android 는 NaverIdLoginSDK.initialize() 가 이 설정값을 읽어 plugin.load() 에서 자동 초기화됩니다.
     CapacitorNaverLogin: {
       clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID ?? '',
       clientSecret: process.env.NEXT_PUBLIC_NAVER_CLIENT_SECRET ?? '',
