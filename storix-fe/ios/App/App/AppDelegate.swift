@@ -61,4 +61,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+
+    // iOS 13+ 에서는 URL open 콜백이 AppDelegate 가 아니라 SceneDelegate 로 들어온다.
+    // 카카오톡 로그인 복귀 URL(kakao{APP_KEY}://oauth) 을 KakaoSDK 로 전달해야 토큰이 세팅됨.
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        if AuthApi.isKakaoTalkLoginUrl(url) {
+            _ = AuthController.handleOpenUrl(url: url)
+            return
+        }
+        // Capacitor App 플러그인이 구독하는 capacitorOpenURL 노티피케이션으로 전달
+        _ = ApplicationDelegateProxy.shared.application(
+            UIApplication.shared, open: url, options: [:]
+        )
+    }
+
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        _ = ApplicationDelegateProxy.shared.application(
+            UIApplication.shared,
+            continue: userActivity,
+            restorationHandler: { _ in }
+        )
+    }
 }

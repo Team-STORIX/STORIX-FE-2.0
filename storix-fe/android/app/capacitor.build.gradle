@@ -10,6 +10,8 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-community-apple-sign-in')
+    implementation project(':team-lepisode-capacitor-naver-login')
+    implementation project(':capacitor-kakao-login-plugin')
 
 }
 
